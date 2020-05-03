@@ -481,10 +481,29 @@ class Gamechat extends React.Component {
 			}
 		};
 
-		const getUserClaimText = (chatSegment, mode) => {
-			const liberalChar = 'B';
-			const fascistChar = 'R';
-			return new Array(chatSegment.num).fill(chatSegment.type === 'liberal' ? liberalChar : fascistChar).join('');
+		const parseClaim = claim => {
+			const mode = (userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
+			let liberalChar = 'L';
+			let fascistChar = 'F';
+			if (mode === 'legacy') {
+				liberalChar = 'B';
+				fascistChar = 'R';
+			} else if (mode === 'full') {
+				liberalChar = 'liberal';
+				fascistChar = 'fascist';
+			}
+			const claims = Array.from(claim);
+			const elements = claims.map((claimChar, index) => {
+				const isLiberal = claimChar === 'b';
+
+				return (
+					<span key={`claim${index}`}>
+						<span className={getClassesFromType(isLiberal ? 'liberal' : 'fascist')}>{isLiberal ? liberalChar : fascistChar}</span>
+						{mode === 'full' && index < claims.length - 1 ? <span>, </span> : <React.Fragment />}
+					</span>
+				);
+			});
+			return elements;
 		};
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
@@ -557,27 +576,14 @@ class Gamechat extends React.Component {
 									chatContents.length &&
 									chatContents.map((chatSegment, index) => {
 										if (chatSegment.type) {
-											const classes = getClassesFromType(chatSegment.type);
-
-											let text = chatSegment.text;
-
-											if (
-												userInfo.gameSettings &&
-												userInfo.gameSettings.claimCharacters &&
-												userInfo.gameSettings.claimCharacters !== 'short' &&
-												chatSegment.type &&
-												chatSegment.num
-											) {
-												text = getUserClaimText(chatSegment, userInfo.gameSettings.claimCharacters);
-											}
-
 											return (
-												<span key={index} className={classes}>
-													{text}
+												<span key={index} className={getClassesFromType(chatSegment.type)}>
+													{chatSegment.text}
 												</span>
 											);
+										} else if (chatSegment.claim) {
+											return <span key={index}>{parseClaim(chatSegment.claim)}</span>;
 										}
-
 										return chatSegment.text;
 									})}
 							</span>
@@ -586,31 +592,20 @@ class Gamechat extends React.Component {
 						<div className={'item game-chat'} key={i}>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="game-chat">
-								{chatContents.map((chatSegment, index) => {
-									if (chatSegment.type) {
-										const classes = getClassesFromType(chatSegment.type);
-
-										let text = chatSegment.text;
-
-										if (
-											userInfo.gameSettings &&
-											userInfo.gameSettings.claimCharacters &&
-											userInfo.gameSettings.claimCharacters !== 'short' &&
-											chatSegment.type &&
-											chatSegment.num
-										) {
-											text = getUserClaimText(chatSegment, userInfo.gameSettings.claimCharacters);
+								{chatContents &&
+									chatContents.length &&
+									chatContents.map((chatSegment, index) => {
+										if (chatSegment.type) {
+											return (
+												<span key={index} className={getClassesFromType(chatSegment.type)}>
+													{chatSegment.text}
+												</span>
+											);
+										} else if (chatSegment.policies) {
+											return <span key={index}>{parseClaim(chatSegment.policies)}</span>;
 										}
-
-										return (
-											<span key={index} className={classes}>
-												{text}
-											</span>
-										);
-									}
-
-									return chatSegment.text;
-								})}
+										return chatSegment.text;
+									})}
 							</span>
 						</div>
 					) : chat.isBroadcast ? (

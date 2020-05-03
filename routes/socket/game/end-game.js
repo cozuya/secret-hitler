@@ -130,18 +130,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 		chat: [
 			{
 				text: 'The remaining policies are '
+			},
+			{
+				policies: game.private.policies.map(policyName => (policyName === 'liberal' ? 'b' : 'r'))
+			},
+			{
+				text: '.'
 			}
-		].concat(
-			game.private.policies
-				.map(policyName => ({
-					text: policyName === 'liberal' ? 'L' : 'F',
-					type: policyName === 'liberal' ? 'liberal' : 'fascist',
-					num: 1
-				}))
-				.concat({
-					text: '.'
-				})
-		)
+		]
 	};
 
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {

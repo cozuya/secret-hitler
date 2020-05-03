@@ -665,7 +665,7 @@ class Settings extends React.Component {
 							<h4 className="ui header">Claim policy representation</h4>
 							<select onChange={this.handleClaimCharacters} value={this.state.claimCharacters}>
 								<option value="short">Short (L/F)</option>
-								{/* <option value="full">Full (liberal/fascist)</option> */}
+								<option value="full">Full (liberal/fascist)</option>
 								<option value="legacy">Legacy (B/R)</option>
 							</select>
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
