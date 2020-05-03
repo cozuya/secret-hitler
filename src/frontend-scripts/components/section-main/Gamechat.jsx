@@ -473,6 +473,20 @@ class Gamechat extends React.Component {
 			}
 		};
 
+		const getClassesFromType = type => {
+			if (type === 'player') {
+				return 'chat-player';
+			} else {
+				return `chat-role--${type}`;
+			}
+		};
+
+		const getUserClaimText = (chatSegment, mode) => {
+			const liberalChar = 'B';
+			const fascistChar = 'R';
+			return new Array(chatSegment.num).fill(chatSegment.type === 'liberal' ? liberalChar : fascistChar).join('');
+		};
+
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)));
 			const chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
@@ -522,13 +536,7 @@ class Gamechat extends React.Component {
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
 									if (chatSegment.type) {
-										let classes;
-
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
-										}
+										const classes = getClassesFromType(chatSegment.type);
 
 										return (
 											<span key={index} className={classes}>
@@ -549,23 +557,60 @@ class Gamechat extends React.Component {
 									chatContents.length &&
 									chatContents.map((chatSegment, index) => {
 										if (chatSegment.type) {
-											let classes;
+											const classes = getClassesFromType(chatSegment.type);
 
-											if (chatSegment.type === 'player') {
-												classes = 'chat-player';
-											} else {
-												classes = `chat-role--${chatSegment.type}`;
+											let text = chatSegment.text;
+
+											if (
+												userInfo.gameSettings &&
+												userInfo.gameSettings.claimCharacters &&
+												userInfo.gameSettings.claimCharacters !== 'short' &&
+												chatSegment.type &&
+												chatSegment.num
+											) {
+												text = getUserClaimText(chatSegment, userInfo.gameSettings.claimCharacters);
 											}
 
 											return (
 												<span key={index} className={classes}>
-													{chatSegment.text}
+													{text}
 												</span>
 											);
 										}
 
 										return chatSegment.text;
 									})}
+							</span>
+						</div>
+					) : chat.isRemainingPolicies ? (
+						<div className={'item game-chat'} key={i}>
+							{this.handleTimestamps(chat.timestamp)}
+							<span className="game-chat">
+								{chatContents.map((chatSegment, index) => {
+									if (chatSegment.type) {
+										const classes = getClassesFromType(chatSegment.type);
+
+										let text = chatSegment.text;
+
+										if (
+											userInfo.gameSettings &&
+											userInfo.gameSettings.claimCharacters &&
+											userInfo.gameSettings.claimCharacters !== 'short' &&
+											chatSegment.type &&
+											chatSegment.num
+										) {
+											text = getUserClaimText(chatSegment, userInfo.gameSettings.claimCharacters);
+										}
+
+										return (
+											<span key={index} className={classes}>
+												{text}
+											</span>
+										);
+									}
+
+									return chatSegment.text;
+								})}
 							</span>
 						</div>
 					) : chat.isBroadcast ? (

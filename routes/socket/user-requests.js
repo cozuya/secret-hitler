@@ -215,6 +215,7 @@ module.exports.sendUserGameSettings = socket => {
 					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 					eloOverall: account.eloOverall,
 					eloSeason: account.eloSeason,
+					claimCharacters: account.gameSettings.claimCharacters,
 					status: {
 						type: 'none',
 						gameId: null

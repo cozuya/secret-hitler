@@ -931,7 +931,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'FFF',
-								type: 'fascist'
+								type: 'fascist',
+								num: 3
 							},
 							{
 								text: '.'
@@ -953,11 +954,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'FF',
-								type: 'fascist'
+								type: 'fascist',
+								num: 2
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: '.'
@@ -979,11 +982,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'LL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 2
 							},
 							{
 								text: '.'
@@ -1005,7 +1010,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'LLL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 3
 							},
 							{
 								text: '.'
@@ -1040,7 +1046,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'FF',
-								type: 'fascist'
+								type: 'fascist',
+								num: 2
 							},
 							{
 								text: '.'
@@ -1062,11 +1069,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1088,7 +1097,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'LL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 2
 							},
 							{
 								text: '.'
@@ -1145,7 +1155,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'FFF',
-								type: 'fascist'
+								type: 'fascist',
+								num: 3
 							},
 							{
 								text: '.'
@@ -1167,15 +1178,18 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1197,16 +1211,19 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1228,16 +1245,19 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1259,11 +1279,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'LL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 2
 							},
 							{
 								text: '.'
@@ -1285,11 +1307,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'LL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 2
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1311,15 +1335,18 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: 'F',
-								type: 'fascist'
+								type: 'fascist',
+								num: 1
 							},
 							{
 								text: 'L',
-								type: 'liberal'
+								type: 'liberal',
+								num: 1
 							},
 							{
 								text: '.'
@@ -1341,7 +1368,8 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 							},
 							{
 								text: 'LLL',
-								type: 'liberal'
+								type: 'liberal',
+								num: 3
 							},
 							{
 								text: '.'

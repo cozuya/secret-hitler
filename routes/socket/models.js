@@ -175,7 +175,8 @@ module.exports.formattedUserList = isAEM => {
 			timeLastGameCreated: user.timeLastGameCreated,
 			staffRole: prune(user.staffRole),
 			staffIncognito: prune(user.staffIncognito),
-			isContributor: prune(user.isContributor)
+			isContributor: prune(user.isContributor),
+			claimCharacters: user.claimCharacters
 			// oldData: user
 		}))
 		.filter(user => isAEM || !user.staffIncognito);

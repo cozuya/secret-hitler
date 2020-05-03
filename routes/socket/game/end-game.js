@@ -125,7 +125,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		]
 	};
 	const remainingPoliciesChat = {
-		gameChat: true,
+		isRemainingPolicies: true,
 		timestamp: new Date(),
 		chat: [
 			{
@@ -135,7 +135,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 			game.private.policies
 				.map(policyName => ({
 					text: policyName === 'liberal' ? 'L' : 'F',
-					type: policyName === 'liberal' ? 'liberal' : 'fascist'
+					type: policyName === 'liberal' ? 'liberal' : 'fascist',
+					num: 1
 				}))
 				.concat({
 					text: '.'
