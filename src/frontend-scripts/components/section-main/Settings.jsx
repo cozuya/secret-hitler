@@ -81,8 +81,8 @@ class Settings extends React.Component {
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
-			safeForWork: gameSettings.safeForWork,
-			claimCharacters: gameSettings.claimCharacters,
+			safeForWork: gameSettings.safeForWork || false,
+			claimCharacters: gameSettings.claimCharacters || 'short',
 			primaryColor: window
 				.getComputedStyle(document.documentElement)
 				.getPropertyValue('--theme-primary')
@@ -119,7 +119,7 @@ class Settings extends React.Component {
 		);
 	};
 
-	handleClaimCharacters = e => {
+	handleClaimCharactersChange = e => {
 		this.setState(
 			{
 				claimCharacters: e.target.value
@@ -663,7 +663,7 @@ class Settings extends React.Component {
 								<label />
 							</div>
 							<h4 className="ui header">Claim policy representation</h4>
-							<select onChange={this.handleClaimCharacters} value={this.state.claimCharacters}>
+							<select onChange={this.handleClaimCharactersChange} value={this.state.claimCharacters}>
 								<option value="short">Short (L/F)</option>
 								<option value="full">Full (liberal/fascist)</option>
 								<option value="legacy">Legacy (B/R)</option>

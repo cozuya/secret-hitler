@@ -11,6 +11,7 @@ const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const prodCacheBustToken = require('./prodCacheBustToken');
+const moment = require('moment');
 
 /**
  * @param {object} req - express request object.
@@ -400,7 +401,7 @@ module.exports.accounts = torIpsParam => {
 	});
 
 	app.post('/account/reset-password', (req, res, next) => {
-		if (!req.body.email || typeof req.body.email !== "string") {
+		if (!req.body.email || typeof req.body.email !== 'string') {
 			return next();
 		}
 
@@ -598,6 +599,9 @@ module.exports.accounts = torIpsParam => {
 						date: new Date(),
 						ip: ip
 					});
+				}
+				if (player.gameSettings && !player.gameSettings.claimCharacters && moment(player.created).isBefore(moment('2020-05-03'))) {
+					player.gameSettings.claimCharacters = 'legacy';
 				}
 				player.save(() => {
 					res.send();
