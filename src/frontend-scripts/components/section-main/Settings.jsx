@@ -662,7 +662,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header">Claim policy representation</h4>
+							<h4 className="ui header">Policy claim representation</h4>
 							<select onChange={this.handleClaimCharactersChange} value={this.state.claimCharacters}>
 								<option value="short">Short (L/F)</option>
 								<option value="full">Full (liberal/fascist)</option>
