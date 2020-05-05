@@ -181,6 +181,7 @@ module.exports.sendInProgressModChatUpdate = async (game, chat, specificUser) =>
 
 module.exports.sendPlayerChatUpdate = async (game, chat) => {
 	const { uid } = game.general;
+
 	if (!io.sockets.adapter.rooms[uid]) {
 		return;
 	}
@@ -194,6 +195,8 @@ module.exports.sendPlayerChatUpdate = async (game, chat) => {
 			sock.emit('playerChatUpdate', chat);
 		}
 	});
+
+	game.chats.push(chat);
 
 	setGameAsync(game);
 };

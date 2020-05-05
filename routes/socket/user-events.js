@@ -787,7 +787,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 		const t = chat.timestamp.getMilliseconds();
 		await pushGameChatsAsync(newGame, chat);
-		
+
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -2511,7 +2511,9 @@ module.exports.handleAddNewGameChat = async (
 			else leniancy = 0.25;
 
 			const timeSince = data.timestamp - lastMessage.timestamp;
-			if (!AEM && timeSince < leniancy * 1000) return; // Prior chat was too recent.
+			if (!AEM && timeSince < leniancy * 1000) {
+				return; // Prior chat was too recent.
+			}
 		}
 
 		data.staffRole = (() => {
@@ -2523,6 +2525,7 @@ module.exports.handleAddNewGameChat = async (
 				return 'admin';
 			}
 		})();
+
 		if (AEM && user.staffIncognito) {
 			data.hiddenUsername = data.userName;
 			data.staffRole = 'moderator';
