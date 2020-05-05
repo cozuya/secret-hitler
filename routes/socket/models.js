@@ -14,7 +14,24 @@ module.exports.getGamesAsync = promisify(games.get).bind(games);
 const setGame = promisify(games.set).bind(games);
 const setGameAsync = (game) => game && typeof game === 'object' && setGame(game.general.uid, JSON.stringify(game));
 module.exports.setGameAsync = setGameAsync;
-module.exports.deleteGameAsync = promisify(games.del).bind(games);
+const deleteGame = promisify(games.del).bind(games);
+const deleteGameAsync = (uid) => {
+	io.in(uid).clients((err, clients) => {
+		if (err) {
+			console.log(err, 'err in deletegame');
+			return;
+		}
+
+		clients.forEach((client) => {
+			io.of('/').adapter.remoteJoin(client, 'sidebarInfoSubscription');
+			io.of('/').adapter.remoteJoin(client, 'gameListInfoSubscription');
+			io.of('/').adapter.remoteLeave(client, uid);
+		});
+	});
+
+	return deleteGame(uid);
+};
+module.exports.deleteGameAsync = deleteGameAsync;
 module.exports.scanGamesAsync = promisify(games.scan).bind(games);
 module.exports.pushGameChatsAsync = (game, chat) => {
 	game.chats.push(chat);

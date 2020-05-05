@@ -366,6 +366,7 @@ const handleSocketDisconnect = async (socket) => {
  */
 const handleUserLeaveGame = async (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex((player) => player.userName === passport.user);
+	socket.join('gameListInfoSubscription');
 
 	if (playerIndex > -1) {
 		const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
@@ -406,6 +407,7 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		}
 
 		if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
+			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 			deleteGameAsync(game.general.uid);
 			// deleteGameChatsAsync(game.general.uid);
 		}
