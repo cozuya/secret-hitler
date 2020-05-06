@@ -189,9 +189,9 @@ class Menu extends React.Component {
 
 	render() {
 		let classes = 'ui menu nav-menu';
-		const { userInfo } = this.props;
+		const { gameInfo, userInfo, midSection, version, readPatchNotes } = this.props;
 
-		if (this.props.midSection === 'game') {
+		if (midSection === 'game') {
 			classes += ' game';
 		}
 
@@ -214,16 +214,14 @@ class Menu extends React.Component {
 								|{' '}
 								<a
 									className={
-										this.props.midSection !== 'game' &&
-										this.props.version.lastSeen &&
-										this.props.version.current.number !== this.props.version.lastSeen
+										midSection !== 'game' && version.lastSeen && version.current.number !== version.lastSeen
 											? 'patch-alert'
 											: null
 									}
-									onClick={this.props.readPatchNotes}
+									onClick={readPatchNotes}
 								>
 									{' '}
-									{`v${this.props.version.current.number}`}{' '}
+									{`v${version.current.number}`}{' '}
 								</a>
 								|{' '}
 								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
@@ -241,8 +239,6 @@ class Menu extends React.Component {
 						</div>
 						<div className="item right menu">
 							{(() => {
-								const { gameInfo, userInfo } = this.props;
-
 								/**
 								 * @return {string} classnames
 								 */
@@ -291,7 +287,7 @@ class Menu extends React.Component {
 									</div>
 								);
 							})()}
-							{this.props.userInfo.userName && (
+							{userInfo.userName && (
 								<div className="item right">
 									<a className="ui button" href="/logout">
 										Logout
@@ -311,16 +307,14 @@ class Menu extends React.Component {
 								|{' '}
 								<a
 									className={
-										this.props.midSection !== 'game' &&
-										this.props.version.lastSeen &&
-										this.props.version.current.number !== this.props.version.lastSeen
+										midSection !== 'game' && version.lastSeen && version.current.number !== version.lastSeen
 											? 'patch-alert'
 											: null
 									}
-									onClick={this.props.readPatchNotes}
+									onClick={readPatchNotes}
 								>
 									{' '}
-									{`v${this.props.version.current.number}`}{' '}
+									{`v${version.current.number}`}{' '}
 								</a>
 								|{' '}
 								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
@@ -392,7 +386,7 @@ class Menu extends React.Component {
 									</div>
 								);
 							})()}
-							{this.props.userInfo.userName && (
+							{userInfo.userName && (
 								<div className="item right">
 									<a className="ui button" href="/logout">
 										Logout

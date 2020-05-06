@@ -130,7 +130,10 @@ const gamesGarbageCollector = async () => {
 };
 
 module.exports.socketRoutes = () => {
-	setInterval(gamesGarbageCollector, 500000);
+	if (process.env.NODE_ENV === 'production') {
+		setInterval(gamesGarbageCollector, 500000);
+	}
+
 	gatherStaffUsernames();
 
 	io.on('connection', (socket) => {
@@ -295,6 +298,9 @@ module.exports.socketRoutes = () => {
 					}
 				});
 			} else {
+				socket.join('sidebarInfoSubscription');
+				socket.join('gameListInfoSubscription');
+				socket.emit('version', { current: version });
 				sendUserList(socket);
 				sendGameList(socket);
 				sendGeneralChats(socket);

@@ -32,15 +32,18 @@ let throttledLastUserListSentTime = Date.now();
  * @param {object} socket - user socket reference.
  */
 const sendUserList = async (socket) => {
-	const list = await getRangeUserlistAsync('userList', 0, -1);
-	const userList = list.map(JSON.parse);
-
 	if (socket) {
+		const list = await getRangeUserlistAsync('userList', 0, -1);
+		const userList = list.map(JSON.parse);
+
 		socket.emit('userList', { list: userList });
 	} else {
 		const now = Date.now();
 
-		if (now - throttledLastUserListSentTime > 4000) {
+		if (now - throttledLastUserListSentTime > 4000 || process.env.NODE_ENV !== 'production') {
+			const list = await getRangeUserlistAsync('userList', 0, -1);
+			const userList = list.map(JSON.parse);
+
 			io.to('sidebarInfoSubscription').emit('userList', { list: userList });
 			throttledLastUserListSentTime = now;
 		}

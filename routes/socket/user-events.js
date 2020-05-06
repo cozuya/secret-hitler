@@ -711,11 +711,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: account.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
-			minPlayersCount: playerCounts[0],
-			// minPlayersCount: 5,
-			// maxPlayersCount: 5,
+			minPlayersCount: 5,
+			maxPlayersCount: 5,
 
-			maxPlayersCount: playerCounts[playerCounts.length - 1],
+			// minPlayersCount: playerCounts[0],
+			// maxPlayersCount: playerCounts[playerCounts.length - 1],
 			gameCreatorName: user,
 			gameCreatorBlacklist: account.gameSettings.blacklist,
 			excludedPlayerCount: excludes,
@@ -2015,7 +2015,7 @@ module.exports.handleAddNewGameChat = async (
 	data.timestamp = new Date();
 
 	if (AEM) {
-		const { blindMode, replacementNames } = game.general;
+		// const { blindMode, replacementNames } = game.general;
 		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
 
 		if (aemRigdeck) {
@@ -2656,11 +2656,11 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 			userName: passport.user,
 			staffRole: getStaffRole(),
 		};
-		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
-		const AEM =
-			staffUserNames.includes(passport.user) ||
-			newStaff.modUserNames.includes(passport.user) ||
-			newStaff.editorUserNames.includes(passport.user);
+		// const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+		// const AEM =
+		// 	staffUserNames.includes(passport.user) ||
+		// 	newStaff.modUserNames.includes(passport.user) ||
+		// 	newStaff.editorUserNames.includes(passport.user);
 		// if (AEM && user.staffIncognito) {
 		// 	newChat.hiddenUsername = newChat.userName;
 		// 	newChat.staffRole = 'moderator';
