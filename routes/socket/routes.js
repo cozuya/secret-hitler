@@ -494,7 +494,7 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('getModInfo', count => {
 				if (authenticated && (isAEM || isTrial)) {
-					sendModInfo(games, socket, count, isTrial && !isAEM);
+					sendModInfo(games, socket, count, isTrial, isAEM);
 				}
 			});
 			socket.on('subscribeModChat', uid => {

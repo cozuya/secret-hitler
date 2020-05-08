@@ -34,11 +34,12 @@ export default class Moderation extends React.Component {
 			type: 'username',
 			direction: 'descending'
 		},
-		hideActions: false,
+		showActions: true,
 		filterModalVisibility: false,
 		filterValue: '',
-		showGameIcons: false,
-		lagMeterStatus: ''
+		showGameIcons: true,
+		lagMeterStatus: '',
+		tableCollapsed: false
 	};
 
 	componentDidMount() {
@@ -56,7 +57,7 @@ export default class Moderation extends React.Component {
 				userList: info.userList,
 				gameList: info.gameList,
 				log: info.modReports,
-				hideActions: info.hideActions || false
+				showActions: info.showActions || false
 			});
 
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
@@ -330,6 +331,13 @@ export default class Moderation extends React.Component {
 		};
 
 		return userList
+			.filter(user => {
+				if (this.state.playerInputText) {
+					return user.userName === this.state.playerInputText;
+				} else {
+					return true;
+				}
+			})
 			.sort((a, b) =>
 				(() => {
 					const getAmt = (a, b) => {
@@ -1067,7 +1075,7 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
-					style={{ background: '#4d949e' }}
+					style={{ background: '#84b8fd' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -1334,11 +1342,11 @@ export default class Moderation extends React.Component {
 	};
 
 	render() {
-		const { userSort, hideActions } = this.state;
+		const { userSort, showActions } = this.state;
 
 		const broadcastKeyup = e => {
 			this.setState({
-				broadcastText: e.currentTarget.value
+				broadcastText: e.target.value
 			});
 		};
 		const toggleModLogToday = e => {
@@ -1364,7 +1372,7 @@ export default class Moderation extends React.Component {
 					<i className="remove icon" />
 				</a>
 				<h2 style={{ userSelect: 'none', WebkitUserSelect: 'none', MsUserSelect: 'none' }}>Moderation</h2>
-				{!hideActions && (
+				{showActions && (
 					<a className="broadcast" href="#" onClick={this.broadcastClick}>
 						Broadcast
 					</a>
@@ -1405,13 +1413,17 @@ export default class Moderation extends React.Component {
 								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">or</div>
 								</span>
 							)}
+							<div onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })} style={{ width: 'max-content', cursor: 'pointer' }}>
+								<i className={`caret icon ${this.state.tableCollapsed ? 'right' : 'down'}`} />
+								Collapse Table
+							</div>
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
@@ -1442,9 +1454,9 @@ export default class Moderation extends React.Component {
 										</th>
 									</tr>
 								</thead>
-								<tbody>{this.renderUserlist()}</tbody>
+								{!this.state.tableCollapsed && <tbody>{this.renderUserlist()}</tbody>}
 							</table>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
@@ -1468,13 +1480,17 @@ export default class Moderation extends React.Component {
 								<br />
 								<span className="unlisted">This game is unlisted</span>
 							</div>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">or</div>
 								</span>
 							)}
+							<div onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })} style={{ width: 'max-content', cursor: 'pointer' }}>
+								<i className={`caret icon ${this.state.tableCollapsed ? 'right' : 'down'}`} />
+								Collapse Table
+							</div>
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
@@ -1506,9 +1522,9 @@ export default class Moderation extends React.Component {
 										</th>
 									</tr>
 								</thead>
-								<tbody>{this.renderGameList()}</tbody>
+								{!this.state.tableCollapsed && <tbody>{this.renderGameList()}</tbody>}
 							</table>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
@@ -1599,8 +1615,8 @@ export default class Moderation extends React.Component {
 				>
 					<div className="ui header">Broadcast to all games:</div>
 					<div className="ui input">
-						<form onSubmit={this.handleBroadcastSubmit}>
-							<input
+						<form onSubmit={this.handleBroadcastSubmit} style={{ marginLeft: '10vw', width: '30vw', display: 'flex', flexDirection: 'column' }}>
+							<textarea
 								maxLength="300"
 								placeholder="Broadcast"
 								onChange={broadcastKeyup}
@@ -1610,13 +1626,16 @@ export default class Moderation extends React.Component {
 								ref={c => {
 									this.broadcastText = c;
 								}}
+								style={{ height: '20vh', width: '100%' }}
 							/>
+							<div style={{ padding: '20px' }}>
+								<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
+								<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
+							</div>
 							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>
 								Submit
 							</div>
 						</form>
-						<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
-						<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
 					</div>
 				</div>
 			</section>
