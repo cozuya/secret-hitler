@@ -157,7 +157,7 @@ const Replay = ({ replay, isSmall, userInfo, userList, to, replayChats, allEmote
 		if (gameInfo.customGameSettings.powers._tail) gameInfo.customGameSettings.powers = gameInfo.customGameSettings.powers._tail.array;
 	}
 	const { phase } = snapshot;
-	const description = toDescription(snapshot, game);
+	const description = toDescription(snapshot, game, userInfo);
 
 	gameInfo.general.uid = game.id;
 	gameInfo.chats = replayChats;

@@ -482,7 +482,7 @@ class Gamechat extends React.Component {
 		};
 
 		const parseClaim = claim => {
-			const mode = (userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
+			const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
 			let liberalChar = 'L';
 			let fascistChar = 'F';
 			if (mode === 'legacy') {

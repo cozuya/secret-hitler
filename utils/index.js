@@ -77,19 +77,38 @@ exports.policyToHand = policy => {
 	return policy === 'fascist' ? { reds: 1, blues: 0 } : { reds: 0, blues: 1 };
 };
 
-// (policy: Policy) => String ('R' | 'B')
-exports.policyToString = policy => {
-	return policy === 'fascist' ? 'R' : 'B';
+const isComma = (index, list, userInfo) => {
+	const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
+	if (mode === 'full') {
+		return index < list.size - 1;
+	}
+	return false;
 };
 
-const text = (exports.text = (type, text, space) => ({ type, text, space }));
+const policyToString = (policy, userInfo) => {
+	const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
+	let liberalChar = 'L';
+	let fascistChar = 'F';
+	if (mode === 'legacy') {
+		liberalChar = 'B';
+		fascistChar = 'R';
+	} else if (mode === 'full') {
+		liberalChar = 'liberal';
+		fascistChar = 'fascist';
+	}
+
+	return policy === 'fascist' ? fascistChar : liberalChar;
+};
+
+// (policy: Policy) => String ('R' | 'B')
+exports.policyToString = policyToString;
+
+const text = (exports.text = (type, text, space, comma) => ({ type, text, space, comma }));
 
 // (hand: Hand) => String ('R*B*')
-exports.handToText = hand => {
-	const policyToString = policy => (policy === 'fascist' ? 'R' : 'B');
-
+exports.handToText = (hand, userInfo) => {
 	return handToPolicies(hand)
-		.map(policy => text(policy, policyToString(policy), false))
+		.map((policy, index, list) => text(policy, policyToString(policy, userInfo), false, isComma(index, list, userInfo)))
 		.concat(text('normal', ''))
 		.toArray();
 };
