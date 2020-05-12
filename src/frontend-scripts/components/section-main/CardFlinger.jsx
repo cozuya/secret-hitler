@@ -1,11 +1,11 @@
 import React from 'react'; // eslint-disable-line
-import $ from 'jquery';
 import PropTypes from 'prop-types';
 
 class CardFlinger extends React.Component {
 	state = {
 		isHovered: false,
-		hoveredClass: null
+		hoveredClass: null,
+		retreatingFlingers: []
 	};
 
 	handleHover = classes => {
@@ -15,79 +15,102 @@ class CardFlinger extends React.Component {
 		});
 	};
 
-	render() {
-		const handleCardClick = e => {
-			const { gameInfo, socket } = this.props;
-			const { gameState } = gameInfo;
-			const { phase } = gameState;
-			const index = parseInt($(e.currentTarget).attr('data-index'), 10);
+	componentDidUpdate(prevProps) {
+		const { gameInfo } = this.props;
+		const { cardFlingerState } = gameInfo;
 
-			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
+		if (prevProps.gameInfo.cardFlingerState && prevProps.gameInfo.cardFlingerState.length && cardFlingerState && !cardFlingerState.length) {
+			this.setState(
+				{
+					retreatingFlingers: prevProps.gameInfo.cardFlingerState.map(flinger => ({
+						...flinger,
+						action: '',
+						notificationStatus: '',
+						cardStatus: {
+							...flinger.cardStatus,
+							isFlipped: false
+						}
+					}))
+				},
+				() => {
+					setTimeout(() => {
+						this.setState({
+							retreatingFlingers: []
+						});
+					}, 1000);
+				}
+			);
+		}
+	}
+
+	render() {
+		const { gameInfo, socket, userInfo } = this.props;
+		const { gameState, publicPlayersState, cardFlingerState, general } = gameInfo;
+
+		const handleCardClick = index => {
+			const { phase } = gameState;
+			const isActive = cardFlingerState[0].action === 'active';
+
+			if (phase === 'voting' && isActive) {
 				socket.emit('selectedVoting', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: general.uid
 				});
 			}
 
-			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+			if (phase === 'presidentSelectingPolicy' && isActive) {
 				socket.emit('selectedPresidentPolicy', {
-					uid: gameInfo.general.uid,
+					uid: general.uid,
 					selection: index ? (index === 2 ? 1 : 2) : 0
 				});
 			}
 
-			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+			if (phase === 'chancellorSelectingPolicy' && isActive) {
 				socket.emit('selectedChancellorPolicy', {
-					uid: gameInfo.general.uid,
+					uid: general.uid,
 					selection: index
 				});
 			}
 
-			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+			if (phase === 'chancellorVoteOnVeto' && isActive) {
 				socket.emit('selectedChancellorVoteOnVeto', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: general.uid
 				});
 			}
 
-			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+			if (phase === 'presidentVoteOnVeto' && isActive) {
 				socket.emit('selectedPresidentVoteOnVeto', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: general.uid
 				});
 			}
 
-			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
+			if (phase === 'presidentVoteOnBurn' && isActive) {
 				socket.emit('selectedPresidentVoteOnBurn', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: general.uid
 				});
 			}
 		};
-		const { cardFlingerState } = this.props.gameInfo;
+
 		const positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 		const renderHelpMessage = () => {
-			const { gameInfo, userInfo } = this.props;
-			const { gameState, publicPlayersState, cardFlingerState, general } = gameInfo;
 			const { phase } = gameState;
 			const { status } = general;
 			const { userName } = userInfo;
 			const currentPlayer = publicPlayersState.find(player => player.userName === userName);
-			const currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
+			const currentPlayerStatus = currentPlayer && currentPlayer.governmentStatus;
 
-			if (userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) {
+			if ((userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) || status === 'Fascists win the game.' || status === 'Liberals win the game.') {
 				return;
 			}
 
-			if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
-				return;
-			}
-
-			if (phase === 'voting' && cardFlingerState.length) {
+			if (phase === 'voting' && cardFlingerState && cardFlingerState.length) {
 				return (
 					<div className="help-message voting">
 						Click once to <span className="select">SELECT</span> a vote.
-						<div className="secondary-message">
+						<div className="seconry-message">
 							If you change your mind, click again to <span className="deselect">DESELECT</span>.
 						</div>
 					</div>
@@ -141,13 +164,15 @@ class CardFlinger extends React.Component {
 			<section className="cardflinger-container">
 				{renderHelpMessage()}
 				{positions.map((position, i) => {
-					const stateObj = cardFlingerState.find(flinger => flinger.position === position);
+					const { isHovered, hoveredClass, retreatingFlingers } = this.state;
+					const retreatingFlinger = retreatingFlingers.find(flinger => flinger.position === position);
+					const stateObj = (cardFlingerState && cardFlingerState.find(flinger => flinger.position === position)) || retreatingFlinger;
 
 					let frontClasses = 'cardflinger-card front';
 					let backClasses = 'cardflinger-card back';
 					let containerClasses = `cardflinger-card-container ${position}`;
 
-					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+					if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disableHelpIcons !== true) {
 						containerClasses += ' display-help-icons';
 					}
 
@@ -173,10 +198,10 @@ class CardFlinger extends React.Component {
 						}
 					}
 
-					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
-						if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
+					if (userInfo.userName && userInfo.gameSettings && !userInfo.gameSettings.disableHelpIcons) {
+						if (isHovered && hoveredClass === containerClasses) {
 							containerClasses += ' hovered';
-						} else if (this.state.isHovered) {
+						} else if (isHovered) {
 							containerClasses += ' not-hovered';
 						}
 					}
@@ -184,9 +209,8 @@ class CardFlinger extends React.Component {
 					return (
 						<div
 							key={i}
-							data-index={i}
 							className={containerClasses}
-							onClick={handleCardClick}
+							onClick={() => handleCardClick(i)}
 							onMouseEnter={() => this.handleHover(containerClasses)}
 							onMouseLeave={() => this.handleHover(containerClasses)}
 						>
