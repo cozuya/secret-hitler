@@ -66,7 +66,7 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 
 const sessionSettings = {
-	secret: process.env.SECRETSESSIONKEY,
+	secret: process.env.SECRETSESSIONKEY || 'hunter2',
 	cookie: {
 		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
 	},
