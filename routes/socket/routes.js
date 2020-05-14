@@ -123,10 +123,11 @@ const gamesGarbageCollector = () => {
 					continue;
 				}
 
-				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('toLobby');
+				// I'm entirely unsure why socketio seems to misbehave with these combined so often - probably just bad timing
+				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId])
+					io.sockets.sockets[affectedSocketId].emit('toLobby');                                                                                         
+				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId])
 					io.sockets.sockets[affectedSocketId].leave(gameName);
-				}
 			}
 			delete games[gameName];
 			sendGameList();
