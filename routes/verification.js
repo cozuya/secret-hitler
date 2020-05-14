@@ -72,10 +72,16 @@ module.exports.verifyRoutes = () => {
 
 	app.post('/password-reset', (req, res, next) => {
 		const { username, password, password2, tok } = req.body;
-		
-		
 
-		if (password !== password2 || !tok || password.length < 6 || password.length > 255 || typeof username !== "string" || typeof password !== "string" || typeof tok !== "string") {
+		if (
+			password !== password2 ||
+			!tok ||
+			password.length < 6 ||
+			password.length > 255 ||
+			typeof username !== 'string' ||
+			typeof password !== 'string' ||
+			typeof tok !== 'string'
+		) {
 			res.status(400).send();
 			return next();
 		}
