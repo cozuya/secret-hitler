@@ -134,6 +134,19 @@ module.exports.socketRoutes = () => {
 		setInterval(gamesGarbageCollector, 500000);
 	}
 
+	const ipc = require('node-ipc');
+
+	ipc.config.id = 'client';
+
+	ipc.connectTo('cache', () => {
+		ipc.of.cache.on('sendGame', (game) => {
+			console.log(game, 'game');
+			console.log(ipc.log(game, 'msg2'));
+		});
+
+		ipc.of.cache.emit('getGame');
+	});
+
 	gatherStaffUsernames();
 
 	io.on('connection', (socket) => {
@@ -195,7 +208,7 @@ module.exports.socketRoutes = () => {
 				for (let index = 0; index < gameUids.length; index++) {
 					const g = JSON.parse(await getGamesAsync(gameUids[index]));
 
-					if (g.publicPlayersState.find((player) => player.userName === user && !player.leftGame)) {
+					if (g && g.publicPlayersState.find((player) => player.userName === user && !player.leftGame)) {
 						game = g;
 						break;
 					}

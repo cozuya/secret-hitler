@@ -284,6 +284,7 @@ const playerLeavePretourny = (game, playerName) => {
  * @param {object} socket - user socket reference.
  */
 const handleSocketDisconnect = async (socket) => {
+	console.log('disconnect fired');
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -432,8 +433,17 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
 			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 
-			console.log('deleted game ');
-			await deleteGameAsync(game.general.uid);
+			console.log(game.general.uid, 'deleted game ');
+			await deleteGameAsync(game.general.uid)
+				.then((a, b) => {
+					console.log(a, 'a');
+					console.log(b, 'b');
+				})
+				.catch((e) => console.log(e, 'e'))
+				.finally((a, b) => {
+					console.log(a, 'a2');
+					console.log(b, 'b2');
+				});
 			// deleteGameChatsAsync(game.general.uid);
 		}
 
@@ -472,8 +482,11 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 			}
 		}
 
-		console.log('delete fired in leavegame');
-		await deleteGameAsync(game.general.uid);
+		console.log(game.general.uid, 'delete fired in leavegame');
+		await deleteGameAsync(game.general.uid).then((a, b) => {
+			console.log(a, 'a');
+			console.log(b, 'b');
+		});
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}

@@ -8,6 +8,7 @@ const BannedIP = require('../../models/bannedIP');
 
 const games = redis.createClient({
 	db: 1,
+	prefix: 'game-',
 });
 
 module.exports.getGamesAsync = promisify(games.get).bind(games);
