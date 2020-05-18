@@ -118,8 +118,6 @@ module.exports.makeReport = (data, game, type = 'report') => {
 			} catch (e) {
 				console.log(e);
 			}
-		} else {
-			console.log('game.general.uid');
 		}
 	});
 };

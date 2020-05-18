@@ -368,7 +368,6 @@ const handleSocketDisconnect = async (socket) => {
  */
 const handleUserLeaveGame = async (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex((player) => player.userName === passport.user);
-	socket.join('gameListInfoSubscription');
 
 	if (playerIndex > -1) {
 		const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
@@ -405,12 +404,36 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
+			console.log(
+				game.publicPlayersState.map((p) => ({
+					leftGame: Boolean(p.leftGame),
+					userName: p.userName,
+				})),
+				'pub1'
+			);
 			await setGameAsync(game);
+			console.log(
+				game.publicPlayersState.map((p) => ({
+					leftGame: Boolean(p.leftGame),
+					userName: p.userName,
+				})),
+				'pub2'
+			);
 		}
+
+		console.log(
+			game.publicPlayersState.map((p) => ({
+				leftGame: Boolean(p.leftGame),
+				userName: p.userName,
+			})),
+			'pub3'
+		);
 
 		if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
 			io.sockets.in(game.general.uid).emit('gameUpdate', game);
-			deleteGameAsync(game.general.uid);
+
+			console.log('deleted game ');
+			await deleteGameAsync(game.general.uid);
 			// deleteGameChatsAsync(game.general.uid);
 		}
 

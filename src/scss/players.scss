@@ -197,8 +197,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			transition-property: transform, top;
 			transform-style: preserve-3d;
 			position: relative;
-			-webkit-backface-visibility: hidden; // thanks osx safari
-			backface-visibility: hidden;
 			.card {
 				background-size: cover;
 				background-repeat: no-repeat;

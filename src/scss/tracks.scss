@@ -114,8 +114,6 @@
 			transition-property: transform;
 			transform-style: preserve-3d;
 			position: relative;
-			-webkit-backface-visibility: hidden; // thanks osx safari
-			backface-visibility: hidden;
 		}
 		.track {
 			transform: rotateX(0deg);
@@ -201,7 +199,8 @@
 	left: 0;
 	font-size: 20px;
 	z-index: 3;
-	text-shadow: 0px 0px 7px var(--theme-background-1), 0px 0px 7px var(--theme-background-1), 0px 0px 7px var(--theme-background-1);
+	text-shadow: 0px 0px 7px var(--theme-background-1), 0px 0px 7px var(--theme-background-1),
+		0px 0px 7px var(--theme-background-1);
 	.secondary-message {
 		font-size: 15px;
 		margin-top: 5px;

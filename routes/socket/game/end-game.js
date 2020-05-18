@@ -1,5 +1,5 @@
 const { sendInProgressGameUpdate, rateEloGame } = require('../util.js');
-const { getRangeUserlistAsync } = require('../models.js');
+const { getRangeUserlistAsync, getGamesAsync } = require('../models.js');
 const { sendUserList, sendGameList } = require('../user-requests.js');
 const Account = require('../../../models/account.js');
 const Game = require('../../../models/game');
@@ -158,10 +158,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 			winningPrivatePlayers.forEach((player, index) => {
 				publicPlayersState.find((play) => play.userName === player.userName).isConfetti = false;
 			});
-			const doesGameExist = await getGamesAsync(game.general.uid);
+			const doesGameExist = Boolean(await getGamesAsync(game.general.uid));
 
-			console.log(doesGameExist, 'dge');
-			sendInProgressGameUpdate(game, true);
+			if (doesGameExist) {
+				sendInProgressGameUpdate(game, true);
+			}
 		}, 15000);
 	}
 

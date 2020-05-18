@@ -1682,9 +1682,12 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 						game.private.unSeatedGameChats.push(chat);
 					}
 
+					const x = true;
+
 					if (
-						game.trackState.fascistPolicyCount >= game.customGameSettings.hitlerZone &&
-						game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler'
+						(game.trackState.fascistPolicyCount >= game.customGameSettings.hitlerZone &&
+							game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') ||
+						x
 					) {
 						const getNumberText = (val) => {
 							if (val == 1) return '1st';
