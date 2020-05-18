@@ -30,7 +30,8 @@
 			display: flex;
 			justify-content: space-between;
 			color: var(--theme-primary);
-			border-bottom: 1px solid var(--theme-background-2);
+			border-bottom: 1px solid var(--theme-background-3);
+			background-color: var(--theme-background-2);
 			.mod-button,
 			.report-button {
 				cursor: pointer;
@@ -165,7 +166,7 @@
 		}
 		.generalchat-header {
 			min-height: 32px;
-			border-bottom: 1px solid var(--theme-background-2);
+			border-bottom: 1px solid var(--theme-background-3);
 			padding: 5px 0px 3px;
 			h3 {
 				float: left;
@@ -202,8 +203,8 @@
 			.chat-input-box {
 				resize: none;
 				width: 100%;
-				background: var(--theme-background-1);
-				color: white;
+				background: var(--theme-background-2);
+				color: var(--theme-text-1);
 				padding-right: 25px;
 				border: solid 1px var(--theme-background-3);
 				height: 44px;

@@ -228,11 +228,7 @@ const enactPolicy = async (game, team, socket) => {
 						});
 						game.gameState.audioCue = '';
 
-						if (process.env.NODE_ENV === 'development') {
-							completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
-						} else {
-							completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-						}
+						completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
 					},
 					process.env.NODE_ENV === 'development' ? 100 : 2000
 				);

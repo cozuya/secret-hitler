@@ -52,6 +52,8 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants')
 const { makeReport } = require('./report.js');
 const { chatReplacements } = require('./chatReplacements');
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
+
+console.log(process.env.NODE_ENV);
 /**
  * @param {object} game - game to act on.
  * @return {string} status text.
@@ -447,6 +449,7 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 			}
 		}
 
+		console.log('delete fired in leavegame');
 		await deleteGameAsync(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
@@ -711,11 +714,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: account.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
-			// minPlayersCount: 5,
-			// maxPlayersCount: 5,
+			minPlayersCount: 5,
+			maxPlayersCount: 5,
 
-			minPlayersCount: playerCounts[0],
-			maxPlayersCount: playerCounts[playerCounts.length - 1],
+			// minPlayersCount: playerCounts[0],
+			// maxPlayersCount: playerCounts[playerCounts.length - 1],
 			gameCreatorName: user,
 			gameCreatorBlacklist: account.gameSettings.blacklist,
 			excludedPlayerCount: excludes,

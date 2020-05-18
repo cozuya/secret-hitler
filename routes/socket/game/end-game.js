@@ -154,10 +154,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 			player.wonGame = true;
 		});
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			winningPrivatePlayers.forEach((player, index) => {
 				publicPlayersState.find((play) => play.userName === player.userName).isConfetti = false;
 			});
+			const doesGameExist = await getGamesAsync(game.general.uid);
+
+			console.log(doesGameExist, 'dge');
 			sendInProgressGameUpdate(game, true);
 		}, 15000);
 	}
@@ -179,7 +182,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 	// debug('Final game summary: %O', game.summary.publish().toObject());
 
 	sendInProgressGameUpdate(game);
-
 	saveGame(game);
 
 	game.general.isRecorded = true;
