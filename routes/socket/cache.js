@@ -9,8 +9,8 @@ ipc.serve(() => {
 		games[uid] = game;
 	});
 
-	ipc.server.on('getGame', (data, socket) => {
-		ipc.server.emit(socket, 'sendGame', { hi: 'world' });
+	ipc.server.on('getGame', (uid, socket) => {
+		ipc.server.emit(socket, 'sendGame', games[uid]);
 	});
 });
 

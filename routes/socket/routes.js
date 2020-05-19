@@ -138,10 +138,9 @@ module.exports.socketRoutes = () => {
 
 	ipc.config.id = 'client';
 
-	ipc.connectTo('cache', () => {
+	ipc.connectTo('cache').then(() => {
 		ipc.of.cache.on('sendGame', (game) => {
-			console.log(game, 'game');
-			console.log(ipc.log(game, 'msg2'));
+			ipc.log(game, 'msg2');
 		});
 
 		ipc.of.cache.emit('getGame');
@@ -478,6 +477,7 @@ module.exports.socketRoutes = () => {
 		socket.on('addNewGame', (data) => {
 			if (isRestricted) return;
 			if (authenticated) {
+				ipc.of.cache.emit('addNewGame', data);
 				handleAddNewGame(socket, passport, data);
 			}
 		});
