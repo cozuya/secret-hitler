@@ -52,8 +52,8 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants')
 const { makeReport } = require('./report.js');
 const { chatReplacements } = require('./chatReplacements');
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
+const ipc = require('node-ipc');
 
-console.log(process.env.NODE_ENV);
 /**
  * @param {object} game - game to act on.
  * @return {string} status text.
@@ -635,8 +635,8 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGame = async (socket, passport, data) => {
-	const isGameCreationDisabled = await getServerSettingAsync('gameCreationDisabled');
-	const isLimitNewPlayers = await getServerSettingAsync('limitNewPlayers');
+	// const isGameCreationDisabled = await getServerSettingAsync('gameCreationDisabled');
+	// const isLimitNewPlayers = await getServerSettingAsync('limitNewPlayers');
 	const account = await Account.findOne({ username: passport.user });
 	const { user } = passport;
 
@@ -827,7 +827,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		};
 
 		const t = chat.timestamp.getMilliseconds();
-		await pushGameChatsAsync(newGame, chat);
+		newGame.chats.push(chat);
 
 		chat = {
 			timestamp: new Date(),
@@ -853,7 +853,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			],
 		};
 		chat.timestamp.setMilliseconds(t + 1);
-		await pushGameChatsAsync(newGame, chat);
+		newGame.chats.push(chat);
 	}
 
 	if (data.isTourny) {
@@ -936,9 +936,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	newGame.general.timeCreated = currentTime;
 	updateUserStatus(passport, newGame);
 
-	await setGameAsync(newGame);
+	ipc.of.cache.emit('addNewGame', newGame);
 	passport.gameUidUserIsSeatedIn = newGame.general.uid;
-	sendGameList();
 	socket.join(newGame.general.uid);
 	socket.leave('gameListInfoSubscription');
 	socket.emit('updateSeatForUser');
