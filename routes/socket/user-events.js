@@ -1911,13 +1911,16 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	if (!AEM) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
+				// No alert needed since client can and will disable chat
 				return;
 			}
 		} else {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
+				// No alert needed since client can and will disable chat
 				return;
 			}
 			if (game.general.disableObserver || user.wins + user.losses < 10) {
+				socket.emit('sendAlert', 'You must play at least 10 games to use observer chat');
 				return;
 			}
 		}
@@ -2529,6 +2532,8 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			generalChats.list.shift();
 		}
 		io.sockets.emit('generalChats', generalChats);
+	} else {
+		socket.emit('sendAlert', 'You must play at least 10 games to use general chat');
 	}
 };
 
