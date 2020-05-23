@@ -91,9 +91,7 @@ export default class Generalchat extends React.Component {
 	generalChatStatus = () => {
 		const { userInfo } = this.props;
 		const { userName } = userInfo;
-		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
-
-		console.log(user);
+		const user = Object.keys(this.props.userList || []).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (!userName) {
 			return {
