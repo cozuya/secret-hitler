@@ -341,7 +341,6 @@ class Gamechat extends React.Component {
 				userInfo.staffRole !== 'altmod' &&
 				userInfo.staffRole !== 'veteran'
 		);
-		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			return {
@@ -354,13 +353,6 @@ class Gamechat extends React.Component {
 			return {
 				isDisabled: true,
 				placeholder: 'You must log in to use chat'
-			};
-		}
-
-		if (!user) {
-			return {
-				isDisabled: true,
-				placeholder: 'Please reload...'
 			};
 		}
 
@@ -399,19 +391,32 @@ class Gamechat extends React.Component {
 					placeholder: 'Send a staff message'
 				};
 			}
+		}
 
-			if ((user.wins || 0) + (user.losses || 0) < 10) {
+		if (this.props.userList) {
+			const user = this.props.userList.list.find(play => play.userName === userName);
+
+			if (!user) {
 				return {
 					isDisabled: true,
-					placeholder: 'You must finish ten games to use observer chat'
+					placeholder: 'Please reload...'
 				};
 			}
 
-			if (user.isPrivate && !gameInfo.general.private) {
-				return {
-					isDisabled: true,
-					placeholder: 'Non-private observer chat disabled'
-				};
+			if (!userInfo.isSeated) {
+				if ((user.wins || 0) + (user.losses || 0) < 10) {
+					return {
+						isDisabled: true,
+						placeholder: 'You must finish ten games to use observer chat'
+					};
+				}
+
+				if (user.isPrivate && !gameInfo.general.private) {
+					return {
+						isDisabled: true,
+						placeholder: 'Non-private observer chat disabled'
+					};
+				}
 			}
 		}
 

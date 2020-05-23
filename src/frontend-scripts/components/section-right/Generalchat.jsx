@@ -91,7 +91,6 @@ export default class Generalchat extends React.Component {
 	generalChatStatus = () => {
 		const { userInfo } = this.props;
 		const { userName } = userInfo;
-		const user = Object.keys(this.props.userList || []).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (!userName) {
 			return {
@@ -100,25 +99,29 @@ export default class Generalchat extends React.Component {
 			};
 		}
 
-		if (!user) {
-			return {
-				isDisabled: true,
-				placeholder: 'Please reload...'
-			};
-		}
-
-		if ((user.wins || 0) + (user.losses || 0) < 10) {
-			return {
-				isDisabled: true,
-				placeholder: 'You must finish ten games to use general chat'
-			};
-		}
-
 		if (userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 			return {
 				isDisabled: true,
 				placeholder: 'Your account is private and cannot participate in general chat'
 			};
+		}
+
+		if (this.props.userList) {
+			const user = this.props.userList.list.find(play => play.userName === userName);
+
+			if (!user) {
+				return {
+					isDisabled: true,
+					placeholder: 'Please reload...'
+				};
+			}
+
+			if ((user.wins || 0) + (user.losses || 0) < 10) {
+				return {
+					isDisabled: true,
+					placeholder: 'You must finish ten games to use general chat'
+				};
+			}
 		}
 
 		return {
