@@ -88,6 +88,47 @@ export default class Generalchat extends React.Component {
 		}
 	};
 
+	generalChatStatus = () => {
+		const { userInfo } = this.props;
+		const { userName } = userInfo;
+		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
+
+		console.log(user);
+
+		if (!userName) {
+			return {
+				isDisabled: true,
+				placeholder: 'You must log in to use chat'
+			};
+		}
+
+		if (!user) {
+			return {
+				isDisabled: true,
+				placeholder: 'Please reload...'
+			};
+		}
+
+		if ((user.wins || 0) + (user.losses || 0) < 10) {
+			return {
+				isDisabled: true,
+				placeholder: 'You must finish ten games to use general chat'
+			};
+		}
+
+		if (userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
+			return {
+				isDisabled: true,
+				placeholder: 'Your account is private and cannot participate in general chat'
+			};
+		}
+
+		return {
+			isDisabled: false,
+			placeholder: 'Send a message'
+		};
+	};
+
 	chatDisabled = () => {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 	};
@@ -139,10 +180,8 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
-		const { userInfo } = this.props;
-
 		return this.state.discordEnabled ? null : (
-			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
+			<div className={this.generalChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 				{this.state.badWord[0] && (
 					<span
 						style={{
@@ -175,16 +214,16 @@ export default class Generalchat extends React.Component {
 				)}
 				<textarea
 					style={{ zIndex: 1 }}
-					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
+					disabled={this.generalChatStatus().isDisabled}
 					className="chat-input-box"
-					placeholder="Send a message"
+					placeholder={this.generalChatStatus().placeholder}
 					value={this.state.chatValue}
 					spellCheck="false"
 					onKeyDown={this.handleKeyPress}
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
-				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote, this.props.allEmotes) : null}
+				{this.generalChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
