@@ -137,7 +137,7 @@ module.exports.socketRoutes = () => {
 
 	ipc.config.id = 'client';
 
-	ipc.connectTo('cache').then(() => {
+	ipc.connectTo('cache', () => {
 		// ipc.of.cache.emit('getGame');
 
 		gatherStaffUsernames();
@@ -444,23 +444,7 @@ module.exports.socketRoutes = () => {
 			socket.on('updateTruncateGame', (data) => {
 				handleUpdatedTruncateGame(data);
 			});
-			socket.on('addNewGameChat', async (data) => {
-				const game = await findGame(data);
 
-				if (isRestricted) return;
-				if (authenticated) {
-					handleAddNewGameChat(
-						socket,
-						passport,
-						data,
-						game,
-						modUserNames,
-						editorUserNames,
-						adminUserNames,
-						handleAddNewClaim
-					);
-				}
-			});
 			socket.on('updateReportGame', (data) => {
 				try {
 					handleUpdatedReportGame(socket, data);
@@ -468,19 +452,38 @@ module.exports.socketRoutes = () => {
 					console.log(e, 'err in player report');
 				}
 			});
+
+			socket.on('addNewGameChat', (data) => {
+				console.log('Hello, World!');
+				// if (!isRestricted && authenticated) {
+				// 	handleAddNewGameChat(
+				// 		socket,
+				// 		passport,
+				// 		data,
+				// 		game,
+				// 		modUserNames,
+				// 		editorUserNames,
+				// 		adminUserNames,
+				// 		handleAddNewClaim
+				// 	);
+				// }
+				console.log(data, 'data');
+				ipc.of.cache.emit('getGame', data);
+			});
+
+			ipc.of.cache.on('receiveGame', (data) => {
+				console.log(data, 'data');
+			});
+
 			socket.on('addNewGame', (data) => {
-				if (isRestricted) return;
-				if (authenticated) {
-					ipc.of.cache.emit('addNewGame', data, () => {
-						console.log('Hello, World!');
-					});
+				if (!isRestricted && authenticated) {
 					handleAddNewGame(socket, passport, data);
 				}
 			});
 
-			ipc.of.cache.on('sendGame', (game) => {
-				ipc.log(game, 'msg2');
-			});
+			// ipc.of.cache.on('sendGame', (game) => {
+			// 	ipc.log(game, 'msg2');
+			// });
 
 			socket.on('updateGameSettings', (data) => {
 				if (authenticated) {

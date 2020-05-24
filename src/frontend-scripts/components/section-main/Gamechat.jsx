@@ -207,7 +207,7 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubmit = (e) => {
-		const { gameInfo } = this.props;
+		const { gameInfo, socket } = this.props;
 
 		e.preventDefault();
 
@@ -223,7 +223,7 @@ class Gamechat extends React.Component {
 				uid: gameInfo.general.uid,
 			};
 
-			this.props.socket.emit('addNewGameChat', chat);
+			socket.emit('addNewGameChat', chat);
 
 			this.setState({
 				chatValue: '',

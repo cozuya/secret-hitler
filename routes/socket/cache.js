@@ -1,6 +1,16 @@
+const http = require('http');
+const express = require('express');
+const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+const redisAdapter = require('socket.io-redis');
+io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
+
 const ipc = require('node-ipc');
 
 ipc.config.id = 'cache';
+// ipc.config.logger = null;
+ipc.config.logDepth = 0;
 
 const games = {};
 const gameList = {};
@@ -82,15 +92,17 @@ const sendGameList = async (socketId, isAEM) => {
 	}
 };
 
-ipc.serve(() => {
+const ipcInit = () => {
 	ipc.server.on('addNewGame', (uid, game) => {
 		games[uid] = game;
-		ipc.server.emit('sendGameList');
+		sendGameList();
 	});
 
 	ipc.server.on('getGame', (uid, socket) => {
-		ipc.server.emit(socket, 'sendGame', games[uid]);
+		console.log('Hello, World!');
+		ipc.server.emit(socket, 'receiveGame', games[uid]);
 	});
-});
+};
 
+ipc.serve(ipcInit);
 ipc.server.start();

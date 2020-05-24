@@ -636,7 +636,10 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  */
 module.exports.handleAddNewGame = async (socket, passport, data) => {
 	// const isGameCreationDisabled = await getServerSettingAsync('gameCreationDisabled');
+	const isGameCreationDisabled = false;
+
 	// const isLimitNewPlayers = await getServerSettingAsync('limitNewPlayers');
+	const isLimitNewPlayers = false;
 	const account = await Account.findOne({ username: passport.user });
 	const { user } = passport;
 
