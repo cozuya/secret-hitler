@@ -75,7 +75,7 @@ Upon seeing the end result in the terminal of `Assigned.` you will know it worke
 
 ## Running in production mode
 
-Don't. Respect the maintainer and contributors who have given their time for free to make SH.io as good as it is. Running this codebase outside of SH.io may have unintended consequences.
+Please respect the maintainer and contributors who have given their time for free to make SH.io as good as it is. Running this codebase outside of SH.io may have unintended consequences.
 
 ## Statistics
 
