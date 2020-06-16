@@ -84,7 +84,7 @@ export class App extends React.Component {
 				data: null
 			},
 			warnings: null,
-			allEmotes: []
+			allEmotes: {}
 		};
 
 		this.prevHash = '';
@@ -166,8 +166,12 @@ export class App extends React.Component {
 		});
 
 		socket.on('emoteList', list => {
+			const mapping = {};
+
+			list.forEach(e => (mapping[`${e[0]}`] = e[1]));
+
 			this.setState({
-				allEmotes: list
+				allEmotes: mapping
 			});
 		});
 

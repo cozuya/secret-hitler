@@ -62,15 +62,20 @@ export default class Generalchat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
+		const { badWord, textChangeTimer } = this.state;
+		const { value } = e.target;
 
 		this.setState({
-			chatValue: e.target.value
+			chatValue: value
 		});
-		const chatValue = e.target.value;
 
-		const foundWord = getBadWord(chatValue);
-		if (this.state.badWord[0] !== foundWord[0]) {
-			if (this.state.textChangeTimer !== -1) clearTimeout(this.state.textChangeTimer);
+		const foundWord = getBadWord(value);
+
+		if (badWord[0] !== foundWord[0]) {
+			if (textChangeTimer !== -1) {
+				clearTimeout(textChangeTimer);
+			}
+
 			if (foundWord[0]) {
 				this.setState({
 					badWord: foundWord,
@@ -139,7 +144,7 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
-		const { userInfo } = this.props;
+		const { userInfo, allEmotes } = this.props;
 
 		return this.state.discordEnabled ? null : (
 			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
@@ -184,7 +189,7 @@ export default class Generalchat extends React.Component {
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
-				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote, this.props.allEmotes) : null}
+				{userInfo.userName && Object.keys(allEmotes).length ? renderEmotesButton(this.handleInsertEmote, allEmotes) : null}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
@@ -361,5 +366,5 @@ Generalchat.propTypes = {
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.object
 };

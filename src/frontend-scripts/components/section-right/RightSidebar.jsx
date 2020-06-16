@@ -31,7 +31,7 @@ RightSidebar.propTypes = {
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
 	midSection: PropTypes.string,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.object
 };
 
 export default RightSidebar;
