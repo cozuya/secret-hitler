@@ -1340,6 +1340,18 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 }
 
+.emote-helper-container {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background: var(--theme-background-2);
+	z-index: 1;
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid var(--theme-secondary);
+}
+
 .ui.toggle.checkbox .box:after,
 .ui.toggle.checkbox label:after {
 	background: var(--theme-tertiary);

@@ -11,7 +11,6 @@ export const renderEmotesButton = (handleInsertEmote, allEmotes) => (
 						<img
 							src="../images/blank.png"
 							style={{
-								textAlign: 'center',
 								backgroundImage: 'url("../images/emotesheet.png")',
 								backgroundPositionX: `${allEmotes[keyName][0] * 28}px`,
 								backgroundPositionY: `${allEmotes[keyName][1] * 28}px`,

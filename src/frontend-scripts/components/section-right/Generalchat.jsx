@@ -8,12 +8,12 @@ import moment from 'moment';
 export default class Generalchat extends React.Component {
 	state = {
 		lock: false,
-		discordEnabled: false,
 		stickyEnabled: true,
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
-		chatValue: ''
+		chatValue: '',
+		isEmoteHelperVisible: false
 	};
 
 	componentDidMount() {
@@ -34,7 +34,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.state.lock && !this.state.discordEnabled) {
+		if (!this.state.lock) {
 			this.scrollbar.scrollToBottom();
 		}
 	}
@@ -62,11 +62,13 @@ export default class Generalchat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { badWord, textChangeTimer } = this.state;
+		const { badWord, textChangeTimer, isEmoteHelperVisible } = this.state;
 		const { value } = e.target;
+		const lastLetter = value[value.length - 1];
 
 		this.setState({
-			chatValue: value
+			chatValue: value,
+			isEmoteHelperVisible: lastLetter === ':' && !isEmoteHelperVisible
 		});
 
 		const foundWord = getBadWord(value);
@@ -141,12 +143,18 @@ export default class Generalchat extends React.Component {
 			e.preventDefault();
 			this.handleSubmit();
 		}
+
+		if (e.keyCode === 27 && this.state.isEmoteHelperVisible) {
+			this.setState({
+				isEmoteHelperVisible: false
+			});
+		}
 	};
 
 	renderInput() {
 		const { userInfo, allEmotes } = this.props;
 
-		return this.state.discordEnabled ? null : (
+		return (
 			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
 				{this.state.badWord[0] && (
 					<span
@@ -314,13 +322,20 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
+	renderEmoteHelper() {
+		return (
+			<div className="emote-helper-container">
+				<div>item 1</div>
+				<div>item 2</div>
+				<div>item 3</div>
+				<div>item 4</div>
+				<div>item 5</div>
+			</div>
+		);
+	}
+
 	render() {
-		const { userInfo } = this.props;
-		const discordIconClick = () => {
-			this.setState({
-				discordEnabled: this.state.discordEnabled
-			});
-		};
+		const { isEmoteHelperVisible, lock } = this.state;
 
 		return (
 			<section className="generalchat">
@@ -329,25 +344,25 @@ export default class Generalchat extends React.Component {
 						<h3 className="ui header">Chat</h3>
 						<i
 							title="Click here to lock chat and prevent from scrolling"
-							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
+							className={lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
-						{userInfo && userInfo.userName && <img onClick={discordIconClick} />}
 					</div>
 				</section>
 				<section className="segment chats">
-					{!this.state.discordEnabled && this.renderSticky()}
-					{this.state.discordEnabled ? (
-						<embed height="100%" width="100%" src="https://discord.gg/secrethitlerio" />
-					) : (
-						<Scrollbars
-							ref={c => (this.scrollbar = c)}
-							onScroll={this.handleChatScrolled}
-							renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
-						>
-							<div className="ui list genchat-container">{this.renderChats()}</div>
-						</Scrollbars>
-					)}
+					{this.renderSticky()}
+					<Scrollbars
+						ref={c => (this.scrollbar = c)}
+						onScroll={this.handleChatScrolled}
+						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+					>
+						<div className="ui list genchat-container">
+							<>
+								{isEmoteHelperVisible && this.renderEmoteHelper()}
+								{this.renderChats()}
+							</>
+						</div>
+					</Scrollbars>
 				</section>
 				{this.renderInput()}
 			</section>

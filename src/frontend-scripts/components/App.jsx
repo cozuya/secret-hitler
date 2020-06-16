@@ -168,7 +168,7 @@ export class App extends React.Component {
 		socket.on('emoteList', list => {
 			const mapping = {};
 
-			list.forEach(e => (mapping[`${e[0]}`] = e[1]));
+			list.forEach(e => (mapping[`:${e[0].toLowerCase()}`] = e[1]));
 
 			this.setState({
 				allEmotes: mapping
