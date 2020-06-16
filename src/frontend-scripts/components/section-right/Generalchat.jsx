@@ -13,7 +13,8 @@ export default class Generalchat extends React.Component {
 		textLastChanged: 0,
 		textChangeTimer: -1,
 		chatValue: '',
-		isEmoteHelperVisible: false
+		emoteHelperSelectedIndex: null,
+		emoteHelperElements: ['foo', 'bar', 'baz', 'qux', 'corge']
 	};
 
 	componentDidMount() {
@@ -62,13 +63,13 @@ export default class Generalchat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { badWord, textChangeTimer, isEmoteHelperVisible } = this.state;
+		const { badWord, textChangeTimer, emoteHelperSelectedIndex } = this.state;
 		const { value } = e.target;
 		const lastLetter = value[value.length - 1];
 
 		this.setState({
 			chatValue: value,
-			isEmoteHelperVisible: lastLetter === ':' && !isEmoteHelperVisible
+			emoteHelperSelectedIndex: lastLetter === ':' && !Number.isInteger(emoteHelperSelectedIndex) ? 0 : null
 		});
 
 		const foundWord = getBadWord(value);
@@ -100,7 +101,9 @@ export default class Generalchat extends React.Component {
 	};
 
 	handleSubmit = e => {
-		if (this.chatDisabled()) return;
+		if (this.chatDisabled()) {
+			return;
+		}
 
 		const { chatValue } = this.state;
 
@@ -111,7 +114,8 @@ export default class Generalchat extends React.Component {
 
 			this.setState({
 				chatValue: '',
-				badWord: [null, null]
+				badWord: [null, null],
+				emoteHelperSelectedIndex: null
 			});
 		}
 	};
@@ -131,23 +135,45 @@ export default class Generalchat extends React.Component {
 		}
 	};
 
-	handleInsertEmote = emote => {
+	handleInsertEmote = (emote, isHelper) => {
+		const { chatValue } = this.state;
+
 		this.setState({
-			chatValue: this.state.chatValue + ' ' + emote
+			emoteHelperSelectedIndex: null,
+			chatValue: `${chatValue}${isHelper ? '' : ' '}${emote}`
 		});
 		this.chatInput.focus();
 	};
 
 	handleKeyPress = e => {
-		if (e.keyCode === 13 && e.shiftKey === false) {
+		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		const emoteHelperElementCount = emoteHelperElements.length;
+		const { keyCode } = e;
+
+		if (Number.isInteger(emoteHelperSelectedIndex)) {
+			if (keyCode === 27) {
+				this.setState({
+					emoteHelperSelectedIndex: null
+				});
+			} else if (keyCode === 40) {
+				const nextIndex = emoteHelperSelectedIndex + 1;
+
+				this.setState({
+					emoteHelperSelectedIndex: nextIndex === emoteHelperElementCount ? 0 : nextIndex
+				});
+			} else if (keyCode === 38) {
+				this.setState({
+					emoteHelperSelectedIndex: emoteHelperSelectedIndex ? emoteHelperSelectedIndex - 1 : emoteHelperElementCount - 1
+				});
+			} else if (keyCode === 13 || keyCode === 9) {
+				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
+				// this.setState({
+				// 	chatValue: chatValue.slice(0, chatValue.length - 1)
+				// });
+			}
+		} else if (keyCode === 13 && e.shiftKey === false) {
 			e.preventDefault();
 			this.handleSubmit();
-		}
-
-		if (e.keyCode === 27 && this.state.isEmoteHelperVisible) {
-			this.setState({
-				isEmoteHelperVisible: false
-			});
 		}
 	};
 
@@ -323,19 +349,36 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderEmoteHelper() {
+		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		const helperHover = index => {
+			this.setState({
+				emoteHelperSelectedIndex: index
+			});
+		};
+
 		return (
 			<div className="emote-helper-container">
-				<div>item 1</div>
-				<div>item 2</div>
-				<div>item 3</div>
-				<div>item 4</div>
-				<div>item 5</div>
+				{emoteHelperElements.map((el, index) => (
+					<div
+						onMouseOver={() => {
+							helperHover(index);
+						}}
+						onClick={() => {
+							this.handleInsertEmote(el, true);
+						}}
+						key={index}
+						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
+					>
+						<span>emoji ph</span>
+						{el}
+					</div>
+				))}
 			</div>
 		);
 	}
 
 	render() {
-		const { isEmoteHelperVisible, lock } = this.state;
+		const { emoteHelperSelectedIndex, lock } = this.state;
 
 		return (
 			<section className="generalchat">
@@ -358,7 +401,7 @@ export default class Generalchat extends React.Component {
 					>
 						<div className="ui list genchat-container">
 							<>
-								{isEmoteHelperVisible && this.renderEmoteHelper()}
+								{Number.isInteger(emoteHelperSelectedIndex) && this.renderEmoteHelper()}
 								{this.renderChats()}
 							</>
 						</div>

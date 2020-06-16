@@ -1349,7 +1349,15 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	z-index: 1;
 	padding: 5px;
 	border-radius: 5px;
-	border: 1px solid var(--theme-secondary);
+	border: 1px solid var(--theme-tertiary);
+
+	> div {
+		cursor: pointer;
+	}
+
+	.selected {
+		background: var(--theme-background-3);
+	}
 }
 
 .ui.toggle.checkbox .box:after,
