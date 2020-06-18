@@ -707,7 +707,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
-			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
+			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 ? true : data.gameType === 'casual',
+			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && data.gameType === 'practice',
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
@@ -2270,7 +2271,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					election: game.general.electionCount,
 					title: game.general.name,
 					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 				},
 				game,
 				'ping'
@@ -2651,7 +2652,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 				election: game.general.electionCount,
 				title: game.general.name,
 				uid: game.general.uid,
-				gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+				gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 			},
 			game,
 			'modchat'

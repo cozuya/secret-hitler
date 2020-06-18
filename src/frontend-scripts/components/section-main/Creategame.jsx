@@ -20,6 +20,7 @@ export default class Creategame extends React.Component {
 
 		this.state = {
 			gameName: '',
+			gameType: 'ranked',
 			sliderValues: [7, 7],
 			experiencedmode: true,
 			disablechat: false,
@@ -34,7 +35,6 @@ export default class Creategame extends React.Component {
 			privateonlygame: false,
 			unlistedGame: false,
 			isTourny: false,
-			casualgame: false,
 			blindMode: false,
 			timedMode: false,
 			isVerifiedOnly: props.userInfo.verified && !isRainbow,
@@ -339,6 +339,104 @@ export default class Creategame extends React.Component {
 		);
 	}
 
+	renderGameTypeDropdown() {
+		const options = [
+			{
+				value: 'ranked',
+				label: (
+					<>
+						<span title="A normal ranked game, counts for winrate and Elo">Ranked</span>
+					</>
+				)
+			},
+			{
+				value: 'casual',
+				label: (
+					<>
+						<span title="A casual game, gameplay rules are not enforced, does not count for winrate or Elo">Casual</span>
+					</>
+				)
+			},
+			{
+				value: 'practice',
+				label: (
+					<>
+						<span title="A practice game, gameplay rules ARE enforced, does not count for winrate or Elo">Practice</span>
+					</>
+				)
+			},
+			{
+				value: 'custom',
+				label: (
+					<>
+						<span title="A game with custom gameplay settings, gameplay rules are not enforced, does not count for winrate or Elo">Custom</span>
+					</>
+				)
+			}
+		];
+
+		const style = {
+			option: (styles, state) => ({
+				...styles,
+				backgroundColor: state.isSelected ? 'rgba(127, 65, 225, 0.75)' : state.isFocused ? 'rgba(98, 124, 200, 0.1)' : null,
+				color: 'black',
+				padding: '5px',
+				fontWeight: state.isSelected ? 'bold' : null
+			})
+		};
+
+		const findValue = val => {
+			for (const value of options) {
+				if (val === value.value) {
+					return value;
+				}
+			}
+
+			if (val === 'private') {
+				return {
+					value: 'private',
+					label: (
+						<>
+							<span title="A private game with a password, gameplay rules are not enforced, does not count for winrate or Elo">Private</span>
+						</>
+					)
+				};
+			}
+		};
+
+		return (
+			<Select
+				defaultValue={options[0]}
+				options={
+					this.state.privateShowing || this.state.privateonlygame
+						? [
+								{
+									value: 'private',
+									label: (
+										<>
+											<span title="A private game with a password, gameplay rules are not enforced, does not count for winrate or Elo">Private</span>
+										</>
+									)
+								},
+								options[3]
+						  ]
+						: options
+				}
+				styles={style}
+				value={findValue(this.state.gameType)}
+				onChange={(inputValue, action) => {
+					this.setState({
+						gameType: inputValue.value,
+						customGameSettings: { ...this.state.customGameSettings, enabled: inputValue.value === 'custom' }
+					});
+				}}
+				menuPlacement={'auto'}
+				isDisabled={this.state.unlistedGame || this.state.customGameSettings.enabled}
+				menuShouldScrollIntoView={true}
+			/>
+		);
+	}
+
 	powerPicker(slot) {
 		const options = [
 			{ value: 'null', label: 'No Power' },
@@ -399,6 +497,7 @@ export default class Creategame extends React.Component {
 			case 'Meoww':
 				this.setState({
 					gameName: 'Meoww',
+					gameType: 'ranked',
 					sliderValues: [5, 5],
 					experiencedmode: true,
 					disablechat: false,
@@ -412,7 +511,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: false,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -437,6 +535,7 @@ export default class Creategame extends React.Component {
 			case 'High ELO':
 				this.setState({
 					gameName: 'High ELO',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -450,7 +549,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: false,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -475,6 +573,7 @@ export default class Creategame extends React.Component {
 			case 'Gun Game':
 				this.setState({
 					gameName: 'Gun Game',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -488,7 +587,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: true,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -513,6 +611,7 @@ export default class Creategame extends React.Component {
 			case '2R1H':
 				this.setState({
 					gameName: '2 Rooms 1 Hitler',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
@@ -527,7 +626,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: false,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -552,6 +650,7 @@ export default class Creategame extends React.Component {
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
@@ -566,7 +665,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: true,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -591,6 +689,7 @@ export default class Creategame extends React.Component {
 			case 'Tourney Game':
 				this.setState({
 					gameName: 'Tourney Game ',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -605,7 +704,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: true,
 					isTourny: false,
-					casualgame: true,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: false,
@@ -630,6 +728,7 @@ export default class Creategame extends React.Component {
 			case 'Inv Game':
 				this.setState({
 					gameName: 'Investigation Game',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -644,7 +743,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: true,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -669,6 +767,7 @@ export default class Creategame extends React.Component {
 			case 'Trivia Mode':
 				this.setState({
 					gameName: 'Trivia Mode',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -683,7 +782,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: true,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: false,
@@ -708,6 +806,7 @@ export default class Creategame extends React.Component {
 			case 'Reset':
 				this.setState({
 					gameName: '',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -722,7 +821,6 @@ export default class Creategame extends React.Component {
 					privateonlygame: false,
 					unlistedGame: false,
 					isTourny: false,
-					casualgame: false,
 					blindMode: false,
 					timedMode: false,
 					isVerifiedOnly: !isRainbow,
@@ -751,49 +849,49 @@ export default class Creategame extends React.Component {
 
 		customGameSettings.fascistCount = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderHitlerZone = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.hitlerZone = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderVetoZone = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.vetoZone = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderDeckLib = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.lib = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderDeckFas = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.fas = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderTrackLib = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.lib = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderTrackFas = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.fas = val[0];
 		customGameSettings.enabled = true;
-		this.setState({ casualgame: true, customGameSettings });
+		this.setState({ gameType: 'custom', customGameSettings });
 	};
 
 	sliderChange = sliderValues => {
@@ -835,6 +933,7 @@ export default class Creategame extends React.Component {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
 				gameName: this.state.gameName || 'New Game',
+				gameType: this.state.gameType,
 				flag: this.state.flag || 'none',
 				minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.sliderValues[0],
 				excludedPlayerCount,
@@ -850,7 +949,6 @@ export default class Creategame extends React.Component {
 				flappyMode: this.state.flappyMode,
 				flappyOnlyMode: this.state.flappyOnlyMode,
 				timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
-				casualGame: this.state.casualgame,
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
@@ -997,7 +1095,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange = timedSliderValue => {
-		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue[0] < 30 }));
+		this.setState(prevState => ({ timedSliderValue, gameType: timedSliderValue[0] < 30 ? 'casual' : this.state.gameType }));
 	};
 
 	eloSliderChange = eloSliderValue => {
@@ -1606,7 +1704,10 @@ export default class Creategame extends React.Component {
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
-										this.setState({ privateShowing: checked });
+										this.setState({
+											privateShowing: checked,
+											gameType: checked ? 'private' : this.state.customGameSettings.enabled ? 'custom' : 'ranked'
+										});
 									}}
 									checked={this.state.privateShowing}
 									onColor="#627cc8"
@@ -1644,7 +1745,7 @@ export default class Creategame extends React.Component {
 									onChange={checked => {
 										this.setState({
 											unlistedGame: checked,
-											casualgame: checked ? true : this.state.casualgame
+											gameType: checked ? 'casual' : 'ranked'
 										});
 									}}
 									checked={this.state.unlistedGame}
@@ -1933,29 +2034,8 @@ export default class Creategame extends React.Component {
 						)}
 						<div className="four wide column">
 							<i className="big handshake icon" />
-							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
-							<Switch
-								className="create-game-switch"
-								onChange={checked => {
-									if (!checked) {
-										this.setState({
-											casualgame: checked,
-											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false }),
-											unlistedGame: false
-										});
-									} else {
-										this.setState({ casualgame: checked });
-									}
-								}}
-								checked={this.state.casualgame}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
+							<h4 className="ui header">Game Type</h4>
+							{this.renderGameTypeDropdown()}
 						</div>
 						{this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.isPrivate && (
 							<div className="four wide column privateonlygame">
@@ -1963,7 +2043,11 @@ export default class Creategame extends React.Component {
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
-										this.setState({ privateonlyGame: checked, isVerifiedOnly: false });
+										this.setState({
+											privateonlyGame: checked,
+											isVerifiedOnly: false,
+											gameType: checked ? 'private' : this.state.customGameSettings.enabled ? 'custom' : 'ranked'
+										});
 									}}
 									checked={this.state.privateonlyGame}
 									onColor="#627cc8"
@@ -1986,7 +2070,7 @@ export default class Creategame extends React.Component {
 								onChange={checked => {
 									this.setState({
 										customGameSettings: Object.assign(this.state.customGameSettings, { enabled: checked }),
-										casualgame: checked
+										gameType: checked ? 'custom' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
 									});
 								}}
 								checked={this.state.customGameSettings.enabled}
