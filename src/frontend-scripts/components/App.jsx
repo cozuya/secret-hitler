@@ -108,7 +108,8 @@ export class App extends React.Component {
 				userName: username,
 				verified: window.verified,
 				staffRole: window.staffRole,
-				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal
+				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal,
+				isTournamentMod: window.isTournamentMod
 			};
 
 			socket.emit('getUserGameSettings');
