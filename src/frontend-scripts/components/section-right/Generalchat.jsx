@@ -14,7 +14,8 @@ export default class Generalchat extends React.Component {
 		textChangeTimer: -1,
 		chatValue: '',
 		emoteHelperSelectedIndex: null,
-		emoteHelperElements: ['foo', 'bar', 'baz', 'qux', 'corge']
+		emoteHelperElements: ['ja', 'nein', 'blobsweat', 'wethink', 'limes'],
+		emoteColonIndex: null
 	};
 
 	componentDidMount() {
@@ -63,13 +64,11 @@ export default class Generalchat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { badWord, textChangeTimer, emoteHelperSelectedIndex } = this.state;
+		const { badWord, textChangeTimer } = this.state;
 		const { value } = e.target;
-		const lastLetter = value[value.length - 1];
 
 		this.setState({
-			chatValue: value,
-			emoteHelperSelectedIndex: lastLetter === ':' && !Number.isInteger(emoteHelperSelectedIndex) ? 0 : null
+			chatValue: value
 		});
 
 		const foundWord = getBadWord(value);
@@ -136,11 +135,14 @@ export default class Generalchat extends React.Component {
 	};
 
 	handleInsertEmote = (emote, isHelper) => {
-		const { chatValue } = this.state;
+		const { chatValue, emoteColonIndex } = this.state;
+		const helperChatArr = chatValue.split('');
+		helperChatArr.splice(emoteColonIndex, 0, emote);
 
 		this.setState({
 			emoteHelperSelectedIndex: null,
-			chatValue: `${chatValue}${isHelper ? '' : ' '}${emote}`
+			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote}`,
+			emoteColonIndex: null
 		});
 		this.chatInput.focus();
 	};
@@ -148,9 +150,14 @@ export default class Generalchat extends React.Component {
 	handleKeyPress = e => {
 		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
 		const emoteHelperElementCount = emoteHelperElements.length;
-		const { keyCode } = e;
+		const { keyCode, target } = e;
 
-		if (Number.isInteger(emoteHelperSelectedIndex)) {
+		if (keyCode === 186) {
+			this.setState({
+				emoteHelperSelectedIndex: 0,
+				emoteColonIndex: target.selectionStart + 1
+			});
+		} else if (Number.isInteger(emoteHelperSelectedIndex)) {
 			if (keyCode === 27) {
 				this.setState({
 					emoteHelperSelectedIndex: null
@@ -166,10 +173,8 @@ export default class Generalchat extends React.Component {
 					emoteHelperSelectedIndex: emoteHelperSelectedIndex ? emoteHelperSelectedIndex - 1 : emoteHelperElementCount - 1
 				});
 			} else if (keyCode === 13 || keyCode === 9) {
+				e.preventDefault();
 				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
-				// this.setState({
-				// 	chatValue: chatValue.slice(0, chatValue.length - 1)
-				// });
 			}
 		} else if (keyCode === 13 && e.shiftKey === false) {
 			e.preventDefault();
@@ -212,7 +217,7 @@ export default class Generalchat extends React.Component {
 						{`This message is too long ${300 - this.state.chatValue.length}`}
 					</span>
 				)}
-				<textarea
+				<input
 					style={{ zIndex: 1 }}
 					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
 					className="chat-input-box"
@@ -349,6 +354,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderEmoteHelper() {
+		const { allEmotes } = this.props;
 		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
 		const helperHover = index => {
 			this.setState({
@@ -369,8 +375,18 @@ export default class Generalchat extends React.Component {
 						key={index}
 						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
 					>
-						<span>emoji ph</span>
-						{el}
+						<img
+							src="../images/blank.png"
+							style={{
+								width: '28px',
+								height: '28px',
+								backgroundImage: 'url("../images/emotesheet.png")',
+								backgroundPositionX: `${allEmotes[`:${el}`][0] * 28}px`,
+								backgroundPositionY: `${allEmotes[`:${el}`][1] * 28}px`,
+								margin: '2px 10px 2px 5px'
+							}}
+						/>
+						{`:${el}`}
 					</div>
 				))}
 			</div>
@@ -394,17 +410,13 @@ export default class Generalchat extends React.Component {
 				</section>
 				<section className="segment chats">
 					{this.renderSticky()}
+					{Number.isInteger(emoteHelperSelectedIndex) && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}
 						onScroll={this.handleChatScrolled}
 						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
 					>
-						<div className="ui list genchat-container">
-							<>
-								{Number.isInteger(emoteHelperSelectedIndex) && this.renderEmoteHelper()}
-								{this.renderChats()}
-							</>
-						</div>
+						<div className="ui list genchat-container">{this.renderChats()}</div>
 					</Scrollbars>
 				</section>
 				{this.renderInput()}

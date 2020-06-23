@@ -2503,7 +2503,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		}
 	}
 
-	if (user.wins + user.losses >= 10) {
+	if (user.wins + user.losses >= 10 || process.env.NODE_ENV !== 'production') {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
