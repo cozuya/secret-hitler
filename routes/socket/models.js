@@ -57,7 +57,6 @@ emotes.forEach(emote => {
 	emote[1] = loc;
 });
 
-console.log(emotes, 'e');
 module.exports.emoteList = emotes;
 
 const games = {};

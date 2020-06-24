@@ -6,6 +6,8 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 
 export default class Generalchat extends React.Component {
+	defaultEmotes = ['ja', 'nein', 'blobsweat', 'wethink', 'limes'];
+
 	state = {
 		lock: false,
 		stickyEnabled: true,
@@ -14,7 +16,7 @@ export default class Generalchat extends React.Component {
 		textChangeTimer: -1,
 		chatValue: '',
 		emoteHelperSelectedIndex: null,
-		emoteHelperElements: ['ja', 'nein', 'blobsweat', 'wethink', 'limes'],
+		emoteHelperElements: this.defaultEmotes,
 		emoteColonIndex: null
 	};
 
@@ -64,12 +66,23 @@ export default class Generalchat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { badWord, textChangeTimer } = this.state;
+		const { allEmotes } = this.props;
+		const { badWord, textChangeTimer, emoteColonIndex } = this.state;
 		const { value } = e.target;
+		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length));
 
 		this.setState({
 			chatValue: value
 		});
+
+		if (Number.isInteger(emoteColonIndex)) {
+			const textAfterColon = value.slice(emoteColonIndex).split(' ')[0];
+			const filteredEmotes = textAfterColon ? emoteNames.filter(emote => new RegExp(textAfterColon).test(emote)).slice(0, 5) : [];
+
+			this.setState({
+				emoteHelperElements: filteredEmotes.length ? filteredEmotes : textAfterColon ? [] : this.defaultEmotes
+			});
+		}
 
 		const foundWord = getBadWord(value);
 
@@ -95,9 +108,7 @@ export default class Generalchat extends React.Component {
 		}
 	};
 
-	chatDisabled = () => {
-		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
-	};
+	chatDisabled = () => this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 
 	handleSubmit = e => {
 		if (this.chatDisabled()) {
@@ -136,8 +147,13 @@ export default class Generalchat extends React.Component {
 
 	handleInsertEmote = (emote, isHelper) => {
 		const { chatValue, emoteColonIndex } = this.state;
-		const helperChatArr = chatValue.split('');
-		helperChatArr.splice(emoteColonIndex, 0, emote);
+		const textAfterColon = chatValue.slice(emoteColonIndex).split(' ')[0];
+		let helperChatArr;
+
+		if (isHelper) {
+			helperChatArr = chatValue.split('');
+			helperChatArr.splice(emoteColonIndex, textAfterColon.length, emote);
+		}
 
 		this.setState({
 			emoteHelperSelectedIndex: null,
@@ -149,34 +165,39 @@ export default class Generalchat extends React.Component {
 
 	handleKeyPress = e => {
 		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
-		const emoteHelperElementCount = emoteHelperElements.length;
 		const { keyCode, target } = e;
+		const emoteHelperElementCount = emoteHelperElements.length;
 
 		if (keyCode === 186) {
+			// :
 			this.setState({
 				emoteHelperSelectedIndex: 0,
 				emoteColonIndex: target.selectionStart + 1
 			});
 		} else if (Number.isInteger(emoteHelperSelectedIndex)) {
-			if (keyCode === 27) {
+			if (keyCode === 27 || keyCode === 32) {
+				// esc or space
 				this.setState({
 					emoteHelperSelectedIndex: null
 				});
 			} else if (keyCode === 40) {
+				// arrow key
 				const nextIndex = emoteHelperSelectedIndex + 1;
 
 				this.setState({
 					emoteHelperSelectedIndex: nextIndex === emoteHelperElementCount ? 0 : nextIndex
 				});
 			} else if (keyCode === 38) {
+				// arrow key
 				this.setState({
 					emoteHelperSelectedIndex: emoteHelperSelectedIndex ? emoteHelperSelectedIndex - 1 : emoteHelperElementCount - 1
 				});
 			} else if (keyCode === 13 || keyCode === 9) {
-				e.preventDefault();
+				// enter and tab
+				e.preventDefault(); // prevents from tabbing out of input
 				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
 			}
-		} else if (keyCode === 13 && e.shiftKey === false) {
+		} else if (keyCode === 13 && !e.shiftKey) {
 			e.preventDefault();
 			this.handleSubmit();
 		}
@@ -394,7 +415,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	render() {
-		const { emoteHelperSelectedIndex, lock } = this.state;
+		const { emoteHelperSelectedIndex, lock, emoteHelperElements } = this.state;
 
 		return (
 			<section className="generalchat">
@@ -410,7 +431,7 @@ export default class Generalchat extends React.Component {
 				</section>
 				<section className="segment chats">
 					{this.renderSticky()}
-					{Number.isInteger(emoteHelperSelectedIndex) && this.renderEmoteHelper()}
+					{Number.isInteger(emoteHelperSelectedIndex) && emoteHelperElements.length > 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}
 						onScroll={this.handleChatScrolled}
