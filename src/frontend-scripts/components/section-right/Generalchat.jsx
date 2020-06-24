@@ -15,9 +15,10 @@ export default class Generalchat extends React.Component {
 		textLastChanged: 0,
 		textChangeTimer: -1,
 		chatValue: '',
-		emoteHelperSelectedIndex: null,
+		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
-		emoteColonIndex: null
+		emoteColonIndex: -1,
+		excludedColonIndices: []
 	};
 
 	componentDidMount() {
@@ -67,22 +68,45 @@ export default class Generalchat extends React.Component {
 	handleTyping = e => {
 		e.preventDefault();
 		const { allEmotes } = this.props;
-		const { badWord, textChangeTimer, emoteColonIndex } = this.state;
+		const { badWord, textChangeTimer, emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		let { excludedColonIndices } = this.state;
 		const { value } = e.target;
-		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length));
+		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length - 1));
+		let emoteColonIndex = value.substring(0, e.target.selectionStart).lastIndexOf(':');
+		let filteredEmotes = [];
+		const colonSplitText = value.substring(0, emoteColonIndex).split(':');
 
+		if (
+			value.substring(emoteColonIndex + 1, e.target.selectionStart).indexOf(' ') !== -1 ||
+			excludedColonIndices.includes(emoteColonIndex) ||
+			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1)
+		) {
+			emoteColonIndex = -1;
+		}
+
+		excludedColonIndices = excludedColonIndices.map(i => (value.length <= i || value[i] !== ':' ? null : i)).filter(Number.isInteger);
+
+		if (value.lastIndexOf(':') === value.length - 1) {
+			this.setState({ emoteHelperSelectedIndex: 0 });
+		}
+
+		if (emoteColonIndex >= 0) {
+			const textAfterColon = value
+				.slice(emoteColonIndex + 1)
+				.split(' ')[0]
+				.split(':')[0];
+			filteredEmotes = textAfterColon ? emoteNames.filter(emote => emote.toLowerCase().includes(textAfterColon.toLowerCase())).slice(0, 5) : this.defaultEmotes;
+			emoteColonIndex = emoteNames.includes(textAfterColon + ':') ? -1 : emoteColonIndex;
+		}
 		this.setState({
-			chatValue: value
+			emoteHelperElements: filteredEmotes.length ? filteredEmotes : this.defaultEmotes,
+			chatValue: value,
+			emoteColonIndex,
+			excludedColonIndices,
+			emoteHelperSelectedIndex: emoteHelperSelectedIndex > emoteHelperElements.length ? 0 : emoteHelperSelectedIndex
 		});
 
-		if (Number.isInteger(emoteColonIndex)) {
-			const textAfterColon = value.slice(emoteColonIndex).split(' ')[0];
-			const filteredEmotes = textAfterColon ? emoteNames.filter(emote => new RegExp(textAfterColon).test(emote)).slice(0, 5) : [];
-
-			this.setState({
-				emoteHelperElements: filteredEmotes.length ? filteredEmotes : textAfterColon ? [] : this.defaultEmotes
-			});
-		}
+		if (emoteHelperSelectedIndex > emoteHelperElements.length) emoteHelperSelectedIndex = 0;
 
 		const foundWord = getBadWord(value);
 
@@ -125,7 +149,10 @@ export default class Generalchat extends React.Component {
 			this.setState({
 				chatValue: '',
 				badWord: [null, null],
-				emoteHelperSelectedIndex: null
+				excludedColonIndices: [],
+				emoteColonIndex: -1,
+				emoteHelperElements: this.defaultEmotes,
+				emoteHelperSelectedIndex: 0
 			});
 		}
 	};
@@ -147,55 +174,67 @@ export default class Generalchat extends React.Component {
 
 	handleInsertEmote = (emote, isHelper) => {
 		const { chatValue, emoteColonIndex } = this.state;
-		const textAfterColon = chatValue.slice(emoteColonIndex).split(' ')[0];
+		const textAfterColon =
+			':' +
+			chatValue
+				.slice(emoteColonIndex + 1)
+				.split(' ')[0]
+				.split(':')[0];
 		let helperChatArr;
 
 		if (isHelper) {
 			helperChatArr = chatValue.split('');
-			helperChatArr.splice(emoteColonIndex, textAfterColon.length, emote);
+			helperChatArr.splice(emoteColonIndex, textAfterColon.length, `:${emote}: `);
 		}
 
 		this.setState({
-			emoteHelperSelectedIndex: null,
-			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote}`,
-			emoteColonIndex: null
+			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote} `,
+			emoteColonIndex: -1,
+			emoteHelperSelectedIndex: 0
 		});
-		this.chatInput.focus();
+
+		if (!isHelper) this.chatInput.focus();
 	};
 
 	handleKeyPress = e => {
-		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
-		const { keyCode, target } = e;
-		const emoteHelperElementCount = emoteHelperElements.length;
+		const { emoteHelperSelectedIndex, emoteHelperElements, emoteColonIndex, excludedColonIndices } = this.state;
+		const { keyCode } = e;
+		const emoteHelperElementCount = emoteHelperElements && emoteHelperElements.length;
 
-		if (keyCode === 186) {
-			// :
-			this.setState({
-				emoteHelperSelectedIndex: 0,
-				emoteColonIndex: target.selectionStart + 1
-			});
-		} else if (Number.isInteger(emoteHelperSelectedIndex)) {
-			if (keyCode === 27 || keyCode === 32) {
-				// esc or space
+		// if (keyCode === 186) {
+		// 	// :
+		// 	this.setState({
+		// 		emoteHelperSelectedIndex: 0,
+		// 		emoteColonIndex: target.selectionStart + 1
+		// 	});
+		// } else
+		if (emoteColonIndex >= 0) {
+			if (keyCode === 27) {
+				// esc
 				this.setState({
-					emoteHelperSelectedIndex: null
+					excludedColonIndices: [...excludedColonIndices, emoteColonIndex],
+					emoteColonIndex: -1
 				});
 			} else if (keyCode === 40) {
 				// arrow key
 				const nextIndex = emoteHelperSelectedIndex + 1;
-
+				e.preventDefault(); // prevents moving to home and end of textarea
 				this.setState({
 					emoteHelperSelectedIndex: nextIndex === emoteHelperElementCount ? 0 : nextIndex
 				});
 			} else if (keyCode === 38) {
 				// arrow key
+				e.preventDefault(); // prevents moving to home and end of textarea
 				this.setState({
 					emoteHelperSelectedIndex: emoteHelperSelectedIndex ? emoteHelperSelectedIndex - 1 : emoteHelperElementCount - 1
 				});
-			} else if (keyCode === 13 || keyCode === 9) {
+			} else if (keyCode === 9 || keyCode === 13) {
 				// enter and tab
 				e.preventDefault(); // prevents from tabbing out of input
 				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
+				this.setState({
+					emoteColonIndex: -1
+				});
 			}
 		} else if (keyCode === 13 && !e.shiftKey) {
 			e.preventDefault();
@@ -249,7 +288,7 @@ export default class Generalchat extends React.Component {
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
-				{userInfo.userName && Object.keys(allEmotes).length ? renderEmotesButton(this.handleInsertEmote, allEmotes) : null}
+				{userInfo.userName && Object.keys(allEmotes).length && renderEmotesButton(this.handleInsertEmote, allEmotes)}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
@@ -273,87 +312,86 @@ export default class Generalchat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
-		return generalChats.list
-			? generalChats.list.map((chat, i) => {
-					const { gameSettings } = userInfo;
-					const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
-					const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const userClasses =
-						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
-							? 'chat-user'
-							: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
+		return (
+			generalChats.list &&
+			generalChats.list.map((chat, i) => {
+				const { gameSettings } = userInfo;
+				const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
+				const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+				const userClasses =
+					!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
+						? 'chat-user'
+						: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
 
-					if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
-						timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
-					}
+				if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+					timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
+				}
 
-					return (
-						<div className="item" key={i}>
-							{timestamp}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.tournyWins &&
-								renderCrowns(chat.tournyWins)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.previousSeasonAward &&
-								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020captain' && (
-									<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+				return (
+					<div className="item" key={i}>
+						{timestamp}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.tournyWins &&
+							renderCrowns(chat.tournyWins)}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.previousSeasonAward &&
+							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.specialTournamentStatus &&
+							chat.specialTournamentStatus === 'spring2020captain' && (
+								<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+							)}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.specialTournamentStatus &&
+							chat.specialTournamentStatus === 'spring2020' && (
+								<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+							)}
+						<span
+							className={
+								chat.isBroadcast
+									? 'chat-user broadcast'
+									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole
+									? 'chat-user moderatorcolor'
+									: userClasses
+							}
+						>
+							{chat.staffRole === 'moderator' &&
+								!(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran') && (
+									<span className="moderatorcolor">(M) 🌀</span>
 								)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020' && (
-									<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+							{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
+							{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
+							{chat.staffRole === 'moderator' &&
+								chat.userName === 'Incognito' &&
+								userInfo.staffRole &&
+								userInfo.staffRole !== 'altmod' &&
+								userInfo.staffRole !== 'veteran' && (
+									<span data-tooltip="Incognito" data-inverted>
+										<span className="admin-name">(I) 🚫</span>
+									</span>
 								)}
-							<span
-								className={
-									chat.isBroadcast
-										? 'chat-user broadcast'
-										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole
-										? 'chat-user moderatorcolor'
-										: userClasses
-								}
+							<a
+								href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
+								className={chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'genchat-user moderatorcolor' : userClasses}
 							>
-								{chat.staffRole === 'moderator' &&
-									!(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran') && (
-										<span className="moderatorcolor">(M) 🌀</span>
-									)}
-								{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
-								{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
-								{chat.staffRole === 'moderator' &&
+								{`${
+									chat.staffRole === 'moderator' &&
 									chat.userName === 'Incognito' &&
 									userInfo.staffRole &&
 									userInfo.staffRole !== 'altmod' &&
-									userInfo.staffRole !== 'veteran' && (
-										<span data-tooltip="Incognito" data-inverted>
-											<span className="admin-name">(I) 🚫</span>
-										</span>
-									)}
-								<a
-									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
-									className={
-										chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'genchat-user moderatorcolor' : userClasses
-									}
-								>
-									{`${
-										chat.staffRole === 'moderator' &&
-										chat.userName === 'Incognito' &&
-										userInfo.staffRole &&
-										userInfo.staffRole !== 'altmod' &&
-										userInfo.staffRole !== 'veteran'
-											? chat.hiddenUsername
-											: chat.userName
-									}: `}
-								</a>
-							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
-								{processEmotes(chat.chat, isMod, this.props.allEmotes)}
-							</span>
-						</div>
-					);
-			  })
-			: null;
+									userInfo.staffRole !== 'veteran'
+										? chat.hiddenUsername
+										: chat.userName
+								}: `}
+							</a>
+						</span>
+						<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
+							{processEmotes(chat.chat, isMod, this.props.allEmotes)}
+						</span>
+					</div>
+				);
+			})
+		);
 	}
 
 	renderSticky() {
@@ -383,6 +421,10 @@ export default class Generalchat extends React.Component {
 			});
 		};
 
+		if (emoteHelperSelectedIndex > emoteHelperElements.length) this.setState({ emoteHelperSelectedIndex: 0 });
+
+		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length) return;
+
 		return (
 			<div className="emote-helper-container">
 				{emoteHelperElements.map((el, index) => (
@@ -392,6 +434,7 @@ export default class Generalchat extends React.Component {
 						}}
 						onClick={() => {
 							this.handleInsertEmote(el, true);
+							this.chatInput.focus();
 						}}
 						key={index}
 						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
@@ -402,12 +445,12 @@ export default class Generalchat extends React.Component {
 								width: '28px',
 								height: '28px',
 								backgroundImage: 'url("../images/emotesheet.png")',
-								backgroundPositionX: `${allEmotes[`:${el}`][0] * 28}px`,
-								backgroundPositionY: `${allEmotes[`:${el}`][1] * 28}px`,
+								backgroundPositionX: `-${allEmotes[`:${el}:`][0] * 28}px`,
+								backgroundPositionY: `-${allEmotes[`:${el}:`][1] * 28}px`,
 								margin: '2px 10px 2px 5px'
 							}}
 						/>
-						{`:${el}`}
+						{`${el}`}
 					</div>
 				))}
 			</div>
@@ -415,7 +458,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	render() {
-		const { emoteHelperSelectedIndex, lock, emoteHelperElements } = this.state;
+		const { lock, emoteColonIndex } = this.state;
 
 		return (
 			<section className="generalchat">
@@ -431,7 +474,7 @@ export default class Generalchat extends React.Component {
 				</section>
 				<section className="segment chats">
 					{this.renderSticky()}
-					{Number.isInteger(emoteHelperSelectedIndex) && emoteHelperElements.length > 0 && this.renderEmoteHelper()}
+					{emoteColonIndex >= 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}
 						onScroll={this.handleChatScrolled}

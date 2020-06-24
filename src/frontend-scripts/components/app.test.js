@@ -13,7 +13,7 @@ describe('App', () => {
 				data: null,
 				type: null
 			},
-			allEmotes: [],
+			allEmotes: {},
 			notesValue: '',
 			warnings: null
 		};
