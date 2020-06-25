@@ -476,6 +476,39 @@ class Gamechat extends React.Component {
 			}
 		};
 
+		const getClassesFromType = type => {
+			if (type === 'player') {
+				return 'chat-player';
+			} else {
+				return `chat-role--${type}`;
+			}
+		};
+
+		const parseClaim = claim => {
+			const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
+			let liberalChar = 'L';
+			let fascistChar = 'F';
+			if (mode === 'legacy') {
+				liberalChar = 'B';
+				fascistChar = 'R';
+			} else if (mode === 'full') {
+				liberalChar = 'liberal';
+				fascistChar = 'fascist';
+			}
+			const claims = Array.from(claim);
+			const elements = claims.map((claimChar, index) => {
+				const isLiberal = claimChar === 'b';
+
+				return (
+					<span key={`claim${index}`}>
+						<span className={getClassesFromType(isLiberal ? 'liberal' : 'fascist')}>{isLiberal ? liberalChar : fascistChar}</span>
+						{mode === 'full' && index < claims.length - 1 ? <span>, </span> : <React.Fragment />}
+					</span>
+				);
+			});
+			return elements;
+		};
+
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)));
 			const chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
@@ -525,13 +558,7 @@ class Gamechat extends React.Component {
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
 									if (chatSegment.type) {
-										let classes;
-
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
-										}
+										const classes = getClassesFromType(chatSegment.type);
 
 										return (
 											<span key={index} className={classes}>
@@ -552,21 +579,34 @@ class Gamechat extends React.Component {
 									chatContents.length &&
 									chatContents.map((chatSegment, index) => {
 										if (chatSegment.type) {
-											let classes;
-
-											if (chatSegment.type === 'player') {
-												classes = 'chat-player';
-											} else {
-												classes = `chat-role--${chatSegment.type}`;
-											}
-
 											return (
-												<span key={index} className={classes}>
+												<span key={index} className={getClassesFromType(chatSegment.type)}>
 													{chatSegment.text}
 												</span>
 											);
+										} else if (chatSegment.claim) {
+											return <span key={index}>{parseClaim(chatSegment.claim)}</span>;
 										}
-
+										return chatSegment.text;
+									})}
+							</span>
+						</div>
+					) : chat.isRemainingPolicies ? (
+						<div className={'item game-chat'} key={i}>
+							{this.handleTimestamps(chat.timestamp)}
+							<span className="game-chat">
+								{chatContents &&
+									chatContents.length &&
+									chatContents.map((chatSegment, index) => {
+										if (chatSegment.type) {
+											return (
+												<span key={index} className={getClassesFromType(chatSegment.type)}>
+													{chatSegment.text}
+												</span>
+											);
+										} else if (chatSegment.policies) {
+											return <span key={index}>{parseClaim(chatSegment.policies)}</span>;
+										}
 										return chatSegment.text;
 									})}
 							</span>

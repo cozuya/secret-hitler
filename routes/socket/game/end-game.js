@@ -125,22 +125,19 @@ module.exports.completeGame = (game, winningTeamName) => {
 		]
 	};
 	const remainingPoliciesChat = {
-		gameChat: true,
+		isRemainingPolicies: true,
 		timestamp: new Date(),
 		chat: [
 			{
 				text: 'The remaining policies are '
+			},
+			{
+				policies: game.private.policies.map(policyName => (policyName === 'liberal' ? 'b' : 'r'))
+			},
+			{
+				text: '.'
 			}
-		].concat(
-			game.private.policies
-				.map(policyName => ({
-					text: policyName === 'liberal' ? 'B' : 'R',
-					type: policyName === 'liberal' ? 'liberal' : 'fascist'
-				}))
-				.concat({
-					text: '.'
-				})
-		)
+		]
 	};
 
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
