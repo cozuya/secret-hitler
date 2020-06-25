@@ -301,7 +301,7 @@ Main.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameList: PropTypes.array,
-	allEmotes: PropTypes.array,
+	allEmotes: PropTypes.object,
 	onClickedTakeSeat: PropTypes.func,
 	onSeatingUser: PropTypes.func,
 	onLeaveGame: PropTypes.func

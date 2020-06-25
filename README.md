@@ -30,7 +30,7 @@ Install [node.js version: LTS](https://nodejs.org/en/), have it in your path.
 
 Install [git](https://git-scm.com/downloads), have it in your path.
 
-Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
+Install [mongodb](https://www.mongodb.com/download-center/community), have it in your path.
 
 Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
 
@@ -75,7 +75,7 @@ Upon seeing the end result in the terminal of `Assigned.` you will know it worke
 
 ## Running in production mode
 
-Don't. Respect the maintainer and contributors who have given their time for free to make SH.io as good as it is. Running this codebase outside of SH.io may have unintended consequences.
+Don't. Please respect the maintainers and contributors who have given their time for free to make SH.io as good as it is. Running this codebase outside of SH.io may have unintended consequences.
 
 ## Statistics
 
@@ -96,6 +96,6 @@ Veto power is slightly adjusted so that chancellors need to select a policy prio
 
 Adapted the rules explanation to account for online vs physical play.
 
-There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p starts with one less fascist policy in the deck, 9p starts with two less facist policies in the deck. Players (and results from analyzing statistics) have noted that these game modes are not balanced well in the original ruleset.
+There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p starts with one less fascist policy in the deck, 9p starts with two less fascist policies in the deck. Players (and results from analyzing statistics) have noted that these game modes are not balanced well in the original ruleset.
 
 There is a custom game mode where game creators can make games with different rulesets such as being able to pick policy powers, pick number of fascists (always less than liberals), number of policies, etc.

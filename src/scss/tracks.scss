@@ -108,15 +108,13 @@
 			left: 62%;
 		}
 		.track-flipper {
-			//height: 220px;
 			padding-top: 34%;
 			transition-duration: 1s;
 			transition-property: transform;
 			transform-style: preserve-3d;
 			position: relative;
-			-webkit-backface-visibility: hidden; // thanks osx safari
-			backface-visibility: hidden;
 		}
+
 		.track {
 			transform: rotateX(0deg);
 			background-size: contain;
@@ -124,7 +122,6 @@
 			position: absolute;
 			top: 0;
 			left: 0;
-			//height: 220px;
 			padding-top: 34%;
 			width: 100%;
 		}
@@ -189,7 +186,6 @@
 
 .tracks.blurred,
 .enactedpolicies-container.blurred {
-	//filter: blur(5px) saturate(60%);
 	opacity: 0.3;
 }
 .help-message {

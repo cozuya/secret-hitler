@@ -111,7 +111,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
 	const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
-	const { seatedPlayers } = game.private;
+	let { seatedPlayers } = game.private;
 	const { publicPlayersState } = game;
 	const chat = {
 		gameChat: true,
@@ -190,6 +190,20 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 
+				const byUsername = (a, b) => {
+					if (a.userName === b.userName)
+						// this should never happen, but eh
+						return 0;
+					if (a.userName > b.userName) return 1;
+					return -1;
+				};
+
+				seatedPlayers = [
+					...seatedPlayers.filter(e => e.role.cardName === 'hitler').sort(byUsername),
+					...seatedPlayers.filter(e => e.role.cardName === 'fascist').sort(byUsername),
+					...seatedPlayers.filter(e => e.role.cardName === 'liberal').sort(byUsername)
+				];
+
 				results.forEach(player => {
 					const listUser = userList.find(user => user.userName === player.username);
 					if (listUser) {
@@ -198,27 +212,27 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
-					seatedPlayers.forEach(eachPlayer => {
+					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange.changeSeason : playerChange.change;
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
-								timestamp: new Date(),
+								timestamp: new Date(Date.now() + i),
 								chat: [
 									{
 										text: eachPlayer.userName,
-										type: eachPlayer.role.team
+										type: eachPlayer.role.cardName
 									},
 									{
-										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
+										text: `'s Elo: `
+									},
+									{
+										text: ` ${activeChange > 0 ? '+' : '-'}`
 									},
 									{
 										text: Math.abs(activeChange).toFixed(1),
 										type: 'player'
-									},
-									{
-										text: ` points.`
 									}
 								]
 							});

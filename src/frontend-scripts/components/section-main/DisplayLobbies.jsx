@@ -75,6 +75,8 @@ const DisplayLobbies = props => {
 		let privateOnlyTooltip;
 		let casualGame;
 		let casualGameTooltip;
+		let practiceGame;
+		let practiceGameTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -204,6 +206,11 @@ const DisplayLobbies = props => {
 			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
 		}
 
+		if (game.practiceGame) {
+			practiceGame = <i className="chess icon" />;
+			practiceGameTooltip = 'Practice game - results do not count towards wins and losses';
+		}
+
 		return (
 			<div className="options-icons-container">
 				{game.isCustomGame && (
@@ -214,6 +221,11 @@ const DisplayLobbies = props => {
 				{casualGame && (
 					<span data-tooltip={casualGameTooltip} data-inverted="">
 						{casualGame}
+					</span>
+				)}
+				{practiceGame && (
+					<span data-tooltip={practiceGameTooltip} data-inverted="">
+						{practiceGame}
 					</span>
 				)}
 				{rebalance && (

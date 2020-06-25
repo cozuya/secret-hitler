@@ -2,28 +2,30 @@ import React from 'react'; // eslint-disable-line
 import { Button, Popup } from 'semantic-ui-react';
 import Linkify from 'react-linkify';
 
-export function renderEmotesButton(handleInsertEmote, allEmotes) {
-	return (
-		<Popup on="click" className="emotes-popup" trigger={<Button type="button" icon="smile" primary className="emotes-button" />}>
-			<Popup.Content>
-				<div className="emotes-popup-content">
-					{allEmotes.map((el, index) => (
-						<div key={index} data-tooltip={el[0]} data-inverted onClick={() => handleInsertEmote(el[0])}>
-							<img
-								src="../images/blank.png"
-								style={{ background: `url("../images/emotesheet.png") -${el[1][0] * 28}px -${el[1][1] * 28}px`, width: '28px', height: '28px' }}
-							/>
-						</div>
-					))}
-				</div>
-			</Popup.Content>
-		</Popup>
-	);
-}
+export const renderEmotesButton = (handleInsertEmote, allEmotes) => (
+	<Popup on="click" className="emotes-popup" trigger={<Button type="button" icon="smile" primary className="emotes-button" />}>
+		<Popup.Content>
+			<div className="emotes-popup-content">
+				{Object.keys(allEmotes).map((keyName, index) => (
+					<div key={index} data-tooltip={keyName} data-inverted onClick={() => handleInsertEmote(keyName)}>
+						<img
+							src="../images/blank.png"
+							style={{
+								backgroundImage: 'url("../images/emotesheet.png")',
+								backgroundPositionX: `${allEmotes[keyName][0] * 28}px`,
+								backgroundPositionY: `${allEmotes[keyName][1] * 28}px`,
+								width: '28px',
+								height: '28px'
+							}}
+						/>
+					</div>
+				))}
+			</div>
+		</Popup.Content>
+	</Popup>
+);
 
-export function processEmotes(input, isMod, allEmotes) {
-	const mapping = {};
-	allEmotes.forEach(e => (mapping[e[0]] = e[1]));
+export function processEmotes(input, isMod, mapping) {
 	if (typeof input !== 'string') {
 		return input;
 	}
@@ -51,7 +53,7 @@ export function processEmotes(input, isMod, allEmotes) {
 			const data = validSiteURL.exec(word);
 			const isGithub = data[1] == 'github.com/cozuya/secret-hitler';
 			const gameURL = data[2].startsWith('game/');
-			/* eslint-disable */
+
 			formatedMsg.push(
 				<a
 					key={index}
@@ -62,7 +64,6 @@ export function processEmotes(input, isMod, allEmotes) {
 					{isGithub ? `SH.IO github: ${data[2]}` : data[2]}
 				</a>
 			);
-			/* eslint-enable */
 		} else if (word.substr(0, 2) === '**' && word.substr(word.length - 2, word.length) === '**') {
 			formatedMsg.push(<b key={index}>{word.slice(2).slice(0, word.length - 4) + ' '}</b>);
 		} else if (word.substr(0, 2) === '~~' && word.substr(word.length - 2, word.length) === '~~') {
