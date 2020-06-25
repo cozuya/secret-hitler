@@ -403,7 +403,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (user.wins + user.losses < 10) {
+			if ((user.wins || 0) + (user.losses || 0) < 10) {
 				return {
 					isDisabled: true,
 					placeholder: 'You must finish ten games to use observer chat'
