@@ -15,7 +15,8 @@ block content
 			var verified = #{verified}
 			var staffRole = '#{staffRole}'
 			var hasNotDismissedSignupModal = #{hasNotDismissedSignupModal}
+			var isTournamentMod = #{isTournamentMod}
 			gameSettings.blacklist = !{JSON.stringify(blacklist).replace(/<\//g, '<\\/')}
-			
+
 	else
 		section#game-container

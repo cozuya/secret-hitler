@@ -333,7 +333,7 @@ export default class Moderation extends React.Component {
 		return userList
 			.filter(user => {
 				if (this.state.playerInputText) {
-					return user.userName === this.state.playerInputText;
+					return user.userName.indexOf(this.state.playerInputText) === 0;
 				} else {
 					return true;
 				}
@@ -984,19 +984,6 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Roles</div>
 				<button
-					style={{ background: 'grey' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('removeContributor');
-					}}
-				>
-					Remove Contributor Role
-				</button>
-				<button
 					style={{ background: '#21bae0' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -1004,10 +991,23 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
-						takeModAction('promoteToContributor');
+						takeModAction('toggleContributor');
 					}}
 				>
-					Promote to Contributor Role
+					Toggle Contributor Role
+				</button>
+				<button
+					style={{ background: '#74d6d3' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('toggleTourneyMod');
+					}}
+				>
+					Toggle Tourney Mod Role
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -1182,11 +1182,11 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
-			removeContributor: 'Remove Contributor Role',
 			resetGameName: 'Reset Game Name',
 			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',
-			promoteToContributor: 'Promote (Contributor)',
+			toggleContributor: 'Add/Remove Role (Contributor)',
+			toggleTourneyMod: 'Add/Remove Role (Tourney Mod)',
 			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToVeteran: 'Promote (Veteran AEM)',

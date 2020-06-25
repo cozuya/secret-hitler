@@ -110,6 +110,8 @@ class Tracks extends React.Component {
 		let rainbowgameTooltip;
 		let casualgame;
 		let casualgameTooltip;
+		let practiceGame;
+		let practiceGameTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -190,7 +192,12 @@ class Tracks extends React.Component {
 
 		if (game.casualGame) {
 			casualgame = <i className="handshake icon" />;
-			casualgameTooltip = 'Casual game - results do not count towards wins and losses';
+			casualgameTooltip = 'Casual game - results do not count towards wins and losses, gameplay rules are not enforced';
+		}
+
+		if (game.practiceGame) {
+			practiceGame = <i className="chess icon" />;
+			practiceGameTooltip = 'Practice game - results do not count towards wins and losses, gameplay rules are enforced';
 		}
 
 		if (game.timedMode) {
@@ -274,6 +281,11 @@ class Tracks extends React.Component {
 				{casualgame && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
+					</span>
+				)}
+				{practiceGame && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={practiceGame} content={practiceGameTooltip} />
 					</span>
 				)}
 				{timedMode && (

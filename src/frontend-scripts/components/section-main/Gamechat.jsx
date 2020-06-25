@@ -386,14 +386,17 @@ class Gamechat extends React.Component {
 				};
 			}
 		} else {
-			if ((gameInfo.general.disableObserver || gameInfo.general.private) && !isStaff) {
+			if ((gameInfo.general.disableObserver || gameInfo.general.private) && !(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))) {
 				return {
 					isDisabled: true,
 					placeholder: 'Observer chat disabled'
 				};
 			}
 
-			if ((gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) && isStaff) {
+			if (
+				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) &&
+				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+			) {
 				return {
 					isDisabled: false,
 					placeholder: 'Send a staff message'
@@ -704,7 +707,11 @@ class Gamechat extends React.Component {
 		const FollowRemakeButton = () => {
 			if (gameInfo.general.isRemade) {
 				const onClick = () => {
-					window.location.href = `#/table/${gameInfo.general.uid}Remake`;
+					if (gameInfo.general.uid.indexOf('Remake') === -1) {
+						window.location.href = '#/table/'.concat(gameInfo.general.uid, 'Remake1');
+					} else {
+						window.location.href = '#/table/'.concat(gameInfo.general.uid.split('Remake')[0], 'Remake', parseInt(gameInfo.general.uid.split('Remake')[1]) + 1);
+					}
 					window.location.reload();
 				};
 
@@ -854,54 +861,66 @@ class Gamechat extends React.Component {
 							gameInfo.gameState.isStarted &&
 							!gameInfo.gameState.isCompleted &&
 							this.renderModEndGameButtons()}
-						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
-							<div>
-								<div
-									className="ui button primary"
-									onClick={() => {
-										if (!this.state.votesPeeked) {
-											if (confirm('Are you sure you want to peek votes for this game?')) {
+						{userInfo &&
+							!userInfo.isSeated &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted && (
+								<div>
+									<div
+										className="ui button primary"
+										onClick={() => {
+											if (!this.state.votesPeeked) {
+												if (confirm('Are you sure you want to peek votes for this game?')) {
+													modGetCurrentVotes();
+													this.setState({
+														votesPeeked: true
+													});
+												}
+											} else {
 												modGetCurrentVotes();
-												this.setState({
-													votesPeeked: true
-												});
 											}
-										} else {
-											modGetCurrentVotes();
-										}
-									}}
-									style={{ width: '60px' }}
-								>
-									Peek
-									<br />
-									Votes
+										}}
+										style={{ width: '60px' }}
+									>
+										Peek
+										<br />
+										Votes
+									</div>
 								</div>
-							</div>
-						)}
-						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
-							<div>
-								<div
-									className="ui button primary"
-									onClick={() => {
-										if (!this.state.gameFrozen) {
-											if (confirm('Are you sure you want to freeze this game?')) {
+							)}
+						{userInfo &&
+							!userInfo.isSeated &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted && (
+								<div>
+									<div
+										className="ui button primary"
+										onClick={() => {
+											if (!this.state.gameFrozen) {
+												if (confirm('Are you sure you want to freeze this game?')) {
+													modFreezeGame();
+													this.setState({
+														gameFrozen: true
+													});
+												}
+											} else {
 												modFreezeGame();
-												this.setState({
-													gameFrozen: true
-												});
 											}
-										} else {
-											modFreezeGame();
-										}
-									}}
-									style={{ width: '60px' }}
-								>
-									Freeze/
-									<br />
-									Unfreeze
+										}}
+										style={{ width: '60px' }}
+									>
+										Freeze/
+										<br />
+										Unfreeze
+									</div>
 								</div>
-							</div>
-						)}
+							)}
 						{userInfo && !userInfo.isSeated && isStaff && (
 							<div>
 								<div
@@ -1133,7 +1152,14 @@ class Gamechat extends React.Component {
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					{(() => {
-						if (gameInfo.gameState && gameInfo.gameState.isStarted && isStaff && userInfo && !userInfo.isSeated && !gameInfo.gameState.isCompleted) {
+						if (
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							userInfo &&
+							!userInfo.isSeated &&
+							!gameInfo.gameState.isCompleted
+						) {
 							return (
 								<div
 									className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'}

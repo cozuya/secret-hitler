@@ -169,6 +169,7 @@ module.exports = () => {
 					game: true,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
+					isTournamentMod: account.isTournamentMod || false,
 					verified: req.user.verified,
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,

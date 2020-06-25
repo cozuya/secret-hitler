@@ -11,22 +11,19 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Welcome to Season 10!</p>
+					<p>Welcome to Season 11!</p>
 				</div>
-				<h5>Thanks to LoveOken for this season's medals!</h5>
-				<h4>The top 10 players of season 9 are:</h4>
-				<ol>
-					<li>rags009: 1992</li>
-					<li>ChroIIo: 1942</li>
-					<li>Scorcha: 1930</li>
-					<li>NotFat: 1929</li>
-					<li>ChillMedusa: 1899</li>
-					<li>arteezy: 1886</li>
-					<li>DanGheesling14: 1886</li>
-					<li>olly97: 1882</li>
-					<li>earring: 1854</li>
-					<li>lucaanders: 1854</li>
-				</ol>
+				<div className="ui header">
+					<p>Version 1.6.9 released 6-1-2020</p>
+				</div>
+				<p>New feature: reworked emotes</p>
+				<p>
+					Emotes now work more similarly to other chat applications: you can type ":" to bring up a helper/autocomplete list of emotes, and type more to filter
+					down to emotes. Example: you type ":", the helper appears with default autocompletes (ja, nein, etc), you can use the arrow keys or mouse to select
+					one and then hit enter or tab to have it fill the chat input, or you can continue to type and it will filter that list down to match. This should give
+					a much more satisfying emote system - its basically similar to the way discord works. All emotes have been changed - they all now start with ":", and
+					they are all lowercase.
+				</p>
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
 				</div>

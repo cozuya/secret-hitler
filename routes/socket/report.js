@@ -60,7 +60,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		});
 	}
 
-	if (type === 'report') {
+	if (type === 'report' && !game.general.casualGame) {
 		report = JSON.stringify({
 			content: `${process.env.DISCORDMODPING}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
 			username: 'Auto Report',

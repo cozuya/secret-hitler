@@ -28,7 +28,7 @@
 		"gfycat-style-urls": "git://github.com/cozuya/gfycat-style-urls.git",
 		"immutable": "^4.0.0-rc.6",
 		"isomorphic-fetch": "^2.2.1",
-		"jimp": "^0.6.0",
+		"jimp": "^0.12.0",
 		"jquery": "^3.5.0",
 		"lodash": "^4.17.4",
 		"mongodb": "^3.1.10",
@@ -129,6 +129,7 @@
 		"webpack-livereload-plugin": "^2.1.1"
 	},
 	"scripts": {
+		"prepare": "npm-run-all --parallel build-css:dark build-css:web",
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
 		"dev": "node scripts/processEmotes && concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",

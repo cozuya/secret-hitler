@@ -84,7 +84,7 @@ export class App extends React.Component {
 				data: null
 			},
 			warnings: null,
-			allEmotes: []
+			allEmotes: {}
 		};
 
 		this.prevHash = '';
@@ -108,7 +108,8 @@ export class App extends React.Component {
 				userName: username,
 				verified: window.verified,
 				staffRole: window.staffRole,
-				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal
+				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal,
+				isTournamentMod: window.isTournamentMod
 			};
 
 			socket.emit('getUserGameSettings');
@@ -166,8 +167,12 @@ export class App extends React.Component {
 		});
 
 		socket.on('emoteList', list => {
+			const mapping = {};
+
+			list.forEach(e => (mapping[`:${e[0].toLowerCase()}:`] = e[1]));
+
 			this.setState({
-				allEmotes: list
+				allEmotes: mapping
 			});
 		});
 

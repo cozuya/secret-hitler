@@ -358,7 +358,9 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 		const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
 		if (playerRemakeData && playerRemakeData.isRemaking) {
 			// Count leaving the game as rescinded remake vote.
-			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+			const minimumRemakeVoteCount =
+				(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) ||
+				Math.floor(game.general.playerCount / 2) + 2;
 			const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
 			if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
@@ -707,7 +709,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
-			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
+			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 ? true : data.gameType === 'casual',
+			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && data.gameType === 'practice',
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
@@ -1587,7 +1590,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.isRemaking = false;
 		newGame.general.isRecorded = false;
 		newGame.summarySaved = false;
-		newGame.general.uid = `${game.general.uid}Remake`;
+		if (game.general.uid.indexOf('Remake') === -1) {
+			newGame.general.uid = `${game.general.uid}Remake1`;
+		} else {
+			newGame.general.uid = `${game.general.uid.split('Remake')[0]}Remake${parseInt(game.general.uid.split('Remake')[1]) + 1}`;
+		}
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
 		newGame.general.lastModPing = 0;
@@ -1789,15 +1796,16 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  * @param {function} addNewClaim - links to handleAddNewClaim
+ * @param {boolean} isTourneyMod - self explain
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
+module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
 	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (chat.length > 300 || !chat.length) {
+	if (chat.length > 300 || !chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(data.chat)) {
 		return;
 	}
 
@@ -1811,8 +1819,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
+	console.log(isTourneyMod, AEM, game.general.unlisted, playerIndex);
+
 	// if (!AEM && game.general.disableChat) return;
-	if (!(AEM && playerIndex === -1)) {
+	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
 		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
 			return;
 		}
@@ -1908,7 +1918,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
-	if (!AEM) {
+	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
 				return;
@@ -2270,7 +2280,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					election: game.general.electionCount,
 					title: game.general.name,
 					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 				},
 				game,
 				'ping'
@@ -2372,12 +2382,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			);
 
 		if (lastMessage.chat) {
-			let leniancy; // How much time (in seconds) must pass before allowing the message.
-			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 1.5;
-			else leniancy = 0.25;
+			let leniency; // How much time (in seconds) must pass before allowing the message.
+			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 1.5;
+			else leniency = 0.25;
 
 			const timeSince = data.timestamp - lastMessage.timestamp;
-			if (!AEM && timeSince < leniancy * 1000) return; // Prior chat was too recent.
+			if (!AEM && timeSince < leniency * 1000) return; // Prior chat was too recent.
 		}
 
 		data.staffRole = (() => {
@@ -2441,7 +2451,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 	if (!data.chat) return;
 	const chat = (data.chat = data.chat.trim());
-	if (data.chat.length > 300 || !data.chat.length) return;
+	if (data.chat.length > 300 || !data.chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(data.chat)) return;
 
 	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
@@ -2456,12 +2466,12 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		);
 
 	if (lastMessage.chat) {
-		let leniancy; // How much time (in seconds) must pass before allowing the message.
-		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
-		else leniancy = 0.5;
+		let leniency; // How much time (in seconds) must pass before allowing the message.
+		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 3;
+		else leniency = 0.5;
 
 		const timeSince = curTime - lastMessage.time;
-		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+		if (timeSince < leniency * 1000) return; // Prior chat was too recent.
 	}
 
 	for (repl of chatReplacements) {
@@ -2499,7 +2509,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		}
 	}
 
-	if (user.wins + user.losses >= 10) {
+	if (user.wins + user.losses >= 10 || process.env.NODE_ENV !== 'production') {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
@@ -2651,7 +2661,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 				election: game.general.electionCount,
 				title: game.general.name,
 				uid: game.general.uid,
-				gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+				gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 			},
 			game,
 			'modchat'
@@ -2703,6 +2713,22 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 		});
 		modaction.save();
 		game.private.gameFrozen = true;
+	} else {
+		ModAction.findOne({ userActedOn: game.general.uid, actionTaken: 'Game Freeze' })
+			.then(action => {
+				if (action.modNotes) {
+					if (action.modNotes.indexOf(passport.user) === -1) {
+						action.modNotes += passport.user + '\n';
+					}
+				} else {
+					action.modNotes = 'Subsequently frozen/unfrozen by:\n';
+					action.modNotes += passport.user + '\n';
+				}
+				action.save();
+			})
+			.catch(err => {
+				console.log(err, 'err in finding player report');
+			});
 	}
 
 	const now = new Date();
@@ -2757,6 +2783,22 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 		});
 		modaction.save();
 		game.private.votesPeeked = true;
+	} else {
+		ModAction.findOne({ userActedOn: game.general.uid, actionTaken: 'Peek Votes' })
+			.then(action => {
+				if (action.modNotes) {
+					if (action.modNotes.indexOf(passport.user) === -1) {
+						action.modNotes += passport.user + '\n';
+					}
+				} else {
+					action.modNotes = 'Subsequently viewed by:\n';
+					action.modNotes += passport.user + '\n';
+				}
+				action.save();
+			})
+			.catch(err => {
+				console.log(err, 'err in finding player report');
+			});
 	}
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
@@ -3532,7 +3574,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
-				case 'promoteToContributor':
+				case 'toggleContributor':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
@@ -3540,6 +3582,24 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.isContributor = true;
 									account.save(() => {
 										newStaff.contributorUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'toggleTourneyMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isTournamentMod = true;
+									account.save(() => {
 										logOutUser(account.username);
 									});
 								} else {
@@ -3785,11 +3845,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				deleteBio: 'Delete Bio',
 				deleteProfile: 'Delete Profile',
 				deleteCardback: 'Delete Cardback',
-				removeContributor: 'Remove Contributor Role',
 				resetGameName: 'Reset Game Name',
 				rainbowUser: 'Grant Rainbow',
 				removeStaffRole: 'Remove Staff Role',
-				promoteToContributor: 'Promote (Contributor)',
+				toggleContributor: 'Add/Remove Role (Contributor)',
+				toggleTourneyMod: 'Add/Remove Role (Tourney Mod)',
 				promoteToAltMod: 'Promote (AEM Alt)',
 				promoteToTrialMod: 'Promote (Trial Mod)',
 				promoteToVeteran: 'Promote (Veteran AEM)',
