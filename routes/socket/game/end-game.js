@@ -225,14 +225,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 										type: eachPlayer.role.cardName
 									},
 									{
-										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
+										text: `'s Elo: `
+									},
+									{
+										text: ` ${activeChange > 0 ? '+' : '-'}`
 									},
 									{
 										text: Math.abs(activeChange).toFixed(1),
 										type: 'player'
-									},
-									{
-										text: ` points.`
 									}
 								]
 							});

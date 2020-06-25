@@ -2041,6 +2041,27 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
+							text: ' to vote.'
+						}
+					]
+				});
+
+				const modOnlyChat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: `${passport.user}`,
+							type: 'player'
+						},
+						{
+							text: ' has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
 							text: ' to vote '
 						},
 						{
@@ -2048,10 +2069,23 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
-							text: '.'
+							text: ' ,'
+						},
+						{
+							text: `${affectedPlayer.userName}`,
+							type: 'player'
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? ' had originally voted ' : ' had not voted.'}`
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ''}`,
+							type: 'player'
 						}
 					]
-				});
+				};
+				game.private.hiddenInfoChat.push(modOnlyChat);
+
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
 				sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
