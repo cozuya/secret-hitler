@@ -2,6 +2,11 @@ const cn = require('classnames');
 
 module.exports.TOU_CHANGES = [
 	{
+		changeVer: '1.5',
+		changeDesc:
+			'Updated to include mention of the new "Practice" mode and redefine rules on "Casual" mode.\nHate Speech rules updated to include transphobic and ableist language.\nClarified the rule on encouraging/glorifying physical harm.\nSlight adjustment to "ape"/"monkey" rule.\nSlight adjustment to doxxing rule.\nClarified cardback rules.\nSlightly redefined stalling rule.\nAdjusted rules on blacklist mentions, fake RQs, and RQ threats to focus more on gameplay influences.\nSitting for a game on one account while speaking with another account is now prohibited.\nRevised the table of offences and their corresponding suggested penalties.\nVarious other rewordings, reorganizations.'
+	},
+	{
 		changeVer: '1.4',
 		changeDesc:
 			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
