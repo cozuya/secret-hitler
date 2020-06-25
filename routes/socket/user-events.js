@@ -698,7 +698,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			disableChat: data.disableChat,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserverLobby: data.disableObserverLobby,
-			disableObserver: data.disableObserver && !data.isTourny,
+			disableObserver: data.disableObserverLobby || (data.disableObserver && !data.isTourny),
 			isTourny: false,
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),

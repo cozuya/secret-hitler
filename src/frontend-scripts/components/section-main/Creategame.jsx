@@ -1925,11 +1925,11 @@ export default class Creategame extends React.Component {
 						{!this.state.isTourny && (
 							<div className="four wide column">
 								<i className="big talk icon" />
-								<h4 className="ui header">Disable observer chat in lobby</h4>
+								<h4 className="ui header">Disable observer chat</h4>
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
-										this.setState({ disableobserverlobby: checked });
+										this.setState({ disableobserverlobby: checked, disableobserver: checked });
 									}}
 									checked={this.state.disableobserverlobby}
 									onColor="#627cc8"
@@ -1940,7 +1940,7 @@ export default class Creategame extends React.Component {
 									width={48}
 									handleDiameter={21}
 								/>
-								<h4 className="ui header">Disable observer chat in game</h4>
+								<h4 className="ui header">Disable observer chat during game{this.state.disableobserverlobby ? '' : ' only'}</h4>
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
@@ -1954,6 +1954,7 @@ export default class Creategame extends React.Component {
 									height={21}
 									width={48}
 									handleDiameter={21}
+									disabled={this.state.disableobserverlobby}
 								/>
 							</div>
 						)}
