@@ -25,6 +25,7 @@ export default class Creategame extends React.Component {
 			experiencedmode: true,
 			disablechat: false,
 			disablegameChat: false,
+			disableobserverlobby: false,
 			disableobserver: false,
 			privateShowing: false,
 			password: '',
@@ -502,6 +503,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
@@ -540,6 +542,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
@@ -578,6 +581,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
@@ -616,6 +620,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: true,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: true,
 					password: 'rsar',
@@ -655,6 +660,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: true,
 					disablegameChat: false,
+					disableobserverlobby: true,
 					disableobserver: true,
 					privateShowing: false,
 					password: '',
@@ -694,6 +700,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: true,
 					privateShowing: false,
 					password: '',
@@ -733,6 +740,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -772,6 +780,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -811,6 +820,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -940,6 +950,7 @@ export default class Creategame extends React.Component {
 				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
 				disableChat: this.state.disablechat,
+				disableObserverLobby: this.state.disableobserverlobby,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
 				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
@@ -2019,6 +2030,21 @@ export default class Creategame extends React.Component {
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
+										this.setState({ disableobserverlobby: checked, disableobserver: checked });
+									}}
+									checked={this.state.disableobserverlobby}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+								<h4 className="ui header">Disable observer chat during game{this.state.disableobserverlobby ? '' : ' only'}</h4>
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
 										this.setState({ disableobserver: checked });
 									}}
 									checked={this.state.disableobserver}
@@ -2029,6 +2055,7 @@ export default class Creategame extends React.Component {
 									height={21}
 									width={48}
 									handleDiameter={21}
+									disabled={this.state.disableobserverlobby}
 								/>
 							</div>
 						)}

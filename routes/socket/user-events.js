@@ -699,7 +699,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
 			isVerifiedOnly: data.isVerifiedOnly,
-			disableObserver: data.disableObserver && !data.isTourny,
+			disableObserverLobby: data.disableObserverLobby,
+			disableObserver: data.disableObserverLobby || (data.disableObserver && !data.isTourny),
 			isTourny: false,
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),
@@ -1618,7 +1619,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
 			return;
 		}
-		if (game.general.disableObserver && playerIndex === -1) {
+		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
+			return;
+		}
+		if ((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby && playerIndex === -1) {
 			return;
 		}
 	}
@@ -1719,7 +1723,13 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
-			if (game.general.disableObserver || user.wins + user.losses < 10) {
+			if (user.wins + user.losses < 10) {
+				return;
+			}
+			if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver) {
+				return;
+			}
+			if ((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby) {
 				return;
 			}
 		}
