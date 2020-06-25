@@ -1584,7 +1584,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.isRemaking = false;
 		newGame.general.isRecorded = false;
 		newGame.summarySaved = false;
-		if (game.general.uid.split('Remake').length == 1) {
+		if (game.general.uid.indexOf('Remake') === -1) {
 			newGame.general.uid = `${game.general.uid}Remake1`;
 		} else {
 			newGame.general.uid = `${game.general.uid.split('Remake')[0]}Remake${parseInt(game.general.uid.split('Remake')[1]) + 1}`;
