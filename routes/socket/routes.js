@@ -425,6 +425,7 @@ module.exports.socketRoutes = () => {
 
 			socket.on('addNewGeneralChat', data => {
 				if (isRestricted) return;
+
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}

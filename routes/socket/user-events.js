@@ -358,7 +358,9 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 		const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
 		if (playerRemakeData && playerRemakeData.isRemaking) {
 			// Count leaving the game as rescinded remake vote.
-			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+			const minimumRemakeVoteCount =
+				(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) ||
+				Math.floor(game.general.playerCount / 2) + 2;
 			const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
 			if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
@@ -2503,7 +2505,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		}
 	}
 
-	if (user.wins + user.losses >= 10) {
+	if (user.wins + user.losses >= 10 || process.env.NODE_ENV !== 'production') {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
