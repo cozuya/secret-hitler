@@ -457,7 +457,7 @@ module.exports.accounts = torIpsParam => {
 			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
 			res.status(401).json({ message: 'Your username is too short.' });
-		} else if (username.length > 12) {
+		} else if (username.length > 16) {
 			res.status(401).json({ message: 'Your username is too long.' });
 		} else if (password.length < 6) {
 			res.status(401).json({ message: 'Your password is too short.' });
