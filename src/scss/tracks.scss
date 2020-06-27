@@ -35,6 +35,26 @@
 		text-align: center;
 	}
 
+	.icon.hourglass.half.timer {
+		opacity: 1 !important;
+		position: absolute;
+		bottom: 5px;
+		right: 2px;
+		z-index: 105;
+		color: var(--theme-text-2) !important;
+		background: #034f61;
+		font-size: 16px !important;
+		padding: 4px;
+		opacity: 1;
+		width: 28px;
+		height: 30px;
+		border: 2px solid lightblue;
+		cursor: pointer;
+
+		&.enabled {
+			color: #db2828 !important;
+		}
+	}
 	.icon.repeat,
 	.icon.remove {
 		opacity: 1 !important;

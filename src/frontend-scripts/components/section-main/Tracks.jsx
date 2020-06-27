@@ -3,13 +3,15 @@ import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import playSound from '../reusable/playSound.js';
 
 class Tracks extends React.Component {
 	constructor() {
 		super();
 		this.state = {
 			remakeStatus: false,
-			timedModeTimer: ''
+			timedModeTimer: '',
+			showTimer: true
 		};
 	}
 
@@ -46,6 +48,12 @@ class Tracks extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		const { gameInfo } = this.props;
 
+		const toggleTimer = () => {
+			this.setState({
+				showTimer: !this.state.showTimer
+			});
+		};
+
 		if (!gameInfo.gameState.isStarted) {
 			this.setState({
 				remakeStatus: false
@@ -70,15 +78,28 @@ class Tracks extends React.Component {
 				} else {
 					seconds--;
 				}
+				if (!minutes && seconds <= 15) {
+					playSound('clockTick', 'pack1', 500);
+				}
 
 				if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
 					this.setState({ timedModeTimer: '' }, () => {
 						window.clearInterval(this.intervalId);
 					});
 				} else {
-					this.setState({
-						timedModeTimer: `Action forced in ${minutes}:${seconds > 9 ? seconds : `0${seconds}`}`
-					});
+					if (!this.state.showTimer && (minutes || seconds >= 15)) {
+						this.setState({
+							timedModeTimer: <i title="Click to view Timer." className="hourglass half timer icon" onClick={toggleTimer}></i>
+						});
+					} else {
+						this.setState({
+							timedModeTimer: (
+								<div title="Click to hide until the last 15s." onClick={toggleTimer} className="timed-mode-counter">
+									Action forced in {minutes}:{seconds > 9 ? seconds : `0${seconds}`}
+								</div>
+							)
+						});
+					}
 				}
 			}, 1000);
 		}
@@ -605,7 +626,7 @@ class Tracks extends React.Component {
 								}
 							/>
 						)}
-					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
+					{this.state.timedModeTimer && this.state.timedModeTimer}
 				</div>
 				<section
 					className={(() => {
