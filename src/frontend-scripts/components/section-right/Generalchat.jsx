@@ -106,8 +106,6 @@ export default class Generalchat extends React.Component {
 			emoteHelperSelectedIndex: emoteHelperSelectedIndex > emoteHelperElements.length ? 0 : emoteHelperSelectedIndex
 		});
 
-		if (emoteHelperSelectedIndex > emoteHelperElements.length) emoteHelperSelectedIndex = 0;
-
 		const foundWord = getBadWord(value);
 
 		if (badWord[0] !== foundWord[0]) {
@@ -201,13 +199,6 @@ export default class Generalchat extends React.Component {
 		const { keyCode } = e;
 		const emoteHelperElementCount = emoteHelperElements && emoteHelperElements.length;
 
-		// if (keyCode === 186) {
-		// 	// :
-		// 	this.setState({
-		// 		emoteHelperSelectedIndex: 0,
-		// 		emoteColonIndex: target.selectionStart + 1
-		// 	});
-		// } else
 		if (emoteColonIndex >= 0) {
 			if (keyCode === 27) {
 				// esc
