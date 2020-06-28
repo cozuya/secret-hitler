@@ -648,8 +648,10 @@ class Gamechat extends React.Component {
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
 										? chat.hiddenUsername
+										: isBlind
+										? '?'
 										: chat.userName
-									: isBlind && isSeated
+									: isBlind
 									? '?'
 									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
 									? chat.hiddenUsername
