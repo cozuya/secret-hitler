@@ -18,6 +18,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = ({ notesActive }) => ({ notesActive });
 
 class Gamechat extends React.Component {
+	defaultEmotes = ['ja', 'nein', 'blobsweat', 'wethink', 'limes'];
+
 	state = {
 		lock: false,
 		claim: '',
@@ -33,7 +35,11 @@ class Gamechat extends React.Component {
 		chatValue: '',
 		processedChats: '',
 		votesPeeked: false,
-		gameFrozen: false
+		gameFrozen: false,
+		emoteHelperSelectedIndex: 0,
+		emoteHelperElements: this.defaultEmotes,
+		emoteColonIndex: -1,
+		excludedColonIndices: []
 	};
 
 	componentDidMount() {
@@ -159,14 +165,48 @@ class Gamechat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { gameInfo } = this.props;
+		const { gameInfo, allEmotes } = this.props;
+		const { emoteHelperSelectedIndex, emoteHelperElements, badWord } = this.state;
+		const value = e.target.value;
+		let { excludedColonIndices } = this.state;
+		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length - 1));
+		let emoteColonIndex = value.substring(0, e.target.selectionStart).lastIndexOf(':');
+		let filteredEmotes = [];
+		const colonSplitText = value.substring(0, emoteColonIndex).split(':');
+
+		if (
+			value.substring(emoteColonIndex + 1, e.target.selectionStart).indexOf(' ') !== -1 ||
+			excludedColonIndices.includes(emoteColonIndex) ||
+			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1)
+		) {
+			emoteColonIndex = -1;
+		}
+
+		excludedColonIndices = excludedColonIndices.map(i => (value.length <= i || value[i] !== ':' ? null : i)).filter(Number.isInteger);
+
+		if (value.lastIndexOf(':') === value.length - 1) {
+			this.setState({ emoteHelperSelectedIndex: 0 });
+		}
+
+		if (emoteColonIndex >= 0) {
+			const textAfterColon = value
+				.slice(emoteColonIndex + 1)
+				.split(' ')[0]
+				.split(':')[0];
+			filteredEmotes = textAfterColon ? emoteNames.filter(emote => emote.toLowerCase().includes(textAfterColon.toLowerCase())).slice(0, 5) : this.defaultEmotes;
+			emoteColonIndex = emoteNames.includes(textAfterColon + ':') ? -1 : emoteColonIndex;
+		}
+
 		this.setState({
-			chatValue: e.target.value
+			emoteHelperElements: filteredEmotes.length ? filteredEmotes : this.defaultEmotes,
+			chatValue: value,
+			emoteColonIndex,
+			excludedColonIndices,
+			emoteHelperSelectedIndex: emoteHelperSelectedIndex > emoteHelperElements.length ? 0 : emoteHelperSelectedIndex
 		});
-		const chatValue = e.target.value;
 
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
-			if (this.state.badWord[0]) {
+			if (badWord[0]) {
 				this.setState({
 					badWord: [null, null]
 				});
@@ -174,8 +214,8 @@ class Gamechat extends React.Component {
 			}
 		}
 
-		const foundWord = getBadWord(chatValue);
-		if (this.state.badWord[0] !== foundWord[0]) {
+		const foundWord = getBadWord(value);
+		if (badWord[0] !== foundWord[0]) {
 			if (this.state.textChangeTimer !== -1) clearTimeout(this.state.textChangeTimer);
 			if (foundWord[0]) {
 				this.setState({
@@ -194,6 +234,70 @@ class Gamechat extends React.Component {
 		}
 	};
 
+	handleInsertEmote = (emote, isHelper) => {
+		const { chatValue, emoteColonIndex } = this.state;
+		const textAfterColon =
+			':' +
+			chatValue
+				.slice(emoteColonIndex + 1)
+				.split(' ')[0]
+				.split(':')[0];
+		let helperChatArr;
+
+		if (isHelper) {
+			helperChatArr = chatValue.split('');
+			helperChatArr.splice(emoteColonIndex, textAfterColon.length, `:${emote}: `);
+		}
+
+		this.setState({
+			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote} `,
+			emoteColonIndex: -1,
+			emoteHelperSelectedIndex: 0
+		});
+
+		if (!isHelper) this.chatInput.focus();
+	};
+
+	handleKeyPress = e => {
+		const { emoteHelperSelectedIndex, emoteHelperElements, emoteColonIndex, excludedColonIndices } = this.state;
+		const { keyCode } = e;
+		const emoteHelperElementCount = emoteHelperElements && emoteHelperElements.length;
+
+		if (emoteColonIndex >= 0) {
+			if (keyCode === 27) {
+				// esc
+				this.setState({
+					excludedColonIndices: [...excludedColonIndices, emoteColonIndex],
+					emoteColonIndex: -1
+				});
+			} else if (keyCode === 40) {
+				// arrow key
+				const nextIndex = emoteHelperSelectedIndex + 1;
+				e.preventDefault(); // prevents moving to home and end of textarea
+				this.setState({
+					emoteHelperSelectedIndex: nextIndex === emoteHelperElementCount ? 0 : nextIndex
+				});
+			} else if (keyCode === 38) {
+				// arrow key
+				e.preventDefault(); // prevents moving to home and end of textarea
+				this.setState({
+					emoteHelperSelectedIndex: emoteHelperSelectedIndex ? emoteHelperSelectedIndex - 1 : emoteHelperElementCount - 1
+				});
+			} else if (keyCode === 9 || keyCode === 13) {
+				// enter and tab
+				e.preventDefault(); // prevents from tabbing out of input
+				console.log('Hello, World!');
+				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
+				this.setState({
+					emoteColonIndex: -1
+				});
+			}
+		} else if (keyCode === 13 && !e.shiftKey) {
+			e.preventDefault();
+			this.handleSubmit();
+		}
+	};
+
 	chatDisabled = () => {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 	};
@@ -201,7 +305,9 @@ class Gamechat extends React.Component {
 	handleSubmit = e => {
 		const { gameInfo } = this.props;
 
-		e.preventDefault();
+		if (e) {
+			e.preventDefault();
+		}
 
 		if (this.chatDisabled()) {
 			return;
@@ -287,13 +393,6 @@ class Gamechat extends React.Component {
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
-	};
-
-	handleInsertEmote = emote => {
-		this.setState({
-			chatValue: this.state.chatValue + ' ' + emote
-		});
-		this.chatInput.focus();
 	};
 
 	renderModEndGameButtons() {
@@ -736,9 +835,54 @@ class Gamechat extends React.Component {
 		}
 	}
 
+	renderEmoteHelper() {
+		const { allEmotes } = this.props;
+		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		const helperHover = index => {
+			this.setState({
+				emoteHelperSelectedIndex: index
+			});
+		};
+
+		if (emoteHelperSelectedIndex > emoteHelperElements.length) this.setState({ emoteHelperSelectedIndex: 0 });
+
+		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length) return;
+
+		return (
+			<div className="emote-helper-container">
+				{emoteHelperElements.map((el, index) => (
+					<div
+						onMouseOver={() => {
+							helperHover(index);
+						}}
+						onClick={() => {
+							this.handleInsertEmote(el, true);
+							this.chatInput.focus();
+						}}
+						key={index}
+						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
+					>
+						<img
+							src="../images/blank.png"
+							style={{
+								width: '28px',
+								height: '28px',
+								backgroundImage: 'url("../images/emotesheet.png")',
+								backgroundPositionX: `-${allEmotes[`:${el}:`][0] * 28}px`,
+								backgroundPositionY: `-${allEmotes[`:${el}:`][1] * 28}px`,
+								margin: '2px 10px 2px 5px'
+							}}
+						/>
+						{`${el}`}
+					</div>
+				))}
+			</div>
+		);
+	}
+
 	render() {
 		const { socket, userInfo, gameInfo, userList } = this.props;
-		const { playersToWhitelist, showPlayerChat, showGameChat, showObserverChat, showFullChat, notesEnabled, lock } = this.state;
+		const { emoteColonIndex, playersToWhitelist, showPlayerChat, showGameChat, showObserverChat, showFullChat, notesEnabled, lock } = this.state;
 
 		const selectedWhitelistplayer = playerName => {
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
@@ -1036,6 +1180,7 @@ class Gamechat extends React.Component {
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
+					{emoteColonIndex >= 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}
 						onScroll={this.handleChatScrolled}
@@ -1272,6 +1417,7 @@ class Gamechat extends React.Component {
 						<input
 							value={this.state.chatValue}
 							onSubmit={this.handleSubmit}
+							onKeyDown={this.handleKeyPress}
 							onChange={this.handleTyping}
 							type="text"
 							autoComplete="off"
@@ -1397,7 +1543,7 @@ Gamechat.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array,
+	allEmotes: PropTypes.object,
 	notesActive: PropTypes.bool,
 	toggleNotes: PropTypes.func
 };

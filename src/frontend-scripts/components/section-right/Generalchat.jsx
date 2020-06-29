@@ -172,7 +172,7 @@ export default class Generalchat extends React.Component {
 
 	chatDisabled = () => this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 
-	handleSubmit = e => {
+	handleSubmit = () => {
 		if (this.chatDisabled()) {
 			return;
 		}
