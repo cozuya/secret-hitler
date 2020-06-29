@@ -2596,7 +2596,7 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
  */
 module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	const gameToPeek = game;
-	let output = '';
+	let output = '<table class="fullTable"><tr><th>Seat</th><th>Role</th><th>Vote</th></tr>';
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		for (player of gameToPeek.private.seatedPlayers) {
@@ -2638,20 +2638,27 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
 		playersToCheckVotes.map(player => {
-			output += 'Seat ' + (playersToCheckVotes.indexOf(player) + 1) + ' - ';
+			output += '<tr>';
+			output += '<td>' + (playersToCheckVotes.indexOf(player) + 1) + '</td>';
+			output += '<td>';
 			if (player && player.role && player.role.cardName) {
 				if (player.role.cardName === 'hitler') {
-					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + '   - ';
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1);
 				} else {
-					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + ' - ';
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1);
 				}
 			} else {
-				output += 'Roles not Dealt - ';
+				output += 'Roles not Dealt';
 			}
-			output += player.isDead ? 'Dead' : player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
-			output += '\n';
+			output +=
+				'</td><td>' +
+				(player.isDead ? 'Dead' : player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted') +
+				'</td>';
+			output += '</tr>';
 		});
 	}
+
+	output += '</table>';
 	socket.emit('sendAlert', output);
 };
 
