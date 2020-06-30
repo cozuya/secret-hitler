@@ -250,12 +250,12 @@ const continueSignup = config => {
 
 			if (type === 'discord') {
 				accountObj.discordDiscriminator = profile.discriminator;
-				accountObj.discordMfa_enabled = profile.mfa_enabled;
+				accountObj.discordMFA = profile.mfa_enabled;
 				accountObj.discordUsername = profile.username;
 				accountObj.discordUID = profile.id;
 			} else {
 				accountObj.githubUsername = profile.username;
-				accountObj.github2FA = profile._json.two_factor_authentication;
+				accountObj.githubMFA = profile._json.two_factor_authentication;
 				accountObj.bio = profile._json.bio;
 			}
 
@@ -767,7 +767,7 @@ module.exports.accounts = torIpsParam => {
 				}
 			} else {
 				passport.authenticate(type, profile => {
-					if (!profile || !profile.username) {
+					if (!profile || !profile.id) {
 						return next();
 					}
 
@@ -775,11 +775,11 @@ module.exports.accounts = torIpsParam => {
 						if (type === 'discord') {
 							req.user.discordUsername = profile.username;
 							req.user.discordDiscriminator = profile.discriminator;
-							req.user.discordMfa_enabled = profile.mfa_enabled;
+							req.user.discordMFA = profile.mfa_enabled;
 							req.user.discordUID = profile.id;
 						} else {
 							req.user.githubUsername = profile.username;
-							req.user.github2FA = profile.two_factor_authentication;
+							req.user.githubMFA = profile.two_factor_authentication;
 						}
 						req.user.verified = true;
 						req.user.save(() => {
@@ -787,8 +787,7 @@ module.exports.accounts = torIpsParam => {
 						});
 					} else {
 						// see if their oauth information matches an account, if so sign them in
-						const queryObj =
-							type === 'discord' ? { discordUsername: profile.username, discordDiscriminator: profile.discriminator } : { githubUsername: profile.username };
+						const queryObj = type === 'discord' ? { discordUID: profile.id } : { githubUsername: profile.username };
 
 						Account.findOne(queryObj)
 							.then(account => {
@@ -802,8 +801,7 @@ module.exports.accounts = torIpsParam => {
 										});
 									} else {
 										// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
-
-										Account.findOne({ username: profile.username })
+										Account.findOne({ username: new RegExp(profile.username, 'i') })
 											.then(account => {
 												req.session.oauthType = type;
 												if (account) {
@@ -935,15 +933,18 @@ module.exports.accounts = torIpsParam => {
 	});
 
 	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
-		req.user.discordUsername = req.user.discordDiscriminator = '';
+		req.user.discordUsername = null;
+		req.user.discordDiscriminator = null;
+		req.user.discordUID = null;
+		req.user.discordMFA = null;
 		req.user.save(() => {
 			res.redirect('/account');
 		});
 	});
 
 	app.get('/revoke-github', ensureAuthenticated, (req, res) => {
-		req.user.githubUsername = '';
-		req.user.github2FA = false;
+		req.user.githubUsername = null;
+		req.user.githubMFA = null;
 		req.user.save(() => {
 			res.redirect('/account');
 		});
