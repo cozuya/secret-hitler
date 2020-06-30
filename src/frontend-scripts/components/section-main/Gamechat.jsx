@@ -425,7 +425,6 @@ class Gamechat extends React.Component {
 	};
 
 	processChats() {
-		const processStart = new Date();
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
@@ -664,11 +663,6 @@ class Gamechat extends React.Component {
 				);
 				return acc;
 			}, []);
-			// DEBUG
-			const processEnd = new Date();
-			if (processEnd - processStart > 25) {
-				console.warn('It took', processEnd - processStart, 'ms to process', gameInfo.chats.length, 'chats.');
-			}
 			return processedChats;
 		}
 	}
