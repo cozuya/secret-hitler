@@ -504,8 +504,8 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserverlobby: false,
-					disableobserver: false,
+					disableobserverlobby: true,
+					disableobserver: true,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
@@ -543,8 +543,8 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserverlobby: false,
-					disableobserver: false,
+					disableobserverlobby: true,
+					disableobserver: true,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
@@ -577,7 +577,7 @@ export default class Creategame extends React.Component {
 			case 'Gun Game':
 				this.setState({
 					gameName: 'Gun Game',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -616,21 +616,21 @@ export default class Creategame extends React.Component {
 			case '2R1H':
 				this.setState({
 					gameName: '2 Rooms 1 Hitler',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
 					disablegameChat: false,
 					disableobserverlobby: false,
-					disableobserver: false,
-					privateShowing: true,
-					password: 'rsar',
+					disableobserver: true,
+					privateShowing: false,
+					password: '',
 					containsBadWord: false,
 					rainbowgame: true,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
-					unlistedGame: false,
+					unlistedGame: true,
 					isTourny: false,
 					blindMode: false,
 					timedMode: false,
@@ -656,7 +656,7 @@ export default class Creategame extends React.Component {
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
@@ -696,12 +696,12 @@ export default class Creategame extends React.Component {
 			case 'Tourney Game':
 				this.setState({
 					gameName: 'Tourney Game ',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserverlobby: false,
+					disableobserverlobby: true,
 					disableobserver: true,
 					privateShowing: false,
 					password: '',
@@ -736,7 +736,7 @@ export default class Creategame extends React.Component {
 			case 'Inv Game':
 				this.setState({
 					gameName: 'Investigation Game',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
@@ -776,7 +776,7 @@ export default class Creategame extends React.Component {
 			case 'Trivia Mode':
 				this.setState({
 					gameName: 'Trivia Mode',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
