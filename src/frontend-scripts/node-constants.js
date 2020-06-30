@@ -36,7 +36,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 10;
+module.exports.CURRENTSEASONNUMBER = 11;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];

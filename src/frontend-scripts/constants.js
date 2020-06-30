@@ -36,7 +36,7 @@ export const TOU_CHANGES = [
 	}
 ];
 
-export const CURRENTSEASONNUMBER = 10;
+export const CURRENTSEASONNUMBER = 11;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -126,7 +126,7 @@ export const getBadWord = text => {
 
 	// let ec = 0; //for future use in auto reporting
 	let exceptedText = text;
-	for (let exception of exceptions) {
+	for (const exception of exceptions) {
 		while (exceptedText.search(exception) > -1) {
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;
