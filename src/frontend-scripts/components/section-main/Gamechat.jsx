@@ -556,7 +556,6 @@ class Gamechat extends React.Component {
 	};
 
 	processChats() {
-		const processStart = new Date();
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
@@ -819,8 +818,10 @@ class Gamechat extends React.Component {
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
 										? chat.hiddenUsername
+										: isBlind && !isMod
+										? '?'
 										: chat.userName
-									: isBlind && isSeated
+									: isBlind && (!isMod || (isMod && isSeated))
 									? '?'
 									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
 									? chat.hiddenUsername
@@ -833,11 +834,6 @@ class Gamechat extends React.Component {
 				);
 				return acc;
 			}, []);
-			// DEBUG
-			const processEnd = new Date();
-			if (processEnd - processStart > 25) {
-				console.warn('It took', processEnd - processStart, 'ms to process', gameInfo.chats.length, 'chats.');
-			}
 			return processedChats;
 		}
 	}
