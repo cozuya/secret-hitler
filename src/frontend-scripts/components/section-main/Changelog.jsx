@@ -95,18 +95,18 @@ class Changelog extends React.Component {
 				</p>
 				<br />
 				<h4>The top 10 players of season 10 are:</h4>
-				<ul>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-				</ul>
+				<ol>
+					<li> thijsdB: 2130 </li>
+					<li> imbapingu: 2026 </li>
+					<li> FinalManu: 2018 </li>
+					<li> GodMedusa: 1971 </li>
+					<li> Reich25: 1959 </li>
+					<li> DoubleAgent: 1945 </li>
+					<li> CowsAreCute: 1910 </li>
+					<li> KyleTheHill: 1910 </li>
+					<li> Mell0: 1907 </li>
+					<li> RyanLockwood: 1905 </li>
+				</ol>
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
