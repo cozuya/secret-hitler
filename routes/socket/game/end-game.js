@@ -178,7 +178,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.general.isRecorded = true;
 
-	if (!game.general.private && !game.general.casualGame && !game.customGameSettings.enabled && !game.general.practiceGame && !game.general.unlisted) {
+	// Don't compute Elo for private, casual, custom, private, or unlisted games
+	if (
+		!game.general.private &&
+		!game.general.casualGame &&
+		!(game.customGameSettings && game.customGameSettings.enabled) &&
+		!game.general.practiceGame &&
+		!game.general.unlisted
+	) {
 		Account.find({
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})
