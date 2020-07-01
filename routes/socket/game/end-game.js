@@ -178,7 +178,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.general.isRecorded = true;
 
-	if (!game.general.private && !game.general.casualGame && !game.general.unlisted) {
+	if (!game.general.private && !game.general.casualGame && !game.general.practiceGame && !game.general.unlisted) {
 		Account.find({
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})
