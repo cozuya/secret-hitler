@@ -41,6 +41,7 @@ class Tracks extends React.Component {
 		const { Notification } = window;
 
 		this._ismounted = false;
+		window.clearInterval(this.intervalId);
 
 		if (Notification && Notification.permission === 'granted' && this.props.socket) {
 			this.props.socket.off('pingPlayer');
@@ -54,7 +55,7 @@ class Tracks extends React.Component {
 	};
 
 	componentWillReceiveProps(nextProps) {
-		const { gameInfo } = this.props;
+		const { gameInfo, userInfo } = this.props;
 
 		if (!gameInfo.gameState.isStarted) {
 			this.setState({
@@ -81,7 +82,9 @@ class Tracks extends React.Component {
 					seconds--;
 				}
 				if (!minutes && seconds <= 15) {
-					playSound('clockTick', 'pack1', 500);
+					if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
+						playSound('clockTick', 'pack1', 500);
+					}
 				}
 
 				if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
