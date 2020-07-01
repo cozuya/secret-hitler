@@ -7,7 +7,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
-import { renderEmotesButton, processEmotes } from '../../emotes';
+import { processEmotes } from '../../emotes';
 import * as Swal from 'sweetalert2';
 
 const mapDispatchToProps = dispatch => ({
@@ -1459,7 +1459,6 @@ class Gamechat extends React.Component {
 							id="gameChatInput"
 							ref={c => (this.chatInput = c)}
 						/>
-						{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 						<button type="submit" className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 							Chat
 						</button>
