@@ -68,7 +68,7 @@ export default class Generalchat extends React.Component {
 	handleTyping = e => {
 		e.preventDefault();
 		const { allEmotes } = this.props;
-		const { badWord, textChangeTimer, emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		const { badWord, textChangeTimer } = this.state;
 		let { excludedColonIndices } = this.state;
 		const { value } = e.target;
 		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length - 1));
@@ -77,17 +77,18 @@ export default class Generalchat extends React.Component {
 		const colonSplitText = value.substring(0, emoteColonIndex).split(':');
 
 		if (
-			value.substring(emoteColonIndex + 1, e.target.selectionStart).indexOf(' ') !== -1 ||
+			!/^[a-zA-Z]*$/.test(value.substring(emoteColonIndex + 1, e.target.selectionStart)) ||
 			excludedColonIndices.includes(emoteColonIndex) ||
-			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1)
+			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1) ||
+			!/^ ?$/.test(value.substring(0, emoteColonIndex).slice(-1))
 		) {
 			emoteColonIndex = -1;
 		}
 
 		excludedColonIndices = excludedColonIndices.map(i => (value.length <= i || value[i] !== ':' ? null : i)).filter(Number.isInteger);
 
-		if (value.lastIndexOf(':') === value.length - 1) {
-			this.setState({ emoteHelperSelectedIndex: 0 });
+		if (value.lastIndexOf(':') === e.target.selectionStart - 1) {
+			this.setState({ emoteHelperSelectedIndex: -1 });
 		}
 
 		if (emoteColonIndex >= 0) {
@@ -102,8 +103,7 @@ export default class Generalchat extends React.Component {
 			emoteHelperElements: filteredEmotes.length ? filteredEmotes : this.defaultEmotes,
 			chatValue: value,
 			emoteColonIndex,
-			excludedColonIndices,
-			emoteHelperSelectedIndex: emoteHelperSelectedIndex > emoteHelperElements.length ? 0 : emoteHelperSelectedIndex
+			excludedColonIndices
 		});
 
 		const foundWord = getBadWord(value);
@@ -190,7 +190,7 @@ export default class Generalchat extends React.Component {
 				excludedColonIndices: [],
 				emoteColonIndex: -1,
 				emoteHelperElements: this.defaultEmotes,
-				emoteHelperSelectedIndex: 0
+				emoteHelperSelectedIndex: -1
 			});
 		}
 	};
@@ -228,7 +228,7 @@ export default class Generalchat extends React.Component {
 		this.setState({
 			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote} `,
 			emoteColonIndex: -1,
-			emoteHelperSelectedIndex: 0
+			emoteHelperSelectedIndex: -1
 		});
 
 		if (!isHelper) this.chatInput.focus();
@@ -262,10 +262,14 @@ export default class Generalchat extends React.Component {
 			} else if (keyCode === 9 || keyCode === 13) {
 				// enter and tab
 				e.preventDefault(); // prevents from tabbing out of input
-				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
-				this.setState({
-					emoteColonIndex: -1
-				});
+				if (emoteHelperSelectedIndex >= 0) {
+					this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
+					this.setState({
+						emoteColonIndex: -1
+					});
+				} else {
+					this.handleSubmit();
+				}
 			}
 		} else if (keyCode === 13 && !e.shiftKey) {
 			e.preventDefault();
