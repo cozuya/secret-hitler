@@ -3,27 +3,111 @@ import React from 'react'; // eslint-disable-line
 class Changelog extends React.Component {
 	render() {
 		return (
-			<section className="changelog">
+			<section className="changelog" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
 				<a href="#/">
 					<i className="remove icon" />
 				</a>
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
-				<div className="ui header">
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome to Season 11!</p>
 				</div>
 				<div className="ui header">
-					<p>Version 1.6.9 released 6-1-2020</p>
+					<p>Version 1.7 released 7-1-2020</p>
 				</div>
-				<p>New feature: reworked emotes</p>
+				<h3>New Features:</h3>
 				<p>
-					Emotes now work more similarly to other chat applications: you can type ":" to bring up a helper/autocomplete list of emotes, and type more to filter
-					down to emotes. Example: you type ":", the helper appears with default autocompletes (ja, nein, etc), you can use the arrow keys or mouse to select
-					one and then hit enter or tab to have it fill the chat input, or you can continue to type and it will filter that list down to match. This should give
-					a much more satisfying emote system - its basically similar to the way discord works. All emotes have been changed - they all now start with ":", and
-					they are all lowercase.
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Emote Selector</strong> - emotes now work more similarly to other chat applications: you
+					can type : (a colon) to bring up a list of emotes, and type more to filter down to specific emotes. You can use the arrow keys or mouse to select one
+					and then press enter or tab to have it fill the chat input, or you can continue to type and it will filter that list down to match. All emotes have
+					been changed - they all now start and end with : (a colon), and they are all lowercase.
 				</p>
+				<img src="../images/1.7.0-images/1-7EmoteSelector.gif" alt="Emote Selector GIF" style={{ width: '50%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Practice Game Mode</strong> - a casual game mode (no stat/Elo changes), but gameplay rules
+					are enforced. This allows for games just for fun, but with basic gameplay rules enforced. As a result, casual games now have no gameplay rules
+					enforced.
+				</p>
+				<img src="../images/1.7.0-images/1-7GameMode.png" alt="Game Mode Selection" style={{ width: '25%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Timer UI Improvements</strong> - the timer in-game will be hidden by default, and will
+					only show up in the last 15 seconds or if you click its button. Click the timer to hide it. There is also a new sound when 15 seconds are remaining.
+				</p>
+				<div style={{ width: '75%', display: 'flex', justifyContent: 'center', alignSelf: 'center' }}>
+					<img src="../images/1.7.0-images/1-7TimerIcon.png" alt="Timer UI Hidden" style={{ marginRight: '35px' }}></img>
+					<img src="../images/1.7.0-images/1-7Timer.png" alt="Timer UI Shown"></img>
+				</div>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Terms of Use Version 1.5</strong> - a new version of the Terms of Use has been published{' '}
+					<a href="/tou">here</a>.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>End-of-game Elo Reward Changes</strong> - the Elo calculation formula has changed slightly
+					(nothing major, you likely won't even notice). Elo rewards at the end of the game are now sorted by role, and are more readable.
+				</p>
+
+				<img src="../images/1.7.0-images/1-7EloChanges.png" alt="Elo Changes" style={{ maxWidth: '65%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Remake URLs have changed</strong> - remaking a game will no longer simply add "Remake" to
+					the end of the URL, it will instead update a number. e.g. OriginalUID, OriginalUIDRemake1, OriginalUIDRemake2.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Deck/Claim Information Customizations</strong> - you can now choose how deck and claim
+					information is presented in your chat. The original way ('RRB' etc) is still the default, and available. However, you can now pick short ('FFL' etc)
+					or full ('fascist, fascist, liberal' etc) as well.
+				</p>
+				<img
+					src="../images/1.7.0-images/1-7ClaimTypeLegacy.png"
+					alt="Deck Customizations (legacy)"
+					style={{ width: '50%', marginBottom: '5px', alignSelf: 'center' }}
+				></img>
+				<img
+					src="../images/1.7.0-images/1-7ClaimTypeShort.png"
+					alt="Deck Customizations (short)"
+					style={{ maxWidth: '50%', marginBottom: '5px', alignSelf: 'center' }}
+				></img>
+				<img
+					src="../images/1.7.0-images/1-7ClaimTypeFull.png"
+					alt="Deck Customizations (full)"
+					style={{ maxWidth: '50%', marginBottom: '15px', alignSelf: 'center' }}
+				></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Disable Observer Chat in-game-only option</strong> - observer chat has gained a new
+					option to disable observer chat only during the game. You can still disable observer chat completely as well.
+				</p>
+				<img src="../images/1.7.0-images/1-7Observer.png" alt="Observer Chat Selector" style={{ maxWidth: '35%', alignSelf: 'center' }}></img>
+				<h3>Minor Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixed Multiple Discord Login Issues</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixed Multiple Minor Blind Mode Issues</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Changed the look of various pop-ups</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Added various error messages</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various other bugs squashed</strong>
+				</p>
+				<br />
+				<h4>The top 10 players of season 10 are:</h4>
+				<ol>
+					<li> thijsdB: 2130 </li>
+					<li> imbapingu: 2026 </li>
+					<li> FinalManu: 2018 </li>
+					<li> GodMedusa: 1971 </li>
+					<li> Reich25: 1959 </li>
+					<li> DoubleAgent: 1945 </li>
+					<li> CowsAreCute: 1910 </li>
+					<li> KyleTheHill: 1910 </li>
+					<li> Mell0: 1907 </li>
+					<li> RyanLockwood: 1905 </li>
+				</ol>
+				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
 				</div>
@@ -39,7 +123,7 @@ class Changelog extends React.Component {
 				<p>Fixes Leaderboard Caching</p>
 				<p>Adds Veteran AEM Role</p>
 				<p>Multiple Bug Fixes</p>
-				<hr />
+				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Welcome to 2020 and to Season 9!</p>
 				</div>
@@ -103,7 +187,7 @@ class Changelog extends React.Component {
 				<p>Fixes Terms of Use formatting</p>
 				<p>Fixes Claim Window not Disappearing at end of game</p>
 				<p>Fixes Various Moderation Features</p>
-				<hr />
+				<hr style={{ width: '100%' }} />
 
 				<div className="ui header">
 					<p>Version 1.6.1 released 7-10-2019</p>

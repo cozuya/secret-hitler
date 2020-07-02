@@ -44,6 +44,7 @@ class Settings extends React.Component {
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
+		claimCharacters: 'short',
 		primaryColor: 'hsl(225, 73%, 57%)',
 		secondaryColor: 'hsl(225, 48%, 57%)',
 		tertiaryColor: 'hsl(265, 73%, 57%)',
@@ -80,7 +81,8 @@ class Settings extends React.Component {
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
-			safeForWork: gameSettings.safeForWork,
+			safeForWork: gameSettings.safeForWork || false,
+			claimCharacters: gameSettings.claimCharacters || 'short',
 			primaryColor: window
 				.getComputedStyle(document.documentElement)
 				.getPropertyValue('--theme-primary')
@@ -112,6 +114,19 @@ class Settings extends React.Component {
 			() => {
 				this.props.socket.emit('updateGameSettings', {
 					soundStatus: this.state.soundSelected
+				});
+			}
+		);
+	};
+
+	handleClaimCharactersChange = e => {
+		this.setState(
+			{
+				claimCharacters: e.target.value
+			},
+			() => {
+				this.props.socket.emit('updateGameSettings', {
+					claimCharacters: this.state.claimCharacters
 				});
 			}
 		);
@@ -647,6 +662,12 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
+							<h4 className="ui header">Policy claim representation</h4>
+							<select onChange={this.handleClaimCharactersChange} value={this.state.claimCharacters}>
+								<option value="short">Short (L/F)</option>
+								<option value="full">Full (liberal/fascist)</option>
+								<option value="legacy">Legacy (B/R)</option>
+							</select>
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>

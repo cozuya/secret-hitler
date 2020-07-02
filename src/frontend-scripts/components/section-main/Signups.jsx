@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import * as Swal from 'sweetalert2';
 
 let signupType = 'getSignups';
 
@@ -49,7 +50,7 @@ const Signups = ({ socket }) => {
 								<td
 									onClick={() => {
 										if (report.email.indexOf('#') !== -1) {
-											window.alert('Discord ID: ' + report.oauthID);
+											Swal.fire('Discord ID: ' + report.oauthID);
 										}
 									}}
 									style={{ cursor: `${report.email.indexOf('#') !== -1 ? 'pointer' : ''}` }}

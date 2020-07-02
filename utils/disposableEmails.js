@@ -2779,6 +2779,7 @@ module.exports = [
 	'awahal0vk1o7gbyzf0.gq',
 	'awahal0vk1o7gbyzf0.ml',
 	'awahal0vk1o7gbyzf0.tk',
+	'awdrt.net',
 	'awea.icu',
 	'aweh.icu',
 	'awel.icu',

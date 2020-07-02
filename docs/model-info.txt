@@ -48,6 +48,7 @@ general
 	casualGame bool
 	disableChat bool
 	disableGamechat bool
+	disableObserverLobby bool
 	disableObserver bool
 	playerCount number 5-10
 	type number refers to fasctrack

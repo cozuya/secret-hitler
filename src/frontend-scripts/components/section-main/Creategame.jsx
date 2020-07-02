@@ -4,6 +4,7 @@ import Select from 'react-select';
 import { Range } from 'rc-slider';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
+import * as Swal from 'sweetalert2';
 
 export default class Creategame extends React.Component {
 	constructor(props) {
@@ -25,6 +26,7 @@ export default class Creategame extends React.Component {
 			experiencedmode: true,
 			disablechat: false,
 			disablegameChat: false,
+			disableobserverlobby: false,
 			disableobserver: false,
 			privateShowing: false,
 			password: '',
@@ -502,7 +504,8 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserver: false,
+					disableobserverlobby: true,
+					disableobserver: true,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
@@ -540,7 +543,8 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserver: false,
+					disableobserverlobby: true,
+					disableobserver: true,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
@@ -573,11 +577,12 @@ export default class Creategame extends React.Component {
 			case 'Gun Game':
 				this.setState({
 					gameName: 'Gun Game',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
@@ -611,20 +616,21 @@ export default class Creategame extends React.Component {
 			case '2R1H':
 				this.setState({
 					gameName: '2 Rooms 1 Hitler',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
 					disablegameChat: false,
-					disableobserver: false,
-					privateShowing: true,
-					password: 'rsar',
+					disableobserverlobby: false,
+					disableobserver: true,
+					privateShowing: false,
+					password: '',
 					containsBadWord: false,
 					rainbowgame: true,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
-					unlistedGame: false,
+					unlistedGame: true,
 					isTourny: false,
 					blindMode: false,
 					timedMode: false,
@@ -650,11 +656,12 @@ export default class Creategame extends React.Component {
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
 					disablegameChat: false,
+					disableobserverlobby: true,
 					disableobserver: true,
 					privateShowing: false,
 					password: '',
@@ -689,11 +696,12 @@ export default class Creategame extends React.Component {
 			case 'Tourney Game':
 				this.setState({
 					gameName: 'Tourney Game ',
-					gameType: 'ranked',
+					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: true,
 					disableobserver: true,
 					privateShowing: false,
 					password: '',
@@ -728,11 +736,12 @@ export default class Creategame extends React.Component {
 			case 'Inv Game':
 				this.setState({
 					gameName: 'Investigation Game',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -767,11 +776,12 @@ export default class Creategame extends React.Component {
 			case 'Trivia Mode':
 				this.setState({
 					gameName: 'Trivia Mode',
-					gameType: 'ranked',
+					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -811,6 +821,7 @@ export default class Creategame extends React.Component {
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
+					disableobserverlobby: false,
 					disableobserver: false,
 					privateShowing: false,
 					password: '',
@@ -928,7 +939,7 @@ export default class Creategame extends React.Component {
 		if (this.state.containsBadWord) {
 			return;
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-			window.alert('Sorry, this service is currently unavailable.');
+			Swal.fire('Sorry, this service is currently unavailable.');
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
@@ -940,6 +951,7 @@ export default class Creategame extends React.Component {
 				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
 				disableChat: this.state.disablechat,
+				disableObserverLobby: this.state.disableobserverlobby,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
 				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
@@ -2019,6 +2031,21 @@ export default class Creategame extends React.Component {
 								<Switch
 									className="create-game-switch"
 									onChange={checked => {
+										this.setState({ disableobserverlobby: checked, disableobserver: checked });
+									}}
+									checked={this.state.disableobserverlobby}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+								<h4 className="ui header">Disable observer chat during game{this.state.disableobserverlobby ? '' : ' only'}</h4>
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
 										this.setState({ disableobserver: checked });
 									}}
 									checked={this.state.disableobserver}
@@ -2029,6 +2056,7 @@ export default class Creategame extends React.Component {
 									height={21}
 									width={48}
 									handleDiameter={21}
+									disabled={this.state.disableobserverlobby}
 								/>
 							</div>
 						)}

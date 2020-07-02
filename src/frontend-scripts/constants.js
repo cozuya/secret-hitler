@@ -2,6 +2,11 @@ const cn = require('classnames');
 
 export const TOU_CHANGES = [
 	{
+		changeVer: '1.5',
+		changeDesc:
+			'Updated to include mention of the new "Practice" mode and redefine rules on "Casual" mode.\nHate Speech rules updated to include transphobic and ableist language.\nClarified the rule on encouraging/glorifying physical harm.\nSlight adjustment to "ape"/"monkey" rule.\nSlight adjustment to doxxing rule.\nClarified cardback rules.\nSlightly redefined stalling rule.\nAdjusted rules on blacklist mentions, fake RQs, and RQ threats to focus more on gameplay influences.\nSitting for a game on one account while speaking with another account is now prohibited.\nRevised the table of offences and their corresponding suggested penalties.\nVarious other rewordings, reorganizations.'
+	},
+	{
 		changeVer: '1.4',
 		changeDesc:
 			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
@@ -31,7 +36,7 @@ export const TOU_CHANGES = [
 	}
 ];
 
-export const CURRENTSEASONNUMBER = 10;
+export const CURRENTSEASONNUMBER = 11;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -121,7 +126,7 @@ export const getBadWord = text => {
 
 	// let ec = 0; //for future use in auto reporting
 	let exceptedText = text;
-	for (let exception of exceptions) {
+	for (const exception of exceptions) {
 		while (exceptedText.search(exception) > -1) {
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;

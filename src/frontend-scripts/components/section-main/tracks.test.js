@@ -6,7 +6,10 @@ describe('Tracks', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			remakeStatus: false,
-			timedModeTimer: ''
+			minutes: 0,
+			seconds: 0,
+			timedMode: false,
+			showTimer: false
 		};
 
 		const component = shallow(<Tracks gameInfo={{ general: {}, publicPlayersState: [], cardFlingerState: [], trackState: {}, gameState: {} }} />);

@@ -168,9 +168,7 @@ const gatherStaffUsernames = () => {
 };
 
 module.exports.socketRoutes = () => {
-	if (process.env.NODE_ENV === 'production') {
-		setInterval(gamesGarbageCollector, 30000);
-	}
+	setInterval(gamesGarbageCollector, 30000);
 
 	gatherStaffUsernames();
 

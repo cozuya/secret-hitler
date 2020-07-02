@@ -1,7 +1,7 @@
 import React from 'react';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
 import PropTypes from 'prop-types';
-import { renderEmotesButton, processEmotes } from '../../emotes';
+import { processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 
@@ -68,7 +68,7 @@ export default class Generalchat extends React.Component {
 	handleTyping = e => {
 		e.preventDefault();
 		const { allEmotes } = this.props;
-		const { badWord, textChangeTimer, emoteHelperSelectedIndex, emoteHelperElements } = this.state;
+		const { badWord, textChangeTimer } = this.state;
 		let { excludedColonIndices } = this.state;
 		const { value } = e.target;
 		const emoteNames = Object.keys(allEmotes).map(emoteName => emoteName.slice(1, emoteName.length - 1));
@@ -77,17 +77,18 @@ export default class Generalchat extends React.Component {
 		const colonSplitText = value.substring(0, emoteColonIndex).split(':');
 
 		if (
-			value.substring(emoteColonIndex + 1, e.target.selectionStart).indexOf(' ') !== -1 ||
+			!/^[a-zA-Z]*$/.test(value.substring(emoteColonIndex + 1, e.target.selectionStart)) ||
 			excludedColonIndices.includes(emoteColonIndex) ||
-			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1)
+			(colonSplitText.length > 1 && colonSplitText.slice(-1)[0].indexOf(' ') === -1) ||
+			!/^ ?$/.test(value.substring(0, emoteColonIndex).slice(-1))
 		) {
 			emoteColonIndex = -1;
 		}
 
 		excludedColonIndices = excludedColonIndices.map(i => (value.length <= i || value[i] !== ':' ? null : i)).filter(Number.isInteger);
 
-		if (value.lastIndexOf(':') === value.length - 1) {
-			this.setState({ emoteHelperSelectedIndex: 0 });
+		if (value.lastIndexOf(':') === e.target.selectionStart - 1) {
+			this.setState({ emoteHelperSelectedIndex: -1 });
 		}
 
 		if (emoteColonIndex >= 0) {
@@ -102,8 +103,7 @@ export default class Generalchat extends React.Component {
 			emoteHelperElements: filteredEmotes.length ? filteredEmotes : this.defaultEmotes,
 			chatValue: value,
 			emoteColonIndex,
-			excludedColonIndices,
-			emoteHelperSelectedIndex: emoteHelperSelectedIndex > emoteHelperElements.length ? 0 : emoteHelperSelectedIndex
+			excludedColonIndices
 		});
 
 		const foundWord = getBadWord(value);
@@ -130,9 +130,49 @@ export default class Generalchat extends React.Component {
 		}
 	};
 
+	generalChatStatus = () => {
+		const { userInfo } = this.props;
+		const { userName } = userInfo;
+
+		if (!userName) {
+			return {
+				isDisabled: true,
+				placeholder: 'You must log in to use chat'
+			};
+		}
+
+		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
+
+		if (!user) {
+			return {
+				isDisabled: true,
+				placeholder: 'Please reload...'
+			};
+		}
+
+		if (userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
+			return {
+				isDisabled: true,
+				placeholder: 'Your account is private and cannot participate in general chat'
+			};
+		}
+
+		if ((user.wins || 0) + (user.losses || 0) < 10) {
+			return {
+				isDisabled: true,
+				placeholder: 'You must finish ten games to use general chat'
+			};
+		}
+
+		return {
+			isDisabled: false,
+			placeholder: 'Send a message'
+		};
+	};
+
 	chatDisabled = () => this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 
-	handleSubmit = e => {
+	handleSubmit = () => {
 		if (this.chatDisabled()) {
 			return;
 		}
@@ -150,7 +190,7 @@ export default class Generalchat extends React.Component {
 				excludedColonIndices: [],
 				emoteColonIndex: -1,
 				emoteHelperElements: this.defaultEmotes,
-				emoteHelperSelectedIndex: 0
+				emoteHelperSelectedIndex: -1
 			});
 		}
 	};
@@ -188,7 +228,7 @@ export default class Generalchat extends React.Component {
 		this.setState({
 			chatValue: isHelper ? helperChatArr.join('') : `${chatValue}${emote} `,
 			emoteColonIndex: -1,
-			emoteHelperSelectedIndex: 0
+			emoteHelperSelectedIndex: -1
 		});
 
 		if (!isHelper) this.chatInput.focus();
@@ -222,10 +262,14 @@ export default class Generalchat extends React.Component {
 			} else if (keyCode === 9 || keyCode === 13) {
 				// enter and tab
 				e.preventDefault(); // prevents from tabbing out of input
-				this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
-				this.setState({
-					emoteColonIndex: -1
-				});
+				if (emoteHelperSelectedIndex >= 0) {
+					this.handleInsertEmote(emoteHelperElements[emoteHelperSelectedIndex], true);
+					this.setState({
+						emoteColonIndex: -1
+					});
+				} else {
+					this.handleSubmit();
+				}
 			}
 		} else if (keyCode === 13 && !e.shiftKey) {
 			e.preventDefault();
@@ -234,10 +278,8 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
-		const { userInfo, allEmotes } = this.props;
-
 		return (
-			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
+			<div className={this.generalChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 				{this.state.badWord[0] && (
 					<span
 						style={{
@@ -268,18 +310,17 @@ export default class Generalchat extends React.Component {
 						{`This message is too long ${300 - this.state.chatValue.length}`}
 					</span>
 				)}
-				<input
+				<textarea
 					style={{ zIndex: 1 }}
-					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
+					disabled={this.generalChatStatus().isDisabled}
 					className="chat-input-box"
-					placeholder="Send a message"
+					placeholder={this.generalChatStatus().placeholder}
 					value={this.state.chatValue}
 					spellCheck="false"
 					onKeyDown={this.handleKeyPress}
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
-				{userInfo.userName && Object.keys(allEmotes).length && renderEmotesButton(this.handleInsertEmote, allEmotes)}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat

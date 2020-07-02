@@ -1,10 +1,10 @@
 import { text, handToText, mapOpt1, capitalize } from '../../../utils';
 
-export default function(snapshot, game) {
+export default function(snapshot, game, userInfo) {
 	const { isVotePassed, jas, neins } = game.turns.get(snapshot.turnNum);
 	const usernameOf = id => game.usernameOf(id).valueOrElse('');
 	const claimToText = claim => claim.valueOrElse(text('player', 'nothing'));
-	const claimHandToText = claim => claimToText(mapOpt1(handToText)(claim));
+	const claimHandToText = (claim, userInfo) => claimToText(mapOpt1(claim => handToText(claim, userInfo))(claim));
 	const gameOverText = supplied => supplied.concat([text(game.winningTeam, capitalize(game.winningTeam) + 's'), text('normal', 'win the game.')]);
 
 	switch (snapshot.phase) {
@@ -33,14 +33,14 @@ export default function(snapshot, game) {
 			return [text('normal', 'The election tracker is maxed')];
 		case 'presidentLegislation':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'draws')]
-				.concat(handToText(snapshot.presidentHand))
+				.concat(handToText(snapshot.presidentHand, userInfo))
 				.concat([text('normal', 'and claims')])
-				.concat(claimHandToText(snapshot.presidentClaim));
+				.concat(claimHandToText(snapshot.presidentClaim, userInfo));
 		case 'chancellorLegislation':
 			return [text('player', usernameOf(snapshot.chancellorId)), text('normal', 'receives')]
-				.concat(handToText(snapshot.chancellorHand))
+				.concat(handToText(snapshot.chancellorHand, userInfo))
 				.concat([text('normal', 'and claims')])
-				.concat(claimHandToText(snapshot.chancellorClaim));
+				.concat(claimHandToText(snapshot.chancellorClaim, userInfo));
 		case 'veto':
 			return [text('normal', 'The veto'), text('player', snapshot.isVetoSuccessful ? 'succeeds' : 'fails')];
 		case 'policyEnaction':
@@ -63,9 +63,9 @@ export default function(snapshot, game) {
 			];
 		case 'policyPeek':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'peeks')]
-				.concat(handToText(snapshot.policyPeek))
+				.concat(handToText(snapshot.policyPeek, userInfo))
 				.concat([text('normal', 'and claims')])
-				.concat(claimHandToText(snapshot.policyPeekClaim));
+				.concat(claimHandToText(snapshot.policyPeekClaim, userInfo));
 		case 'specialElection':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'special elects'), text('player', usernameOf(snapshot.specialElection))];
 		case 'execution':

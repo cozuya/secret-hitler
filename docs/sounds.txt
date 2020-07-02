@@ -13,6 +13,7 @@ Fascists Win (Hitler Elected) - https://freesound.org/people/smacks999/sounds/38
 Fascists Win - https://freesound.org/people/dominictreis/sounds/362281/
 Veto Succeeds - https://freesound.org/people/the_very_Real_Horst/sounds/239040/
 Veto Fails - https://freesound.org/people/InspectorJ/sounds/411729/
+Timer Tick - http://dustyroom.com/casual-game-sfx-freebie/
 
 All Sound Effects in terms of legal use/status:
 Policy Enacted - zero(cc0)
@@ -29,6 +30,7 @@ Fascists Win (Hitler Elected) - zero(cc0)
 Fascists Win - zero(cc0)
 Veto Succeeds - zero(cc0)
 Veto Fails - attribution (by)
+Timer Tick - zero(cc0)
 
 Attribution & Credits for sound effects:
 This online game uses these sounds from freesound:
