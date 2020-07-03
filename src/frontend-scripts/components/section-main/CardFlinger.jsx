@@ -15,6 +15,41 @@ class CardFlinger extends React.Component {
 		});
 	};
 
+	onKeyDown(event) {
+		const { gameInfo, socket } = this.props;
+		const { gameState } = gameInfo;
+		const { phase } = gameState;
+
+		// ignore typing in chat/reporting
+		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+		if (phase === 'voting') {
+			if (event.keyCode == 'J'.charCodeAt(0)) {
+				event.preventDefault();
+				console.log('ja!');
+				socket.emit('selectedVoting', {
+					vote: 1,
+					uid: gameInfo.general.uid
+				});
+			} else if (event.keyCode == 'N'.charCodeAt(0)) {
+				event.preventDefault();
+				console.log('nein!');
+				socket.emit('selectedVoting', {
+					vote: 0,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		document.addEventListener('keydown', this.onKeyDown.bind(this));
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keydown', this.onKeyDown.bind(this));
+	}
+
 	render() {
 		const handleCardClick = e => {
 			const { gameInfo, socket } = this.props;
