@@ -5,7 +5,9 @@ import PropTypes from 'prop-types';
 class CardFlinger extends React.Component {
 	state = {
 		isHovered: false,
-		hoveredClass: null
+		hoveredClass: null,
+		expanding: null, // position of expanding card - e.g. middle-left or middle-right
+		expansionTimer: 0
 	};
 
 	handleHover = classes => {
@@ -14,6 +16,33 @@ class CardFlinger extends React.Component {
 			hoveredClass: classes
 		});
 	};
+
+	onKeyUp(event) {
+		const { gameInfo } = this.props;
+		const { gameState } = gameInfo;
+		const { phase } = gameState;
+
+		// ignore typing in chat/reporting
+		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+		if (phase === 'voting') {
+			if (event.keyCode == 'J'.charCodeAt(0)) {
+				event.preventDefault();
+				if (this.state.expansionTimer !== 0) clearTimeout(this.state.expansionTimer);
+
+				this.setState({ expanding: null, expansionTimer: 0 }, () => {
+					console.log('cancel ja!');
+				});
+			} else if (event.keyCode == 'N'.charCodeAt(0)) {
+				event.preventDefault();
+				if (this.state.expansionTimer !== 0) clearTimeout(this.state.expansionTimer);
+
+				this.setState({ expanding: null, expansionTimer: 0 }, () => {
+					console.log('cancel nein!');
+				});
+			}
+		}
+	}
 
 	onKeyDown(event) {
 		const { gameInfo, socket } = this.props;
@@ -26,28 +55,44 @@ class CardFlinger extends React.Component {
 		if (phase === 'voting') {
 			if (event.keyCode == 'J'.charCodeAt(0)) {
 				event.preventDefault();
-				console.log('ja!');
-				socket.emit('selectedVoting', {
-					vote: 1,
-					uid: gameInfo.general.uid
-				});
+				if (this.state.expanding === 'middle-right' || this.state.expansionTimer === 0) {
+					this.setState({
+						expanding: 'middle-left',
+						expansionTimer: setTimeout(() => {
+							socket.emit('selectedVoting', {
+								vote: 1,
+								uid: gameInfo.general.uid
+							});
+						}, 2000)
+					});
+					console.log('ja!');
+				}
 			} else if (event.keyCode == 'N'.charCodeAt(0)) {
 				event.preventDefault();
-				console.log('nein!');
-				socket.emit('selectedVoting', {
-					vote: 0,
-					uid: gameInfo.general.uid
-				});
+				if (this.state.expanding === 'middle-left' || this.state.expansionTimer === 0) {
+					this.setState({
+						expanding: 'middle-right',
+						expansionTimer: setTimeout(() => {
+							socket.emit('selectedVoting', {
+								vote: 0,
+								uid: gameInfo.general.uid
+							});
+						}, 2000)
+					});
+					console.log('nein!');
+				}
 			}
 		}
 	}
 
 	componentDidMount() {
 		document.addEventListener('keydown', this.onKeyDown.bind(this));
+		document.addEventListener('keyup', this.onKeyUp.bind(this));
 	}
 
 	componentWillUnmount() {
 		document.removeEventListener('keydown', this.onKeyDown.bind(this));
+		document.removeEventListener('keyup', this.onKeyUp.bind(this));
 	}
 
 	render() {
@@ -214,6 +259,10 @@ class CardFlinger extends React.Component {
 						} else if (this.state.isHovered) {
 							containerClasses += ' not-hovered';
 						}
+					}
+
+					if (this.state.expanding === position) {
+						containerClasses += ' expanding';
 					}
 
 					return (
