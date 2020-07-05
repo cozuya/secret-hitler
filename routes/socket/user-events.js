@@ -2240,7 +2240,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
-
+		
+		if (game.general.blindmode) {
+			data.userName = game.general.replacementNames[affectedPlayerNumber]
+		}
+		
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
