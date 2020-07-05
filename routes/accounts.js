@@ -699,12 +699,9 @@ module.exports.accounts = torIpsParam => {
 						}
 
 						account.verification.email = email;
+						account.verified = false;
 						account.save(() => {
-							if (!verified) {
-								setVerify({ username, email, res });
-							} else {
-								res.send();
-							}
+							setVerify({ username, email, res });
 						});
 					});
 				}
