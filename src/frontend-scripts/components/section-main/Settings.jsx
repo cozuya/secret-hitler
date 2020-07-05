@@ -44,6 +44,7 @@ class Settings extends React.Component {
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
+		keyboardShortcuts: 'disable',
 		claimCharacters: 'short',
 		primaryColor: 'hsl(225, 73%, 57%)',
 		secondaryColor: 'hsl(225, 48%, 57%)',
@@ -82,6 +83,7 @@ class Settings extends React.Component {
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork || false,
+			keyboardShortcuts: gameSettings.keyboardShortcuts || 'disable',
 			claimCharacters: gameSettings.claimCharacters || 'short',
 			primaryColor: window
 				.getComputedStyle(document.documentElement)

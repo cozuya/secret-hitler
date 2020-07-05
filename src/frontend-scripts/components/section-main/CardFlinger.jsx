@@ -45,43 +45,64 @@ class CardFlinger extends React.Component {
 	}
 
 	onKeyDown(event) {
-		const { gameInfo, socket } = this.props;
+		const { gameInfo, socket, userInfo } = this.props;
 		const { gameState } = gameInfo;
 		const { phase } = gameState;
+		const keyboardShortcutsSetting = (userInfo && userInfo.gameSettings && userInfo.gameSettings.keyboardShortcuts) || 'disable';
 
-		// ignore typing in chat/reporting
-		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+		console.log(keyboardShortcutsSetting);
+		// ignore typing in chat/reporting, or if keyboard shortcuts are disabled
+		if (keyboardShortcutsSetting === 'disable' || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-		if (phase === 'voting') {
-			if (event.keyCode == 'J'.charCodeAt(0)) {
-				event.preventDefault();
-				if (this.state.expanding === 'middle-right' || this.state.expansionTimer === 0) {
-					clearTimeout(this.state.expansionTimer);
-					this.setState({
-						expanding: 'middle-left',
-						expansionTimer: setTimeout(() => {
-							socket.emit('selectedVoting', {
-								vote: 1,
-								uid: gameInfo.general.uid
-							});
-						}, 2000)
+		if (keyboardShortcutsSetting === '0s') {
+			// instantly vote
+			if (phase === 'voting') {
+				if (event.keyCode == 'J'.charCodeAt(0)) {
+					event.preventDefault();
+					socket.emit('selectedVoting', {
+						vote: 1,
+						uid: gameInfo.general.uid
 					});
-					console.log('ja!');
+				} else if (event.keyCode == 'N'.charCodeAt(0)) {
+					event.preventDefault();
+					socket.emit('selectedVoting', {
+						vote: 0,
+						uid: gameInfo.general.uid
+					});
 				}
-			} else if (event.keyCode == 'N'.charCodeAt(0)) {
-				event.preventDefault();
-				if (this.state.expanding === 'middle-left' || this.state.expansionTimer === 0) {
-					clearTimeout(this.state.expansionTimer);
-					this.setState({
-						expanding: 'middle-right',
-						expansionTimer: setTimeout(() => {
-							socket.emit('selectedVoting', {
-								vote: 0,
-								uid: gameInfo.general.uid
-							});
-						}, 2000)
-					});
-					console.log('nein!');
+			}
+		} else {
+			if (phase === 'voting') {
+				if (event.keyCode == 'J'.charCodeAt(0)) {
+					event.preventDefault();
+					if (this.state.expanding === 'middle-right' || this.state.expansionTimer === 0) {
+						clearTimeout(this.state.expansionTimer);
+						this.setState({
+							expanding: 'middle-left',
+							expansionTimer: setTimeout(() => {
+								socket.emit('selectedVoting', {
+									vote: 1,
+									uid: gameInfo.general.uid
+								});
+							}, 2000)
+						});
+						console.log('ja!');
+					}
+				} else if (event.keyCode == 'N'.charCodeAt(0)) {
+					event.preventDefault();
+					if (this.state.expanding === 'middle-left' || this.state.expansionTimer === 0) {
+						clearTimeout(this.state.expansionTimer);
+						this.setState({
+							expanding: 'middle-right',
+							expansionTimer: setTimeout(() => {
+								socket.emit('selectedVoting', {
+									vote: 0,
+									uid: gameInfo.general.uid
+								});
+							}, 2000)
+						});
+						console.log('nein!');
+					}
 				}
 			}
 		}
