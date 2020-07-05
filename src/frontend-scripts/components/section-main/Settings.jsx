@@ -132,6 +132,19 @@ class Settings extends React.Component {
 		);
 	};
 
+	handleKeyboardShortcutsChange = e => {
+		this.setState(
+			{
+				keyboardShortcuts: e.target.value
+			},
+			() => {
+				this.props.socket.emit('updateGameSettings', {
+					keyboardShortcuts: this.state.keyboardShortcuts
+				});
+			}
+		);
+	};
+
 	toggleGameSettings = value => {
 		const obj = {};
 
@@ -679,6 +692,12 @@ class Settings extends React.Component {
 									</div>
 								</React.Fragment>
 							)}
+							<h4 className="ui header">Keyboard shortcuts</h4>
+							<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
+								<option value="disable">Disable keyboard shortcuts</option>
+								<option value="2s">Shortcuts with 2s delay</option>
+								<option value="0s">Shortcuts with no delay</option>
+							</select>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>

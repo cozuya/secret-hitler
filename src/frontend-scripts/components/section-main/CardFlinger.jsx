@@ -56,6 +56,7 @@ class CardFlinger extends React.Component {
 			if (event.keyCode == 'J'.charCodeAt(0)) {
 				event.preventDefault();
 				if (this.state.expanding === 'middle-right' || this.state.expansionTimer === 0) {
+					clearTimeout(this.state.expansionTimer);
 					this.setState({
 						expanding: 'middle-left',
 						expansionTimer: setTimeout(() => {
@@ -70,6 +71,7 @@ class CardFlinger extends React.Component {
 			} else if (event.keyCode == 'N'.charCodeAt(0)) {
 				event.preventDefault();
 				if (this.state.expanding === 'middle-left' || this.state.expansionTimer === 0) {
+					clearTimeout(this.state.expansionTimer);
 					this.setState({
 						expanding: 'middle-right',
 						expansionTimer: setTimeout(() => {
