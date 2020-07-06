@@ -1466,6 +1466,7 @@ class Gamechat extends React.Component {
 							id="gameChatInput"
 							ref={c => (this.chatInput = c)}
 						/>
+						{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 						<button type="submit" className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 							Chat
 						</button>
