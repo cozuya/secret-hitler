@@ -1,13 +1,43 @@
 import React from 'react'; // eslint-disable-line
-import $ from 'jquery';
 import PropTypes from 'prop-types';
+
+const positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
+
+// keyboardShortcuts: {phase: {key: index}}
+const keyboardShortcuts = {
+	voting: {
+		J: 1,
+		N: 3
+	},
+	presidentSelectingPolicy: {
+		'1': 0,
+		'2': 2,
+		'3': 4
+	},
+	chancellorSelectingPolicy: {
+		'1': 1,
+		'2': 3
+	},
+	chancellorVoteOnVeto: {
+		J: 1,
+		N: 3
+	},
+	presidentVoteOnVeto: {
+		J: 1,
+		N: 3
+	},
+	presidentVoteOnBurn: {
+		J: 1,
+		N: 3
+	}
+};
 
 class CardFlinger extends React.Component {
 	state = {
 		isHovered: false,
 		hoveredClass: null,
-		expanding: null, // position of expanding card - e.g. middle-left or middle-right
-		expansionTimer: 0
+		expandingIndex: null, // index of expanding card in [0, 1, 2, 3, 4]
+		expansionTimer: 0 // number returned by setTimeout
 	};
 
 	handleHover = classes => {
@@ -18,92 +48,41 @@ class CardFlinger extends React.Component {
 	};
 
 	onKeyUp(event) {
-		const { gameInfo } = this.props;
-		const { gameState } = gameInfo;
-		const { phase } = gameState;
-
 		// ignore typing in chat/reporting
-		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+		if (this.state.expandingIndex === null || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-		if (phase === 'voting') {
-			if (event.keyCode == 'J'.charCodeAt(0)) {
-				event.preventDefault();
-				if (this.state.expansionTimer !== 0) clearTimeout(this.state.expansionTimer);
-
-				this.setState({ expanding: null, expansionTimer: 0 }, () => {
-					console.log('cancel ja!');
-				});
-			} else if (event.keyCode == 'N'.charCodeAt(0)) {
-				event.preventDefault();
-				if (this.state.expansionTimer !== 0) clearTimeout(this.state.expansionTimer);
-
-				this.setState({ expanding: null, expansionTimer: 0 }, () => {
-					console.log('cancel nein!');
-				});
-			}
-		}
+		clearTimeout(this.state.expansionTimer);
+		this.setState({
+			expandingIndex: null,
+			expansionTimer: 0
+		});
 	}
 
 	onKeyDown(event) {
-		const { gameInfo, socket, userInfo } = this.props;
+		const { gameInfo, userInfo } = this.props;
 		const { gameState } = gameInfo;
 		const { phase } = gameState;
 		const keyboardShortcutsSetting = (userInfo && userInfo.gameSettings && userInfo.gameSettings.keyboardShortcuts) || 'disable';
+		const keyIndex = keyboardShortcuts[phase][String.fromCharCode(event.keyCode)];
 
 		console.log(keyboardShortcutsSetting);
-		// ignore typing in chat/reporting, or if keyboard shortcuts are disabled
-		if (keyboardShortcutsSetting === 'disable' || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-		if (keyboardShortcutsSetting === '0s') {
+		// ignore typing in chat/reporting, or if keyboard shortcuts are disabled
+		if (keyIndex === undefined || keyboardShortcutsSetting === 'disable' || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+		if (keyboardShortcutsSetting === '0s' && phase === 'voting') {
 			// instantly vote
-			if (phase === 'voting') {
-				if (event.keyCode == 'J'.charCodeAt(0)) {
-					event.preventDefault();
-					socket.emit('selectedVoting', {
-						vote: 1,
-						uid: gameInfo.general.uid
-					});
-				} else if (event.keyCode == 'N'.charCodeAt(0)) {
-					event.preventDefault();
-					socket.emit('selectedVoting', {
-						vote: 0,
-						uid: gameInfo.general.uid
-					});
-				}
-			}
+			this.handleCardClick(keyboardShortcuts[phase][keyChar]);
 		} else {
-			if (phase === 'voting') {
-				if (event.keyCode == 'J'.charCodeAt(0)) {
-					event.preventDefault();
-					if (this.state.expanding === 'middle-right' || this.state.expansionTimer === 0) {
-						clearTimeout(this.state.expansionTimer);
-						this.setState({
-							expanding: 'middle-left',
-							expansionTimer: setTimeout(() => {
-								socket.emit('selectedVoting', {
-									vote: 1,
-									uid: gameInfo.general.uid
-								});
-							}, 2000)
-						});
-						console.log('ja!');
-					}
-				} else if (event.keyCode == 'N'.charCodeAt(0)) {
-					event.preventDefault();
-					if (this.state.expanding === 'middle-left' || this.state.expansionTimer === 0) {
-						clearTimeout(this.state.expansionTimer);
-						this.setState({
-							expanding: 'middle-right',
-							expansionTimer: setTimeout(() => {
-								socket.emit('selectedVoting', {
-									vote: 0,
-									uid: gameInfo.general.uid
-								});
-							}, 2000)
-						});
-						console.log('nein!');
-					}
-				}
+			// set a 2s timer to process the vote as if it were a click
+			if (this.state.expandingIndex !== keyIndex) {
+				clearTimeout(this.state.expansionTimer);
+				this.setState({
+					expandingIndex: keyIndex,
+					expansionTimer: setTimeout(() => {
+						this.handleCardClick(keyIndex);
+					}, 2000)
+				});
 			}
 		}
 	}
@@ -118,57 +97,56 @@ class CardFlinger extends React.Component {
 		document.removeEventListener('keyup', this.onKeyUp.bind(this));
 	}
 
+	handleCardClick = index => {
+		const { gameInfo, socket } = this.props;
+		const { gameState } = gameInfo;
+		const { phase } = gameState;
+
+		if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedVoting', {
+				vote: index === 1,
+				uid: gameInfo.general.uid
+			});
+		}
+
+		if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedPresidentPolicy', {
+				uid: gameInfo.general.uid,
+				selection: index ? (index === 2 ? 1 : 2) : 0
+			});
+		}
+
+		if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedChancellorPolicy', {
+				uid: gameInfo.general.uid,
+				selection: index
+			});
+		}
+
+		if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedChancellorVoteOnVeto', {
+				vote: index === 1,
+				uid: gameInfo.general.uid
+			});
+		}
+
+		if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedPresidentVoteOnVeto', {
+				vote: index === 1,
+				uid: gameInfo.general.uid
+			});
+		}
+
+		if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
+			socket.emit('selectedPresidentVoteOnBurn', {
+				vote: index === 1,
+				uid: gameInfo.general.uid
+			});
+		}
+	};
+
 	render() {
-		const handleCardClick = e => {
-			const { gameInfo, socket } = this.props;
-			const { gameState } = gameInfo;
-			const { phase } = gameState;
-			const index = parseInt($(e.currentTarget).attr('data-index'), 10);
-
-			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedVoting', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
-
-			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentPolicy', {
-					uid: gameInfo.general.uid,
-					selection: index ? (index === 2 ? 1 : 2) : 0
-				});
-			}
-
-			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedChancellorPolicy', {
-					uid: gameInfo.general.uid,
-					selection: index
-				});
-			}
-
-			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedChancellorVoteOnVeto', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
-
-			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentVoteOnVeto', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
-
-			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentVoteOnBurn', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
-		};
 		const { cardFlingerState } = this.props.gameInfo;
-		const positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 		const renderHelpMessage = () => {
 			const { gameInfo, userInfo } = this.props;
 			const { gameState, publicPlayersState, cardFlingerState, general } = gameInfo;
@@ -284,16 +262,15 @@ class CardFlinger extends React.Component {
 						}
 					}
 
-					if (this.state.expanding === position) {
+					if (this.state.expandingIndex === i) {
 						containerClasses += ' expanding';
 					}
 
 					return (
 						<div
 							key={i}
-							data-index={i}
 							className={containerClasses}
-							onClick={handleCardClick}
+							onClick={() => this.handleCardClick(i)}
 							onMouseEnter={() => this.handleHover(containerClasses)}
 							onMouseLeave={() => this.handleHover(containerClasses)}
 						>
