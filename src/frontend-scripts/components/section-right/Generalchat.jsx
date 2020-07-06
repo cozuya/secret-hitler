@@ -1,7 +1,7 @@
 import React from 'react';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
 import PropTypes from 'prop-types';
-import { processEmotes } from '../../emotes';
+import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 
@@ -278,6 +278,8 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
+		const { userInfo } = this.props;
+		console.log(this.props.allEmotes);
 		return (
 			<div className={this.generalChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 				{this.state.badWord[0] && (
@@ -321,6 +323,7 @@ export default class Generalchat extends React.Component {
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
+				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote, this.props.allEmotes) : null}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
