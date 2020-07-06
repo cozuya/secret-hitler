@@ -278,7 +278,6 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
-		const { userInfo } = this.props;
 		return (
 			<div className={this.generalChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 				{this.state.badWord[0] && (
