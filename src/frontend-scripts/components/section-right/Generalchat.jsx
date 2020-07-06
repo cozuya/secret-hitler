@@ -322,7 +322,7 @@ export default class Generalchat extends React.Component {
 					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
-				{this.chatDisabled() ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
+				{this.generalChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
@@ -330,6 +330,7 @@ export default class Generalchat extends React.Component {
 				</div>
 			</div>
 		);
+		console.log(this.chatDisabled());
 	}
 
 	renderChats() {
