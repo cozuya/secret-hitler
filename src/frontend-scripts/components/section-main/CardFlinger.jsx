@@ -62,17 +62,18 @@ class CardFlinger extends React.Component {
 		const { gameInfo, userInfo } = this.props;
 		const { gameState } = gameInfo;
 		const { phase } = gameState;
+
+		if (!phase) return;
+
 		const keyboardShortcutsSetting = (userInfo && userInfo.gameSettings && userInfo.gameSettings.keyboardShortcuts) || 'disable';
 		const keyIndex = keyboardShortcuts[phase][String.fromCharCode(event.keyCode)];
-
-		console.log(keyboardShortcutsSetting);
 
 		// ignore typing in chat/reporting, or if keyboard shortcuts are disabled
 		if (keyIndex === undefined || keyboardShortcutsSetting === 'disable' || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
 		if (keyboardShortcutsSetting === '0s' && phase === 'voting') {
 			// instantly vote
-			this.handleCardClick(keyboardShortcuts[phase][keyChar]);
+			this.handleCardClick(keyIndex);
 		} else {
 			// set a 2s timer to process the vote as if it were a click
 			if (this.state.expandingIndex !== keyIndex) {
