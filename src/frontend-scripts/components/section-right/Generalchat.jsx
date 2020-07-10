@@ -329,7 +329,6 @@ export default class Generalchat extends React.Component {
 				</div>
 			</div>
 		);
-		console.log(this.chatDisabled());
 	}
 
 	renderChats() {
