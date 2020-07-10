@@ -5,7 +5,7 @@ const GameSummary = require('../models/game-summary');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
-const accounts = require('./accounts');
+const { accounts } = require('./accounts');
 const version = require('../version');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
@@ -169,6 +169,7 @@ module.exports = () => {
 					game: true,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
+					isTournamentMod: account.isTournamentMod || false,
 					verified: req.user.verified,
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
@@ -263,12 +264,9 @@ module.exports = () => {
 	});
 
 	app.get('/profile', (req, res) => {
+		const authedUser = req.session && req.session.passport && req.session.passport.user;
 		const username = req.query.username;
-		const requestingUser = req.query.requestingUser;
-		if (req && req.user && requestingUser && requestingUser !== 'undefined' && req.user.username && requestingUser !== req.user.username) {
-			res.status(401).send('You are not who you say you are. Please login again.');
-			return;
-		}
+
 		getProfile(username).then(profile => {
 			if (!profile) {
 				res.status(404).send('Profile not found');
@@ -283,16 +281,20 @@ module.exports = () => {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
 
-						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
-								_profile.lastConnectedIP = 'no looking';
-							} else {
+						Account.findOne({ username: authedUser }).then(acc => {
+							if (
+								acc &&
+								acc.staffRole &&
+								(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
+							) {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
 								} catch (e) {
-									_profile.lastConnectedIP = 'something went wrong';
+									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);
 								}
+							} else {
+								_profile.lastConnectedIP = undefined;
 							}
 
 							res.json(_profile);

@@ -14,11 +14,21 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 
 	/**
 	 * @param {number} cardY
-	 * @param {number} offset
+	 * @param {object} pylon
 	 */
-	const detectCollision = (cardY, offset) => {
+	const detectCollisionAndPass = (cardY, pylon) => {
+		const { offset, x } = pylon;
 		if (cardY < 30 + offset / 2 || cardY + 57 > 150 + offset / 2) {
-			console.log('collision');
+			socket.emit('flappyEvent', {
+				uid: gameInfo.general.uid,
+				team: isFacist ? 'fascist' : 'liberal',
+				type: 'collision'
+			});
+		} else if (x === -32) {
+			socket.emit('flappyEvent', {
+				uid: gameInfo.general.uid,
+				type: 'passedPylon'
+			});
 		}
 	};
 
@@ -38,12 +48,14 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			pylonCoords.shift();
 		}
 
+		let foo;
 		pylonCoords.forEach(coord => {
 			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
 			ctx.fillStyle = pipeGradient;
 			if (coord.x >= -32 && coord.x <= 52 && !isFacist) {
-				detectCollision(vert, coord.offset);
+				detectCollisionAndPass(vert, coord);
 			}
+
 			pipeGradient.addColorStop(0, '#87B145');
 			pipeGradient.addColorStop(0.4, '#b5ffb2');
 			pipeGradient.addColorStop(1, 'darkgreen');
@@ -59,7 +71,7 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			coord.x = coord.x - 1;
 		});
 
-		window.requestAnimationFrame(draw);
+		if (!foo) window.requestAnimationFrame(draw);
 	};
 
 	const flap = () => {
@@ -92,7 +104,8 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			if (data.type === 'newPylon') {
 				pylonCoords.push({
 					offset: data.offset,
-					x: 751
+					x: 751,
+					pylonType: data.pylonType
 				});
 			}
 		});

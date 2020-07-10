@@ -13,6 +13,7 @@ const {
 	ipbansNotEnforced,
 	gameCreationDisabled,
 	limitNewPlayers,
+	bypassVPNCheck,
 	userListEmitter,
 	formattedUserList,
 	gameListEmitter,
@@ -51,7 +52,7 @@ module.exports.sendSpecificUserList = (socket, staffRole) => {
 	}
 };
 
-const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
+const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
 	ModAction.find(queryObj)
 		.sort({ $natural: -1 })
@@ -108,9 +109,10 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 				ipbansNotEnforced,
 				gameCreationDisabled,
 				limitNewPlayers,
+				bypassVPNCheck,
 				userList: list,
 				gameList: gList,
-				hideActions: isTrial || undefined
+				showActions: !isTrial && isAEM
 			});
 		})
 		.catch(err => {
@@ -161,13 +163,14 @@ module.exports.sendPrivateSignups = socket => {
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
  * @param {boolean} isTrial - true if the user is a trial mod.
+ * @param {boolean} isAEM - true if the user is a AEM member.
  */
-module.exports.sendModInfo = (games, socket, count, isTrial) => {
+module.exports.sendModInfo = (games, socket, count, isTrial, isAEM) => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
 		.then(users => {
-			getModInfo(games, users, socket, {}, count, isTrial);
+			getModInfo(games, users, socket, {}, count, isTrial, isAEM);
 		})
 		.catch(err => {
 			console.log(err, 'err in sending mod info');

@@ -61,21 +61,76 @@ let modUserNames = [],
 	adminUserNames = [];
 
 const gamesGarbageCollector = () => {
-	const currentTime = Date.now();
-	const toRemoveGameNames = Object.keys(games).filter(
-		gameName =>
-			(games[gameName].general.timeStarted && games[gameName].general.timeStarted + 4200000 < currentTime) ||
-			(games[gameName].general.timeCreated &&
-				games[gameName].general.timeCreated + 600000 < currentTime &&
-				games[gameName].general.private &&
-				games[gameName].publicPlayersState.length < 5)
-	);
+	const currentTime = new Date();
+	Object.keys(games).forEach(gameName => {
+		let toDelete = false;
+		const currentGame = games[gameName];
+		const createdTimer =
+			currentGame &&
+			currentGame.general &&
+			currentGame.general.timeCreated &&
+			currentGame.gameState &&
+			!currentGame.gameState.isStarted &&
+			new Date(currentGame.general.timeCreated.getTime() + 600000);
+		const completedTimer =
+			currentGame &&
+			currentGame.general &&
+			currentGame.general.timeStarted &&
+			currentGame.gameState &&
+			currentGame.gameState.isCompleted &&
+			new Date(games[gameName].general.timeStarted + 0);
 
-	toRemoveGameNames.forEach(gameName => {
-		delete games[gameName];
+		// To come maybe later
+		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
+
+		// DEBUG
+		// console.log(
+		// 	'Name: ',
+		// 	gameName,
+		// 	// '\nDelay: ',
+		// 	// games[gameName].general.modDeleteDelay,
+		// 	'\nCurrent Time: ',
+		// 	currentTime,
+		// 	// '\nDelay Timer: ',
+		// 	// modDeleteTimer,
+		// 	'\nCompleted Timer: ',
+		// 	completedTimer,
+		// 	'\nCreated Timer: ',
+		// 	createdTimer
+		// );
+
+		if (games[gameName] && createdTimer && createdTimer < currentTime) {
+			// console.log('Created Timer Expired. Deleting... ');
+			toDelete = true;
+		}
+		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
+			// console.log('Completed Game Timer Expired. Deleting... ');
+			toDelete = true;
+		}
+		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
+		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
+		// toDelete = true;
+		// }
+
+		if (toDelete && currentGame.publicPlayersState) {
+			for (let affectedPlayerNumber = 0; affectedPlayerNumber < currentGame.publicPlayersState.length; affectedPlayerNumber++) {
+				const affectedSocketId = Object.keys(io.sockets.sockets).find(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport &&
+						io.sockets.sockets[socketId].handshake.session.passport.user === currentGame.publicPlayersState[affectedPlayerNumber].userName
+				);
+				if (!io.sockets.sockets[affectedSocketId]) {
+					continue;
+				}
+
+				// I'm entirely unsure why socketio seems to misbehave with these combined so often - probably just bad timing
+				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].emit('toLobby');
+				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].leave(gameName);
+			}
+			delete games[gameName];
+			sendGameList();
+		}
 	});
-
-	sendGameList();
 };
 
 const ensureAuthenticated = socket => {
@@ -113,7 +168,7 @@ const gatherStaffUsernames = () => {
 };
 
 module.exports.socketRoutes = () => {
-	setInterval(gamesGarbageCollector, 100000);
+	setInterval(gamesGarbageCollector, 30000);
 
 	gatherStaffUsernames();
 
@@ -139,6 +194,7 @@ module.exports.socketRoutes = () => {
 
 			let isAEM = false;
 			let isTrial = false;
+			let isTourneyMod = false;
 
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
@@ -152,6 +208,7 @@ module.exports.socketRoutes = () => {
 						isAEM = true;
 					}
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
+					if (account.isTournamentMod) isTourneyMod = true;
 				});
 			}
 
@@ -245,7 +302,11 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
-				sendSpecificUserList(socket, user.staffRole);
+				if (authenticated && isAEM) {
+					sendSpecificUserList(socket, 'moderator');
+				} else {
+					sendSpecificUserList(socket);
+				}
 			});
 
 			socket.on('flappyEvent', data => {
@@ -338,7 +399,7 @@ module.exports.socketRoutes = () => {
 				const game = findGame(data);
 				if (isRestricted) return;
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
+					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim, isTourneyMod);
 				}
 			});
 			socket.on('updateReportGame', data => {
@@ -362,6 +423,7 @@ module.exports.socketRoutes = () => {
 
 			socket.on('addNewGeneralChat', data => {
 				if (isRestricted) return;
+
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
@@ -434,12 +496,12 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('getModInfo', count => {
 				if (authenticated && (isAEM || isTrial)) {
-					sendModInfo(games, socket, count, isTrial && !isAEM);
+					sendModInfo(games, socket, count, isTrial, isAEM);
 				}
 			});
 			socket.on('subscribeModChat', uid => {
-				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+				const game = findGame({ uid });
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
 						Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
@@ -459,24 +521,24 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('modPeekVotes', data => {
 				const uid = data.uid;
-				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+				const game = findGame({ uid });
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
+					} else {
+						socket.emit('sendAlert', 'Game is missing.');
 					}
-				} else {
-					socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
 			socket.on('modFreezeGame', data => {
 				const uid = data.uid;
-				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+				const game = findGame({ uid });
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleGameFreeze(socket, passport, game, data.modName);
+					} else {
+						socket.emit('sendAlert', 'Game is missing.');
 					}
-				} else {
-					socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
 			socket.on('getUserReports', () => {
@@ -488,6 +550,8 @@ module.exports.socketRoutes = () => {
 				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game);
+				} else if (authenticated) {
+					updateUserStatus(passport);
 				}
 			});
 			socket.on('getReplayGameChats', uid => {

@@ -93,7 +93,15 @@
 	.crown-icon {
 		width: 24px;
 		height: 16px;
-		background: url('/images/crown-small.png') no-repeat;
+		background: url('/images/crown-spring2020.png') no-repeat;
+		display: inline-block;
+		margin-right: 2px;
+		margin-bottom: -3px;
+	}
+	.crown-captain-icon {
+		width: 24px;
+		height: 16px;
+		background: url('/images/crown-captain-spring2020.png') no-repeat;
 		display: inline-block;
 		margin-right: 2px;
 		margin-bottom: -3px;
@@ -330,6 +338,7 @@
 			// small hack to prevent hover tooltips being cut off.
 			margin-right: -50px;
 			padding-right: 50px;
+			background: var(--theme-background-2);
 		}
 		.section-main-content-container {
 			width: 870px;
@@ -697,7 +706,7 @@
 	.playerlist {
 		min-height: 0;
 		order: 2;
-		max-width: 300px;
+		max-width: 310px;
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
@@ -710,7 +719,7 @@
 			box-shadow: 0 0 3px var(--theme-primary);
 		}
 		&::placeholder {
-			color: var(--theme-background-3);
+			color: var(--theme-text-2);
 		}
 	}
 	// careful this styles both generalchat and gamechat emote buttons
@@ -751,7 +760,7 @@
 	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: var(--theme-background-2);
+		background: var(--theme-background-1);
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
@@ -1037,10 +1046,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .veteran {
-	color: #4d949e !important;
+	color: #84b8fd !important;
 }
 .player-small-cardback.veteran {
-	box-shadow: 0 0 5px 2px #4d949e !important;
+	box-shadow: 0 0 5px 2px #84b8fd !important;
 }
 
 .editorcolor {
@@ -1328,6 +1337,26 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	margin-left: 4px;
 	&:hover {
 		color: lightblue !important;
+	}
+}
+
+.emote-helper-container {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background: var(--theme-background-2);
+	z-index: 1;
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid var(--theme-tertiary);
+
+	> div {
+		cursor: pointer;
+	}
+
+	.selected {
+		background: var(--theme-background-3);
 	}
 }
 

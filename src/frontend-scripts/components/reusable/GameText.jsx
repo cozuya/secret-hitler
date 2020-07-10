@@ -6,9 +6,16 @@ import { fromNullable } from 'option';
  */
 const Segment = ({ segment }) => {
 	const isSpace = fromNullable(segment.space).valueOrElse(true);
-	const space = isSpace ? ' ' : '';
+	const isComma = fromNullable(segment.comma).valueOrElse(false);
 
-	return <span className={segment.type}>{segment.text + space}</span>;
+	const space = isSpace && !isComma ? ' ' : '';
+
+	return (
+		<React.Fragment>
+			<span className={segment.type}>{segment.text + space}</span>
+			{isComma ? <span className={'normal'}>, </span> : <React.Fragment></React.Fragment>}
+		</React.Fragment>
+	);
 };
 
 /**

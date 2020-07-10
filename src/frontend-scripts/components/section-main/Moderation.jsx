@@ -34,28 +34,37 @@ export default class Moderation extends React.Component {
 			type: 'username',
 			direction: 'descending'
 		},
-		hideActions: false,
+		showActions: true,
 		filterModalVisibility: false,
 		filterValue: '',
-		showGameIcons: false
+		showGameIcons: true,
+		lagMeterStatus: '',
+		tableCollapsed: false
 	};
 
 	componentDidMount() {
 		const self = this;
 		const { socket } = this.props;
 
+		socket.on('lagTestResults', data => {
+			this.setState({
+				lagMeterStatus: `Average lag: ${data} ms`
+			});
+		});
+
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
 				gameList: info.gameList,
 				log: info.modReports,
-				hideActions: info.hideActions || false
+				showActions: info.showActions || false
 			});
 
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
 			$(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
+			$(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.emit('getModInfo', 1);
@@ -77,6 +86,27 @@ export default class Moderation extends React.Component {
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled account creation',
 					action: 'enableAccountCreation'
+				});
+			}
+		});
+
+		$(this.toggleBypassVPNCheck).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled VPN Check',
+					action: 'disableVPNCheck'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled VPN Check',
+					action: 'enableVPNCheck'
 				});
 			}
 		});
@@ -180,7 +210,10 @@ export default class Moderation extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.socket.off('modInfo');
+		const { socket } = this.props;
+
+		socket.off('modInfo');
+		socket.off('lagTestResults');
 	}
 
 	togglePlayerList = () => {
@@ -298,6 +331,13 @@ export default class Moderation extends React.Component {
 		};
 
 		return userList
+			.filter(user => {
+				if (this.state.playerInputText) {
+					return user.userName.indexOf(this.state.playerInputText) === 0;
+				} else {
+					return true;
+				}
+			})
 			.sort((a, b) =>
 				(() => {
 					const getAmt = (a, b) => {
@@ -427,9 +467,33 @@ export default class Moderation extends React.Component {
 
 	renderButtons() {
 		const { socket, userInfo } = this.props;
-		const { playerInputText, selectedUser, userList, actionTextValue } = this.state;
+		const { playerInputText, selectedUser, userList, actionTextValue, lagMeterStatus } = this.state;
 		const takeModAction = action => {
-			if (action === 'resetServer' && !this.state.resetServerCount) {
+			if (action === 'lagMeter') {
+				this.setState(
+					{
+						lagMeterStatus: 'Pending...'
+					},
+					() => {
+						let count = 0;
+						const lagTimer = window.setInterval(() => {
+							if (count < 5) {
+								socket.emit('updateModAction', {
+									modName: userInfo.userName,
+									userName: playerInputText || selectedUser,
+									ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
+									comment: actionTextValue,
+									action,
+									frontEndTime: Date.now()
+								});
+								count++;
+							} else {
+								clearInterval(lagTimer);
+							}
+						}, 1000);
+					}
+				);
+			} else if (action === 'resetServer' && !this.state.resetServerCount) {
 				this.setState({ resetServerCount: 1 });
 			} else {
 				socket.emit('updateModAction', {
@@ -464,6 +528,17 @@ export default class Moderation extends React.Component {
 				>
 					Comment without action
 				</button>
+				<div className="ui horizontal divider">lag-o-meter</div>
+				<button
+					className={lagMeterStatus ? 'ui button lagmeter disabled' : 'ui button lagmeter'}
+					style={{ background: 'turquoise', color: 'black' }}
+					onClick={() => {
+						takeModAction('lagMeter');
+					}}
+				>
+					Test lag
+				</button>
+				<span style={{ marginLeft: '10px' }}>{lagMeterStatus}</span>
 				<div className="ui horizontal divider">Warnings</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
@@ -703,6 +778,18 @@ export default class Moderation extends React.Component {
 					</div>
 				</div> */}
 				<br />
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable VPN Check</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleBypassVPNCheck = c;
+						}}
+					>
+						<input type="checkbox" name="vpnbypass" />
+					</div>
+				</div>
+				<br />
 				<div className="ui horizontal divider" style={{ color: 'red' }}>
 					🔰 Editors/Admins Only 📛
 				</div>
@@ -897,19 +984,6 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Roles</div>
 				<button
-					style={{ background: 'grey' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('removeContributor');
-					}}
-				>
-					Remove Contributor Role
-				</button>
-				<button
 					style={{ background: '#21bae0' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -917,10 +991,23 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
-						takeModAction('promoteToContributor');
+						takeModAction('toggleContributor');
 					}}
 				>
-					Promote to Contributor Role
+					Toggle Contributor Role
+				</button>
+				<button
+					style={{ background: '#74d6d3' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('toggleTourneyMod');
+					}}
+				>
+					Toggle Tourney Mod Role
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -988,7 +1075,7 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
-					style={{ background: '#4d949e' }}
+					style={{ background: '#84b8fd' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -1069,6 +1156,8 @@ export default class Moderation extends React.Component {
 			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
+			enableVPNCheck: 'Enable VPN Check',
+			disableVPNCheck: 'Disable VPN Check',
 			togglePrivate: 'Toggle Private (Permanent)',
 			togglePrivateEighteen: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',
@@ -1093,11 +1182,11 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
-			removeContributor: 'Remove Contributor Role',
 			resetGameName: 'Reset Game Name',
 			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',
-			promoteToContributor: 'Promote (Contributor)',
+			toggleContributor: 'Add/Remove Role (Contributor)',
+			toggleTourneyMod: 'Add/Remove Role (Tourney Mod)',
 			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToVeteran: 'Promote (Veteran AEM)',
@@ -1253,11 +1342,11 @@ export default class Moderation extends React.Component {
 	};
 
 	render() {
-		const { userSort, hideActions } = this.state;
+		const { userSort, showActions } = this.state;
 
 		const broadcastKeyup = e => {
 			this.setState({
-				broadcastText: e.currentTarget.value
+				broadcastText: e.target.value
 			});
 		};
 		const toggleModLogToday = e => {
@@ -1283,7 +1372,7 @@ export default class Moderation extends React.Component {
 					<i className="remove icon" />
 				</a>
 				<h2 style={{ userSelect: 'none', WebkitUserSelect: 'none', MsUserSelect: 'none' }}>Moderation</h2>
-				{!hideActions && (
+				{showActions && (
 					<a className="broadcast" href="#" onClick={this.broadcastClick}>
 						Broadcast
 					</a>
@@ -1324,13 +1413,17 @@ export default class Moderation extends React.Component {
 								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">or</div>
 								</span>
 							)}
+							<div onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })} style={{ width: 'max-content', cursor: 'pointer' }}>
+								<i className={`caret icon ${this.state.tableCollapsed ? 'right' : 'down'}`} />
+								Collapse Table
+							</div>
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
@@ -1361,9 +1454,9 @@ export default class Moderation extends React.Component {
 										</th>
 									</tr>
 								</thead>
-								<tbody>{this.renderUserlist()}</tbody>
+								{!this.state.tableCollapsed && <tbody>{this.renderUserlist()}</tbody>}
 							</table>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
@@ -1387,13 +1480,17 @@ export default class Moderation extends React.Component {
 								<br />
 								<span className="unlisted">This game is unlisted</span>
 							</div>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">or</div>
 								</span>
 							)}
+							<div onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })} style={{ width: 'max-content', cursor: 'pointer' }}>
+								<i className={`caret icon ${this.state.tableCollapsed ? 'right' : 'down'}`} />
+								Collapse Table
+							</div>
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
@@ -1425,9 +1522,9 @@ export default class Moderation extends React.Component {
 										</th>
 									</tr>
 								</thead>
-								<tbody>{this.renderGameList()}</tbody>
+								{!this.state.tableCollapsed && <tbody>{this.renderGameList()}</tbody>}
 							</table>
-							{!hideActions && (
+							{showActions && (
 								<span>
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
@@ -1518,8 +1615,8 @@ export default class Moderation extends React.Component {
 				>
 					<div className="ui header">Broadcast to all games:</div>
 					<div className="ui input">
-						<form onSubmit={this.handleBroadcastSubmit}>
-							<input
+						<form onSubmit={this.handleBroadcastSubmit} style={{ marginLeft: '10vw', width: '30vw', display: 'flex', flexDirection: 'column' }}>
+							<textarea
 								maxLength="300"
 								placeholder="Broadcast"
 								onChange={broadcastKeyup}
@@ -1529,13 +1626,16 @@ export default class Moderation extends React.Component {
 								ref={c => {
 									this.broadcastText = c;
 								}}
+								style={{ height: '20vh', width: '100%' }}
 							/>
+							<div style={{ padding: '20px' }}>
+								<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
+								<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
+							</div>
 							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>
 								Submit
 							</div>
 						</form>
-						<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
-						<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
 					</div>
 				</div>
 			</section>

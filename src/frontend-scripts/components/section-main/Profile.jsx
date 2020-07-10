@@ -24,6 +24,17 @@ class ProfileWrapper extends React.Component {
 		};
 	}
 
+	static getDerivedStateFromProps(nextProps, prevState) {
+		const name = prevState && prevState.profileUser;
+		const newName = nextProps && nextProps.profile && nextProps.profile._id;
+		let updatedState = null;
+
+		if (name !== newName) {
+			updatedState = { ...updatedState, profileUser: newName, blacklistClicked: false };
+		}
+		return updatedState;
+	}
+
 	formatDateString(dateString) {
 		const date = new Date(dateString);
 
@@ -224,12 +235,15 @@ class ProfileWrapper extends React.Component {
 					}
 				}
 				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
+				this.props.socket.emit('sendUser', this.props.userInfo); // To force a new playerlist pull
 			}
 		);
 	};
 
 	renderBlacklist() {
 		const { gameSettings } = this.props.userInfo;
+		const { profile } = this.props;
+		const name = profile._id;
 
 		return (
 			<button className="ui primary button blacklist-button" onClick={this.blackListClick}>
@@ -308,7 +322,7 @@ class ProfileWrapper extends React.Component {
 								<span>{gamesUntilRainbow}</span>
 							</div>
 						)}
-						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist

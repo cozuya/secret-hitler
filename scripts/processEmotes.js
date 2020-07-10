@@ -1,7 +1,10 @@
 const fs = require('fs');
 const PNG = require('pngjs').PNG;
 const emotes = [];
-fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
+
+// !!! Must be run from base directory !!!
+
+fs.readdirSync(`public/images/emotes`, { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
 
@@ -53,7 +56,7 @@ const result = new PNG({
 let numDone = 0;
 const incrementEmote = () => {
 	numDone++;
-	if (numDone == numEmotes) result.pack().pipe(fs.createWriteStream('./public/images/emotesheet.png'));
+	if (numDone == numEmotes) result.pack().pipe(fs.createWriteStream(`public/images/emotesheet.png`));
 };
 emotes.forEach(emote => {
 	const thisCell = curCell;
@@ -67,4 +70,5 @@ emotes.forEach(emote => {
 	emote[1] = loc;
 });
 
+console.log('Emotesheet Generated.');
 return 0;

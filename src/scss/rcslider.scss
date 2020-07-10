@@ -50,7 +50,7 @@
 	vertical-align: middle;
 	text-align: center;
 	cursor: pointer;
-	color: var(--text-3);
+	color: var(--theme-text-3);
 	user-select: none;
 	-ms-user-select: none;
 	-webkit-user-select: none;
@@ -261,12 +261,12 @@
 	height: 24px;
 	font-size: 12px;
 	line-height: 1;
-	color: var(theme-text-1);
+	color: var(--theme-text-1);
 	text-align: center;
 	text-decoration: none;
-	background-color: var(theme-background-3);
+	background-color: var(--theme-background-3);
 	border-radius: 6px;
-	box-shadow: 0 0 4px var(theme-text-2);
+	box-shadow: 0 0 4px var(--theme-text-2);
 }
 .rc-slider-tooltip-arrow {
 	position: absolute;
@@ -280,5 +280,5 @@
 	left: 50%;
 	margin-left: -4px;
 	border-width: 4px 4px 0;
-	border-top-color: var(theme-background-3);
+	border-top-color: var(--theme-background-3);
 }

@@ -28,5 +28,12 @@ module.exports = [
 	'fagg0t',
 	'mong',
 	'kunt',
-	'niglet'
+	'niglet',
+	'etard',
+	'nigg',
+	'negro',
+	'KKK',
+	'rape',
+	'pussy',
+	'niger'
 ];

@@ -43,3 +43,6 @@ coverage/*
 dump/
 scripts/out/*
 public/images/emotesheet.png
+
+# Keep .gitkeep files, even in ignored directories
+!/**/.gitkeep

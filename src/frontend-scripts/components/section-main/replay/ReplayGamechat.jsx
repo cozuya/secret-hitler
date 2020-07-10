@@ -64,7 +64,7 @@ class ReplayGamechat extends React.Component {
 	handleTimestamps(timestamp) {
 		const { userInfo } = this.props;
 
-		if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+		if (userInfo && userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
 			const hours = `0${new Date(timestamp).getHours()}`.slice(-2);
 			const minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2);
 			const seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
@@ -72,6 +72,41 @@ class ReplayGamechat extends React.Component {
 			return <span className="chat-timestamp">{`${hours}:${minutes}:${seconds} `}</span>;
 		}
 	}
+
+	getClassesFromType = type => {
+		if (type === 'player') {
+			return 'chat-player';
+		} else {
+			return `chat-role--${type}`;
+		}
+	};
+
+	parseClaim = claim => {
+		const { userInfo } = this.props;
+
+		const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'legacy';
+		let liberalChar = 'L';
+		let fascistChar = 'F';
+		if (mode === 'legacy') {
+			liberalChar = 'B';
+			fascistChar = 'R';
+		} else if (mode === 'full') {
+			liberalChar = 'liberal';
+			fascistChar = 'fascist';
+		}
+		const claims = Array.from(claim);
+		const elements = claims.map((claimChar, index) => {
+			const isLiberal = claimChar === 'b';
+
+			return (
+				<span key={`claim${index}`}>
+					<span className={this.getClassesFromType(isLiberal ? 'liberal' : 'fascist')}>{isLiberal ? liberalChar : fascistChar}</span>
+					{mode === 'full' && index < claims.length - 1 ? <span>, </span> : <React.Fragment />}
+				</span>
+			);
+		});
+		return elements;
+	};
 
 	processChats() {
 		const { gameInfo, userInfo, userList } = this.props;
@@ -179,21 +214,14 @@ class ReplayGamechat extends React.Component {
 									chatContents.length &&
 									chatContents.map((chatSegment, index) => {
 										if (chatSegment.type) {
-											let classes;
-
-											if (chatSegment.type === 'player') {
-												classes = 'chat-player';
-											} else {
-												classes = `chat-role--${chatSegment.type}`;
-											}
-
 											return (
-												<span key={index} className={classes}>
+												<span key={index} className={this.getClassesFromType(chatSegment.type)}>
 													{chatSegment.text}
 												</span>
 											);
+										} else if (chatSegment.claim) {
+											return <span key={index}>{this.parseClaim(chatSegment.claim)}</span>;
 										}
-
 										return chatSegment.text;
 									})}
 							</span>

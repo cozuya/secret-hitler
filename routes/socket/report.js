@@ -3,8 +3,8 @@ const Account = require('../../models/account');
 const { newStaff } = require('./models');
 
 module.exports.makeReport = (data, game, type = 'report') => {
-	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
-	if (!game || game.customGameSettings.enabled || game.general.unlisted) return;
+	// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
+	if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
 	const { player, seat, role, election, situation, uid, gameType } = data;
 
 	let report;
@@ -60,7 +60,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		});
 	}
 
-	if (type === 'report') {
+	if (type === 'report' && !game.general.casualGame) {
 		report = JSON.stringify({
 			content: `${process.env.DISCORDMODPING}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
 			username: 'Auto Report',

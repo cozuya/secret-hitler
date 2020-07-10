@@ -2,6 +2,11 @@ const cn = require('classnames');
 
 module.exports.TOU_CHANGES = [
 	{
+		changeVer: '1.5',
+		changeDesc:
+			'Updated to include mention of the new "Practice" mode and redefine rules on "Casual" mode.\nHate Speech rules updated to include transphobic and ableist language.\nClarified the rule on encouraging/glorifying physical harm.\nSlight adjustment to "ape"/"monkey" rule.\nSlight adjustment to doxxing rule.\nClarified cardback rules.\nSlightly redefined stalling rule.\nAdjusted rules on blacklist mentions, fake RQs, and RQ threats to focus more on gameplay influences.\nSitting for a game on one account while speaking with another account is now prohibited.\nRevised the table of offences and their corresponding suggested penalties.\nVarious other rewordings, reorganizations.'
+	},
+	{
 		changeVer: '1.4',
 		changeDesc:
 			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
@@ -31,7 +36,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 9;
+module.exports.CURRENTSEASONNUMBER = 11;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -59,11 +64,9 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			moderatorcolor: user.staffRole === 'moderator',
 			editorcolor: user.staffRole === 'editor',
 			veteran: user.staffRole === 'veteran',
-			cbell: user.userName === 'cbell',
-			jdudle3: user.userName === 'jdudle3',
-			max: user.userName === 'Max',
-			thejuststopo: user.userName === 'TheJustStopO',
-			moira: user.userName === 'moira'
+			cbell: user.userName === 'cbell' && user.staffRole === 'editor',
+			max: user.userName === 'Max' && user.staffRole === 'editor',
+			moira: user.userName === 'moira' && user.staffRole === 'editor'
 		});
 	} else if (
 		user.isContributor &&
@@ -112,11 +115,9 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 module.exports.getBadWord = text => {
 	const badWords = {
 		// List of all blacklisted words and their variations.
-		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
-		kike: ['k1ke', 'kik3', 'k1k3'],
-		retard: ['autist', 'libtard', 'retard', 'tard'],
+		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
+		retard: ['libtard', 'retard', 'tard', 'ret4rd', 't4rd', 'retrd'],
 		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
-		mongoloid: ['mong', 'm0ng'],
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};

@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const Game = require('../models/game');
 const moment = require('moment');
-const _ = require('lodash');
 const fs = require('fs');
-const labels = [];
 const data = {};
 const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/node-constants');
 
@@ -218,21 +216,8 @@ Game.find({})
 				allPlayerGameData.fascistWinCountSeason++;
 			}
 		}
-		labels.push(moment(new Date(game.date)).format('l'));
 	})
 	.then(() => {
-		const uLabels = _.uniq(labels),
-			series = new Array(uLabels.length).fill(0);
-
-		labels.forEach(date => {
-			series[uLabels.indexOf(date)]++;
-		});
-
-		data.completedGames = {
-			labels: uLabels,
-			series
-		};
-
 		data.allPlayerGameData = allPlayerGameData;
 		data.fivePlayerGameData = fivePlayerGameData;
 		data.sixPlayerGameData = sixPlayerGameData;

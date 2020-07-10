@@ -66,7 +66,7 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 
 const sessionSettings = {
-	secret: process.env.SECRETSESSIONKEY,
+	secret: process.env.SECRETSESSIONKEY || 'hunter2',
 	cookie: {
 		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
 	},
@@ -121,7 +121,7 @@ if (process.env.DISCORDCLIENTID) {
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
