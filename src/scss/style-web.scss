@@ -42,6 +42,17 @@ html {
 	clear: both;
 }
 
+.coinbasetheft {
+	background: #444;
+	position: absolute;
+	top: 86px;
+	left: 10px;
+	padding: 5px;
+	text-decoration: underline;
+	cursor: pointer;
+	color: yellow;
+}
+
 #header-container {
 	width: 100%;
 	margin: 55px auto 0;
