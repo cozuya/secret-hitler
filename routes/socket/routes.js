@@ -19,6 +19,7 @@ const {
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
 	handleModPeekVotes,
+	handleModPeekRemakes,
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
@@ -525,6 +526,17 @@ module.exports.socketRoutes = () => {
 				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
+					} else {
+						socket.emit('sendAlert', 'Game is missing.');
+					}
+				}
+			});
+			socket.on('modGetRemakes', data => {
+				const uid = data.uid;
+				const game = findGame({ uid });
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+					if (game && game.private && game.private.seatedPlayers) {
+						handleModPeekRemakes(socket, passport, game, data.modName);
 					} else {
 						socket.emit('sendAlert', 'Game is missing.');
 					}
