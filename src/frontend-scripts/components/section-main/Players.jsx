@@ -470,7 +470,6 @@ class Players extends React.Component {
 			});
 		};
 		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
-		console.log(this.props.gameInfo.general);
 
 		return (
 			<section className="players">
