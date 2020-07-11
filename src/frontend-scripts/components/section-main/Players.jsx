@@ -560,10 +560,14 @@ class Players extends React.Component {
 							<div className="menu">
 								<div className="item">AFK/Leaving game</div>
 								<div className="item">Abusive chat</div>
-								<div className="item">Cheating</div>
-								<div className="item">Gamethrowing</div>
-								<div className="item">Stalling</div>
-								<div className="item">Other</div>
+								{this.props.gameInfo.general.casualGame ? null : (
+									<>
+										<div className="item">Cheating</div>
+										<div className="item">Gamethrowing</div>
+										<div className="item">Stalling</div>
+										<div className="item">Other</div>
+									</>
+								)}
 							</div>
 						</div>
 						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
