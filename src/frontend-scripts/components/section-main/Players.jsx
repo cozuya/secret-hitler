@@ -4,12 +4,12 @@ import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Popup, List, Grid, Button } from 'semantic-ui-react';
 
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
+import UserInfo from './UserInfo.jsx';
 
 $.fn.dropdown = Dropdown;
 
@@ -268,80 +268,37 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<Popup
-					inverted
-					mouseEnterDelay={300}
-					trigger={
-						<div
-							title={
-								isBlind || player.isPrivate
-									? 'Double click to open a modal to report this player to the moderator team'
-									: `Double click to open a modal to report ${player.userName} to the moderator team`
+				<UserInfo userName={player.userName}>
+					<div
+						title={
+							isBlind || player.isPrivate
+								? 'Double click to open a modal to report this player to the moderator team'
+								: `Double click to open a modal to report ${player.userName} to the moderator team`
+						}
+						onDoubleClick={() => {
+							this.handlePlayerDoubleClick(player.userName);
+						}}
+						className={(() => {
+							let classes = 'player-number';
+
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
-							onDoubleClick={() => {
-								this.handlePlayerDoubleClick(player.userName);
-							}}
-							className={(() => {
-								let classes = 'player-number';
 
-								if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
-									classes = `${classes} ${playersState[i].nameStatus}`;
-								} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-									classes = `${classes} ${publicPlayersState[i].nameStatus}`;
-								}
+							if (publicPlayersState[i].leftGame) {
+								classes = `${classes} leftgame`;
+							} else if (!publicPlayersState[i].connected) {
+								classes = `${classes} disconnected`;
+							}
 
-								if (publicPlayersState[i].leftGame) {
-									classes = `${classes} leftgame`;
-								} else if (!publicPlayersState[i].connected) {
-									classes = `${classes} disconnected`;
-								}
-
-								return classes;
-							})()}
-						>
-							{renderPlayerName(player, i)}
-						</div>
-					}
-				>
-					<Popup.Header>bbb</Popup.Header>
-					<Popup.Content>
-						<List>
-							<List.Item>
-								<List.Icon name="arrow up" />
-								<List.Content>
-									<Grid columns={2} divided inverted>
-										<Grid.Row textAlign="center">
-											<Grid.Column>1600</Grid.Column>
-											<Grid.Column>1600</Grid.Column>
-										</Grid.Row>
-									</Grid>
-								</List.Content>
-							</List.Item>
-							<List.Item>
-								<Button fluid size="small">
-									Ping
-								</Button>
-							</List.Item>
-							<List.Item>
-								<Button fluid size="small">
-									View Profile
-								</Button>
-							</List.Item>
-							<List.Item>
-								<List.Icon name="gavel" />
-								<List.Content>
-									<a>Report</a>
-								</List.Content>
-							</List.Item>
-							<List.Item>
-								<List.Icon name="x" />
-								<List.Content>
-									<a>Blacklist</a>
-								</List.Content>
-							</List.Item>
-						</List>
-					</Popup.Content>
-				</Popup>
+							return classes;
+						})()}
+					>
+						{renderPlayerName(player, i)}
+					</div>
+				</UserInfo>
 
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
