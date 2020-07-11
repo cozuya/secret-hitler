@@ -470,6 +470,7 @@ class Players extends React.Component {
 			});
 		};
 		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
+		console.log(this.props.gameInfo.general);
 
 		return (
 			<section className="players">
@@ -558,16 +559,20 @@ class Players extends React.Component {
 							<i className="dropdown icon" />
 							<div className="default text">Reason</div>
 							<div className="menu">
-								<div className="item">AFK/Leaving game</div>
-								<div className="item">Abusive chat</div>
-								{this.props.gameInfo.general.casualGame ? null : (
+								{!this.props.gameInfo.general.private && (
+									<>
+										<div className="item">AFK/Leaving game</div>
+										<div className="item">Abusive chat</div>
+									</>
+								)}
+								{!this.props.gameInfo.general.casualGame && !this.props.gameInfo.general.private && (
 									<>
 										<div className="item">Cheating</div>
 										<div className="item">Gamethrowing</div>
 										<div className="item">Stalling</div>
-										<div className="item">Other</div>
 									</>
 								)}
+								<div className="item">Other</div>
 							</div>
 						</div>
 						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
