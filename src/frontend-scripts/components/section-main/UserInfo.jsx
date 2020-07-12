@@ -22,28 +22,34 @@ const UserInfo = props => {
 							</Grid>
 						</List.Content>
 					</List.Item>
+					{props.onPing && (
+						<List.Item>
+							<Button fluid size="small">
+								Ping
+							</Button>
+						</List.Item>
+					)}
 					<List.Item>
-						<Button fluid size="small">
-							Ping
-						</Button>
-					</List.Item>
-					<List.Item>
-						<Button fluid size="small" as={'Link'} to={`/observe/#/profile/${props.userName}`}>
+						<Button fluid size="small" onClick={() => (window.location.hash = `#/profile/${userName}`)}>
 							View Profile
 						</Button>
 					</List.Item>
-					<List.Item>
-						<List.Icon name="gavel" />
-						<List.Content>
-							<a>Report</a>
-						</List.Content>
-					</List.Item>
-					<List.Item>
-						<List.Icon name="x" />
-						<List.Content>
-							<a>Blacklist</a>
-						</List.Content>
-					</List.Item>
+					{props.onReport && (
+						<List.Item>
+							<List.Icon name="gavel" />
+							<List.Content>
+								<a>Report</a>
+							</List.Content>
+						</List.Item>
+					)}
+					{props.onBlacklist && (
+						<List.Item>
+							<List.Icon name="x" />
+							<List.Content>
+								<a>Blacklist</a>
+							</List.Content>
+						</List.Item>
+					)}
 				</List>
 			</Popup.Content>
 		</Popup>
