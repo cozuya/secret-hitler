@@ -46,7 +46,7 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick = userName => {
+	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
 		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
@@ -268,16 +268,13 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<UserInfo userName={player.userName}>
+				<UserInfo userName={player.userName} onReport={this.handlePlayerReport.bind(this)}>
 					<div
 						title={
 							isBlind || player.isPrivate
 								? 'Double click to open a modal to report this player to the moderator team'
 								: `Double click to open a modal to report ${player.userName} to the moderator team`
 						}
-						onDoubleClick={() => {
-							this.handlePlayerDoubleClick(player.userName);
-						}}
 						className={(() => {
 							let classes = 'player-number';
 
