@@ -34,7 +34,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer, onSubmitReport }) 
 				placeholder="Reason"
 				fluid
 				selection
-				options={opt.map(option => ({ text: option, key: option, value: option }))}
+				options={opt.map(option => ({ text: option, key: option, value: option.toLowerCase() }))}
 				onChange={(_event, props) => setReason(props.value)}
 			/>
 			<Form.TextArea placeholder="Comment" onChange={(_event, props) => setComment(props.value)} />

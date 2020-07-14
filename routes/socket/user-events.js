@@ -3733,10 +3733,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 };
 
 /**
+ * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handlePlayerReport = (passport, data) => {
+module.exports.handlePlayerReport = (socket, passport, data) => {
 	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2) && process.env.NODE_ENV === 'production') {
@@ -3755,6 +3756,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 	});
 
 	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(playerReport.reason)) {
+		socket.emit('confirmPlayerReport', { report: data, success: false, error: 'Invalid report reason.' });
 		return;
 	}
 
@@ -3813,16 +3815,20 @@ module.exports.handlePlayerReport = (passport, data) => {
 		game.reportCounts[passport.user]++;
 	}
 
+	let reportError = false;
+
 	try {
 		const req = https.request(options);
 		req.end(body);
 	} catch (error) {
 		console.log(error, 'Caught exception in player request https request to discord server');
+		reportError = true;
 	}
 
 	playerReport.save(err => {
 		if (err) {
 			console.log(err, 'Failed to save player report');
+			socket.emit('confirmPlayerReport', { report: data, success: false, errorMessage: 'Error submitting report.' });
 			return;
 		}
 
@@ -3841,6 +3847,12 @@ module.exports.handlePlayerReport = (passport, data) => {
 				account.save();
 			});
 		});
+
+		if (reportError) {
+			socket.emit('confirmPlayerReport', { report: data, success: false, errorMessage: 'Error submitting report.' });
+		} else {
+			socket.emit('confirmPlayerReport', { report: data, success: true });
+		}
 	});
 };
 

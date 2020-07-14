@@ -448,7 +448,7 @@ module.exports.socketRoutes = () => {
 			socket.on('playerReport', data => {
 				if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
 				if (authenticated) {
-					handlePlayerReport(passport, data);
+					handlePlayerReport(socket, passport, data);
 				}
 			});
 			socket.on('playerReportDismiss', () => {
