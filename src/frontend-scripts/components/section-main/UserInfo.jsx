@@ -1,26 +1,65 @@
 import React, { useState } from 'react'; // eslint-disable-line
 import { connect } from 'react-redux';
-import { Popup, List, Grid, Button, Dropdown, Segment, TextArea } from 'semantic-ui-react';
+import { Popup, List, Grid, Button, Form } from 'semantic-ui-react';
 
-const mapStateToProps = ({ userList }) => ({ userList });
+const mapStateToProps = state => state;
 
-const Report = props => {
+const Report = ({ socket, userInfo, gameInfo, reportedPlayer, onSubmitReport }) => {
 	const opt = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
+	const [reason, setReason] = useState('');
+	const [comment, setComment] = useState('');
+
+	const submitReport = () => {
+		if (!reason || !comment || comment.length > 140) {
+			return;
+		}
+
+		const index = gameInfo.gameState.isStarted ? gameInfo.publicPlayersState.findIndex(player => player.userName === reportedPlayer) : undefined;
+		if (comment.length <= 140) {
+			socket.emit('playerReport', {
+				uid: gameInfo.general.uid,
+				userName: userInfo.userName || 'from replay',
+				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
+				reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
+				reason: reason,
+				comment: comment
+			});
+			onSubmitReport();
+		}
+	};
+
 	return (
-		<Segment inverted>
-			<Dropdown placeholder="Reason" fluid selection options={opt.map(option => ({ text: option, key: option, value: option }))} />
-			<TextArea placeholder="Tell us more" style={{ marginTop: 10, marginBottom: 10, width: '100%' }} />
-			<Button>Submit</Button>
-		</Segment>
+		<Form inverted>
+			<Form.Select
+				placeholder="Reason"
+				fluid
+				selection
+				options={opt.map(option => ({ text: option, key: option, value: option }))}
+				onChange={(_event, props) => setReason(props.value)}
+			/>
+			<Form.TextArea placeholder="Comment" onChange={(_event, props) => setComment(props.value)} />
+			<span className={comment.length > 140 ? 'counter error' : 'counter'}>{140 - comment.length}</span>
+			<Button inverted disabled={!reason || !comment || comment.length > 140} onClick={() => submitReport()}>
+				Submit
+			</Button>
+		</Form>
 	);
 };
 
-const UserInfo = props => {
+const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, onPing, onBlacklist }) => {
 	const [reportVisible, setReportVisible] = useState(false);
-	const user = props.userList && props.userList.list && props.userList.list.find(play => play.userName === props.userName);
+	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	return (
-		<Popup inverted hoverable trigger={props.children} mouseLeaveDelay={300}>
-			<Popup.Header>{props.userName}</Popup.Header>
+		<Popup
+			inverted
+			trigger={children}
+			pinned
+			on="click"
+			onClose={() => {
+				setReportVisible(false);
+			}}
+		>
+			<Popup.Header>{userName}</Popup.Header>
 			<Popup.Content>
 				<List>
 					<List.Item>
@@ -34,7 +73,7 @@ const UserInfo = props => {
 							</Grid>
 						</List.Content>
 					</List.Item>
-					{props.onPing && (
+					{onPing && (
 						<List.Item>
 							<Button fluid size="small">
 								Ping
@@ -52,7 +91,7 @@ const UserInfo = props => {
 							<a onClick={() => setReportVisible(!reportVisible)}>Report</a>
 						</List.Content>
 					</List.Item>
-					{props.onBlacklist && (
+					{onBlacklist && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
@@ -61,7 +100,9 @@ const UserInfo = props => {
 						</List.Item>
 					)}
 				</List>
-				{reportVisible && <Report />}
+				{reportVisible && (
+					<Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} onSubmitReport={() => setReportVisible(false)} />
+				)}
 			</Popup.Content>
 		</Popup>
 	);

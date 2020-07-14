@@ -268,7 +268,7 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<UserInfo userName={player.userName} onReport={this.handlePlayerReport.bind(this)}>
+				<UserInfo userName={player.userName} socket={this.props.socket}>
 					<div
 						title={
 							isBlind || player.isPrivate
