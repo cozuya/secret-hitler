@@ -8,41 +8,61 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer, onSubmitReport }) 
 	const opt = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
 	const [reason, setReason] = useState('');
 	const [comment, setComment] = useState('');
+	const [submittingReport, setSubmittingReport] = useState(false);
+	const [errorMessage, setErrorMessage] = useState(null);
+	const [successMessage, setSuccessMessage] = useState(null);
 
 	const submitReport = () => {
 		if (!reason || !comment || comment.length > 140) {
 			return;
 		}
+		setSubmittingReport(true);
 
 		const index = gameInfo.gameState.isStarted ? gameInfo.publicPlayersState.findIndex(player => player.userName === reportedPlayer) : undefined;
 		if (comment.length <= 140) {
-			socket.emit('playerReport', {
-				uid: gameInfo.general.uid,
-				userName: userInfo.userName || 'from replay',
-				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-				reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
-				reason: reason,
-				comment: comment
-			});
-			onSubmitReport();
+			socket.emit(
+				'playerReport',
+				{
+					uid: gameInfo.general.uid,
+					userName: userInfo.userName || 'from replay',
+					gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
+					reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
+					reason: reason,
+					comment: comment
+				},
+				response => {
+					if (response.success) {
+						setSuccessMessage('Report submitted successfully.');
+					} else {
+						setErrorMessage(reponse.error);
+					}
+					setSubmittingReport(false);
+				}
+			);
 		}
 	};
 
 	return (
-		<Form inverted>
-			<Form.Select
-				placeholder="Reason"
-				fluid
-				selection
-				options={opt.map(option => ({ text: option, key: option, value: option.toLowerCase() }))}
-				onChange={(_event, props) => setReason(props.value)}
-			/>
-			<Form.TextArea placeholder="Comment" onChange={(_event, props) => setComment(props.value)} />
-			<span className={comment.length > 140 ? 'counter error' : 'counter'}>{140 - comment.length}</span>
-			<Button inverted disabled={!reason || !comment || comment.length > 140} onClick={() => submitReport()}>
-				Submit
-			</Button>
-		</Form>
+		<div>
+			{!successMessage && !errorMessage && (
+				<Form inverted>
+					<Form.Select
+						placeholder="Reason"
+						fluid
+						selection
+						options={opt.map(option => ({ text: option, key: option, value: option.toLowerCase() }))}
+						onChange={(_event, props) => setReason(props.value)}
+					/>
+					<Form.TextArea placeholder="Comment" onChange={(_event, props) => setComment(props.value)} />
+					<span className={comment.length > 140 ? 'counter error' : 'counter'}>{140 - comment.length}</span>
+					<Button inverted disabled={submittingReport || !reason || !comment || comment.length > 140} onClick={() => submitReport()}>
+						Submit
+					</Button>
+				</Form>
+			)}
+			{successMessage && <span>{successMessage}</span>}
+			{errorMessage && <span className="error">{errorMessage}</span>}
+		</div>
 	);
 };
 
@@ -100,9 +120,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, on
 						</List.Item>
 					)}
 				</List>
-				{reportVisible && (
-					<Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} onSubmitReport={() => setReportVisible(false)} />
-				)}
+				{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
 			</Popup.Content>
 		</Popup>
 	);

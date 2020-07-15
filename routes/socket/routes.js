@@ -445,10 +445,10 @@ module.exports.socketRoutes = () => {
 					updateSeatedUser(socket, passport, data);
 				}
 			});
-			socket.on('playerReport', data => {
+			socket.on('playerReport', (data, callback) => {
 				if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
 				if (authenticated) {
-					handlePlayerReport(socket, passport, data);
+					handlePlayerReport(passport, data, callback);
 				}
 			});
 			socket.on('playerReportDismiss', () => {
