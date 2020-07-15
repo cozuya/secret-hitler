@@ -66,7 +66,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	);
 };
 
-const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, onPing }) => {
+const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
@@ -100,19 +100,33 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, on
 			<Popup.Content>
 				<List>
 					<List.Item>
-						<List.Icon name="chart line" />
 						<List.Content>
 							<Grid columns={2} divided inverted>
-								<Grid.Row textAlign="center">
-									<Grid.Column>{user && (user.eloOverall || 1600)}</Grid.Column>
-									<Grid.Column>{user && (user.eloSeasonal || 1600)}</Grid.Column>
+								<Grid.Row>
+									<Grid.Column textAlign="center" data-tooltip="Overall Elo">
+										<List.Icon name="chart line" />
+										{user && (user.eloOverall || 1600)}
+									</Grid.Column>
+									<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
+										<List.Icon name="calendar alternate outline" />
+										{user && (user.eloSeasonal || 1600)}
+									</Grid.Column>
 								</Grid.Row>
 							</Grid>
 						</List.Content>
 					</List.Item>
-					{onPing && (
+					{userInfo && userInfo.isSeated && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
 						<List.Item>
-							<Button fluid size="small">
+							<Button
+								fluid
+								size="small"
+								onClick={() =>
+									socket.emit('addNewGameChat', {
+										chat: `ping${gameInfo.publicPlayersState.findIndex(player => player.userName === userName) + 1}`,
+										uid: gameInfo.general.uid
+									})
+								}
+							>
 								Ping
 							</Button>
 						</List.Item>
