@@ -4,7 +4,7 @@ import { Popup, List, Grid, Button, Form } from 'semantic-ui-react';
 
 const mapStateToProps = state => state;
 
-const Report = ({ socket, userInfo, gameInfo, reportedPlayer, onSubmitReport }) => {
+const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	const opt = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
 	const [reason, setReason] = useState('');
 	const [comment, setComment] = useState('');
@@ -66,9 +66,26 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer, onSubmitReport }) 
 	);
 };
 
-const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, onPing, onBlacklist }) => {
+const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, onPing }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
+	const { gameSettings } = userInfo;
+
+	const toggleBlacklist = () => {
+		if (!gameSettings) return;
+
+		if (gameSettings.blacklist !== undefined && gameSettings.blacklist.includes(userName)) {
+			gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(userName), 1);
+		} else if (!gameSettings.blacklist) {
+			gameSettings.blacklist = [userName];
+		} else {
+			gameSettings.blacklist.push(userName);
+		}
+
+		socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
+		socket.emit('sendUser', userInfo); // To force a new playerlist pull
+	};
+
 	return (
 		<Popup
 			inverted
@@ -111,16 +128,16 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, on
 							<a onClick={() => setReportVisible(!reportVisible)}>Report</a>
 						</List.Content>
 					</List.Item>
-					{onBlacklist && (
+					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
+					{gameInfo && gameInfo.general && !gameInfo.general.blindMode && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
-								<a>Blacklist</a>
+								<a onClick={() => toggleBlacklist()}>{gameSettings && gameSettings.blacklist.includes(userName) ? 'Unblacklist' : 'Blacklist'}</a>
 							</List.Content>
 						</List.Item>
 					)}
 				</List>
-				{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
 			</Popup.Content>
 		</Popup>
 	);
