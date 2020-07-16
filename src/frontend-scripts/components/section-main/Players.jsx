@@ -9,7 +9,7 @@ import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
-import UserInfo from './UserInfo.jsx';
+import UserInfo from '../reusable/UserInfo.jsx';
 
 $.fn.dropdown = Dropdown;
 

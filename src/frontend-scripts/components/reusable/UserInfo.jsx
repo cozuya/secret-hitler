@@ -5,10 +5,20 @@ import { Popup, List, Grid, Button, Form } from 'semantic-ui-react';
 const mapStateToProps = state => state;
 
 const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
-	const opt = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
+	const defaultOptions = ['Abusive chat', 'Other']; // outside started games.
+	const casualOptions = ['AFK/Leaving Game', 'Abusive chat', 'Other'];
+	const ratedOptions = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
+
+	const inStartedGame = gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted; 
+	const casualGame = gameInfo && gameInfo.general && gameInfo.general.casualGame; 
+	const opt = inStartedGame ?
+					casualGame ? casualOptions : ratedOptions
+				: defaultOptions
+
 	const [reason, setReason] = useState('');
 	const [comment, setComment] = useState('');
 	const [submittingReport, setSubmittingReport] = useState(false);
+	const [showWarningMessage, setShowWarningMessage] = useState(true);
 	const [errorMessage, setErrorMessage] = useState(null);
 	const [successMessage, setSuccessMessage] = useState(null);
 
@@ -43,7 +53,13 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	};
 
 	return (
-		<div>
+		<>
+			{!inStartedGame && showWarningMessage && 
+				<div>
+				<span>Warning: You are reporting a player outside an active game. Please make your report as detailed as possible.</span>
+				<a onClick={() => setShowWarningMessage(false)}>(hide)</a>
+				</div>
+			}
 			{!successMessage && !errorMessage && (
 				<Form inverted>
 					<Form.Select
@@ -62,11 +78,11 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 			)}
 			{successMessage && <span>{successMessage}</span>}
 			{errorMessage && <span className="error">{errorMessage}</span>}
-		</div>
+		</>
 	);
 };
 
-const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) => {
+const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, position='top center'}) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
@@ -86,6 +102,11 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) 
 		socket.emit('sendUser', userInfo); // To force a new playerlist pull
 	};
 
+	const gameStarted = gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted;
+	const userSeated = userInfo && userInfo.isSeated;
+	const notBlindMode = gameInfo && gameInfo.general && !gameInfo.general.blindMode;
+	const privateGame = gameInfo && gameInfo.general && gameInfo.general.private;
+
 	return (
 		<Popup
 			inverted
@@ -95,6 +116,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) 
 			onClose={() => {
 				setReportVisible(false);
 			}}
+			position={position}
 		>
 			<Popup.Header>{userName}</Popup.Header>
 			<Popup.Content>
@@ -115,7 +137,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) 
 							</Grid>
 						</List.Content>
 					</List.Item>
-					{userInfo && userInfo.isSeated && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
+					{userSeated && gameStarted && (
 						<List.Item>
 							<Button
 								fluid
@@ -136,14 +158,14 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName }) 
 							View Profile
 						</Button>
 					</List.Item>
-					<List.Item>
+					{!privateGame && <List.Item>
 						<List.Icon name="gavel" />
 						<List.Content>
 							<a onClick={() => setReportVisible(!reportVisible)}>Report</a>
 						</List.Content>
-					</List.Item>
+					</List.Item>}
 					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
-					{gameInfo && gameInfo.general && !gameInfo.general.blindMode && (
+					{notBlindMode && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
