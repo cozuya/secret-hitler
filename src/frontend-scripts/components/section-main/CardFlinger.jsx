@@ -255,6 +255,10 @@ class CardFlinger extends React.Component {
 						if (stateObj.cardStatus.cardBack) {
 							backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
 						}
+
+						if (stateObj.discard) {
+							containerClasses += ' discard';
+						}
 					}
 
 					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {

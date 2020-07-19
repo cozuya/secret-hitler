@@ -81,6 +81,8 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.2.2",
+		"@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
+		"@babel/plugin-proposal-optional-chaining": "^7.10.4",
 		"babel-core": "7.0.0-bridge.0",
 		"babel-eslint": "^10.0.3",
 		"babel-jest": "^25.5.1",

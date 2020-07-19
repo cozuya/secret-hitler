@@ -517,6 +517,15 @@
 	animation-duration: 0s;
 }
 
+.cardflinger-card-container.selected.discard::after {
+	box-shadow: 0 0 2px 14px red;
+	animation-duration: 0s;
+}
+
+.cardflinger-card-container.expanding.discard::after {
+	box-shadow: 0 0 2px 14px red;
+}
+
 .cardflinger-card-container.selected.display-help-icons {
 	left: 670px;
 	.cardflinger-card.back::before {
