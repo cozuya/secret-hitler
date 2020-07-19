@@ -65,6 +65,7 @@ class CardFlinger extends React.Component {
 
 		if (!phase) return;
 
+		const { cardFlingerState } = this.props.gameInfo;
 		const keyboardShortcutsSetting = (userInfo && userInfo.gameSettings && userInfo.gameSettings.keyboardShortcuts) || 'disable';
 		const keyIndex = keyboardShortcuts[phase][String.fromCharCode(event.keyCode)];
 
@@ -75,8 +76,9 @@ class CardFlinger extends React.Component {
 			// instantly vote
 			this.handleCardClick(keyIndex);
 		} else {
+			const stateObj = cardFlingerState.find(flinger => flinger.position === positions[keyIndex]);
 			// set a 2s timer to process the vote as if it were a click
-			if (this.state.expandingIndex !== keyIndex) {
+			if (this.state.expandingIndex !== keyIndex && !(stateObj && stateObj.notificationStatus && stateObj.notificationStatus === 'selected')) {
 				clearTimeout(this.state.expansionTimer);
 				this.setState({
 					expandingIndex: keyIndex,
