@@ -17,6 +17,7 @@
 		"node": ">=12.0"
 	},
 	"dependencies": {
+		"@popperjs/core": "^2.4.4",
 		"compression": "^1.6.2",
 		"connect-mongodb-session": "^2.0.5",
 		"connect-redis": "^3.4.0",
@@ -55,6 +56,7 @@
 		"react-dom": "16.8.1",
 		"react-dropzone": "^4.2.8",
 		"react-linkify": "^0.2.2",
+		"react-popper": "^2.2.3",
 		"react-redux": "^5.0.6",
 		"react-select": "^3.0.0",
 		"react-switch": "^4.1.0",

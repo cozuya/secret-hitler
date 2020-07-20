@@ -9,11 +9,10 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	const casualOptions = ['AFK/Leaving Game', 'Abusive chat', 'Other'];
 	const ratedOptions = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
 
-	const inStartedGame = gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted; 
-	const casualGame = gameInfo && gameInfo.general && gameInfo.general.casualGame; 
-	const opt = inStartedGame ?
-					casualGame ? casualOptions : ratedOptions
-				: defaultOptions
+	const inGame = gameInfo && gameInfo.gameState;
+	const inStartedGame = inGame && gameInfo.gameState.isStarted;
+	const casualGame = inGame && gameInfo.general && gameInfo.general.casualGame;
+	const opt = inStartedGame ? (casualGame ? casualOptions : ratedOptions) : defaultOptions;
 
 	const [reason, setReason] = useState('');
 	const [comment, setComment] = useState('');
@@ -28,15 +27,15 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 		}
 		setSubmittingReport(true);
 
-		const index = gameInfo.gameState.isStarted ? gameInfo.publicPlayersState.findIndex(player => player.userName === reportedPlayer) : undefined;
+		const index = inStartedGame ? gameInfo.publicPlayersState.findIndex(player => player.userName === reportedPlayer) : undefined;
 		if (comment.length <= 140) {
 			socket.emit(
 				'playerReport',
 				{
-					uid: gameInfo.general.uid,
+					uid: inGame && gameInfo.general.uid,
 					userName: userInfo.userName || 'from replay',
-					gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-					reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
+					gameType: inGame ? (gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard') : 'homepage',
+					reportedPlayer: `${inStartedGame ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
 					reason: reason,
 					comment: comment
 				},
@@ -54,12 +53,12 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 
 	return (
 		<>
-			{!inStartedGame && showWarningMessage && 
+			{!inStartedGame && showWarningMessage && (
 				<div>
-				<span>Warning: You are reporting a player outside an active game. Please make your report as detailed as possible.</span>
-				<a onClick={() => setShowWarningMessage(false)}>(hide)</a>
+					<span>Warning: You are reporting a player outside an active game. Please make your report as detailed as possible.</span>
+					<a onClick={() => setShowWarningMessage(false)}>(hide)</a>
 				</div>
-			}
+			)}
 			{!successMessage && !errorMessage && (
 				<Form inverted>
 					<Form.Select
@@ -82,7 +81,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	);
 };
 
-const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, position='top center'}) => {
+const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top center' }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
@@ -117,6 +116,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 				setReportVisible(false);
 			}}
 			position={position}
+			className="user-popup"
 		>
 			<Popup.Header>{userName}</Popup.Header>
 			<Popup.Content>
@@ -158,12 +158,14 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 							View Profile
 						</Button>
 					</List.Item>
-					{!privateGame && <List.Item>
-						<List.Icon name="gavel" />
-						<List.Content>
-							<a onClick={() => setReportVisible(!reportVisible)}>Report</a>
-						</List.Content>
-					</List.Item>}
+					{!privateGame && (
+						<List.Item>
+							<List.Icon name="gavel" />
+							<List.Content>
+								<a onClick={() => setReportVisible(!reportVisible)}>Report</a>
+							</List.Content>
+						</List.Item>
+					)}
 					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
 					{notBlindMode && (
 						<List.Item>
