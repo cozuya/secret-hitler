@@ -101,11 +101,13 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 		socket.emit('sendUser', userInfo); // To force a new playerlist pull
 	};
 
-	const gameStarted = gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted;
-	const userSeated = userInfo && userInfo.isSeated;
-	const notBlindMode = gameInfo && gameInfo.general && !gameInfo.general.blindMode;
-	const privateGame = gameInfo && gameInfo.general && gameInfo.general.private;
+	const gameStarted = gameInfo?.gameState?.isStarted;
+	const userSeated = userInfo?.isSeated;
+	const blindMode = gameInfo?.general?.blindMode;
+	const privateGame = gameInfo?.general?.private;
+	const isMe = userName === userInfo?.userName;
 
+	console.log(userName, userInfo?.userName);
 	return (
 		<Popup
 			inverted
@@ -137,7 +139,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 							</Grid>
 						</List.Content>
 					</List.Item>
-					{userSeated && gameStarted && (
+					{userSeated && gameStarted && !isMe && (
 						<List.Item>
 							<Button
 								fluid
@@ -158,7 +160,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 							View Profile
 						</Button>
 					</List.Item>
-					{!privateGame && (
+					{!privateGame && !isMe && (
 						<List.Item>
 							<List.Icon name="gavel" />
 							<List.Content>
@@ -167,11 +169,11 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 						</List.Item>
 					)}
 					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
-					{notBlindMode && (
+					{!blindMode && !isMe && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
-								<a onClick={() => toggleBlacklist()}>{gameSettings && gameSettings.blacklist.includes(userName) ? 'Unblacklist' : 'Blacklist'}</a>
+								<a onClick={() => toggleBlacklist()}>{gameSettings?.blacklist.includes(userName) ? 'Unblacklist' : 'Blacklist'}</a>
 							</List.Content>
 						</List.Item>
 					)}
