@@ -81,7 +81,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	);
 };
 
-const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top center' }) => {
+const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top center', index }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
@@ -102,6 +102,7 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 	};
 
 	const gameStarted = gameInfo?.gameState?.isStarted;
+	const isTracksFlipped = gameInfo?.gameState?.isTracksFlipped;
 	const userSeated = userInfo?.isSeated;
 	const blindMode = gameInfo?.general?.blindMode;
 	const privateGame = gameInfo?.general?.private;
@@ -120,25 +121,27 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 			position={position}
 			className="user-popup"
 		>
-			<Popup.Header>{userName}</Popup.Header>
+			<Popup.Header>{blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
 			<Popup.Content>
 				<List>
-					<List.Item>
-						<List.Content>
-							<Grid columns={2} divided inverted>
-								<Grid.Row>
-									<Grid.Column textAlign="center" data-tooltip="Overall Elo">
-										<List.Icon name="chart line" />
-										{user && (user.eloOverall || 1600)}
-									</Grid.Column>
-									<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
-										<List.Icon name="calendar alternate outline" />
-										{user && (user.eloSeasonal || 1600)}
-									</Grid.Column>
-								</Grid.Row>
-							</Grid>
-						</List.Content>
-					</List.Item>
+					{!blindMode && (
+						<List.Item>
+							<List.Content>
+								<Grid columns={2} divided inverted>
+									<Grid.Row>
+										<Grid.Column textAlign="center" data-tooltip="Overall Elo">
+											<List.Icon name="chart line" />
+											{user && (user.eloOverall || 1600)}
+										</Grid.Column>
+										<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
+											<List.Icon name="calendar alternate outline" />
+											{user && (user.eloSeasonal || 1600)}
+										</Grid.Column>
+									</Grid.Row>
+								</Grid>
+							</List.Content>
+						</List.Item>
+					)}
 					{userSeated && gameStarted && !isMe && (
 						<List.Item>
 							<Button
@@ -155,12 +158,14 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 							</Button>
 						</List.Item>
 					)}
-					<List.Item>
-						<Button fluid size="small" onClick={() => (window.location.hash = `#/profile/${userName}`)}>
-							View Profile
-						</Button>
-					</List.Item>
-					{!privateGame && !isMe && (
+					{!blindMode && (
+						<List.Item>
+							<Button fluid size="small" onClick={() => (window.location.hash = `#/profile/${userName}`)}>
+								View Profile
+							</Button>
+						</List.Item>
+					)}
+					{!privateGame && (!isMe || (!gameStarted && blindMode)) && (
 						<List.Item>
 							<List.Icon name="gavel" />
 							<List.Content>
@@ -183,4 +188,4 @@ const UserInfo = ({ socket, userInfo, gameInfo, userList, children, userName, po
 	);
 };
 
-export default connect(mapStateToProps, null)(UserInfo);
+export default connect(mapStateToProps, null)(UserPopup);

@@ -9,7 +9,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Popup } from 'semantic-ui-react';
-import UserInfo from '../reusable/UserInfo.jsx';
+import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.modal = Modal;
 
@@ -341,20 +341,20 @@ class Playerlist extends React.Component {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
-										<UserInfo socket={this.props.socket} userName={user.userName}>
+										<UserPopup socket={this.props.socket} userName={user.userName}>
 											<span className={userClasses}>
 												{prefix}
 												{` ${user.userName}`}
 											</span>
-										</UserInfo>
+										</UserPopup>
 									);
 								} else {
 									return (
-										<UserInfo socket={this.props.socket} userName={user.userName}>
+										<UserPopup socket={this.props.socket} userName={user.userName}>
 											<span className={userClasses} ref={popperRef}>
 												{user.userName}
 											</span>
-										</UserInfo>
+										</UserPopup>
 									);
 								}
 							})()}

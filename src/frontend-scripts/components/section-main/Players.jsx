@@ -9,7 +9,7 @@ import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
-import UserInfo from '../reusable/UserInfo.jsx';
+import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
 
@@ -268,7 +268,7 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<UserInfo userName={player.userName} socket={this.props.socket}>
+				<UserPopup userName={player.userName} socket={this.props.socket} index={i}>
 					<div
 						title={
 							isBlind || player.isPrivate
@@ -295,7 +295,7 @@ class Players extends React.Component {
 					>
 						{renderPlayerName(player, i)}
 					</div>
-				</UserInfo>
+				</UserPopup>
 
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
