@@ -1264,6 +1264,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { remakeData, publicPlayersState } = game;
+	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
