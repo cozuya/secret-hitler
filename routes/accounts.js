@@ -674,7 +674,7 @@ module.exports.accounts = torIpsParam => {
 
 	app.post('/account/change-email', ensureAuthenticated, (req, res, next) => {
 		const { email } = req.body;
-		const { verified, username } = req.user;
+		const { username } = req.user;
 
 		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 			res.status(401).json({
@@ -699,12 +699,9 @@ module.exports.accounts = torIpsParam => {
 						}
 
 						account.verification.email = email;
+						account.verified = false;
 						account.save(() => {
-							if (!verified) {
-								setVerify({ username, email, res });
-							} else {
-								res.send();
-							}
+							setVerify({ username, email, res });
 						});
 					});
 				}

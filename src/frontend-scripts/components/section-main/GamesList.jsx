@@ -183,9 +183,16 @@ export class GamesList extends React.Component {
 					);
 				})
 				.sort((a, b) => {
+					const userInGame =
+						userInfo && userInfo.userName && a.userNames && a.userNames.includes(userInfo.userName)
+							? -1
+							: userInfo && userInfo.userName && b.userNames && b.userNames.includes(userInfo.userName)
+							? 1
+							: 0;
+
 					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
 					const diff = Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
-					return diff || sortTypeThenName(a, b);
+					return userInGame || diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
 					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
