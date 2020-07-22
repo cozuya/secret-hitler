@@ -131,7 +131,6 @@ const Account = new Schema({
 	rainbowLossesSeason11: Number,
 	previousDayElo: Number,
 	created: Date,
-	isOnFire: Boolean,
 	lastCompletedGame: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean,
@@ -150,7 +149,12 @@ const Account = new Schema({
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
-	isTournamentMod: Boolean
+	isTournamentMod: Boolean,
+	pastAwards: Array, // [String]
+	eloPercentile: {
+		seasonal: Number,
+		overall: Number
+	}
 });
 
 Account.plugin(passportLocalMongoose);

@@ -6,6 +6,13 @@ const data = {
 	dailyLeaderboard: []
 };
 
+const percentileData = {
+	totalSeasonalPlayers: 0,
+	totalOverallPlayers: 0,
+	overallPlayers: [],
+	seasonalPlayers: []
+};
+
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
@@ -18,15 +25,59 @@ Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
 		});
 	})
 	.then(() => {
-		Account.find({ 'games.2': { $exists: true } })
+		Account.count({
+			'games.2': { $exists: true },
+			eloOverall: { $ne: 1600 },
+			isBanned: { $ne: true },
+			lastCompletedGame: { $gte: new Date(Date.now() - 60000 * 60 * 24 * 120) }
+		}).then(result => (percentileData.totalOverallPlayers = result));
+		Account.count({
+			'games.2': { $exists: true },
+			eloSeason: { $ne: 1600 },
+			isBanned: { $ne: true },
+			lastCompletedGame: { $gte: new Date(Date.now() - 60000 * 60 * 24 * 120) }
+		}).then(result => (percentileData.totalSeasonalPlayers = result));
+		Account.find({
+			'games.2': { $exists: true },
+			eloSeason: { $ne: 1600 },
+			isBanned: { $ne: true },
+			lastCompletedGame: { $gte: new Date(Date.now() - 60000 * 60 * 24 * 120) }
+		})
+			.sort({ eloSeason: 1 })
 			.cursor()
 			.eachAsync(account => {
-				if (account.eloSeason > 1620 && !account.isBanned) {
-					data.seasonalLeaderboard.push({
-						userName: account.username,
-						elo: account.eloSeason
-					});
-				}
+				percentileData.seasonalPlayers.push({ username: account.username, eloSeason: account.eloSeason });
+			})
+			.then(() => {
+				percentileData.seasonalPlayers = percentileData.seasonalPlayers.map((player, i) => {
+					return { username: player.username, eloSeason: player.eloSeason, percentile: 100 * ((i + 1 - 0.5) / percentileData.totalSeasonalPlayers) };
+				});
+			});
+		Account.find({
+			'games.2': { $exists: true },
+			eloOverall: { $ne: 1600 },
+			isBanned: { $ne: true },
+			lastCompletedGame: { $gte: new Date(Date.now() - 60000 * 60 * 24 * 120) }
+		})
+			.sort({ eloOverall: 1 })
+			.cursor()
+			.eachAsync(account => {
+				percentileData.overallPlayers.push({ username: account.username, eloOverall: account.eloOverall });
+			})
+			.then(() => {
+				percentileData.overallPlayers = percentileData.overallPlayers.map((player, i) => {
+					return { username: player.username, eloOverall: player.eloOverall, percentile: 100 * ((i + 1 - 0.5) / percentileData.totalOverallPlayers) };
+				});
+			});
+	})
+	.then(() => {
+		Account.find({ 'games.2': { $exists: true }, eloSeason: { $gte: 1620 }, isBanned: { $ne: true } })
+			.cursor()
+			.eachAsync(account => {
+				data.seasonalLeaderboard.push({
+					userName: account.username,
+					elo: account.eloSeason
+				});
 				account.previousDayElo = account.eloSeason;
 				account.save();
 			})
