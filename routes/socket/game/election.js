@@ -1586,6 +1586,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 
 					game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
 
+					if (!game.publicPlayersState[chancellorIndex]) return;
 					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
 					chat.chat = [{ text: 'The election passes.' }];
 
