@@ -681,6 +681,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
+	if (!game.private.currentChancellorOptions) return;
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (game.gameState.isGameFrozen) {
