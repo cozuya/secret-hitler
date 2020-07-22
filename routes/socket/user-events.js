@@ -187,7 +187,7 @@ const checkStartConditions = game => {
 		game.gameState.cancellStart = true;
 		game.general.status = displayWaitingForPlayers(game);
 	} else if (
-		(!game.gameState.isStarted &&
+		(game.publicPlayersState.length <= game.general.maxPlayersCount &&
 			game.publicPlayersState.length >= game.general.minPlayersCount &&
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
