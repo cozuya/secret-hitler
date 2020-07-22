@@ -1442,6 +1442,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		}, 400);
 		setTimeout(
 			() => {
+				if (!seatedPlayers[presidentIndex].cardFlingerState[0]) return;
 				seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = seatedPlayers[
 					presidentIndex
 				].cardFlingerState[1].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
