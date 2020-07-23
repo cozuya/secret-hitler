@@ -609,6 +609,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 					sendInProgressGameUpdate(game);
 					setTimeout(
 						() => {
+							if (!president.cardFlingerState[0]) return;
 							president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
 							president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = 'notification';
 							chancellor.cardFlingerState = [];
