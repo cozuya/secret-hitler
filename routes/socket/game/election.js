@@ -1278,6 +1278,7 @@ module.exports.selectPresidentPolicy = selectPresidentPolicy;
 module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
+	if (!seatedPlayers) return;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
 
