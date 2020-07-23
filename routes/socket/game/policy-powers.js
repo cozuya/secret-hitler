@@ -1234,7 +1234,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	// Make sure the target is valid
 	if (
 		playerIndex === presidentIndex ||
-		selectedPlayer.isDead ||
+		(selectedPlayer && selectedPlayer.isDead) ||
 		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
 	) {
 		return;
