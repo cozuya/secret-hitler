@@ -912,6 +912,7 @@ class Settings extends React.Component {
 								<div className="ui basic modal cardbackinfo">
 									<div className="header">Cardback info and terms of use</div>
 									<p>Rainbow players only. Can only upload an image once per 30 second.</p>
+									<p>Cardback dimensions are 70x95 pixels, images larger than that will be scaled down to fit.</p>
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
