@@ -47,7 +47,7 @@ const displayWaitingForPlayers = game => {
 
 		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 	}
-	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount).filter(
+	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount + 1).filter(
 		value => !game.general.excludedPlayerCount.includes(value)
 	);
 
