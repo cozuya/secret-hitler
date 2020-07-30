@@ -1264,6 +1264,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { remakeData, publicPlayersState } = game;
+	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
@@ -3783,8 +3784,11 @@ module.exports.handlePlayerReport = (passport, data) => {
 	}
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
-	const blindModeAnonymizedPlayer = games[data.uid].general.blindMode
-		? games[data.uid].gameState.isStarted
+	const game = games[data.uid];
+	if (!game) return;
+
+	const blindModeAnonymizedPlayer = game.general.blindMode
+		? game.gameState.isStarted
 			? `${data.reportedPlayer.split(' ')[0]} Anonymous`
 			: 'Anonymous'
 		: data.reportedPlayer;
@@ -3802,15 +3806,13 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}
 	};
 
-	const game = games[data.uid];
-
 	if (game) {
-		if (!game.reportCounts) game.reportCounts = {};
-		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
-		if (game.reportCounts[passport.user] >= 4) {
+		if (!game.private.reportCounts) game.private.reportCounts = {};
+		if (!game.private.reportCounts[passport.user]) game.private.reportCounts[passport.user] = 0;
+		if (game.private.reportCounts[passport.user] >= 4) {
 			return;
 		}
-		game.reportCounts[passport.user]++;
+		game.private.reportCounts[passport.user]++;
 	}
 
 	try {
