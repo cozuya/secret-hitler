@@ -145,7 +145,6 @@ module.exports.makeReport = (data, game, type = 'report') => {
 					if (matches.length > 0) report.content += `\n__**Matching IPs**__: ${matches.join(', ')}`;
 					report.content += `\n**<https://secrethitler.io/game/#/table/${uid}>**`;
 					sendReport(game, report, data, type);
-					console.log(report.content);
 				});
 		});
 	}
