@@ -723,6 +723,7 @@ export class App extends React.Component {
 							version={this.props.version}
 							gameList={this.props.gameList}
 							allEmotes={this.state.allEmotes}
+							generalChats={this.props.generalChats}
 						/>
 
 						{(() => {
