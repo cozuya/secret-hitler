@@ -1172,8 +1172,7 @@ class Gamechat extends React.Component {
 											if (result.value) {
 												Swal.fire({
 													title: 'Enter a reason for deleting this game, leave blank if dead',
-													input: 'text',
-													showCancelButton: false
+													input: 'text'
 												}).then(result => {
 													const reason = result.value || 'Dead';
 													modDeleteGame(reason);
