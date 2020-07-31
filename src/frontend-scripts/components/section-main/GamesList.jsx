@@ -32,7 +32,7 @@ export class GamesList extends React.Component {
 	}
 
 	renderSticky = () => {
-		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
+		if (this.state.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
 			console.log(this.props.generalChats.sticky);
 			const dismissSticky = () => {
 				this.setState({ stickyEnabled: false });
