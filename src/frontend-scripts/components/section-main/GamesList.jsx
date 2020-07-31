@@ -38,8 +38,7 @@ export class GamesList extends React.Component {
 			};
 
 			return (
-				<Message onDismiss={dismissSticky} color="black">
-					Sticky:
+				<Message onDismiss={dismissSticky} color="blue">
 					{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
 				</Message>
 			);
