@@ -3,8 +3,8 @@ const Account = require('../../models/account');
 const { newStaff } = require('./models');
 
 module.exports.makeReport = (data, game, type = 'report') => {
-	// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
-	if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
+	// No Auto-Reports, or Mod Pings from Custom, Casual, Unlisted, or Private Games
+	if (!game || game.customGameSettings.enabled || game.general.casualGame || game.general.unlisted || game.general.private) return;
 	const { player, seat, role, election, situation, uid, gameType } = data;
 
 	let report;
