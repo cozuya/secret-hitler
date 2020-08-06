@@ -653,6 +653,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
+	if (!game.private.seatedPlayers[playerIndex]) return;
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
 	if (playerIndex === presidentIndex) {
