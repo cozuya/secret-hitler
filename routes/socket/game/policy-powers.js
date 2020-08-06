@@ -659,6 +659,10 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 		return;
 	}
 
+	if (game.gameState.phase !== 'selectPartyMembershipInvestigate') {
+		return;	
+	}
+
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
 
@@ -864,6 +868,10 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'selectPartyMembershipInvestigateReverse') {
+		return;	
 	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigateReverse && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -1088,6 +1096,10 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.gameState.phase !== 'specialElection') {
+		return;	
+	}
+
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
@@ -1241,6 +1253,10 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'execution') {
+		return;	
 	}
 
 	const nonPresidentChat = {
