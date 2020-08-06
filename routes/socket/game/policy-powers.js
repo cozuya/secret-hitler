@@ -476,6 +476,10 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.gameState.phase !== 'presidentVoteOnBurn') {
+		return;	
+	}
+
 	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectBurnCard = true;
 
@@ -1245,6 +1249,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	// Make sure the target is valid
 	if (
 		playerIndex === presidentIndex ||
+		!selectedPlayer ||
 		selectedPlayer.isDead ||
 		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
 	) {
