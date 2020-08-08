@@ -11,19 +11,21 @@ const {
 	updateSeatedUser,
 	handleUpdateWhitelist,
 	handleAddNewClaim,
-	handleModerationAction,
-	handlePlayerReport,
-	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
-	handleSubscribeModChat,
-	handleModPeekVotes,
-	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
 	handleUpdatedTheme
 } = require('./user-events');
+const {
+	handleSubscribeModChat,
+	handleGameFreeze,
+	handleModPeekVotes,
+	handleModerationAction,
+	handlePlayerReport,
+	handlePlayerReportDismiss
+} = require('./user-events-moderation');
 const {
 	sendPlayerNotes,
 	sendUserReports,
