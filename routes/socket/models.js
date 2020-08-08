@@ -6,7 +6,9 @@ const BannedIP = require('../../models/bannedIP');
 const fs = require('fs');
 const emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
-	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
+	if (file.name.endsWith('.png')) {
+		emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
+	}
 });
 
 // Ordered list of sizes, used for good packing of images with a fixed size.
@@ -45,7 +47,10 @@ const numEmotes = emotes.length;
 let sheetSize = [10, 10];
 sizeMap.forEach(size => {
 	const space = size[0] * size[1];
-	if (space >= numEmotes && space < sheetSize[0] * sheetSize[1]) sheetSize = size;
+
+	if (space >= numEmotes && space < sheetSize[0] * sheetSize[1]) {
+		sheetSize = size;
+	}
 });
 
 let curCell = 0;
@@ -81,38 +86,75 @@ module.exports.newStaff = {
 
 const staffList = [];
 Account.find({ staffRole: { $exists: true } }).then(accounts => {
-	accounts.forEach(user => (staffList[user.username] = user.staffRole));
+	accounts.forEach(user => {
+		staffList[user.username] = user.staffRole;
+	});
 });
 
 module.exports.getPowerFromRole = role => {
-	if (role === 'admin') return 3;
-	if (role === 'editor') return 2;
-	if (role === 'moderator') return 1;
-	if (role === 'altmod') return 0; // Report AEM delays will check for >= 0
-	if (role === 'trialmod') return 0;
-	if (role === 'contributor') return -1;
+	if (role === 'admin') {
+		return 3;
+	}
+	if (role === 'editor') {
+		return 2;
+	}
+	if (role === 'moderator') {
+		return 1;
+	}
+	if (role === 'altmod') {
+		return 0; // Report AEM delays will check for >= 0
+	}
+	if (role === 'trialmod') {
+		return 0;
+	}
+
 	return -1;
 };
 
 module.exports.getPowerFromName = name => {
-	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
-	if (module.exports.newStaff.altmodUserNames.includes(name)) return getPowerFromRole('altmod');
-	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
-	if (module.exports.newStaff.contributorUserNames.includes(name)) return getPowerFromRole('contributor');
+	if (module.exports.newStaff.editorUserNames.includes(name)) {
+		return getPowerFromRole('editor');
+	}
+	if (module.exports.newStaff.modUserNames.includes(name)) {
+		return getPowerFromRole('moderator');
+	}
+	if (module.exports.newStaff.altmodUserNames.includes(name)) {
+		return getPowerFromRole('altmod');
+	}
+	if (module.exports.newStaff.trialmodUserNames.includes(name)) {
+		return getPowerFromRole('trialmod');
+	}
+	if (module.exports.newStaff.contributorUserNames.includes(name)) {
+		return getPowerFromRole('contributor');
+	}
 
 	const user = module.exports.userList.find(user => user.userName === name);
-	if (user) return getPowerFromRole(user.staffRole);
-	else if (staffList[name]) return getPowerFromRole(staffList[name]);
-	else return -1;
+	if (user) {
+		return getPowerFromRole(user.staffRole);
+	} else if (staffList[name]) {
+		return getPowerFromRole(staffList[name]);
+	} else {
+		return -1;
+	}
 };
 
 module.exports.getPowerFromUser = user => {
-	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
-	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) return getPowerFromRole('altmod');
-	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
-	if (module.exports.newStaff.contributorUserNames.includes(user.userName)) return getPowerFromRole('contributor');
+	if (module.exports.newStaff.editorUserNames.includes(user.userName)) {
+		return getPowerFromRole('editor');
+	}
+	if (module.exports.newStaff.modUserNames.includes(user.userName)) {
+		return getPowerFromRole('moderator');
+	}
+	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) {
+		return getPowerFromRole('altmod');
+	}
+	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) {
+		return getPowerFromRole('trialmod');
+	}
+	if (module.exports.newStaff.contributorUserNames.includes(user.userName)) {
+		return getPowerFromRole('contributor');
+	}
+
 	return getPowerFromRole(user.staffRole);
 };
 
@@ -126,10 +168,14 @@ module.exports.profiles = (() => {
 	const get = username => profiles.find(p => p._id === username);
 	const remove = username => {
 		const i = profiles.findIndex(p => p._id === username);
-		if (i > -1) return profiles.splice(i, 1)[0];
+		if (i > -1) {
+			return profiles.splice(i, 1)[0];
+		}
 	};
 	const push = profile => {
-		if (!profile) return profile;
+		if (!profile) {
+			return profile;
+		}
 		remove(profile._id);
 		profiles.unshift(profile);
 		profiles.splice(MAX_SIZE);
@@ -190,8 +236,9 @@ const userListEmitter = {
 			userListEmitter.state = module.exports.userList.length / 10;
 			return;
 		}
-		if (userListEmitter.state > 0) userListEmitter.state--;
-		else {
+		if (userListEmitter.state > 0) {
+			userListEmitter.state--;
+		} else {
 			userListEmitter.send = false;
 			io.sockets.emit('fetchUser'); // , {
 			// 	list: module.exports.formattedUserList()
@@ -202,8 +249,8 @@ const userListEmitter = {
 
 module.exports.userListEmitter = userListEmitter;
 
-module.exports.formattedGameList = () => {
-	return Object.keys(module.exports.games).map(gameName => ({
+module.exports.formattedGameList = () =>
+	Object.keys(module.exports.games).map(gameName => ({
 		name: games[gameName].general.name,
 		flag: games[gameName].general.flag,
 		userNames: games[gameName].publicPlayersState.map(val => val.userName),
@@ -235,7 +282,6 @@ module.exports.formattedGameList = () => {
 					};
 				}
 			}
-			return undefined;
 		})(),
 		experiencedMode: games[gameName].general.experiencedMode || undefined,
 		disableChat: games[gameName].general.disableChat || undefined,
@@ -254,16 +300,19 @@ module.exports.formattedGameList = () => {
 		isCustomGame: games[gameName].customGameSettings.enabled,
 		isUnlisted: games[gameName].general.unlisted || undefined
 	}));
-};
 
 const gameListEmitter = {
 	state: 0,
 	send: false,
 	timer: setInterval(() => {
 		// 3 second delay, instant send
-		if (gameListEmitter.state > 0) gameListEmitter.state--;
-		else {
-			if (!gameListEmitter.send) return;
+		if (gameListEmitter.state > 0) {
+			gameListEmitter.state--;
+		} else {
+			if (!gameListEmitter.send) {
+				return;
+			}
+
 			gameListEmitter.send = false;
 			io.sockets.emit('gameList', module.exports.formattedGameList());
 			gameListEmitter.state = 30;
@@ -277,12 +326,11 @@ module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' }
 
 const bypassKeys = [];
 
-module.exports.verifyBypass = key => {
-	return bypassKeys.indexOf(key) >= 0;
-};
+module.exports.verifyBypass = key => bypassKeys.indexOf(key) >= 0;
 
 module.exports.consumeBypass = (key, user, ip) => {
 	const idx = bypassKeys.indexOf(key);
+
 	if (idx >= 0) {
 		bypassKeys.splice(idx, 1);
 		new ModAction({
@@ -311,8 +359,10 @@ module.exports.createNewBypass = () => {
 
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
-BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
-	if (err) throw err;
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, err => {
+	if (err) {
+		throw err;
+	}
 });
 const banLength = {
 	small: 18 * 60 * 60 * 1000, // 18 hours
@@ -321,12 +371,15 @@ const banLength = {
 	big: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 module.exports.testIP = (IP, callback) => {
-	if (!IP) callback('Bad IP!');
-	else if (module.exports.ipbansNotEnforced.status) callback(null);
-	else {
+	if (!IP) {
+		callback('Bad IP!');
+	} else if (module.exports.ipbansNotEnforced.status) {
+		callback(null);
+	} else {
 		BannedIP.find({ ip: IP }, (err, ips) => {
-			if (err) callback(err);
-			else {
+			if (err) {
+				callback(err);
+			} else {
 				let date;
 				let unbannedTime;
 				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];

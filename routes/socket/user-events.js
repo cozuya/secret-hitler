@@ -2263,15 +2263,20 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  */
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
-	if (!user || user.isPrivate) return;
+	if (!user || user.isPrivate || !data.chat) {
+		return;
+	}
 
-	if (!data.chat) return;
-	const chat = (data.chat = data.chat.trim());
-	if (data.chat.length > 300 || !data.chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(data.chat)) return;
+	const chat = data.chat.trim();
+
+	if (chat.length > 300 || !chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(chat)) {
+		return;
+	}
 
 	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
 	const curTime = new Date();
+
 	const lastMessage = generalChats.list
 		.filter(chat => chat.userName === user.userName)
 		.reduce(
@@ -2283,11 +2288,16 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 	if (lastMessage.chat) {
 		let leniency; // How much time (in seconds) must pass before allowing the message.
-		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 3;
-		else leniency = 0.5;
+		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) {
+			leniency = 3;
+		} else {
+			leniency = 0.5;
+		}
 
 		const timeSince = curTime - lastMessage.time;
-		if (timeSince < leniency * 1000) return; // Prior chat was too recent.
+		if (timeSince < leniency * 1000) {
+			return; // Prior chat was too recent.
+		}
 	}
 
 	for (repl of chatReplacements) {

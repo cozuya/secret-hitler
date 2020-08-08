@@ -278,10 +278,9 @@ module.exports.sendReplayGameChats = (socket, uid) => {
  * @param {boolean} isAEM - user AEM designation
  */
 module.exports.sendGameList = (socket, isAEM) => {
-	// eslint-disable-line one-var
 	if (socket) {
-		let gameList = formattedGameList();
-		gameList = gameList.filter(game => isAEM || (game && !game.isUnlisted));
+		const gameList = formattedGameList().filter(game => isAEM || (game && !game.isUnlisted));
+
 		socket.emit('gameList', gameList);
 	} else {
 		gameListEmitter.send = true;

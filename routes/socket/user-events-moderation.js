@@ -20,7 +20,6 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
-// const crypto = require('crypto');
 const https = require('https');
 const { sendInProgressGameUpdate } = require('./util.js');
 const { obfIP } = require('./ip-obf');
