@@ -1,14 +1,5 @@
 import { combineReducers } from 'redux';
-import {
-	UPDATE_USER,
-	UPDATE_MIDSECTION,
-	UPDATE_GAMELIST,
-	UPDATE_GAMEINFO,
-	UPDATE_USERLIST,
-	UPDATE_GENERALCHATS,
-	TOGGLE_NOTES,
-	TOGGLE_PLAYER_NOTES
-} from '../actions/actions.js';
+import { UPDATE_USER, UPDATE_MIDSECTION, UPDATE_GAMELIST, UPDATE_GAMEINFO, UPDATE_USERLIST, TOGGLE_NOTES, TOGGLE_PLAYER_NOTES } from '../actions/actions.js';
 
 const userInfo = (state = {}, action) => {
 	switch (action.type) {
@@ -73,15 +64,6 @@ const userList = (state = {}, action) => {
 	return state;
 };
 
-const generalChats = (state = {}, action) => {
-	switch (action.type) {
-		case UPDATE_GENERALCHATS:
-			state = action.info;
-			break;
-	}
-	return state;
-};
-
 const profile = (state = { status: 'INITIAL' }, action) => {
 	switch (action.type) {
 		case 'REQUEST_PROFILE':
@@ -141,7 +123,6 @@ export default combineReducers({
 	gameList,
 	gameInfo,
 	userList,
-	generalChats,
 	profile,
 	replay,
 	version,

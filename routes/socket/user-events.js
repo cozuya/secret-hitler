@@ -34,7 +34,7 @@ const displayWaitingForPlayers = game => {
 		if (value > game.publicPlayersState.length) {
 			const count = value - game.publicPlayersState.length;
 
-			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+			return `Waiting for ${count} more player${count !== 1 ? 's' : ''}..`;
 		}
 	}
 };
@@ -2364,7 +2364,8 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		if (generalChats.list.length > 99) {
 			generalChats.list.shift();
 		}
-		io.sockets.emit('generalChats', generalChats);
+
+		io.sockets.emit('newGeneralChat', newChat);
 	}
 };
 

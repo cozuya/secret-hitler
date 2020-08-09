@@ -2,17 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Main from './section-main/Main.jsx';
 import Gamenotes from './Gamenotes.jsx';
-import {
-	updateUser,
-	updateMidsection,
-	updateGameList,
-	updateGameInfo,
-	updateUserList,
-	updateGeneralChats,
-	updateVersion,
-	fetchProfile,
-	fetchReplay
-} from '../actions/actions.js';
+import { updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateVersion, fetchProfile, fetchReplay } from '../actions/actions.js';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
@@ -261,10 +251,6 @@ export class App extends React.Component {
 
 			userInfo.isSeated = true;
 			dispatch(updateUser(userInfo));
-		});
-
-		socket.on('generalChats', chats => {
-			dispatch(updateGeneralChats(chats));
 		});
 
 		socket.on('reportUpdate', reportStatus => {
@@ -735,7 +721,6 @@ export class App extends React.Component {
 										gameInfo={this.props.gameInfo}
 										userInfo={this.props.userInfo}
 										userList={this.props.userList}
-										generalChats={this.props.generalChats}
 										socket={socket}
 										midSection={this.props.midSection}
 										allEmotes={this.state.allEmotes}
@@ -756,7 +741,6 @@ App.propTypes = {
 	midSection: PropTypes.string,
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
-	generalChats: PropTypes.object,
 	userList: PropTypes.object,
 	version: PropTypes.object,
 	socket: PropTypes.object,

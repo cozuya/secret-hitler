@@ -61,15 +61,6 @@ export function updateUserList(userList) {
 	};
 }
 
-export const UPDATE_GENERALCHATS = 'UPDATE_GENERALCHATS';
-
-export function updateGeneralChats(info) {
-	return {
-		type: UPDATE_GENERALCHATS,
-		info
-	};
-}
-
 export const updateActiveStats = activeStat => ({
 	type: 'UPDATE_ACTIVE_STATS',
 	activeStat

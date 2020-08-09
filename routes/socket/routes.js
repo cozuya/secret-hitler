@@ -58,9 +58,9 @@ const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
-let modUserNames = [],
-	editorUserNames = [],
-	adminUserNames = [];
+let modUserNames = [];
+let editorUserNames = [];
+let adminUserNames = [];
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date();
@@ -139,15 +139,11 @@ const ensureAuthenticated = socket => {
 	if (socket.handshake && socket.handshake.session) {
 		const { passport } = socket.handshake.session;
 
-		return Boolean(passport && passport.user && Object.keys(passport).length);
+		return Boolean(passport && passport.user);
 	}
 };
 
-const findGame = data => {
-	if (games && data && data.uid) {
-		return games[data.uid];
-	}
-};
+const findGame = data => games && data && data.uid && games[data.uid];
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {

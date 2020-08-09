@@ -18,29 +18,61 @@ export default class Generalchat extends React.Component {
 		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
 		emoteColonIndex: -1,
-		excludedColonIndices: []
+		excludedColonIndices: [],
+		generalChats: {
+			list: []
+		}
 	};
 
 	componentDidMount() {
+		const { socket } = this.props;
+
 		if (this.scrollbar) {
 			this.scrollbar.scrollToBottom();
 		}
+
+		socket.on('allGeneralChats', generalChats => {
+			this.setState({
+				generalChats
+			});
+		});
+
+		socket.on('newGeneralChat', chat => {
+			this.setState(prevState => {
+				const { list } = prevState.generalChats;
+
+				if (list.length > 99) {
+					list.shift();
+				}
+
+				return {
+					generalChats: {
+						...prevState.generalChats,
+						list: list.concat(chat)
+					}
+				};
+			});
+		});
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const { generalChats } = this.props;
-		const nextGeneralChats = nextProps.generalChats;
+	componentWillUnmount() {
+		const { socket } = this.props;
 
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
+		socket.off('allGeneralChats');
+		socket.off('newGeneralChat');
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		const { lock, generalChats, stickyEnabled } = this.state;
+
+		if (!lock) {
+			this.scrollbar.scrollToBottom();
+		}
+
+		if (!stickyEnabled && generalChats.sticky !== prevState.generalChats.sticky) {
 			this.setState({
 				stickyEnabled: true
 			});
-		}
-	}
-
-	componentDidUpdate() {
-		if (!this.state.lock) {
-			this.scrollbar.scrollToBottom();
 		}
 	}
 
@@ -333,7 +365,8 @@ export default class Generalchat extends React.Component {
 
 	renderChats() {
 		let timestamp;
-		const { userInfo, userList, generalChats } = this.props;
+		const { generalChats } = this.state;
+		const { userInfo, userList } = this.props;
 		const time = Date.now();
 
 		/**
@@ -428,7 +461,8 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderSticky() {
-		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
+		const { stickyEnabled, generalChats } = this.state;
+		if (stickyEnabled && generalChats.sticky) {
 			const dismissSticky = () => {
 				this.setState({ stickyEnabled: false });
 			};
@@ -437,7 +471,7 @@ export default class Generalchat extends React.Component {
 				<div className="sticky">
 					<span>
 						<span>Sticky: </span>
-						{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
+						{processEmotes(generalChats.sticky, true, this.props.allEmotes)}
 					</span>
 					<i className="remove icon" onClick={dismissSticky} />
 				</div>
@@ -523,7 +557,6 @@ export default class Generalchat extends React.Component {
 }
 
 Generalchat.defaultProps = {
-	generalChats: {},
 	userInfo: {}
 };
 
@@ -531,7 +564,6 @@ Generalchat.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	generalChats: PropTypes.object,
 	userList: PropTypes.object,
 	allEmotes: PropTypes.object
 };
