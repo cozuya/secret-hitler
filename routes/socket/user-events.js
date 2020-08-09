@@ -409,6 +409,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 		updateUserStatus(passport, null);
 		socket.emit('gameUpdate', {});
 	}
+
 	sendGameList();
 };
 
@@ -2441,7 +2442,11 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-					if (userIdx !== -1) userList.splice(userIdx, 1);
+
+					if (userIdx !== -1) {
+						userList.splice(userIdx, 1);
+					}
+
 					userList.push(userListInfo);
 					sendUserList();
 				}
@@ -2509,7 +2514,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 			delete sockets[oldSocketID];
 		}
 
-		const reconnectingUser = game ? game.publicPlayersState.find(player => player.userName === user) : undefined;
+		const reconnectingUser = game && game.publicPlayersState.find(player => player.userName === user);
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
 			reconnectingUser.connected = true;
@@ -2529,8 +2534,6 @@ module.exports.checkUserStatus = (socket, callback) => {
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
 				}
-
-				// destroySession(username);
 			};
 
 			Account.findOne({ username: user }, function(err, account) {

@@ -145,13 +145,13 @@ const ensureAuthenticated = socket => {
 
 const findGame = data => games && data && data.uid && games[data.uid];
 
-const ensureInGame = (passport, game) => {
-	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
-		const player = game.publicPlayersState.find(player => player.userName === passport.user);
-
-		return Boolean(player);
-	}
-};
+const ensureInGame = (passport, game) =>
+	game &&
+	game.publicPlayersState &&
+	game.gameState &&
+	passport &&
+	passport.user &&
+	Boolean(game.publicPlayersState.find(player => player.userName === passport.user));
 
 const gatherStaffUsernames = () => {
 	Account.find({ staffRole: { $exists: true } })
@@ -198,17 +198,26 @@ module.exports.socketRoutes = () => {
 				Account.findOne({ username: passport.user }).then(account => {
 					if (
 						account.staffRole &&
-						account.staffRole.length > 0 &&
+						account.staffRole.length &&
 						account.staffRole !== 'trialmod' &&
 						account.staffRole !== 'altmod' &&
 						account.staffRole !== 'veteran'
 					) {
 						isAEM = true;
 					}
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
-					if (account.isTournamentMod) isTourneyMod = true;
+
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') {
+						isTrial = true;
+					}
+
+					if (account.isTournamentMod) {
+						isTourneyMod = true;
+					}
 				});
 			}
+
+			socket.join('gamelistEmitSubscription');
+			socket.join('rightSidebarEmitSubscription');
 
 			sendGameList(socket, isAEM);
 
@@ -223,9 +232,12 @@ module.exports.socketRoutes = () => {
 				};
 				const firstVerNew = (v1, v2) => {
 					for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-						if (!v2[i]) return true;
-						if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
-						if (v1[i] > v2[i]) return true;
+						if (!v2[i] || v1[i] > v2[i]) {
+							return true;
+						}
+						if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) {
+							return false;
+						}
 					}
 					return true;
 				};
@@ -548,6 +560,11 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('updateUserStatus', (type, gameId) => {
+				if (!gameId) {
+					socket.join('gamelistEmitSubscription');
+					sendGameList(socket);
+				}
+
 				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game);

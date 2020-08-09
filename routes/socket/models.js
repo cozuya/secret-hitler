@@ -314,7 +314,7 @@ const gameListEmitter = {
 			}
 
 			gameListEmitter.send = false;
-			io.sockets.emit('gameList', module.exports.formattedGameList());
+			io.sockets.in('gamelistEmitSubscription').emit('gameList', module.exports.formattedGameList());
 			gameListEmitter.state = 30;
 		}
 	}, 100)

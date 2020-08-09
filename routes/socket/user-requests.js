@@ -194,6 +194,7 @@ module.exports.sendUserGameSettings = socket => {
 			const userListNames = userList.map(user => user.userName);
 
 			getProfile(passport.user);
+
 			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
@@ -226,6 +227,7 @@ module.exports.sendUserGameSettings = socket => {
 				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
 				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 				userList.push(userListInfo);
+
 				sendUserList();
 			}
 
@@ -313,6 +315,7 @@ module.exports.sendGeneralChats = socket => {
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
+
 	if (user) {
 		user.status = {
 			type:
@@ -356,6 +359,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		}
 
 		socket.join(uid);
+		socket.leave('gamelistEmitSubscription');
 		sendInProgressGameUpdate(game);
 		socket.emit('joinGameRedirect', game.general.uid);
 	} else {
