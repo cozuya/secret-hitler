@@ -53,6 +53,8 @@ export default class Generalchat extends React.Component {
 				};
 			});
 		});
+
+		socket.emit('getGeneralChats');
 	}
 
 	componentWillUnmount() {

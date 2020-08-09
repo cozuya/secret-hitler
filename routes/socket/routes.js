@@ -3,7 +3,7 @@ const {
 	handleUpdatedReportGame,
 	handleAddNewGame,
 	handleAddNewGameChat,
-	handleNewGeneralChat,
+	handleAddNewGeneralChat,
 	handleUpdatedGameSettings,
 	handleSocketDisconnect,
 	handleUserLeaveGame,
@@ -210,7 +210,6 @@ module.exports.socketRoutes = () => {
 				});
 			}
 
-			sendGeneralChats(socket);
 			sendGameList(socket, isAEM);
 
 			let isRestricted = true;
@@ -373,6 +372,10 @@ module.exports.socketRoutes = () => {
 				handleUpdatedTheme(socket, passport, data);
 			});
 
+			socket.on('getGeneralChats', () => {
+				sendGeneralChats(socket);
+			});
+
 			socket.on('updateModAction', data => {
 				if (authenticated && isAEM) {
 					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
@@ -423,7 +426,7 @@ module.exports.socketRoutes = () => {
 				if (isRestricted) return;
 
 				if (authenticated) {
-					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
+					handleAddNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			});
 			socket.on('leaveGame', data => {

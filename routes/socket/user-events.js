@@ -2261,7 +2261,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  */
-module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+module.exports.handleAddNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate || !data.chat) {
 		return;
