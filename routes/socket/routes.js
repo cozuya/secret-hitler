@@ -562,7 +562,10 @@ module.exports.socketRoutes = () => {
 			socket.on('updateUserStatus', (type, gameId) => {
 				if (!gameId) {
 					socket.join('gamelistEmitSubscription');
+					socket.join('rightSidebarEmitSubscription');
 					sendGameList(socket);
+					sendGeneralChats(socket);
+					sendUserList(socket);
 				}
 
 				const game = findGame({ uid: gameId });

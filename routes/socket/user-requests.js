@@ -219,7 +219,8 @@ module.exports.sendUserGameSettings = socket => {
 					status: {
 						type: 'none',
 						gameId: null
-					}
+					},
+					isRightSidebarEnabledWhileInGame: account.gameSettings.enableRightSidebarInGame
 				};
 
 				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
@@ -343,6 +344,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games[uid];
 	const { passport } = socket.handshake.session;
+	const user = userList.find(user => user.userName === passport.user);
 
 	if (game) {
 		if (passport && Object.keys(passport).length) {
@@ -360,6 +362,11 @@ module.exports.sendGameInfo = (socket, uid) => {
 
 		socket.join(uid);
 		socket.leave('gamelistEmitSubscription');
+
+		if (!user || !user.isRightSidebarEnabledWhileInGame) {
+			socket.leave('rightSidebarEmitSubscription');
+		}
+
 		sendInProgressGameUpdate(game);
 		socket.emit('joinGameRedirect', game.general.uid);
 	} else {

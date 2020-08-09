@@ -2366,7 +2366,7 @@ module.exports.handleAddNewGeneralChat = (socket, passport, data, modUserNames, 
 			generalChats.list.shift();
 		}
 
-		io.sockets.emit('newGeneralChat', newChat);
+		io.sockets.in('rightSidebarEmitSubscription').emit('newGeneralChat', newChat);
 	}
 };
 
@@ -2435,7 +2435,8 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						status: {
 							type: 'none',
 							gameId: null
-						}
+						},
+						isRightSidebarEnabledWhileInGame: account.gameSettings.enableRightSidebarInGame
 					};
 
 					userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];

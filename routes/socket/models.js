@@ -240,9 +240,7 @@ const userListEmitter = {
 			userListEmitter.state--;
 		} else {
 			userListEmitter.send = false;
-			io.sockets.emit('fetchUser'); // , {
-			// 	list: module.exports.formattedUserList()
-			// });
+			io.sockets.emit('fetchUser');
 		}
 	}, 100)
 };
