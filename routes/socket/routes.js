@@ -384,10 +384,6 @@ module.exports.socketRoutes = () => {
 				handleUpdatedTheme(socket, passport, data);
 			});
 
-			socket.on('getGeneralChats', () => {
-				sendGeneralChats(socket);
-			});
-
 			socket.on('updateModAction', data => {
 				if (authenticated && isAEM) {
 					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
@@ -564,8 +560,6 @@ module.exports.socketRoutes = () => {
 					socket.join('gamelistEmitSubscription');
 					socket.join('rightSidebarEmitSubscription');
 					sendGameList(socket);
-					sendGeneralChats(socket);
-					sendUserList(socket);
 				}
 
 				const game = findGame({ uid: gameId });
