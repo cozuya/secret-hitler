@@ -856,7 +856,7 @@ class Gamechat extends React.Component {
 
 		if (emoteHelperSelectedIndex > emoteHelperElements.length) this.setState({ emoteHelperSelectedIndex: 0 });
 
-		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length) return;
+		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length || !Object.keys(allEmotes).length) return;
 
 		return (
 			<div className="emote-helper-container">
