@@ -131,7 +131,7 @@
 	},
 	"scripts": {
 		"prepare": "npm-run-all --parallel build-css:dark build-css:web",
-		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
+		"format": "prettier \"**/*.{js,scss,json,jsx}\" --write",
 		"dev": "node scripts/processEmotes && concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
