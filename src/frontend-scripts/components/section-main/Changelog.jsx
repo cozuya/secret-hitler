@@ -108,6 +108,8 @@ class Changelog extends React.Component {
 					<li> RyanLockwood: 1905 </li>
 				</ol>
 				
+				<p>Welcome to Season 10! 4-1-2020</p>
+
 				<h4>The top 10 players of season 9 are:</h4>
 				<ul>
 					<li> rags009: 1992 </li>
