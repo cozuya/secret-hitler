@@ -16,6 +16,7 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants')
 const { makeReport } = require('./report.js');
 const { chatReplacements } = require('./chatReplacements');
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
+const ipc = 'node-ipc';
 /**
  * @param {object} game - game to act on.
  * @return {string} status text.
@@ -2381,7 +2382,6 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 	Account.findOne({ username: passport.user })
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
-			const userIdx = userList.findIndex(user => user.userName === passport.user);
 			const aem = account.staffRole && (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin');
 			const veteran = account.staffRole && account.staffRole === 'veteran';
 			for (const setting in data) {
@@ -2444,17 +2444,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
 
-					if (userIdx !== -1) {
-						userList.splice(userIdx, 1);
-					}
-
-					userList.push(userListInfo);
-					sendUserList();
+					ipc.of.cache.emit('userListUpdate', 'update', userListInfo);
 				}
 			}
-
-			const user = userList.find(u => u.userName === passport.user);
-			if (user) user.blacklist = account.gameSettings.blacklist;
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&

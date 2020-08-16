@@ -227,24 +227,6 @@ module.exports.formattedUserList = isAEM => {
 		.filter(user => isAEM || !user.staffIncognito);
 };
 
-const userListEmitter = {
-	state: 0,
-	send: false,
-	timer: setInterval(() => {
-		// 0.01s delay per user (1s per 100), always delay
-		if (!userListEmitter.send) {
-			userListEmitter.state = module.exports.userList.length / 10;
-			return;
-		}
-		if (userListEmitter.state > 0) {
-			userListEmitter.state--;
-		} else {
-			userListEmitter.send = false;
-			io.sockets.emit('fetchUser');
-		}
-	}, 100)
-};
-
 module.exports.userListEmitter = userListEmitter;
 
 module.exports.formattedGameList = () =>
