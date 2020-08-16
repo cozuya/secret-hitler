@@ -105,44 +105,41 @@ module.exports.makeReport = (data, game, type = 'report') => {
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		};
 
-		for (const state of game.publicPlayersState) {
+		game.publicPlayersState.map(state => {
 			if (state.userName !== player) {
 				otherPlayers.push(state.userName);
 			}
-		}
+		});
 
 		Account.findOne({ username: player }, (err, account) => {
 			if (err) console.log(err, 'err finding user');
 			else if (account) data.ip = account.lastConnectedIP || account.signupIP;
 			throwerIP = data.ip;
 
-			const queries = [];
-			for (const otherPlayer of otherPlayers) {
-				queries.push(Account.findOne({ username: otherPlayer }));
-			}
-
-			const matches = [];
-			Promise.all(queries)
-				.then(data => {
-					data.forEach(account => {
+			const matches = {};
+			Account.find({ username: { $in: otherPlayers } })
+				.then(accounts => {
+					accounts.forEach(account => {
 						let ip;
 						if (account) ip = account.lastConnectedIP || account.signupIP;
 
 						if (ip === throwerIP) {
-							let seat, role;
-							for (let i = 0; i < game.private.seatedPlayers.length; i++) {
-								if (game.private.seatedPlayers[i].userName === account.username) {
-									seat = i;
-									role = game.private.seatedPlayers[i].role.cardName;
-								}
-							}
-
-							matches.push(`${account.username} {${seat + 1}} (${role})`);
+							const seat = game.private.seatedPlayers.findIndex(elem => elem.userName === account.username);
+							matches[seat] = `${account.username} {${seat + 1}}`;
 						}
 					});
 				})
 				.then(() => {
-					if (matches.length > 0) report.content += `\n__**Matching IPs**__: ${matches.join(', ')}`;
+					const sortedSeats = Object.keys(matches).sort();
+					if (sortedSeats.length > 0) {
+						const sortedMatches = [];
+
+						for (const seat of sortedSeats) {
+							sortedMatches.push(matches[seat]);
+						}
+
+						report.content += `\n__**Matching IPs**__: ${sortedMatches.join(', ')}`;
+					}
 					report.content += `\n**<https://secrethitler.io/game/#/table/${uid}>**`;
 					sendReport(game, report, data, type);
 				});
