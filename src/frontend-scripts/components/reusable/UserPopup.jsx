@@ -124,18 +124,18 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 			<Popup.Header>{blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
 			<Popup.Content>
 				<List>
-					{!blindMode && (
+					{!blindMode && user && !user.staffDisableVisibleElo && (
 						<List.Item>
 							<List.Content>
 								<Grid columns={2} divided inverted>
 									<Grid.Row>
 										<Grid.Column textAlign="center" data-tooltip="Overall Elo">
 											<List.Icon name="chart line" />
-											{user && (user.eloOverall || 1600)}
+											{user.eloOverall || 1600}
 										</Grid.Column>
 										<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
 											<List.Icon name="calendar alternate outline" />
-											{user && (user.eloSeasonal || 1600)}
+											{user.eloSeasonal || 1600}
 										</Grid.Column>
 									</Grid.Row>
 								</Grid>
