@@ -319,7 +319,6 @@ class Playerlist extends React.Component {
 				// 		.filter(winTime => time - winTime < 10800000)
 				// 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
-				console.log(this.props.socket);
 				return (
 					<div key={i} className="user-container">
 						<div className="userlist-username">

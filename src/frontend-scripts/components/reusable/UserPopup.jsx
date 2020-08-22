@@ -108,7 +108,6 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 	const privateGame = gameInfo?.general?.private;
 	const isMe = userName === userInfo?.userName;
 
-	console.log(userName, userInfo?.userName);
 	return (
 		<Popup
 			inverted
@@ -174,7 +173,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 						</List.Item>
 					)}
 					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
-					{!blindMode && !isMe && (
+					{!blindMode && !isMe && !(userSeated && gameStarted) && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
