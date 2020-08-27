@@ -3,13 +3,17 @@ import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import playSound from '../reusable/playSound.js';
 
 class Tracks extends React.Component {
 	constructor() {
 		super();
 		this.state = {
 			remakeStatus: false,
-			timedModeTimer: ''
+			minutes: 0,
+			seconds: 0,
+			timedMode: false,
+			showTimer: false
 		};
 	}
 
@@ -37,14 +41,21 @@ class Tracks extends React.Component {
 		const { Notification } = window;
 
 		this._ismounted = false;
+		window.clearInterval(this.intervalId);
 
 		if (Notification && Notification.permission === 'granted' && this.props.socket) {
 			this.props.socket.off('pingPlayer');
 		}
 	}
 
+	toggleTimer = () => {
+		this.setState({
+			showTimer: !this.state.showTimer
+		});
+	};
+
 	componentWillReceiveProps(nextProps) {
-		const { gameInfo } = this.props;
+		const { gameInfo, userInfo } = this.props;
 
 		if (!gameInfo.gameState.isStarted) {
 			this.setState({
@@ -70,14 +81,21 @@ class Tracks extends React.Component {
 				} else {
 					seconds--;
 				}
+				if (!minutes && seconds <= 15) {
+					if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
+						playSound('clockTick', 'pack1', 500);
+					}
+				}
 
 				if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
-					this.setState({ timedModeTimer: '' }, () => {
+					this.setState({ timedMode: false, minutes: 0, seconds: 0 }, () => {
 						window.clearInterval(this.intervalId);
 					});
 				} else {
 					this.setState({
-						timedModeTimer: `Action forced in ${minutes}:${seconds > 9 ? seconds : `0${seconds}`}`
+						timedMode: true,
+						minutes,
+						seconds
 					});
 				}
 			}, 1000);
@@ -86,7 +104,7 @@ class Tracks extends React.Component {
 		if (gameInfo.gameState && gameInfo.gameState.timedModeEnabled && nextProps.gameInfo.gameState && !nextProps.gameInfo.gameState.timedModeEnabled) {
 			window.clearInterval(this.intervalId);
 			this.setState({
-				timedModeTimer: ''
+				timedMode: false
 			});
 		}
 	}
@@ -110,6 +128,8 @@ class Tracks extends React.Component {
 		let rainbowgameTooltip;
 		let casualgame;
 		let casualgameTooltip;
+		let practiceGame;
+		let practiceGameTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -190,7 +210,12 @@ class Tracks extends React.Component {
 
 		if (game.casualGame) {
 			casualgame = <i className="handshake icon" />;
-			casualgameTooltip = 'Casual game - results do not count towards wins and losses';
+			casualgameTooltip = 'Casual game - results do not count towards wins and losses, gameplay rules are not enforced';
+		}
+
+		if (game.practiceGame) {
+			practiceGame = <i className="chess icon" />;
+			practiceGameTooltip = 'Practice game - results do not count towards wins and losses, gameplay rules are enforced';
 		}
 
 		if (game.timedMode) {
@@ -276,6 +301,11 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
 					</span>
 				)}
+				{practiceGame && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={practiceGame} content={practiceGameTooltip} />
+					</span>
+				)}
 				{timedMode && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
@@ -312,7 +342,7 @@ class Tracks extends React.Component {
 
 	render() {
 		const { gameInfo, userInfo, socket } = this.props;
-
+		const { showTimer, timedMode, minutes, seconds } = this.state;
 		/**
 		 * @return {jsx}
 		 */
@@ -593,7 +623,13 @@ class Tracks extends React.Component {
 								}
 							/>
 						)}
-					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
+					{!showTimer && (minutes || seconds >= 15) && timedMode ? (
+						<i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
+					) : timedMode ? (
+						<div title="Click to hide until the last 15s." onClick={this.toggleTimer} className="timed-mode-counter">
+							Action forced in {minutes}:{seconds > 9 ? seconds : `0${seconds}`}
+						</div>
+					) : null}
 				</div>
 				<section
 					className={(() => {

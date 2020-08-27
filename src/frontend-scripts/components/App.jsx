@@ -19,6 +19,7 @@ import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
 import '../../scss/style-dark.scss';
+import * as Swal from 'sweetalert2';
 
 const select = state => state;
 
@@ -84,7 +85,7 @@ export class App extends React.Component {
 				data: null
 			},
 			warnings: null,
-			allEmotes: []
+			allEmotes: {}
 		};
 
 		this.prevHash = '';
@@ -108,7 +109,8 @@ export class App extends React.Component {
 				userName: username,
 				verified: window.verified,
 				staffRole: window.staffRole,
-				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal
+				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal,
+				isTournamentMod: window.isTournamentMod
 			};
 
 			socket.emit('getUserGameSettings');
@@ -166,8 +168,12 @@ export class App extends React.Component {
 		});
 
 		socket.on('emoteList', list => {
+			const mapping = {};
+
+			list.forEach(e => (mapping[`:${e[0].toLowerCase()}:`] = e[1]));
+
 			this.setState({
-				allEmotes: list
+				allEmotes: mapping
 			});
 		});
 
@@ -268,13 +274,15 @@ export class App extends React.Component {
 			dispatch(updateUser(userInfo));
 		});
 
-		socket.on('sendAlert', ip => {
-			window.alert(ip);
+		socket.on('sendAlert', data => {
+			Swal.fire({
+				html: data
+			});
 		});
 
 		socket.on('toLobby', () => {
 			window.location.hash = '#/';
-			window.alert('The game you were previously in was deleted automatically.');
+			Swal.fire('The game you were previously in was deleted automatically.');
 		});
 
 		socket.on('checkRestrictions', () => {
@@ -386,6 +394,7 @@ export class App extends React.Component {
 			maxPlayersCount: 5,
 			experiencedMode: false,
 			disableChat: false,
+			disableObserverLobby: false,
 			disableObserver: false,
 			isTourny: false,
 			disableGamechat: false,
@@ -471,7 +480,16 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type) {
 							if (this.state.alertMsg.type === 'tou') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 99999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div
+										style={{
+											position: 'fixed',
+											zIndex: 99999,
+											background: 'var(--theme-background-1)',
+											width: '100vw',
+											height: '100vh',
+											display: 'flex'
+										}}
+									>
 										<div
 											style={{
 												margin: 'auto',
@@ -525,7 +543,13 @@ export class App extends React.Component {
 												<input
 													type="submit"
 													value="Dismiss"
-													style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+													style={{
+														width: '100%',
+														borderRadius: '5px',
+														fontFamily: '"Comfortaa", Lato, sans-serif',
+														fontWeight: 'bold',
+														cursor: 'pointer'
+													}}
 													id="touButton"
 												/>
 											</form>
@@ -535,7 +559,16 @@ export class App extends React.Component {
 							}
 							if (this.state.alertMsg.type === 'warning') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div
+										style={{
+											position: 'fixed',
+											zIndex: 9999,
+											background: 'var(--theme-background-1)',
+											width: '100vw',
+											height: '100vh',
+											display: 'flex'
+										}}
+									>
 										<div
 											style={{
 												margin: 'auto',
@@ -603,7 +636,16 @@ export class App extends React.Component {
 					})()}
 
 					{this.state.warnings !== null && (
-						<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+						<div
+							style={{
+								position: 'fixed',
+								zIndex: 9999,
+								background: 'var(--theme-background-1)',
+								width: '100vw',
+								height: '100vh',
+								display: 'flex'
+							}}
+						>
 							<div
 								style={{
 									margin: 'auto',

@@ -178,6 +178,6 @@ Game.propTypes = {
 	expandoInfo: PropTypes.string,
 	dispatch: PropTypes.func,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array,
+	allEmotes: PropTypes.object,
 	onClickedTakeSeat: PropTypes.func
 };

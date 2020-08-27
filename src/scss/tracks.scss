@@ -24,7 +24,7 @@
 	.timed-mode-counter {
 		position: absolute;
 		bottom: 10px;
-		z-index: 1;
+		z-index: 105;
 		right: 15px;
 		background: var(--theme-background-2);
 		padding: 5px;
@@ -33,8 +33,29 @@
 		border: 1px dashed #be0804;
 		width: 190px;
 		text-align: center;
+		cursor: pointer;
 	}
 
+	.icon.hourglass.half.timer {
+		opacity: 1 !important;
+		position: absolute;
+		bottom: 5px;
+		right: 2px;
+		z-index: 105;
+		color: var(--theme-text-2) !important;
+		background: #034f61;
+		font-size: 16px !important;
+		padding: 4px;
+		opacity: 1;
+		width: 28px;
+		height: 30px;
+		border: 2px solid lightblue;
+		cursor: pointer;
+
+		&.enabled {
+			color: #db2828 !important;
+		}
+	}
 	.icon.repeat,
 	.icon.remove {
 		opacity: 1 !important;
@@ -108,13 +129,15 @@
 			left: 62%;
 		}
 		.track-flipper {
+			//height: 220px;
 			padding-top: 34%;
 			transition-duration: 1s;
 			transition-property: transform;
 			transform-style: preserve-3d;
 			position: relative;
+			-webkit-backface-visibility: hidden; // thanks osx safari
+			backface-visibility: hidden;
 		}
-
 		.track {
 			transform: rotateX(0deg);
 			background-size: contain;
@@ -122,6 +145,7 @@
 			position: absolute;
 			top: 0;
 			left: 0;
+			//height: 220px;
 			padding-top: 34%;
 			width: 100%;
 		}
@@ -186,6 +210,7 @@
 
 .tracks.blurred,
 .enactedpolicies-container.blurred {
+	//filter: blur(5px) saturate(60%);
 	opacity: 0.3;
 }
 .help-message {

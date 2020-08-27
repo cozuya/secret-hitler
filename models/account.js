@@ -66,7 +66,8 @@ const Account = new Schema({
 		},
 		playerNotes: Array,
 		ignoreIPBans: Boolean,
-		truncatedSize: Number
+		truncatedSize: Number,
+		claimCharacters: String
 	},
 	verification: {
 		email: String
@@ -124,6 +125,10 @@ const Account = new Schema({
 	lossesSeason10: Number,
 	rainbowWinsSeason10: Number,
 	rainbowLossesSeason10: Number,
+	winsSeason11: Number,
+	lossesSeason11: Number,
+	rainbowWinsSeason11: Number,
+	rainbowLossesSeason11: Number,
 	previousDayElo: Number,
 	created: Date,
 	isOnFire: Boolean,
@@ -135,16 +140,17 @@ const Account = new Schema({
 	hashUid: String,
 	discordUsername: String,
 	discordDiscriminator: String,
-	discordMfa_enabled: Boolean,
+	discordMFA: Boolean,
 	discordUID: String,
 	githubUsername: String,
-	github2FA: Boolean,
+	githubMFA: Boolean,
 	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
 	primaryColor: String,
 	secondaryColor: String,
 	tertiaryColor: String,
 	backgroundColor: String,
-	textColor: String
+	textColor: String,
+	isTournamentMod: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

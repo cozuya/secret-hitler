@@ -8,6 +8,7 @@ import classnames from 'classnames';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
+import * as Swal from 'sweetalert2';
 
 $.fn.dropdown = Dropdown;
 
@@ -402,13 +403,13 @@ class Players extends React.Component {
 			return;
 		}
 
-		const index = gameInfo.gameState.isStarted && gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
+		const index = gameInfo.gameState.isStarted ? gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer) : undefined;
 		if (this.state.reportLength <= 140) {
 			this.props.socket.emit('playerReport', {
 				uid: gameInfo.general.uid,
 				userName: this.props.userInfo.userName || 'from replay',
 				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-				reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
+				reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
 				reason: $('input[name="reason"]').attr('value'),
 				comment: this.state.reportTextValue
 			});
@@ -428,7 +429,7 @@ class Players extends React.Component {
 			if (user && user.staffIncognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				window.alert('Sorry, this service is currently unavailable.');
+				Swal.fire('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if (

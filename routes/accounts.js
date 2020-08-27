@@ -137,7 +137,7 @@ const checkIP = config => {
 				fragSignup.save(() => {
 					res.status(401).json({
 						message:
-							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on discord.'
+							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on Discord.'
 					});
 				});
 				ipBanned = true;
@@ -250,12 +250,12 @@ const continueSignup = config => {
 
 			if (type === 'discord') {
 				accountObj.discordDiscriminator = profile.discriminator;
-				accountObj.discordMfa_enabled = profile.mfa_enabled;
+				accountObj.discordMFA = profile.mfa_enabled;
 				accountObj.discordUsername = profile.username;
 				accountObj.discordUID = profile.id;
 			} else {
 				accountObj.githubUsername = profile.username;
-				accountObj.github2FA = profile._json.two_factor_authentication;
+				accountObj.githubMFA = profile._json.two_factor_authentication;
 				accountObj.bio = profile._json.bio;
 			}
 
@@ -457,7 +457,7 @@ module.exports.accounts = torIpsParam => {
 			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
 			res.status(401).json({ message: 'Your username is too short.' });
-		} else if (username.length > 12) {
+		} else if (username.length > 16) {
 			res.status(401).json({ message: 'Your username is too long.' });
 		} else if (password.length < 6) {
 			res.status(401).json({ message: 'Your password is too short.' });
@@ -674,7 +674,7 @@ module.exports.accounts = torIpsParam => {
 
 	app.post('/account/change-email', ensureAuthenticated, (req, res, next) => {
 		const { email } = req.body;
-		const { verified, username } = req.user;
+		const { username } = req.user;
 
 		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 			res.status(401).json({
@@ -699,12 +699,9 @@ module.exports.accounts = torIpsParam => {
 						}
 
 						account.verification.email = email;
+						account.verified = false;
 						account.save(() => {
-							if (!verified) {
-								setVerify({ username, email, res });
-							} else {
-								res.send();
-							}
+							setVerify({ username, email, res });
 						});
 					});
 				}
@@ -767,7 +764,7 @@ module.exports.accounts = torIpsParam => {
 				}
 			} else {
 				passport.authenticate(type, profile => {
-					if (!profile || !profile.username) {
+					if (!profile || !profile.id) {
 						return next();
 					}
 
@@ -775,11 +772,11 @@ module.exports.accounts = torIpsParam => {
 						if (type === 'discord') {
 							req.user.discordUsername = profile.username;
 							req.user.discordDiscriminator = profile.discriminator;
-							req.user.discordMfa_enabled = profile.mfa_enabled;
+							req.user.discordMFA = profile.mfa_enabled;
 							req.user.discordUID = profile.id;
 						} else {
 							req.user.githubUsername = profile.username;
-							req.user.github2FA = profile.two_factor_authentication;
+							req.user.githubMFA = profile.two_factor_authentication;
 						}
 						req.user.verified = true;
 						req.user.save(() => {
@@ -787,8 +784,7 @@ module.exports.accounts = torIpsParam => {
 						});
 					} else {
 						// see if their oauth information matches an account, if so sign them in
-						const queryObj =
-							type === 'discord' ? { discordUsername: profile.username, discordDiscriminator: profile.discriminator } : { githubUsername: profile.username };
+						const queryObj = type === 'discord' ? { discordUID: profile.id } : { githubUsername: profile.username };
 
 						Account.findOne(queryObj)
 							.then(account => {
@@ -802,8 +798,7 @@ module.exports.accounts = torIpsParam => {
 										});
 									} else {
 										// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
-
-										Account.findOne({ username: profile.username })
+										Account.findOne({ username: new RegExp(profile.username, 'i') })
 											.then(account => {
 												req.session.oauthType = type;
 												if (account) {
@@ -935,15 +930,18 @@ module.exports.accounts = torIpsParam => {
 	});
 
 	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
-		req.user.discordUsername = req.user.discordDiscriminator = '';
+		req.user.discordUsername = null;
+		req.user.discordDiscriminator = null;
+		req.user.discordUID = null;
+		req.user.discordMFA = null;
 		req.user.save(() => {
 			res.redirect('/account');
 		});
 	});
 
 	app.get('/revoke-github', ensureAuthenticated, (req, res) => {
-		req.user.githubUsername = '';
-		req.user.github2FA = false;
+		req.user.githubUsername = null;
+		req.user.githubMFA = null;
 		req.user.save(() => {
 			res.redirect('/account');
 		});

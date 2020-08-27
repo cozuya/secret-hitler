@@ -220,6 +220,7 @@ module.exports.formattedGameList = () => {
 		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
 		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
 		casualGame: games[gameName].general.casualGame || undefined,
+		practiceGame: games[gameName].general.practiceGame || undefined,
 		eloMinimum: games[gameName].general.eloMinimum || undefined,
 		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
 		isTourny: games[gameName].general.isTourny || undefined,

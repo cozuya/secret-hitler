@@ -183,9 +183,16 @@ export class GamesList extends React.Component {
 					);
 				})
 				.sort((a, b) => {
+					const userInGame =
+						userInfo && userInfo.userName && a.userNames && a.userNames.includes(userInfo.userName)
+							? -1
+							: userInfo && userInfo.userName && b.userNames && b.userNames.includes(userInfo.userName)
+							? 1
+							: 0;
+
 					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
 					const diff = Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
-					return diff || sortTypeThenName(a, b);
+					return userInGame || diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
 					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
@@ -204,7 +211,12 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2020-04-02') ? `Season ends ${moment(new Date('2020-07-01')).fromNow()}` : `Welcome to season ${CURRENTSEASONNUMBER}`}.
+						{new Date() > new Date('2020-07-03')
+							? `Season ends ${moment(
+									new Date(new Date('2020-10-01 00:00:00.000').getTime() + new Date('2020-10-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * -5)
+							  ).fromNow()}`
+							: `Welcome to season ${CURRENTSEASONNUMBER}`}
+						.
 					</h5>
 				</a>
 				<h3>Game filters</h3>

@@ -1,4 +1,5 @@
 import React from 'react'; // eslint-disable-line
+import 'sweetalert2/src/sweetalert2.scss';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Modal, Header, Button, Icon } from 'semantic-ui-react';
@@ -301,7 +302,7 @@ Main.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameList: PropTypes.array,
-	allEmotes: PropTypes.array,
+	allEmotes: PropTypes.object,
 	onClickedTakeSeat: PropTypes.func,
 	onSeatingUser: PropTypes.func,
 	onLeaveGame: PropTypes.func

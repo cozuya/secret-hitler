@@ -724,7 +724,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 						election: game.general.electionCount,
 						title: game.general.name,
 						uid: game.general.uid,
-						gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+						gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 					},
 					game,
 					'report'
@@ -746,7 +746,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 						election: game.general.electionCount,
 						title: game.general.name,
 						uid: game.general.uid,
-						gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+						gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 					},
 					game,
 					'report'
@@ -1012,7 +1012,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1028,7 +1028,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1046,7 +1046,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1064,7 +1064,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1080,7 +1080,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1103,7 +1103,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1119,7 +1119,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1137,7 +1137,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1153,7 +1153,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
-									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+									gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 								},
 								game,
 								'report'
@@ -1356,7 +1356,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					election: game.general.electionCount,
 					title: game.general.name,
 					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
 				},
 				game,
 				'report'
