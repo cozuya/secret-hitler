@@ -521,6 +521,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('modPeekVotes', data => {
+				if (!data) return;
 				const uid = data.uid;
 				const game = findGame({ uid });
 				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
@@ -532,6 +533,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('modGetRemakes', data => {
+				if (!data) return;
 				const uid = data.uid;
 				const game = findGame({ uid });
 				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {

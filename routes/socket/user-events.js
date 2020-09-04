@@ -28,6 +28,7 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
+const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -855,6 +856,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			unSeatedGameChats: [],
 			lock: {},
 			votesPeeked: false,
+			remakeVotesPeeked: false,
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
@@ -2663,6 +2665,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 
 	output += '</table>';
 	socket.emit('sendAlert', output);
+	timeRemaking;
 };
 
 /**
@@ -2673,10 +2676,11 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  */
 module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
 	const gameToPeek = game;
-	let output = '<table class="fullTable"><tr><th>Seat</th><th>Role</th><th>Times voted to remake</th><th>Currently voting to remake?</th></tr>';
+	let output =
+		'<table class="fullTable"><tr><th>Seat</th><th>Role</th><th>Time since last voted to remake</th><th>Currently voting to remake?</th><th>Times voted to remake</th></tr>';
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
-		for (player of gameToPeek.private.seatedPlayers) {
+		for (const player of gameToPeek.private.seatedPlayers) {
 			if (modUserName === player.userName) {
 				socket.emit('sendAlert', 'You cannot get votes to remake whilst playing.');
 				return;
@@ -2684,7 +2688,7 @@ module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
 		}
 	}
 
-	if (!game.private.votesPeeked) {
+	if (!game.private.remakeVotesPeeked) {
 		const modaction = new ModAction({
 			date: new Date(),
 			modUserName: passport.user,
@@ -2693,7 +2697,7 @@ module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
 			actionTaken: 'Get Remakes'
 		});
 		modaction.save();
-		game.private.votesPeeked = true;
+		game.private.remakeVotesPeeked = true;
 	} else {
 		ModAction.findOne({ userActedOn: game.general.uid, actionTaken: 'Get Remakes' })
 			.then(action => {
@@ -2729,8 +2733,9 @@ module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
 			}
 
 			const playerRemakeData = game.remakeData.find(d => d.userName === player.userName);
-			output += '<td>' + playerRemakeData.timesVoted + '</td>';
+			output += '<td>' + (playerRemakeData.remakeTime ? moment.duration(new Date() - new Date(playerRemakeData.remakeTime)).humanize() : '-') + '</td>';
 			output += '<td>' + (playerRemakeData.isRemaking ? 'Yes' : 'No') + '</td>';
+			output += '<td>' + playerRemakeData.timesVoted + '</td>';
 			output += '</tr>';
 		});
 	}
