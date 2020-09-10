@@ -3215,8 +3215,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err, 'timeout2 user err');
 						});
-					break;
 				case 'timeOut3':
+					break;
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
@@ -3235,7 +3235,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								}
 							})
 							.catch(err => {
-								console.log(err, 'timeout2 user err');
+								console.log(err, 'timeout3 user err');
 							});
 					});
 					break;
