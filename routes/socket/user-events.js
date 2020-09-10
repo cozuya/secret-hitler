@@ -3184,18 +3184,20 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (user.username === data.userName) {
-										user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
-										user.save(() => {
-											logOutUser(user.username);
-										});
-									}
-								});
-							}
-						});
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+									account.save(() => {
+										logOutUser(data.userName);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err, 'timeout user err');
+							});
 					});
 					break;
 				case 'timeOut2':
@@ -3221,18 +3223,20 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, (err, users) => {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (user.username === data.userName) {
-										user.isTimeout = new Date(Date.now() + 60 * 60 * 1000);
-										user.save(() => {
-											logOutUser(user.username);
-										});
-									}
-								});
-							}
-						});
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isTimeout = new Date(Date.now() + 60 * 60 * 1000);
+									account.save(() => {
+										logOutUser(data.userName);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err, 'timeout2 user err');
+							});
 					});
 					break;
 				case 'timeOut4':
