@@ -238,7 +238,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input id="playernameelem" placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input id="playernameelem" placeholder="Username or Game UID" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
 			</div>
 		);
 	}
@@ -1398,7 +1398,7 @@ export default class Moderation extends React.Component {
 				<div>
 					{this.state.playerListState === 0 && (
 						<div className="modplayerlist">
-							<h3>Current player list</h3>
+							<h3>Current Player List</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
 
@@ -1535,7 +1535,7 @@ export default class Moderation extends React.Component {
 					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>
-							Moderation log{' '}
+							Moderation Log{' '}
 							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
 								{this.state.modLogToday ? 'Show all' : 'Show today only'}
 							</a>
