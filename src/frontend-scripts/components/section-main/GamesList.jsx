@@ -10,7 +10,8 @@ import { processEmotes } from '../../emotes';
 export class GamesList extends React.Component {
 	state = {
 		filtersVisible: false,
-		stickyEnabled: true
+		stickyEnabled: true,
+		generalChats: {}
 	};
 
 	toggleFilter = value => {
@@ -20,11 +21,35 @@ export class GamesList extends React.Component {
 		changeGameFilter(gameFilter);
 	};
 
-	componentWillReceiveProps(nextProps) {
-		const { generalChats } = this.props;
-		const nextGeneralChats = nextProps.generalChats;
+	componentDidMount() {
+		console.log('mounting');
+		const { socket } = this.props;
 
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
+		if (this.scrollbar) {
+			this.scrollbar.scrollToBottom();
+		}
+
+		socket.on('allGeneralChats', generalChats => {
+			console.log('got all chats', generalChats);
+			this.setState({
+				generalChats: { sticky: generalChats.sticky }
+			});
+		});
+
+		socket.emit('getGeneralChats');
+	}
+
+	componentWillUnmount() {
+		const { socket } = this.props;
+
+		socket.off('allGeneralChats');
+		console.log('unmounting');
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		const { generalChats, stickyEnabled } = this.state;
+
+		if (!stickyEnabled && generalChats.sticky !== prevState.generalChats.sticky) {
 			this.setState({
 				stickyEnabled: true
 			});
@@ -32,14 +57,14 @@ export class GamesList extends React.Component {
 	}
 
 	renderSticky = () => {
-		if (this.state.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
+		if (this.state.stickyEnabled && this.state.generalChats && this.state.generalChats.sticky) {
 			const dismissSticky = () => {
 				this.setState({ stickyEnabled: false });
 			};
 
 			return (
 				<Message onDismiss={dismissSticky} color="blue">
-					{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
+					{processEmotes(this.state.generalChats.sticky, true, this.props.allEmotes)}
 				</Message>
 			);
 		}

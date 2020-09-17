@@ -8,7 +8,6 @@ const startGame = require('./game/start-game.js');
 const { secureGame } = require('./util.js');
 const https = require('https');
 const _ = require('lodash');
-const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');

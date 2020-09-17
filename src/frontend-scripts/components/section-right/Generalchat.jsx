@@ -24,6 +24,7 @@ export default class Generalchat extends React.Component {
 	};
 
 	componentDidMount() {
+		console.log('mounting');
 		const { socket } = this.props;
 
 		if (this.scrollbar) {
@@ -31,6 +32,7 @@ export default class Generalchat extends React.Component {
 		}
 
 		socket.on('allGeneralChats', generalChats => {
+			console.log('got all chats', generalChats);
 			this.setState({
 				generalChats
 			});
@@ -61,6 +63,7 @@ export default class Generalchat extends React.Component {
 
 		socket.off('allGeneralChats');
 		socket.off('newGeneralChat');
+		console.log('unmounting');
 	}
 
 	componentDidUpdate(prevProps, prevState) {
