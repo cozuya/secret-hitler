@@ -587,7 +587,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut3');
 					}}
 				>
-					Timeout and IP Timeout - 1 Hour
+					IP Timeout - 1 Hour
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -603,7 +603,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut');
 					}}
 				>
-					Timeout and IP Timeout - 18 Hours
+					IP Timeout - 18 Hours
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -712,7 +712,7 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeout');
 					}}
 				>
-					Restore User - Remove any pre-existing timeout or ban.
+					Restore User
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -720,7 +720,7 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeoutIP');
 					}}
 				>
-					Restore IP - Remove any pre-existing IP timeout or ban.
+					Restore IP
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -728,7 +728,7 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeoutAndTimeoutIP');
 					}}
 				>
-					Restore User and IP - Remove any pre-existing timeout or ban, including IP timeout or ban.
+					Restore User and IP
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
