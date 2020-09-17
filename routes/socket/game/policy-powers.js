@@ -993,6 +993,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 						targetPlayer.playersState[presidentIndex].nameStatus = playersTeam;
 					}
 
+					game.private.invIndex = presidentIndex;
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
