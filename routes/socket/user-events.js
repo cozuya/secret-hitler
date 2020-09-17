@@ -1548,6 +1548,28 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					clearInterval(game.private.remakeTimer);
 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
 					game.general.isRemade = true;
+
+					const remainingPoliciesChat = {
+						isRemainingPolicies: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'The remaining policies are '
+							},
+							{
+								policies: game.private.policies.map(policyName => (policyName === 'liberal' ? 'b' : 'r'))
+							},
+							{
+								text: '.'
+							}
+						]
+					};
+
+					game.private.unSeatedGameChats.push(remainingPoliciesChat);
+					game.private.seatedPlayers.forEach(player => {
+						player.gameChats.push(remainingPoliciesChat);
+					});
+
 					if (game.general.isTourny) {
 						cancellTourny(game.general.uid);
 					} else {
