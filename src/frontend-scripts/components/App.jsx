@@ -13,7 +13,7 @@ import * as Swal from 'sweetalert2';
 
 const select = state => state;
 
-class TopLevelErrorBoundry extends React.Component {
+class TopLevelErrorBoundary extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -36,15 +36,12 @@ class TopLevelErrorBoundry extends React.Component {
 			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Please expand the
-					details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
-					<a href="/game">Click here to get back to safety.</a>
+					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Please post a
+					screenshot of the below error in #development-contribution on our Discord. <a href="/game">Click here to get back to safety.</a>
 				</p>
-				<details style={{ whiteSpace: 'pre-wrap' }}>
-					{error && (error.stack || error.toString())}
-					<br />
-					{errorInfo.componentStack}
-				</details>
+				<code>{error.toString()}</code>
+				<br />
+				<code style={{ whiteSpace: 'pre-wrap', marginLeft: '10px' }}>{errorInfo.componentStack}</code>
 			</div>
 		) : (
 			this.props.children
@@ -52,7 +49,7 @@ class TopLevelErrorBoundry extends React.Component {
 	}
 }
 
-TopLevelErrorBoundry.propTypes = {
+TopLevelErrorBoundary.propTypes = {
 	children: PropTypes.object
 };
 
@@ -445,7 +442,7 @@ export class App extends React.Component {
 		}
 
 		return (
-			<TopLevelErrorBoundry>
+			<TopLevelErrorBoundary>
 				<section
 					className="app-container"
 					style={{
@@ -709,6 +706,7 @@ export class App extends React.Component {
 							version={this.props.version}
 							gameList={this.props.gameList}
 							allEmotes={this.state.allEmotes}
+							generalChats={this.props.generalChats}
 						/>
 
 						{(() => {
@@ -730,7 +728,7 @@ export class App extends React.Component {
 						})()}
 					</div>
 				</section>
-			</TopLevelErrorBoundry>
+			</TopLevelErrorBoundary>
 		);
 	}
 }

@@ -8,6 +8,7 @@ const startGame = require('./game/start-game.js');
 const { secureGame } = require('./util.js');
 const https = require('https');
 const _ = require('lodash');
+const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -26,7 +27,7 @@ const displayWaitingForPlayers = game => {
 
 		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 	}
-	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount).filter(
+	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount + 1).filter(
 		value => !game.general.excludedPlayerCount.includes(value)
 	);
 
@@ -134,7 +135,7 @@ const startCountdown = game => {
 						.slice(0, game.publicPlayersState.length)
 						.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
 				}
-
+				game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, timesVoted: 0, remakeTime: 0 }));
 				startGame(game);
 			}
 		} else {
@@ -171,7 +172,7 @@ const checkStartConditions = game => {
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
-		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
+		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, timesVoted: 0, remakeTime: 0 }));
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
 		game.general.status = displayWaitingForPlayers(game);
@@ -835,6 +836,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			unSeatedGameChats: [],
 			lock: {},
 			votesPeeked: false,
+			remakeVotesPeeked: false,
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
@@ -1507,6 +1509,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 	if (data.remakeStatus && Date.now() > player.remakeTime + 7000) {
 		player.isRemaking = true;
+		player.timesVoted++;
 		player.remakeTime = Date.now();
 
 		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
@@ -1528,6 +1531,28 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					clearInterval(game.private.remakeTimer);
 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
 					game.general.isRemade = true;
+
+					const remainingPoliciesChat = {
+						isRemainingPolicies: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'The remaining policies are '
+							},
+							{
+								policies: game.private.policies.map(policyName => (policyName === 'liberal' ? 'b' : 'r'))
+							},
+							{
+								text: '.'
+							}
+						]
+					};
+
+					game.private.unSeatedGameChats.push(remainingPoliciesChat);
+					game.private.seatedPlayers.forEach(player => {
+						player.gameChats.push(remainingPoliciesChat);
+					});
+
 					if (game.general.isTourny) {
 						cancellTourny(game.general.uid);
 					} else {

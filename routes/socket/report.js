@@ -118,7 +118,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 				console.log(e);
 			}
 		} else {
-			console.log(`${text}\n${game.general.uid}`);
+			console.log(`${report}\n${game.general.uid}`);
 		}
 	});
 };
