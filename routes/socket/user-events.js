@@ -3838,8 +3838,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 /**
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
+ * @param {object} callback - response function.
  */
-module.exports.handlePlayerReport = (passport, data) => {
+module.exports.handlePlayerReport = (passport, data, callback) => {
 	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2) && process.env.NODE_ENV === 'production') {
@@ -3858,6 +3859,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 	});
 
 	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(playerReport.reason)) {
+		callback({ success: false, error: 'Invalid report reason.' });
 		return;
 	}
 
@@ -3887,15 +3889,15 @@ module.exports.handlePlayerReport = (passport, data) => {
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
 	const game = games[data.uid];
-	if (!game) return;
+	if (!game && data.uid) return;
 
-	const blindModeAnonymizedPlayer = game.general.blindMode
-		? game.gameState.isStarted
-			? `${data.reportedPlayer.split(' ')[0]} Anonymous`
-			: 'Anonymous'
-		: data.reportedPlayer;
+	const blindModeAnonymizedPlayer =
+		data.uid && game.general.blindMode ? (game.gameState.isStarted ? `${data.reportedPlayer.split(' ')[0]} Anonymous` : 'Anonymous') : data.reportedPlayer;
+
 	const body = JSON.stringify({
-		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
+		content: `${
+			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>` : 'Report from homepage'
+		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
 	});
 
 	const options = {
@@ -3917,16 +3919,20 @@ module.exports.handlePlayerReport = (passport, data) => {
 		game.private.reportCounts[passport.user]++;
 	}
 
+	let reportError = false;
+
 	try {
 		const req = https.request(options);
 		req.end(body);
 	} catch (error) {
 		console.log(error, 'Caught exception in player request https request to discord server');
+		reportError = true;
 	}
 
 	playerReport.save(err => {
 		if (err) {
 			console.log(err, 'Failed to save player report');
+			callback({ success: false, error: 'Error submitting report.' });
 			return;
 		}
 
@@ -3945,6 +3951,12 @@ module.exports.handlePlayerReport = (passport, data) => {
 				account.save();
 			});
 		});
+
+		if (reportError) {
+			callback({ success: false, error: 'Error submitting report.' });
+		} else {
+			callback({ success: true });
+		}
 	});
 };
 
