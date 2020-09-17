@@ -11,7 +11,9 @@ export class GamesList extends React.Component {
 	state = {
 		filtersVisible: false,
 		stickyEnabled: true,
-		generalChats: {}
+		generalChats: {
+			sticky: ''
+		}
 	};
 
 	toggleFilter = value => {

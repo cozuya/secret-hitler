@@ -6,10 +6,13 @@ describe('GamesList', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			filtersVisible: false,
-			stickyEnabled: true
+			stickyEnabled: true,
+			generalChats: {
+				sticky: ''
+			}
 		};
 
-		const component = shallow(<GamesList />);
+		const component = shallow(<GamesList socket={{ on: () => {}, emit: () => {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});

@@ -13,10 +13,13 @@ describe('Generalchat', () => {
 			emoteHelperSelectedIndex: 0,
 			emoteHelperElements: ['ja', 'nein', 'blobsweat', 'wethink', 'limes'],
 			emoteColonIndex: -1,
-			excludedColonIndices: []
+			excludedColonIndices: [],
+			generalChats: {
+				list: []
+			}
 		};
 
-		const component = shallow(<Generalchat />);
+		const component = shallow(<Generalchat socket={{ on: () => {}, emit: () => {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});
