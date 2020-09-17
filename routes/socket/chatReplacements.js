@@ -75,8 +75,7 @@ module.exports.chatReplacements = [
 	{
 		id: 9,
 		regex: /^r.emake$/i,
-		replacement:
-			'To vote to remake a game, click the :remake: symbol in the centre-left of your screen, just above the player in seat 1.',
+		replacement: 'To vote to remake a game, click the :remake: symbol in the centre-left of your screen, just above the player in seat 1.',
 		aemCooldown: 15,
 		normalCooldown: 180,
 		normalGames: 50
