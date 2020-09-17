@@ -2819,7 +2819,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		}
 	}
 
-	if ((!data.ip || data.ip === '') && (data.action === 'timeOut' || data.action === 'ipban' || data.action === 'getIP' || data.action === 'clearTimeoutIP')) {
+	if (
+		(!data.ip || data.ip === '') &&
+		(data.action === 'timeOut' ||
+			data.action === 'ipban' ||
+			data.action === 'getIP' ||
+			data.action === 'clearTimeoutIP' ||
+			data.action === 'clearTimeoutAndTimeoutIP')
+	) {
 		// Failed to get a relevant IP, abort the action since it needs one.
 		socket.emit('sendAlert', 'That action requires a valid IP.');
 		return;
@@ -3002,6 +3009,25 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					BannedIP.remove({ ip: data.ip }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
+					break;
+				case 'clearTimeoutAndTimeoutIP':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.isTimeout = new Date(0);
+								account.isBanned = false;
+								account.save();
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+
+							BannedIP.remove({ ip: data.ip }, (err, res) => {
+								if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
+							});
+						})
+						.catch(err => {
+							console.log(err, 'clearTimeout user err');
+						});
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
@@ -3260,18 +3286,20 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ userName: data.userName }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
-								});
-								users.forEach(user => {
-									user.save(() => {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+									account.save(() => {
 										logOutUser(data.userName);
 									});
-								});
-							}
-						});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err, 'timeout user err');
+							});
 					});
 					break;
 				case 'timeOut2':
@@ -3289,22 +3317,28 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err, 'timeout2 user err');
 						});
-					break;
 				case 'timeOut3':
+					break;
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.findOne({ lastConnectedIP: data.ip }, (err, users) => {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (user.username === data.userName) user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
-									logOutUser(user.username);
-								});
-							}
-						});
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isTimeout = new Date(Date.now() + 60 * 60 * 1000);
+									account.save(() => {
+										logOutUser(data.userName);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err, 'timeout3 user err');
+							});
 					});
 					break;
 				case 'timeOut4':
@@ -3769,12 +3803,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				disableVPNCheck: 'Disable VPN Check',
 				togglePrivate: 'Toggle Private (Permanent)',
 				togglePrivateEighteen: 'Toggle Private (Temporary)',
-				timeOut: 'Timeout 18 Hours (IP)',
+				timeOut: 'Timeout and IP Timeout 18 Hours',
 				timeOut2: 'Timeout 18 Hours',
-				timeOut3: 'Timeout 1 Hour (IP)',
+				timeOut3: 'Timeout and IP Timeout 1 Hour',
 				timeOut4: 'Timeout 6 Hours',
 				clearTimeout: 'Clear Timeout',
 				clearTimeoutIP: 'Clear IP Ban',
+				clearTimeoutAndTimeoutIP: 'Clear Timeout and IP Timeout',
 				modEndGame: 'End Game',
 				deleteGame: 'Delete Game',
 				enableIpBans: 'Enable IP Bans',

@@ -587,7 +587,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut3');
 					}}
 				>
-					Timeout - 1 Hour (IP)
+					Timeout and IP Timeout - 1 Hour
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -595,7 +595,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut4');
 					}}
 				>
-					Timeout - 6 Hours (non-IP)
+					Timeout - 6 Hours
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -603,7 +603,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut');
 					}}
 				>
-					Timeout - 18 Hours (IP)
+					Timeout and IP Timeout - 18 Hours
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -611,7 +611,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut2');
 					}}
 				>
-					Timeout - 18 Hours (non-IP)
+					Timeout - 18 Hours
 				</button>
 				<div className="ui horizontal divider">User Actions</div>
 				<button
@@ -720,7 +720,15 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeoutIP');
 					}}
 				>
-					Restore IP - Remove any pre-existing IP ban.
+					Restore IP - Remove any pre-existing IP timeout or ban.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeoutAndTimeoutIP');
+					}}
+				>
+					Restore User and IP - Remove any pre-existing timeout or ban, including IP timeout or ban.
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
@@ -1160,12 +1168,13 @@ export default class Moderation extends React.Component {
 			disableVPNCheck: 'Disable VPN Check',
 			togglePrivate: 'Toggle Private (Permanent)',
 			togglePrivateEighteen: 'Toggle Private (Temporary)',
-			timeOut: 'Timeout 18 Hours (IP)',
+			timeOut: 'Timeout and IP Timeout 18 Hours',
 			timeOut2: 'Timeout 18 Hours',
-			timeOut3: 'Timeout 1 Hour (IP)',
+			timeOut3: 'Timeout and IP Timeout 1 Hour',
 			timeOut4: 'Timeout 6 Hours',
 			clearTimeout: 'Clear Timeout',
 			clearTimeoutIP: 'Clear IP Ban',
+			clearTimeoutAndTimeoutIP: 'Clear Timeout and IP Timeout',
 			modEndGame: 'End Game',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
