@@ -327,6 +327,10 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.gameState.phase !== 'presidentVoteOnVeto') {
+		return;	
+	}
+
 	game.private.summary = game.private.summary.updateLog({
 		presidentVeto: data.vote
 	});
@@ -500,6 +504,10 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 	if (!publicChancellor || !publicChancellor.userName || passport.user !== publicChancellor.userName) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'chancellorVoteOnVeto') {
+		return;	
 	}
 
 	game.private.summary = game.private.summary.updateLog({

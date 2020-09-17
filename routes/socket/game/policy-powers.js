@@ -476,6 +476,10 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.gameState.phase !== 'presidentVoteOnBurn') {
+		return;	
+	}
+
 	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectBurnCard = true;
 
@@ -649,6 +653,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
+	if (!game.private.seatedPlayers[playerIndex]) return;
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
 	if (playerIndex === presidentIndex) {
@@ -657,6 +662,10 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'selectPartyMembershipInvestigate') {
+		return;	
 	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -864,6 +873,10 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'selectPartyMembershipInvestigateReverse') {
+		return;	
 	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigateReverse && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -1089,6 +1102,10 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.gameState.phase !== 'specialElection') {
+		return;	
+	}
+
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
@@ -1234,6 +1251,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	// Make sure the target is valid
 	if (
 		playerIndex === presidentIndex ||
+		!selectedPlayer ||
 		selectedPlayer.isDead ||
 		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
 	) {
@@ -1242,6 +1260,10 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'execution') {
+		return;	
 	}
 
 	const nonPresidentChat = {
