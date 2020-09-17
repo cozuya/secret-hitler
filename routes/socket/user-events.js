@@ -155,7 +155,7 @@ const startCountdown = game => {
 						.slice(0, game.publicPlayersState.length)
 						.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
 				}
-
+				game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
 				startGame(game);
 			}
 		} else {
