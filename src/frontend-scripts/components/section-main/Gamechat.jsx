@@ -36,6 +36,7 @@ class Gamechat extends React.Component {
 		chatValue: '',
 		processedChats: '',
 		votesPeeked: false,
+		remakeVotesPeeked: false,
 		gameFrozen: false,
 		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
@@ -1024,6 +1025,13 @@ class Gamechat extends React.Component {
 			});
 		};
 
+		const modGetRemakes = () => {
+			socket.emit('modGetRemakes', {
+				modName: userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		};
+
 		const modFreezeGame = () => {
 			socket.emit('modFreezeGame', {
 				modName: userInfo.userName,
@@ -1124,6 +1132,42 @@ class Gamechat extends React.Component {
 										Peek
 										<br />
 										Votes
+									</div>
+								</div>
+							)}
+						{userInfo &&
+							!userInfo.isSeated &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted && (
+								<div>
+									<div
+										className="ui button primary"
+										onClick={() => {
+											if (!this.state.remakeVotesPeeked) {
+												Swal.fire({
+													title: 'Are you sure you want to see the votes to remake for this game?',
+													showCancelButton: true,
+													icon: 'warning'
+												}).then(result => {
+													if (result.value) {
+														modGetRemakes();
+														this.setState({
+															remakeVotesPeeked: true
+														});
+													}
+												});
+											} else {
+												modGetRemakes();
+											}
+										}}
+										style={{ width: '60px' }}
+									>
+										Get
+										<br />
+										Remakes
 									</div>
 								</div>
 							)}

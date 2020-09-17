@@ -116,6 +116,7 @@ private
 		chat string
 		timestamp time
 	votesPeeked
+	remakeVotesPeeked
 	gameFrozen
 	seatedPlayers array 5-10
 		userName string

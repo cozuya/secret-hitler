@@ -28,6 +28,7 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
+const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -155,7 +156,7 @@ const startCountdown = game => {
 						.slice(0, game.publicPlayersState.length)
 						.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
 				}
-				game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
+				game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, timesVoted: 0, remakeTime: 0 }));
 				startGame(game);
 			}
 		} else {
@@ -192,7 +193,7 @@ const checkStartConditions = game => {
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
-		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
+		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, timesVoted: 0, remakeTime: 0 }));
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
 		game.general.status = displayWaitingForPlayers(game);
@@ -855,6 +856,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			unSeatedGameChats: [],
 			lock: {},
 			votesPeeked: false,
+			remakeVotesPeeked: false,
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
@@ -1527,6 +1529,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 	if (data.remakeStatus && Date.now() > player.remakeTime + 7000) {
 		player.isRemaking = true;
+		player.timesVoted++;
 		player.remakeTime = Date.now();
 
 		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
@@ -2679,6 +2682,83 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 				'</td><td>' +
 				(player.isDead ? 'Dead' : player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted') +
 				'</td>';
+			output += '</tr>';
+		});
+	}
+
+	output += '</table>';
+	socket.emit('sendAlert', output);
+	timeRemaking;
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - game reference.
+ * @param {string} modUserName - requesting Moderator's username
+ */
+module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
+	const gameToPeek = game;
+	let output =
+		'<table class="fullTable"><tr><th>Seat</th><th>Role</th><th>Time since last voted to remake</th><th>Currently voting to remake?</th><th>Times voted to remake</th></tr>';
+
+	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+		for (const player of gameToPeek.private.seatedPlayers) {
+			if (modUserName === player.userName) {
+				socket.emit('sendAlert', 'You cannot get votes to remake whilst playing.');
+				return;
+			}
+		}
+	}
+
+	if (!game.private.remakeVotesPeeked) {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: game.general.uid,
+			modNotes: '',
+			actionTaken: 'Get Remakes'
+		});
+		modaction.save();
+		game.private.remakeVotesPeeked = true;
+	} else {
+		ModAction.findOne({ userActedOn: game.general.uid, actionTaken: 'Get Remakes' })
+			.then(action => {
+				if (action.modNotes) {
+					if (action.modNotes.indexOf(passport.user) === -1) {
+						action.modNotes += passport.user + '\n';
+					}
+				} else {
+					action.modNotes = 'Subsequently viewed by:\n';
+					action.modNotes += passport.user + '\n';
+				}
+				action.save();
+			})
+			.catch(err => {
+				console.log(err, 'err in finding player report');
+			});
+	}
+
+	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
+		playersToCheckVotes.map(player => {
+			output += '<tr>';
+			output += '<td>' + (playersToCheckVotes.indexOf(player) + 1) + '</td>';
+			output += '<td>';
+			if (player && player.role && player.role.cardName) {
+				if (player.role.cardName === 'hitler') {
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1);
+				} else {
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1);
+				}
+			} else {
+				output += 'Roles not Dealt';
+			}
+
+			const playerRemakeData = game.remakeData.find(d => d.userName === player.userName);
+			output += '<td>' + (playerRemakeData.remakeTime ? moment.duration(new Date() - new Date(playerRemakeData.remakeTime)).humanize() : '-') + '</td>';
+			output += '<td>' + (playerRemakeData.isRemaking ? 'Yes' : 'No') + '</td>';
+			output += '<td>' + playerRemakeData.timesVoted + '</td>';
 			output += '</tr>';
 		});
 	}
