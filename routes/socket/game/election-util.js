@@ -226,6 +226,23 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 								const { selectVoting } = require('./election');
 								unvotedPlayerNames.forEach(userName => {
 									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) }, socket);
+									const afkIndex = game.publicPlayersState.findIndex(player => player.userName === userName);
+									game.chats.push({
+										gameChat: true,
+										timestamp: new Date(),
+										chat: [
+											{
+												text: 'The timer has forced '
+											},
+											{
+												text: game.general.blindMode ? `{${afkIndex + 1}}` : `${userName} {${afkIndex + 1}}`,
+												type: 'player'
+											},
+											{
+												text: ' to vote.'
+											}
+										]
+									})
 								});
 							}
 						},

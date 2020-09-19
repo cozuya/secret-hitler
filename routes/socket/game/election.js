@@ -260,6 +260,27 @@ const enactPolicy = (game, team, socket) => {
 								let list = seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead);
 
 								game.gameState.timedModeEnabled = false;
+								
+								game.chats.push({
+									gameChat: true,
+									timestamp: new Date(),
+									chat: [
+										{
+											text: 'The timer has forced '
+										},
+										{
+											text: game.general.blindMode
+												? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+												: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+											type: 'player'
+										},
+										{
+											text: powerToEnact[1]==='The president must examine the top 3 policies.'
+												? ' to peek.'
+												: ' to pick.'
+										}
+									]
+								});
 
 								switch (powerToEnact[1]) {
 									case 'The president must examine the top 3 policies.':
@@ -626,6 +647,25 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 									() => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
+
+											game.chats.push({
+												gameChat: true,
+												timestamp: new Date(),
+												chat: [
+													{
+														text: 'The timer has forced '
+													},
+													{
+														text: game.general.blindMode
+															? `${replacementNames[game.gameState.presidentIndex]} {${game.gameState.presidentIndex + 1}} `
+															: `${president.userName} {${game.gameState.presidentIndex + 1}}`,
+														type: 'player'
+													},
+													{
+														text: ' to vote on the Veto.'
+													}
+												]
+											});
 											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
 										}
 									},
@@ -868,6 +908,24 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
 
+											game.chats.push({
+												gameChat: true,
+												timestamp: new Date(),
+												chat: [
+													{
+														text: 'The timer has forced '
+													},
+													{
+														text: game.general.blindMode
+															? `${replacementNames[chancellorIndex]} {${chancellorIndex + 1}} `
+															: `${chancellor.userName} {${chancellorIndex + 1}}`,
+														type: 'player'
+													},
+													{
+														text: ' to vote on the Veto.'
+													}
+												]
+											});
 											selectChancellorVoteOnVeto({ user: chancellor.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
 										}
 									},
@@ -1522,6 +1580,24 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 							game.gameState.pendingChancellorIndex = null;
 							game.gameState.timedModeEnabled = false;
 
+							game.chats.push({
+								gameChat: true,
+								timestamp: new Date(),
+								chat: [
+									{
+										text: 'The timer has forced '
+									},
+									{
+										text: game.general.blindMode
+											? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+											: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+										type: 'player'
+									},
+									{
+										text: ' to pick.'
+									}
+								]
+							});
 							selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
 						}
 					},

@@ -187,7 +187,24 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			() => {
 				if (game.gameState.timedModeEnabled) {
 					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
-
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'The timer has forced '
+							},
+							{
+								text: game.general.blindMode
+									? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+									: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to pick.'
+							}
+						]
+					});
 					selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
 				}
 			},
