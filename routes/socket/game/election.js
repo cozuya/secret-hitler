@@ -777,7 +777,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 					type: enactedPolicy
 				},
 				{
-					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
+					text: wasTimer ? ' policy due to the timer expiring.' : ' policy.'
 				}
 			]
 		};
