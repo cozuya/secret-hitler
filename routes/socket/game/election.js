@@ -270,7 +270,7 @@ const enactPolicy = (game, team, socket) => {
 										},
 										{
 											text: game.general.blindMode
-												? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+												? `${game.general.replacementNames[presidentIndex]} {${presidentIndex + 1}} `
 												: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 											type: 'player'
 										},
@@ -657,7 +657,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 													},
 													{
 														text: game.general.blindMode
-															? `${replacementNames[game.gameState.presidentIndex]} {${game.gameState.presidentIndex + 1}} `
+															? `${game.general.replacementNames[game.gameState.presidentIndex]} {${game.gameState.presidentIndex + 1}} `
 															: `${president.userName} {${game.gameState.presidentIndex + 1}}`,
 														type: 'player'
 													},
@@ -917,7 +917,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 													},
 													{
 														text: game.general.blindMode
-															? `${replacementNames[chancellorIndex]} {${chancellorIndex + 1}} `
+															? `${game.general.replacementNames[chancellorIndex]} {${chancellorIndex + 1}} `
 															: `${chancellor.userName} {${chancellorIndex + 1}}`,
 														type: 'player'
 													},
@@ -1589,7 +1589,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 									},
 									{
 										text: game.general.blindMode
-											? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+											? `${game.general.replacementNames[presidentIndex]} {${presidentIndex + 1}} `
 											: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 										type: 'player'
 									},

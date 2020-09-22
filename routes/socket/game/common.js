@@ -196,7 +196,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 							},
 							{
 								text: game.general.blindMode
-									? `${replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+									? `${game.general.replacementNames[presidentIndex]} {${presidentIndex + 1}} `
 									: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 								type: 'player'
 							},

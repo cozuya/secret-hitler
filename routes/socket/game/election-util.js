@@ -235,7 +235,7 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 												text: 'The timer has forced '
 											},
 											{
-												text: game.general.blindMode ? `{${afkIndex + 1}}` : `${userName} {${afkIndex + 1}}`,
+												text: game.general.blindMode ? `${game.general.replacementNames[presidentIndex]} {${afkIndex + 1}}` : `${userName} {${afkIndex + 1}}`,
 												type: 'player'
 											},
 											{
