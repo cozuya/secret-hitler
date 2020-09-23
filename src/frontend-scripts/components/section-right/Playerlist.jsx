@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Popup } from 'semantic-ui-react';
+import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.modal = Modal;
 
@@ -227,9 +228,6 @@ class Playerlist extends React.Component {
 					? 'lossesSeason'
 					: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
-			const routeToProfile = userName => {
-				window.location.hash = `#/profile/${userName}`;
-			};
 			const isStaff = Boolean(
 				Object.keys(userInfo).length &&
 					userInfo.staffRole &&
@@ -259,6 +257,8 @@ class Playerlist extends React.Component {
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
 
 			const makeUser = (user, i) => {
+				const popperRef = createRef();
+
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
@@ -340,23 +340,20 @@ class Playerlist extends React.Component {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
-										<Popup
-											inverted
-											className="admin-popup"
-											trigger={
-												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-													{prefix}
-													{` ${user.userName}`}
-												</span>
-											}
-											content={userAdminRole}
-										/>
+										<UserPopup socket={this.props.socket} userName={user.userName}>
+											<span className={userClasses}>
+												{prefix}
+												{` ${user.userName}`}
+											</span>
+										</UserPopup>
 									);
 								} else {
 									return (
-										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-											{user.userName}
-										</span>
+										<UserPopup socket={this.props.socket} userName={user.userName}>
+											<span className={userClasses} ref={popperRef}>
+												{user.userName}
+											</span>
+										</UserPopup>
 									);
 								}
 							})()}

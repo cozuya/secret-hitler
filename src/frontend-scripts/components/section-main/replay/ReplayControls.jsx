@@ -1,4 +1,4 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
+import React, { useEffect } from 'react'; // eslint-disable-line no-unused-vars
 import { Range, List, OrderedMap, Map } from 'immutable';
 import { fromNullable } from 'option';
 import classnames from 'classnames';
@@ -132,31 +132,55 @@ const Description = ({ description }) => {
 	);
 };
 
-const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => (
-	<div className="playback">
-		<h1>Playback Controls</h1>
-		<div className="ui horizontal segments">
-			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={beginning}>
-				<i className="fast backward icon" />
-			</button>
-			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={backward}>
-				<i className="backward icon" />
-			</button>
-			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={prev}>
-				<i className="flipped play icon" />
-			</button>
-			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={next}>
-				<i className="play icon" />
-			</button>
-			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={forward}>
-				<i className="forward icon" />
-			</button>
-			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={end}>
-				<i className="fast forward icon" />
-			</button>
+const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => {
+	const onKeyDown = event => {
+		// ignore typing in textboxes
+		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+		const char = String.fromCharCode(event.keyCode);
+		if (char === 'H' && hasPrev) {
+			backward();
+		} else if (char === 'J' && hasPrev) {
+			prev();
+		} else if (char === 'K' && hasNext) {
+			next();
+		} else if (char === 'L' && hasNext) {
+			forward();
+		}
+	};
+
+	useEffect(() => {
+		document.addEventListener('keydown', onKeyDown);
+		return () => {
+			document.removeEventListener('keydown', onKeyDown);
+		};
+	});
+
+	return (
+		<div className="playback">
+			<h1>Playback Controls</h1>
+			<div className="ui horizontal segments">
+				<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={beginning}>
+					<i className="fast backward icon" />
+				</button>
+				<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={backward}>
+					<i className="backward icon" />
+				</button>
+				<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={prev}>
+					<i className="flipped play icon" />
+				</button>
+				<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={next}>
+					<i className="play icon" />
+				</button>
+				<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={forward}>
+					<i className="forward icon" />
+				</button>
+				<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={end}>
+					<i className="fast forward icon" />
+				</button>
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) => {
 	const {

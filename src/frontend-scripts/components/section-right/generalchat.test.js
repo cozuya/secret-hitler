@@ -6,7 +6,6 @@ describe('Generalchat', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			lock: false,
-			stickyEnabled: true,
 			badWord: [null, null],
 			textLastChanged: 0,
 			textChangeTimer: -1,

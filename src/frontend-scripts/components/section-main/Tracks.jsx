@@ -126,6 +126,8 @@ class Tracks extends React.Component {
 		let privTooltip;
 		let rainbowgame;
 		let rainbowgameTooltip;
+		let blind;
+		let blindTooltip;
 		let casualgame;
 		let casualgameTooltip;
 		let practiceGame;
@@ -164,28 +166,28 @@ class Tracks extends React.Component {
 		}
 
 		if (game.disableChat) {
-			disableChat = (
-				<i className="icons">
-					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
-				</i>
-			);
+			disableChat = <i className="unmute icon" />;
 			disableChatTooltip = 'Player Chat Disabled';
 		}
 
 		if (game.isVerifiedOnly) {
-			isVerifiedOnly = <i className="spy icon" />;
+			isVerifiedOnly = <i className="thumbs up icon" />;
 			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
 		}
 
 		if (game.privateOnly) {
-			priv = <i className="lock icon" />;
-			privTooltip = 'Private Only (Anonymous) players only';
+			priv = <i className="spy icon" />;
+			privTooltip = 'Private game only - only anonymous players.';
 		}
 
 		if (!game.privateOnly && game.private) {
 			priv = <i className="lock icon" />;
 			privTooltip = 'Private game.';
+		}
+
+		if (game.blindMode) {
+			blind = <i className="hide icon" />;
+			blindTooltip = 'Blind mode - players are anonymized';
 		}
 
 		if (game.disableGamechat) {
@@ -289,6 +291,11 @@ class Tracks extends React.Component {
 				{priv && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={priv} content={privTooltip} />
+					</span>
+				)}
+				{blind && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
 					</span>
 				)}
 				{rainbowgame && (

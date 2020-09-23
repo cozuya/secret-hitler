@@ -218,11 +218,7 @@ const enactPolicy = (game, team, socket) => {
 							player.cardStatus.isFlipped = true;
 						});
 						game.gameState.audioCue = '';
-						if (process.env.NODE_ENV === 'development') {
-							completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
-						} else {
-							completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-						}
+						completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
 					},
 					process.env.NODE_ENV === 'development' ? 100 : 2000
 				);
@@ -325,6 +321,10 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 
 	if (!president || president.userName !== passport.user) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'presidentVoteOnVeto') {
+		return;	
 	}
 
 	game.private.summary = game.private.summary.updateLog({
@@ -500,6 +500,10 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 	if (!publicChancellor || !publicChancellor.userName || passport.user !== publicChancellor.userName) {
 		return;
+	}
+
+	if (game.gameState.phase !== 'chancellorVoteOnVeto') {
+		return;	
 	}
 
 	game.private.summary = game.private.summary.updateLog({

@@ -10,7 +10,6 @@ export default class Generalchat extends React.Component {
 
 	state = {
 		lock: false,
-		stickyEnabled: true,
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
@@ -24,17 +23,6 @@ export default class Generalchat extends React.Component {
 	componentDidMount() {
 		if (this.scrollbar) {
 			this.scrollbar.scrollToBottom();
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { generalChats } = this.props;
-		const nextGeneralChats = nextProps.generalChats;
-
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
-			this.setState({
-				stickyEnabled: true
-			});
 		}
 	}
 
@@ -427,24 +415,6 @@ export default class Generalchat extends React.Component {
 		);
 	}
 
-	renderSticky() {
-		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
-			const dismissSticky = () => {
-				this.setState({ stickyEnabled: false });
-			};
-
-			return (
-				<div className="sticky">
-					<span>
-						<span>Sticky: </span>
-						{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
-					</span>
-					<i className="remove icon" onClick={dismissSticky} />
-				</div>
-			);
-		}
-	}
-
 	renderEmoteHelper() {
 		const { allEmotes } = this.props;
 		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
@@ -506,7 +476,6 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<section className="segment chats">
-					{this.renderSticky()}
 					{emoteColonIndex >= 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}
