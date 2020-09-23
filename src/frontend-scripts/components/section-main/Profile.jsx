@@ -276,8 +276,8 @@ class ProfileWrapper extends React.Component {
 				? 'lossesSeason'
 				: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
-		let gamesUntilRainbow = null;
-		let gamesUntilRainbowSeason = null;
+		let gamesUntilRainbow = NaN;
+		let gamesUntilRainbowSeason = NaN;
 		if (user) {
 			userClasses =
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
@@ -340,8 +340,8 @@ class ProfileWrapper extends React.Component {
 						)}
 						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{profile.signupIP && <p>Signup IP: {profile.signupIP}</p>}
-						{profile.eloSeason && <p>ELO (Season): {profile.eloSeason}</p>}
-						{profile.eloOverall && <p>ELO (Overall): {profile.eloOverall}</p>}
+						{!profile.staffDisableVisibleElo && <p>ELO (Seasonal): {profile.eloSeason}</p>}
+						{!profile.staffDisableVisibleElo && <p>ELO (Overall): {profile.eloOverall}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist

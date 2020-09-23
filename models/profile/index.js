@@ -11,6 +11,7 @@ const profileSchema = new Schema({
 	signupIP: String,
 	eloOverall: Number,
 	eloSeason: Number,
+	staffDisableVisibleElo: Boolean,
 	stats: {
 		matches: {
 			allMatches: {
