@@ -280,6 +280,8 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
+						_profile.eloSeason = Math.round(account.eloSeason * 100) / 100.0;
+						_profile.eloOverall = Math.round(account.eloOverall * 100) / 100.0;
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (

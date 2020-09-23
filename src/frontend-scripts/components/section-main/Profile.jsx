@@ -277,6 +277,7 @@ class ProfileWrapper extends React.Component {
 				: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
 		let gamesUntilRainbow = null;
+		let gamesUntilRainbowSeason = null;
 		if (user) {
 			userClasses =
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
@@ -290,6 +291,11 @@ class ProfileWrapper extends React.Component {
 			const { wins = 0, losses = 0 } = user;
 			if (wins + losses < 50) {
 				gamesUntilRainbow = 50 - wins - losses;
+			}
+
+			const { winsSeason = 0, lossesSeason = 0 } = user;
+			if (winsSeason + lossesSeason < 50) {
+				gamesUntilRainbowSeason = 50 - winsSeason - lossesSeason;
 			}
 		}
 
@@ -322,8 +328,20 @@ class ProfileWrapper extends React.Component {
 								<span>{gamesUntilRainbow}</span>
 							</div>
 						)}
+						{!isNaN(gamesUntilRainbow) && (
+							<div>
+								<span>
+									<strong>
+										<em>Games Until Rainbow (Season): </em>
+									</strong>
+								</span>
+								<span>{gamesUntilRainbowSeason}</span>
+							</div>
+						)}
 						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{profile.signupIP && <p>Signup IP: {profile.signupIP}</p>}
+						{profile.eloSeason && <p>ELO (Season): {profile.eloSeason}</p>}
+						{profile.eloOverall && <p>ELO (Overall): {profile.eloOverall}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist
