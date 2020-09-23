@@ -281,8 +281,8 @@ module.exports = () => {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
-						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(account.eloSeason * 100) / 100.0;
-						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(account.eloOverall * 100) / 100.0;
+						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round((account.eloSeason || 1600) * 100) / 100.0;
+						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round((account.eloOverall || 1600) * 100) / 100.0;
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (
