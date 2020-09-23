@@ -323,6 +323,7 @@ class ProfileWrapper extends React.Component {
 							</div>
 						)}
 						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						{profile.signupIP && <p>Signup IP: {profile.signupIP}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist

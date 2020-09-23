@@ -293,8 +293,16 @@ module.exports = () => {
 									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);
 								}
+
+								try {
+									_profile.signupIP = '-' + obfIP(acc.signupIP);
+								} catch (e) {
+									_profile.signupIP = "Couldn't find IP";
+									console.log(e);
+								}
 							} else {
 								_profile.lastConnectedIP = undefined;
+								_profile.signupIP = undefined;
 							}
 
 							res.json(_profile);

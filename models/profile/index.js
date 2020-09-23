@@ -8,6 +8,7 @@ const profileSchema = new Schema({
 	customCardback: String,
 	bio: String,
 	lastConnectedIP: String,
+	signupIP: String,
 	stats: {
 		matches: {
 			allMatches: {
