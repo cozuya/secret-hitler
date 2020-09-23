@@ -298,7 +298,7 @@ module.exports = () => {
 								}
 
 								try {
-									_profile.signupIP = '-' + obfIP(account.signupIP); // TODO: this is AEM SU not acc SU :P
+									_profile.signupIP = '-' + obfIP(account.signupIP);
 								} catch (e) {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);
