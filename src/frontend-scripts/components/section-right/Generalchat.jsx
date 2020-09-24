@@ -184,7 +184,11 @@ export default class Generalchat extends React.Component {
 	};
 
 	handleChatLockClick = () => {
-		this.setState({ lock: !this.state.lock });
+		if (this.state.lock) {
+			this.setState({ lock: false });
+		} else {
+			this.setState({ lock: true });
+		}
 	};
 
 	handleChatScrolled = () => {
