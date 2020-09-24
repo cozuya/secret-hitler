@@ -235,7 +235,7 @@ class Players extends React.Component {
 				onClick={() => {
 					if (!gameSettings.disableKillConfirmation && gameState.phase === 'execution') {
 						Swal.fire({
-							title: `Are you sure you want to execute ${i + 1}. ${player.userName}?`,
+							title: `Are you sure you want to execute {${i + 1}} ${player.userName}?`,
 							showCancelButton: true,
 							icon: 'warning'
 						}).then(result => {
