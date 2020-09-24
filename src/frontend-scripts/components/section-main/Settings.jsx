@@ -33,6 +33,7 @@ class Settings extends React.Component {
 		disableCrowns: '',
 		disableSeasonal: '',
 		disableElo: '',
+		disableKillConfirmation: '',
 		disableAggregations: '',
 		soundStatus: '',
 		isPrivate: '',
@@ -73,6 +74,7 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti || '',
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
+			disableKillConfirmation: gameSettings.disableKillConfirmation || '',
 			disableAggregations: gameSettings.disableAggregations || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
@@ -772,6 +774,16 @@ class Settings extends React.Component {
 									name="disableaggregations"
 									checked={this.state.disableAggregations}
 									onChange={() => this.toggleGameSettings('disableAggregations')}
+								/>
+								<label />
+							</div>
+							<h4 className="ui header">Disable kill confirmation</h4>
+							<div className="ui fitted toggle checkbox">
+								<input
+									type="checkbox"
+									name="disablekillconfirmation"
+									checked={this.state.disableKillConfirmation}
+									onChange={() => this.toggleGameSettings('disableKillConfirmation')}
 								/>
 								<label />
 							</div>
