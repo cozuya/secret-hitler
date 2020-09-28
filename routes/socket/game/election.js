@@ -275,7 +275,7 @@ const enactPolicy = (game, team, socket) => {
 											type: 'player'
 										},
 										{
-											text: powerToEnact[1]==='The president must examine the top 3 policies.'
+											text: powerToEnact[1] === 'The president must examine the top 3 policies.'
 												? ' to peek.'
 												: ' to pick.'
 										}
