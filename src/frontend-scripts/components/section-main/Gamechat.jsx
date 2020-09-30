@@ -399,11 +399,7 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatLockClick = () => {
-		if (this.state.lock) {
-			this.setState({ lock: false });
-		} else {
-			this.setState({ lock: true });
-		}
+		this.setState({ lock: !this.state.lock });
 	};
 
 	handleClickedClaimButton = () => {
