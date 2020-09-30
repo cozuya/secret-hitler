@@ -6,8 +6,6 @@ module.exports = [
 	'aggot',
 	'1gger',
 	'fag',
-	'enis',
-	'fuck',
 	'kike',
 	'卐',
 	'cunt',
@@ -26,7 +24,6 @@ module.exports = [
 	'f4gg0t',
 	'f4ggot',
 	'fagg0t',
-	'mong',
 	'kunt',
 	'niglet',
 	'etard',
@@ -34,6 +31,5 @@ module.exports = [
 	'negro',
 	'KKK',
 	'rape',
-	'pussy',
 	'niger'
 ];

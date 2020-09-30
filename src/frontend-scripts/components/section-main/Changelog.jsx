@@ -107,6 +107,25 @@ class Changelog extends React.Component {
 					<li> Mell0: 1907 </li>
 					<li> RyanLockwood: 1905 </li>
 				</ol>
+
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 10! 4-1-2020</p>
+				</div>
+
+				<h4>The top 10 players of season 9 are:</h4>
+				<ul>
+					<li> rags009: 1992 </li>
+					<li> ChroIIo: 1942 </li>
+					<li> Scorcha: 1930 </li>
+					<li> NotFat: 1924 </li>
+					<li> ChillMedusa: 1899 </li>
+					<li> arteezy: 1886 </li>
+					<li> DanGheesling14: 1886 </li>
+					<li> olly97: 1882 </li>
+					<li> earring: 1854 </li>
+					<li> lucaanders: 1854 </li>
+				</ul>
+
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
