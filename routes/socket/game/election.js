@@ -260,7 +260,7 @@ const enactPolicy = (game, team, socket) => {
 								let list = seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead);
 
 								game.gameState.timedModeEnabled = false;
-								
+
 								game.chats.push({
 									gameChat: true,
 									timestamp: new Date(),
@@ -275,9 +275,7 @@ const enactPolicy = (game, team, socket) => {
 											type: 'player'
 										},
 										{
-											text: powerToEnact[1] === 'The president must examine the top 3 policies.'
-												? ' to peek.'
-												: ' to pick.'
+											text: powerToEnact[1] === 'The president must examine the top 3 policies.' ? ' to peek.' : ' to pick.'
 										}
 									]
 								});
@@ -793,7 +791,26 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 				);
 			}
 		}
-
+		if (wasTimer) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'The timer has forced '
+					},
+					{
+						text: game.general.blindMode
+							? `${game.general.replacementNames[chancellorIndex]} {${chancellorIndex + 1}} `
+							: `${chancellor.userName} {${chancellorIndex + 1}}`,
+						type: 'player'
+					},
+					{
+						text: ' to play a policy.'
+					}
+				]
+			});
+		}
 		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -1014,8 +1031,27 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 			game.gameState.timedModeEnabled = false;
 		}
 
+		if (wasTimer) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'The timer has forced '
+					},
+					{
+						text: game.general.blindMode
+							? `${game.general.replacementNames[presidentIndex]} {${presidentIndex + 1}} `
+							: `${president.userName} {${presidentIndex + 1}}`,
+						type: 'player'
+					},
+					{
+						text: ' to discard a policy.'
+					}
+				]
+			});
+		}
 		const discarded = game.private.currentElectionPolicies[data.selection];
-
 		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
