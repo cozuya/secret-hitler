@@ -365,13 +365,13 @@ class Playerlist extends React.Component {
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
-								user.specialTournamentStatus === 'spring2020captain' && (
-									<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+								user.specialTournamentStatus === '4captain' && (
+									<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
 								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
-								user.specialTournamentStatus === 'spring2020' && (
-									<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+								user.specialTournamentStatus === '4' && (
+									<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
 								)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
@@ -550,13 +550,13 @@ class Playerlist extends React.Component {
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
-								user.specialTournamentStatus === 'spring2020captain' && (
-									<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+								user.specialTournamentStatus === '4captain' && (
+									<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
 								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
-								user.specialTournamentStatus === 'spring2020' && (
-									<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+								user.specialTournamentStatus === '4' && (
+									<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
 								)}
 							{(() => {
 								const userAdminRole = user.staffIncognito
