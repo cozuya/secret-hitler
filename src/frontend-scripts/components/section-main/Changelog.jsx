@@ -32,16 +32,16 @@ class Changelog extends React.Component {
 				</p>
 				<h4>The top 10 players of season 11 are:</h4>
 				<ol>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
+					<li>CuSith: 2071</li>
+					<li>imbapingu: 2068</li>
+					<li>Starkrush: 1983</li>
+					<li>Moranki: 1976</li>
+					<li>near1337: 1940</li>
+					<li>SexGodMedusa: 1939</li>
+					<li>1on1: 1920</li>
+					<li>SOOOOZE: 1907</li>
+					<li>NotAnAlt7: 1903</li>
+					<li>casdude: 1896</li>
 				</ol>
 				<hr />
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
