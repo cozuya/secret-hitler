@@ -324,7 +324,7 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 	}
 
 	if (game.gameState.phase !== 'presidentVoteOnVeto') {
-		return;	
+		return;
 	}
 
 	game.private.summary = game.private.summary.updateLog({
@@ -503,7 +503,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 	}
 
 	if (game.gameState.phase !== 'chancellorVoteOnVeto') {
-		return;	
+		return;
 	}
 
 	game.private.summary = game.private.summary.updateLog({
@@ -777,7 +777,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 					type: enactedPolicy
 				},
 				{
-					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
+					text: wasTimer ? ' policy due to the timer expiring.' : ' policy.'
 				}
 			]
 		};
@@ -981,7 +981,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 					type: discarded
 				},
 				{
-					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
+					text: wasTimer ? ' policy due to the timer expiring.' : ' policy.'
 				}
 			]
 		};
