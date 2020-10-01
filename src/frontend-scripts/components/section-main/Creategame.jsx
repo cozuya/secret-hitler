@@ -656,7 +656,7 @@ export default class Creategame extends React.Component {
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
-					gameType: 'casual',
+					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: true,
