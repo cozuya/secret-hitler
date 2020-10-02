@@ -3987,10 +3987,12 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 			});
 		});
 
-		if (reportError) {
-			callback({ success: false, error: 'Error submitting report.' });
-		} else {
-			callback({ success: true });
+		if (typeof callback === 'function') {
+			if (reportError) {
+				callback({ success: false, error: 'Error submitting report.' });
+			} else {
+				callback({ success: true });
+			}
 		}
 	});
 };
