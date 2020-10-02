@@ -444,7 +444,7 @@ class Players extends React.Component {
 			} else if (gameInfo.general.eloMinimum) {
 				const user = userList.list.find(user => user.userName === userInfo.userName);
 
-				if (user && (parseInt(userInfo.gameSettings.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(userInfo.gameSettings.eloOverall, 10) >= gameInfo.general.eloMinimum)) {
+				if (user && userInfo && userInfo.gameSettings && userInfo.gameSettings.eloSeason && userInfo.gameSettings.eloOverall && (parseInt(userInfo.gameSettings.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(userInfo.gameSettings.eloOverall, 10) >= gameInfo.general.eloMinimum)) {
 					onClickedTakeSeat();
 				} else {
 					$(this.elominimumModal).modal('show');
