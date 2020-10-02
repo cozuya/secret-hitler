@@ -482,6 +482,8 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
+			const veterans = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
+			aem.push(...veterans);
 			const contributors = visible.filter(user => !aem.includes(user) && user.isContributor).sort(this.alphabetical());
 			aem.push(...contributors);
 
@@ -578,13 +580,15 @@ class Playerlist extends React.Component {
 									? 'Editor'
 									: user.staffRole === 'moderator'
 									? 'Moderator'
+									: user.staffRole === 'veteran'
+									? 'Veteran'
 									: user.isContributor
 									? 'Contributor'
 									: null;
 
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+									const prefix = userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
