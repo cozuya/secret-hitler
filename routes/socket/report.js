@@ -33,7 +33,7 @@ function sendReport(game, report, data, type) {
 			}
 		}
 
-		if (process.env.NODE_ENV === 'production') {
+		if (true || process.env.NODE_ENV === 'production') {
 			try {
 				report = JSON.stringify(report);
 				const req = https.request({
@@ -97,12 +97,13 @@ module.exports.makeReport = (data, game, type = 'report') => {
 	}
 
 	if (type === 'reportdelayed' || (type === 'report' && !game.general.casualGame)) {
+		const upperRole = role[0].toUpperCase() + role.substr(1);
 		const isDelayed = type === 'reportdelayed' ? ' - **AEM DELAYED**' : '';
 		let throwerIP;
 		const otherPlayers = [];
 
 		report = {
-			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}`,
+			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${upperRole}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}`,
 			username: 'Auto Report',
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		};
