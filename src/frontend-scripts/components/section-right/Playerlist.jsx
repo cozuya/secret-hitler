@@ -30,6 +30,7 @@ class Playerlist extends React.Component {
 		userListFilter: 'all',
 		expandInfo: {
 			AEM: true,
+			vet: true,
 			cont: true,
 			exp: true,
 			inexp: false,
@@ -244,7 +245,7 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const veterans = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
+			const veterans = visible.filter(user => user.staffRole === 'veteran').sort(this.alphabetical());
 			const nonStaff = visible.filter(user => !aem.includes(user));
 			const contributors = nonStaff.filter(user => user.isContributor).sort(this.alphabetical());
 
@@ -257,7 +258,9 @@ class Playerlist extends React.Component {
 						.filter(user => !veterans.includes(user) && !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
 						.sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = nonStaff.filter(user => !veterans.includes(user) && !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
+			const inexperienced = nonStaff
+				.filter(user => !veterans.includes(user) && !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate)
+				.sort(this.alphabetical());
 
 			const makeUser = (user, i) => {
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
@@ -340,7 +343,8 @@ class Playerlist extends React.Component {
 									: null;
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+									const prefix =
+										userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
@@ -409,9 +413,9 @@ class Playerlist extends React.Component {
 						<span style={{ userSelect: 'none' }}>Staff: {aem.length}</span>
 					</span>
 					<div>{expandInfo.AEM && aem.map(makeUser)}</div>
-					<span onClick={() => toggleGroup('cont')} style={{ cursor: 'pointer' }}>
-						<i className={`caret ${expandInfo.cont ? 'down' : 'right'} icon`} />
-						<span style={{ userSelect: 'none' }}>Veterans: {veteranss.length}</span>
+					<span onClick={() => toggleGroup('vet')} style={{ cursor: 'pointer' }}>
+						<i className={`caret ${expandInfo.vet ? 'down' : 'right'} icon`} />
+						<span style={{ userSelect: 'none' }}>Veteran AEM: {veterans.length}</span>
 					</span>
 					<div>{expandInfo.vet && veterans.map(makeUser)}</div>
 					<span onClick={() => toggleGroup('cont')} style={{ cursor: 'pointer' }}>
@@ -588,7 +592,8 @@ class Playerlist extends React.Component {
 
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+									const prefix =
+										userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
