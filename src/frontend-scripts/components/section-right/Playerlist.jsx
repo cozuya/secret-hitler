@@ -258,9 +258,7 @@ class Playerlist extends React.Component {
 						.filter(user => !veterans.includes(user) && !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
 						.sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = nonStaff
-				.filter(user => !veterans.includes(user) && !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate)
-				.sort(this.alphabetical());
+			const inexperienced = nonStaff.filter(user => !veterans.includes(user) && !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
 
 			const makeUser = (user, i) => {
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
@@ -343,8 +341,7 @@ class Playerlist extends React.Component {
 									: null;
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix =
-										userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+									const prefix = userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
@@ -592,8 +589,7 @@ class Playerlist extends React.Component {
 
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix =
-										userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+									const prefix = userAdminRole !== 'Veteran' ? staffRolePrefixes[userAdminRole] : userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
