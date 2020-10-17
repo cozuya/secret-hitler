@@ -6,7 +6,6 @@ describe('Generalchat', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			lock: false,
-			stickyEnabled: true,
 			badWord: [null, null],
 			textLastChanged: 0,
 			textChangeTimer: -1,
@@ -14,10 +13,13 @@ describe('Generalchat', () => {
 			emoteHelperSelectedIndex: 0,
 			emoteHelperElements: ['ja', 'nein', 'blobsweat', 'wethink', 'limes'],
 			emoteColonIndex: -1,
-			excludedColonIndices: []
+			excludedColonIndices: [],
+			generalChats: {
+				list: []
+			}
 		};
 
-		const component = shallow(<Generalchat />);
+		const component = shallow(<Generalchat socket={{ on: () => {}, emit: () => {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});

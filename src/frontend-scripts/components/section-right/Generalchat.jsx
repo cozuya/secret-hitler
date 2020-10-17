@@ -10,7 +10,6 @@ export default class Generalchat extends React.Component {
 
 	state = {
 		lock: false,
-		stickyEnabled: true,
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
@@ -25,6 +24,7 @@ export default class Generalchat extends React.Component {
 	};
 
 	componentDidMount() {
+		console.log('mounting');
 		const { socket } = this.props;
 
 		if (this.scrollbar) {
@@ -32,6 +32,7 @@ export default class Generalchat extends React.Component {
 		}
 
 		socket.on('allGeneralChats', generalChats => {
+			console.log('got all chats', generalChats);
 			this.setState({
 				generalChats
 			});
@@ -62,19 +63,14 @@ export default class Generalchat extends React.Component {
 
 		socket.off('allGeneralChats');
 		socket.off('newGeneralChat');
+		console.log('unmounting');
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		const { lock, generalChats, stickyEnabled } = this.state;
+		const { lock } = this.state;
 
 		if (!lock) {
 			this.scrollbar.scrollToBottom();
-		}
-
-		if (!stickyEnabled && generalChats.sticky !== prevState.generalChats.sticky) {
-			this.setState({
-				stickyEnabled: true
-			});
 		}
 	}
 
@@ -462,25 +458,6 @@ export default class Generalchat extends React.Component {
 		);
 	}
 
-	renderSticky() {
-		const { stickyEnabled, generalChats } = this.state;
-		if (stickyEnabled && generalChats.sticky) {
-			const dismissSticky = () => {
-				this.setState({ stickyEnabled: false });
-			};
-
-			return (
-				<div className="sticky">
-					<span>
-						<span>Sticky: </span>
-						{processEmotes(generalChats.sticky, true, this.props.allEmotes)}
-					</span>
-					<i className="remove icon" onClick={dismissSticky} />
-				</div>
-			);
-		}
-	}
-
 	renderEmoteHelper() {
 		const { allEmotes } = this.props;
 		const { emoteHelperSelectedIndex, emoteHelperElements } = this.state;
@@ -542,7 +519,6 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<section className="segment chats">
-					{this.renderSticky()}
 					{emoteColonIndex >= 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}

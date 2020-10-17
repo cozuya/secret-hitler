@@ -4,10 +4,16 @@ import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
 import { CURRENTSEASONNUMBER } from '../../constants';
+import { Message } from 'semantic-ui-react';
+import { processEmotes } from '../../emotes';
 
 export class GamesList extends React.Component {
 	state = {
-		filtersVisible: false
+		filtersVisible: false,
+		stickyEnabled: true,
+		generalChats: {
+			sticky: ''
+		}
 	};
 
 	toggleFilter = value => {
@@ -15,6 +21,55 @@ export class GamesList extends React.Component {
 
 		gameFilter[value] = !gameFilter[value];
 		changeGameFilter(gameFilter);
+	};
+
+	componentDidMount() {
+		console.log('mounting');
+		const { socket } = this.props;
+
+		if (this.scrollbar) {
+			this.scrollbar.scrollToBottom();
+		}
+
+		socket.on('allGeneralChats', generalChats => {
+			console.log('got all chats', generalChats);
+			this.setState({
+				generalChats: { sticky: generalChats.sticky }
+			});
+		});
+
+		socket.emit('getGeneralChats');
+	}
+
+	componentWillUnmount() {
+		const { socket } = this.props;
+
+		socket.off('allGeneralChats');
+		console.log('unmounting');
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		const { generalChats, stickyEnabled } = this.state;
+
+		if (!stickyEnabled && generalChats.sticky !== prevState.generalChats.sticky) {
+			this.setState({
+				stickyEnabled: true
+			});
+		}
+	}
+
+	renderSticky = () => {
+		if (this.state.stickyEnabled && this.state.generalChats && this.state.generalChats.sticky) {
+			const dismissSticky = () => {
+				this.setState({ stickyEnabled: false });
+			};
+
+			return (
+				<Message onDismiss={dismissSticky} color="blue">
+					{processEmotes(this.state.generalChats.sticky, true, this.props.allEmotes)}
+				</Message>
+			);
+		}
 	};
 
 	renderFilters() {
@@ -243,7 +298,10 @@ export class GamesList extends React.Component {
 				<a href="#/leaderboards" className="leaderboard">
 					Leaderboards
 				</a>
-				<div className="browser-body">{this.renderGameList()}</div>
+				<div className="browser-body">
+					{this.renderSticky()}
+					{this.renderGameList()}
+				</div>
 			</section>
 		);
 	}
@@ -262,7 +320,9 @@ GamesList.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameFilter: PropTypes.object,
-	changeGameFilter: PropTypes.func
+	changeGameFilter: PropTypes.func,
+	generalChats: PropTypes.object,
+	allEmotes: PropTypes.object
 };
 
 export default GamesList;

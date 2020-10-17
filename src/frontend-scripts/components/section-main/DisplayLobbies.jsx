@@ -127,12 +127,7 @@ const DisplayLobbies = props => {
 		}
 
 		if (game.disableChat) {
-			disableChat = (
-				<i className="icons">
-					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
-				</i>
-			);
+			disableChat = <i className="unmute icon" />;
 			disableChatTooltip = 'Player Chat Disabled';
 		}
 

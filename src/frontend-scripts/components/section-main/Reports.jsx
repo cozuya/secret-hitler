@@ -127,8 +127,8 @@ export default class Reports extends React.Component {
 								<tr key={index} style={{ background: report.isActive ? '#cdf9db' : '#708a78' }}>
 									<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
 									<td>
-										<a href={`#/table/${report.gameUid}`} style={{ textDecoration: 'underline' }}>
-											{report.gameUid.substr(0, 5)}
+										<a href={report.gameUid ? `#/table/${report.gameUid}` : ''} style={{ textDecoration: 'underline' }}>
+											{report.gameUid && report.gameUid.substr(0, 5)}
 										</a>
 									</td>
 									<td>{report.reportedPlayer}</td>

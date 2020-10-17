@@ -5,10 +5,14 @@ import GamesList from './GamesList';
 describe('GamesList', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
-			filtersVisible: false
+			filtersVisible: false,
+			stickyEnabled: true,
+			generalChats: {
+				sticky: ''
+			}
 		};
 
-		const component = shallow(<GamesList />);
+		const component = shallow(<GamesList socket={{ on: () => {}, emit: () => {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});

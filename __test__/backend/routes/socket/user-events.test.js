@@ -7,11 +7,8 @@ import {
 	handleUpdatedRemakeGame,
 	handleAddNewGameChat,
 	handleUpdateWhitelist,
-	handleNewGeneralChat,
+	handleAddNewGeneralChat,
 	handleUpdatedGameSettings,
-	handleModerationAction,
-	handlePlayerReport,
-	handlePlayerReportDismiss,
 	checkUserStatus,
 	handleUserLeaveGame,
 	handleSocketDisconnect
@@ -54,24 +51,12 @@ describe('user events', () => {
 		expect(typeof handleUpdateWhitelist).toBe('function');
 	});
 
-	it('has an handleNewGeneralChat function', () => {
-		expect(typeof handleNewGeneralChat).toBe('function');
+	it('has an handleAddNewGeneralChat function', () => {
+		expect(typeof handleAddNewGeneralChat).toBe('function');
 	});
 
 	it('has an handleUpdatedGameSettings function', () => {
 		expect(typeof handleUpdatedGameSettings).toBe('function');
-	});
-
-	it('has an handleModerationAction function', () => {
-		expect(typeof handleModerationAction).toBe('function');
-	});
-
-	it('has an handlePlayerReport function', () => {
-		expect(typeof handlePlayerReport).toBe('function');
-	});
-
-	it('has an handlePlayerReportDismiss function', () => {
-		expect(typeof handlePlayerReportDismiss).toBe('function');
 	});
 
 	it('has an checkUserStatus function', () => {

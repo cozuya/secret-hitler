@@ -9,6 +9,7 @@ import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
+import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
 
@@ -45,7 +46,7 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick = userName => {
+	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
 		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
@@ -267,35 +268,35 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<div
-					title={
-						isBlind || player.isPrivate
-							? 'Double click to open a modal to report this player to the moderator team'
-							: `Double click to open a modal to report ${player.userName} to the moderator team`
-					}
-					onDoubleClick={() => {
-						this.handlePlayerDoubleClick(player.userName);
-					}}
-					className={(() => {
-						let classes = 'player-number';
-
-						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
-							classes = `${classes} ${playersState[i].nameStatus}`;
-						} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+				<UserPopup userName={player.userName} socket={this.props.socket} index={i}>
+					<div
+						title={
+							isBlind || player.isPrivate
+								? 'Double click to open a modal to report this player to the moderator team'
+								: `Double click to open a modal to report ${player.userName} to the moderator team`
 						}
+						className={(() => {
+							let classes = 'player-number';
 
-						if (publicPlayersState[i].leftGame) {
-							classes = `${classes} leftgame`;
-						} else if (!publicPlayersState[i].connected) {
-							classes = `${classes} disconnected`;
-						}
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+							}
 
-						return classes;
-					})()}
-				>
-					{renderPlayerName(player, i)}
-				</div>
+							if (publicPlayersState[i].leftGame) {
+								classes = `${classes} leftgame`;
+							} else if (!publicPlayersState[i].connected) {
+								classes = `${classes} disconnected`;
+							}
+
+							return classes;
+						})()}
+					>
+						{renderPlayerName(player, i)}
+					</div>
+				</UserPopup>
+
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
