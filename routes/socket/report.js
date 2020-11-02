@@ -33,7 +33,7 @@ function sendReport(game, report, data, type) {
 			}
 		}
 
-		if (true || process.env.NODE_ENV === 'production') {
+		if (process.env.NODE_ENV === 'production') {
 			try {
 				report = JSON.stringify(report);
 				const req = https.request({
