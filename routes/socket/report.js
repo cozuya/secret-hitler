@@ -126,9 +126,22 @@ module.exports.makeReport = (data, game, type = 'report') => {
 						let ip;
 						if (account) ip = account.lastConnectedIP || account.signupIP;
 
+						const seat = game.private.seatedPlayers.findIndex(elem => elem.userName === account.username);
 						if (ip === throwerIP) {
-							const seat = game.private.seatedPlayers.findIndex(elem => elem.userName === account.username);
 							matches[seat] = `${account.username} {${seat + 1}}`;
+						} else if (
+							ip.includes('.') && // Ensure both IPs are IPv4
+							throwerIP.includes('.') &&
+							ip
+								.split('.')
+								.splice(0, -1)
+								.join('.') === // Splice off last block
+								throwerIP
+									.split('.')
+									.splice(0, -1)
+									.join('.') // to determine if the IPs are a 3-block match
+						) {
+							matches[seat] = `${account.username} {${seat + 1}} (3-block)`;
 						}
 					});
 				})
