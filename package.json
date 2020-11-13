@@ -35,7 +35,7 @@
 		"mongoose": "^5.7.5",
 		"morgan": "^1.8.1",
 		"node-fetch": "^2.6.1",
-		"nodemailer": "^4.6.5",
+		"nodemailer": "^6.4.16",
 		"nodemailer-mailgun-transport": "^1.4.0",
 		"nodemon": "^2.0.3",
 		"option": "^0.2.3",
