@@ -1,5 +1,6 @@
 const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
+const moment = require('moment');
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
 const Profile = require('../models/profile');
@@ -195,6 +196,7 @@ module.exports = () => {
 				}
 
 				account.lastConnectedIP = ip;
+				account.lastConnected = new Date();
 				if (
 					(account.ipHistory && account.ipHistory.length === 0) ||
 					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
@@ -281,8 +283,9 @@ module.exports = () => {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
-						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round((account.eloSeason || 1600) * 100) / 100.0;
-						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round((account.eloOverall || 1600) * 100) / 100.0;
+						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloSeason || 1600).toFixed(2);
+						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloOverall || 1600).toFixed(2);
+						_profile.lastConnected = [account.lastConnected.getMonth() + 1, account.lastConnected.getDate(), account.lastConnected.getFullYear()].join('-');
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (
@@ -303,6 +306,8 @@ module.exports = () => {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);
 								}
+
+								_profile.lastConnected = moment(account.lastConnected).format('YYYY-MM-DD HH:mm:ss');
 							} else {
 								_profile.lastConnectedIP = undefined;
 								_profile.signupIP = undefined;

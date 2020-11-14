@@ -9,6 +9,7 @@ const profileSchema = new Schema({
 	bio: String,
 	lastConnectedIP: String,
 	signupIP: String,
+	lastConnected: String,
 	eloOverall: Number,
 	eloSeason: Number,
 	staffDisableVisibleElo: Boolean,

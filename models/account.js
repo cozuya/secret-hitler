@@ -74,6 +74,7 @@ const Account = new Schema({
 	},
 	signupIP: String,
 	lastConnectedIP: String,
+	lastConnected: Date,
 	ipHistory: Array,
 	verified: Boolean,
 	isBanned: Boolean,
