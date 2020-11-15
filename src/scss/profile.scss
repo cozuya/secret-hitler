@@ -163,4 +163,26 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	.bio + p {
 		margin-bottom: 10px;
 	}
+
+	> .fav {
+		background: url('../../public/favicon-16x16.png') no-repeat center center;
+		width: 16px;
+		height: 16px;
+		vertical-align: text-bottom;
+	}
+	> .rainbow {
+		background: url('../../public/images/rainbow.png') no-repeat center center;
+		width: 16px;
+		height: 16px;
+		vertical-align: text-bottom;
+	}
+	> .private {
+		background: url('../../public/images/private.png') no-repeat center center;
+		width: 16px;
+		height: 16px;
+		vertical-align: text-bottom;
+	}
+}
+.breakAll {
+	word-wrap: break-word !important;
 }
