@@ -3080,6 +3080,32 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						return;
 					}
 					break;
+				case 'getObfIP':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								socket.emit('sendAlert', `Requested Obfuscated IP: ${obfIP(account.lastConnectedIP)}`);
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'clearTimeout user err');
+						});
+					break;
+				case 'getObfSUIP':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								socket.emit('sendAlert', `Requested Obfuscated Signup IP: ${obfIP(account.signupIP)}`);
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'clearTimeout user err');
+						});
+					break;
 				case 'rainbowUser':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -3793,6 +3819,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				warn: 'Issue Warning',
 				removeWarning: 'Delete Warning',
 				getIP: 'Get IP',
+				getObfIP: 'Get Obfuscated IP',
+				getObfSUIP: 'Get Obfuscated Signup IP',
 				ban: 'Ban',
 				setSticky: 'Set Sticky',
 				ipbanlarge: '1 Week IP Ban',

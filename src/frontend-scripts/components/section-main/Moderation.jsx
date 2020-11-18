@@ -617,6 +617,24 @@ export default class Moderation extends React.Component {
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
+						takeModAction('getObfIP');
+					}}
+					style={{ width: '100%', background: 'purple' }}
+				>
+					Get User IP (Obfuscated)
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('getObfSUIP');
+					}}
+					style={{ width: '100%', background: 'purple' }}
+				>
+					Get User Signup IP (Obfuscated)
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
 						takeModAction('setVerified');
 					}}
 					style={{ width: '100%', background: 'aquamarine' }}
@@ -898,7 +916,7 @@ export default class Moderation extends React.Component {
 					}}
 					style={{ width: '100%' }}
 				>
-					Get user IP
+					Get User IP
 				</button>
 				<button
 					style={{ background: 'crimson' }}
@@ -1158,6 +1176,8 @@ export default class Moderation extends React.Component {
 			warn: 'Issue Warning',
 			removeWarning: 'Delete Warning',
 			getIP: 'Get IP',
+			getObfIP: 'Get Obfuscated IP',
+			getObfSUIP: 'Get Obfuscated Signup IP',
 			ban: 'Ban',
 			setSticky: 'Set Sticky',
 			ipbanlarge: '1 Week IP Ban',
