@@ -249,6 +249,10 @@
 		overflow: hidden !important;
 		position: relative;
 
+		@media screen and (min-width: 650px) {
+			height: 440px;
+		}
+
 		.card-group {
 			height: 50%;
 

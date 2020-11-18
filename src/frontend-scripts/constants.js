@@ -36,7 +36,7 @@ export const TOU_CHANGES = [
 	}
 ];
 
-export const CURRENTSEASONNUMBER = 11;
+export const CURRENTSEASONNUMBER = 12;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -66,7 +66,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			veteran: user.staffRole === 'veteran',
 			cbell: user.userName === 'cbell' && user.staffRole === 'editor',
 			max: user.userName === 'Max' && user.staffRole === 'editor',
-			moira: user.userName === 'moira' && user.staffRole === 'editor'
+			moira: user.userName === 'moira' && user.staffRole === 'editor',
+			bruno: user.userName === 'Bruno' && user.staffRole === 'editor'
 		});
 	} else if (
 		user.isContributor &&

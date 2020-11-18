@@ -164,29 +164,43 @@ class ProfileWrapper extends React.Component {
 				return 'Nothing here!';
 			}
 
-			const formatedBio = [];
+			const formattedBio = [];
 			const words = text.split(' ');
 
-			words.forEach(word => {
-				if (/^https:\/\//i.test(word)) {
-					formatedBio.push(
-						<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+			words.forEach((word, index) => {
+				const validSiteURL = /http[s]?:\/\/(secrethitler\.io|localhost:8080)\/([a-zA-Z0-9#?=&\/\._]*)/i;
+				if (validSiteURL.test(word)) {
+					const data = validSiteURL.exec(word);
+					const replayURL = data[2].startsWith('game/#/replay/');
+
+					formattedBio.push(
+						<a
+							key={index}
+							href={replayURL ? '/game/' + data[2].substring(5) : '/' + data[2]}
+							title={replayURL ? 'Link to a SH.io replay' : 'Link to something inside of SH.io'}
+						>
+							{replayURL ? data[2].substring(7) : data[2]}
+						</a>
+					);
+				} else if (/^https:\/\//i.test(word)) {
+					formattedBio.push(
+						<a key={index} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
 							{word.split('https://')[1]}
 						</a>,
 						' '
 					);
 				} else if (/^http:\/\//i.test(word)) {
-					formatedBio.push(
-						<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+					formattedBio.push(
+						<a key={index} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
 							{word.split('http://')[1]}
 						</a>,
 						' '
 					);
 				} else {
-					formatedBio.push(word, ' ');
+					formattedBio.push(word, ' ');
 				}
 			});
-			return formatedBio;
+			return formattedBio;
 		};
 
 		return (
