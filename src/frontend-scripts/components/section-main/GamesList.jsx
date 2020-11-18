@@ -239,9 +239,9 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2020-07-03')
+						{new Date() > new Date('2020-10-03')
 							? `Season ends ${moment(
-									new Date(new Date('2020-10-01 00:00:00.000').getTime() + new Date('2020-10-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * -5)
+									new Date(new Date('2021-01-01 00:00:00.000').getTime() + new Date('2021-01-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * 5)
 							  ).fromNow()}`
 							: `Welcome to season ${CURRENTSEASONNUMBER}`}
 						.
