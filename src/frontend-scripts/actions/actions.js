@@ -10,6 +10,8 @@ export function updateUser(user) {
 export const UPDATE_MIDSECTION = 'UPDATE_MIDSECTION';
 
 export function updateMidsection(midSection) {
+	window._paq.push(['setCustomUrl', window.location.href]);
+	window._paq.push(['trackPageView']);
 	return {
 		type: UPDATE_MIDSECTION,
 		midSection
