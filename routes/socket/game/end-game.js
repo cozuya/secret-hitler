@@ -17,7 +17,9 @@ const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-cons
  */
 const saveGame = game => {
 	const summary = game.private.summary.publish();
-	const casualBool = game.general.casualGame ? true : false; // Because Mongo is explicitly typed and integers are not truthy according to it
+	const casualBool = Boolean(game.general.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
+	const practiceBool = Boolean(game.general.practiceGame);
+
 	/**
 	 * @param {object} - object describing game model.
 	 */
@@ -47,6 +49,7 @@ const saveGame = game => {
 		rebalance7p: game.general.rebalance7p,
 		rebalance9p2f: game.general.rebalance9p2f,
 		casualGame: casualBool,
+		practiceGame: practiceBool,
 		customGame: game.customGameSettings.enabled,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
