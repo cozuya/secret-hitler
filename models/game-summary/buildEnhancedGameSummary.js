@@ -79,6 +79,7 @@ function buildEnhancedGameSummary(_summary) {
 
 	const casualGame = summary.gameSetting.casualGame;
 	const practiceGame = summary.gameSetting.practiceGame;
+	const unlisted = summary.gameSetting.practiceGame;
 
 	// String
 	const winningTeam = (() => {
@@ -168,6 +169,7 @@ function buildEnhancedGameSummary(_summary) {
 		isRebalanced,
 		casualGame,
 		practiceGame,
+		unlisted,
 		usernameOf,
 		tagOf,
 		indexOf,

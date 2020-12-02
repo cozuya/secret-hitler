@@ -19,6 +19,7 @@ const saveGame = game => {
 	const summary = game.private.summary.publish();
 	const casualBool = Boolean(game.general.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
 	const practiceBool = Boolean(game.general.practiceGame);
+	const unlistedBool = Boolean(game.general.unlisted);
 
 	/**
 	 * @param {object} - object describing game model.
@@ -51,6 +52,7 @@ const saveGame = game => {
 		casualGame: casualBool,
 		practiceGame: practiceBool,
 		customGame: game.customGameSettings.enabled,
+		unlisted: unlistedBool,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
