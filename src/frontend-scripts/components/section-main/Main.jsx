@@ -271,6 +271,8 @@ export class Main extends React.Component {
 							socket={socket}
 							changeGameFilter={changeGameFilter}
 							gameFilter={this.state.gameFilter}
+							generalChats={this.props.generalChats}
+							allEmotes={this.props.allEmotes}
 						/>
 					);
 			}

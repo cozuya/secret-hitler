@@ -55,7 +55,8 @@ export default class Creategame extends React.Component {
 				fascistCount: 1, // 1-3, does not include hit
 				hitKnowsFas: false,
 				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-				trackState: { lib: 0, fas: 0 }
+				trackState: { lib: 0, fas: 0 },
+				fasCanShootHit: false
 			}
 		};
 	}

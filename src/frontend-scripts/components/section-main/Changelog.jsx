@@ -11,6 +11,40 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 12!</p>
+				</div>
+				<div className="ui header">
+					<p>Version 1.7.1 released 10-1-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various New Emotes</strong> - various contributors have graciously added many new emotes,
+					check them all out!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Replay Menu</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds new user-popup menu to allow better interaction with users</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
+				</p>
+				<h4>The top 10 players of season 11 are:</h4>
+				<ol>
+					<li>CuSith: 2071</li>
+					<li>imbapingu: 2068</li>
+					<li>Starkrush: 1983</li>
+					<li>Moranki: 1976</li>
+					<li>near1337: 1940</li>
+					<li>SexGodMedusa: 1939</li>
+					<li>1on1: 1920</li>
+					<li>SOOOOZE: 1907</li>
+					<li>NotAnAlt7: 1903</li>
+					<li>casdude: 1896</li>
+				</ol>
+				<hr />
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome to Season 11!</p>
 				</div>
 				<div className="ui header">
@@ -107,6 +141,25 @@ class Changelog extends React.Component {
 					<li> Mell0: 1907 </li>
 					<li> RyanLockwood: 1905 </li>
 				</ol>
+
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 10! 4-1-2020</p>
+				</div>
+
+				<h4>The top 10 players of season 9 are:</h4>
+				<ul>
+					<li> rags009: 1992 </li>
+					<li> ChroIIo: 1942 </li>
+					<li> Scorcha: 1930 </li>
+					<li> NotFat: 1924 </li>
+					<li> ChillMedusa: 1899 </li>
+					<li> arteezy: 1886 </li>
+					<li> DanGheesling14: 1886 </li>
+					<li> olly97: 1882 </li>
+					<li> earring: 1854 </li>
+					<li> lucaanders: 1854 </li>
+				</ul>
+
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
