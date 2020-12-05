@@ -1191,8 +1191,9 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					{
 						investigationClaim: data.claimState
 					},
-					{ presidentId: playerIndex }
+					{ investigatorId: playerIndex }
 				);
+
 				switch (data.claimState) {
 					case 'fascist':
 						text.push(
@@ -2688,7 +2689,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 
 	output += '</table>';
 	socket.emit('sendAlert', output);
-	timeRemaking;
 };
 
 /**
