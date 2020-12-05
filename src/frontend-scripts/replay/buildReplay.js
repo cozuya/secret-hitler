@@ -118,7 +118,7 @@ export default function buildReplay(game) {
 				});
 			case 'investigation':
 				return postEnactionAdd({
-					investigatorId: investigatorId.value(),
+					investigatorId: investigatorId._value === undefined ? undefined : investigatorId.value(),
 					investigationId: investigationId.value(),
 					investigationClaim: investigationClaim
 				});
