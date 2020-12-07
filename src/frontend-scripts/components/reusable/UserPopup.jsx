@@ -134,7 +134,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 										</Grid.Column>
 										<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
 											<List.Icon name="calendar alternate outline" />
-											{user.eloSeasonal || 1600}
+											{user.eloSeason || 1600}
 										</Grid.Column>
 									</Grid.Row>
 								</Grid>
