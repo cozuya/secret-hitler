@@ -34,7 +34,8 @@ export class Main extends React.Component {
 				casualgame: false
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
-			newPlayerModalPageIndex: 0
+			newPlayerModalPageIndex: 0,
+			stickyEnabled: true
 		};
 	}
 
@@ -53,6 +54,10 @@ export class Main extends React.Component {
 	static getDerivedStateFromProps(props) {
 		return props.userInfo.gameSettings ? { gameFilter: props.userInfo.gameSettings.gameFilters } : null;
 	}
+
+	setStickyEnabled = enabled => {
+		this.setState({ stickyEnabled: enabled });
+	};
 
 	handleDismissSignupModal = () => {
 		this.setState({
@@ -273,6 +278,8 @@ export class Main extends React.Component {
 							gameFilter={this.state.gameFilter}
 							generalChats={this.props.generalChats}
 							allEmotes={this.props.allEmotes}
+							stickyEnabled={this.state.stickyEnabled}
+							setStickyEnabled={this.setStickyEnabled}
 						/>
 					);
 			}
