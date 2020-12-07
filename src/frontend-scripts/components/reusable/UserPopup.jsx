@@ -81,7 +81,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	);
 };
 
-const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top center', index }) => {
+const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top', index }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
