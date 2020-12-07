@@ -14,6 +14,14 @@ class Changelog extends React.Component {
 					<p>Welcome to Season 12!</p>
 				</div>
 				<div className="ui header">
+					<p>Version 1.7.2 released 12-8-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}></strong> -
+				</p>
+
+				<div className="ui header">
 					<p>Version 1.7.1 released 10-1-2020</p>
 				</div>
 				<h3>New Features:</h3>
