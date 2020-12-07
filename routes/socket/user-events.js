@@ -3317,8 +3317,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err, 'timeout2 user err');
 						});
-				case 'timeOut3':
 					break;
+				case 'timeOut3':
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
