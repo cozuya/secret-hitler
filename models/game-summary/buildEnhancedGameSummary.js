@@ -78,6 +78,8 @@ function buildEnhancedGameSummary(_summary) {
 		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
 
 	const casualGame = summary.gameSetting.casualGame;
+	const practiceGame = summary.gameSetting.practiceGame;
+	const unlisted = summary.gameSetting.practiceGame;
 
 	// String
 	const winningTeam = (() => {
@@ -166,6 +168,8 @@ function buildEnhancedGameSummary(_summary) {
 		winningTeam,
 		isRebalanced,
 		casualGame,
+		practiceGame,
+		unlisted,
 		usernameOf,
 		tagOf,
 		indexOf,
