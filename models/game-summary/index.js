@@ -74,6 +74,7 @@ const gameSummary = new Schema({
 				reds: Number,
 				blues: Number
 			},
+			investigatorId: Number,
 			investigationId: Number,
 			investigationClaim: String,
 			specialElection: Number,

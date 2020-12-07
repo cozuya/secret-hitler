@@ -21,6 +21,7 @@ function buildEnhancedGameSummary(_summary) {
 			'chancellorVeto',
 			'policyPeek',
 			'policyPeekClaim',
+			'investigatorId',
 			'investigationId',
 			'investigationClaim',
 			'specialElection',
@@ -137,13 +138,15 @@ function buildEnhancedGameSummary(_summary) {
 	// Option[List[Option[{ ja: Boolean, presidentId: Int, chancellorId: Int }]]]
 	const votesOf = username => {
 		return indexOf(username).map(i =>
-			turns.map(t =>
-				t.votes.get(i).map(v => ({
-					ja: v,
-					presidentId: t.presidentId,
-					chancellorId: t.chancellorId
-				}))
-			)
+			turns
+				.filter(t => t.votes.get(i))
+				.map(t => {
+					return t.votes.get(i).map(v => ({
+						ja: v,
+						presidentId: t.presidentId,
+						chancellorId: t.chancellorId
+					}));
+				})
 		);
 	};
 
