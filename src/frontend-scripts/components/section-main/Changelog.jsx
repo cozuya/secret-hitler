@@ -18,7 +18,17 @@ class Changelog extends React.Component {
 				</div>
 				<h3>New Features:</h3>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}></strong> -
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Games</strong> - 1/2/3 for discarding a card as president, 1/2
+					for discarding a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections,
+					and is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
+				</p>
+
+				<h3>Minor Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Adds Merriweather font</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
 				</p>
 
 				<div className="ui header">
@@ -30,7 +40,8 @@ class Changelog extends React.Component {
 					check them all out!
 				</p>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Replay Menu</strong>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Replay Menu</strong> - j/k to go backwards or forwards one
+					step, and h/l to go backwards or forwards one turn.
 				</p>
 				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds new user-popup menu to allow better interaction with users</strong>
