@@ -51,6 +51,25 @@ export class Main extends React.Component {
 		}
 	}
 
+	componentDidUpdate(prevProps) {
+		if (Object.keys(prevProps.userList).length !== Object.keys(this.props.userList).length) {
+			const plausibleProps = {
+				Verified: this.props?.userInfo?.verified ? 'Yes' : 'No',
+				'User Type': this.props?.userInfo?.hasNotDismissedSignupModal ? 'New' : 'Returning',
+				'Entrance Node': this.props?.midSection,
+				'Player Count': (this.props?.userList?.list && this.props?.userList?.list.length) || -1,
+				'Game Count': this.props?.gameList.length,
+				'Chat Size': this.props?.userInfo?.gameSettings?.truncatedSize || 250,
+				'Elo View': this.props?.userInfo?.gameSettings?.disableSeasonal ? 'Overall' : 'Seasonal',
+				'Keyboard Shortcuts': this.props?.userInfo?.gameSettings?.keyboardShortcuts || 'disable',
+				'Claim Characters': this.props?.userInfo?.gameSettings?.claimCharacters || 'short',
+				'Staff Status': this.props?.userInfo?.staffRole ? 'Staff' : 'Non-Staff'
+			};
+
+			plausible('Main Load', { props: plausibleProps });
+		}
+	}
+
 	static getDerivedStateFromProps(props) {
 		return props.userInfo.gameSettings ? { gameFilter: props.userInfo.gameSettings.gameFilters } : null;
 	}

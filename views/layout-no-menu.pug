@@ -169,7 +169,9 @@ html(lang="en")
 			ga('create', 'UA-105770066-1', 'auto');
 			ga('send', 'pageview');
 
-		script(async defer data-domain="secrethitler.io" src="https://plausible.vigneshjoglekar.com/js/plausible.js")
+		script(async defer data-domain="secrethitler.io" src="https://plausible.vigneshjoglekar.com/js/plausible.hash.js")
+		script.
+			window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 
 		if game
 			if prodCacheBustToken
