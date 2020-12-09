@@ -71,15 +71,15 @@ class Changelog extends React.Component {
 					<li>CuSith: 2071</li>
 					<li>imbapingu: 2068</li>
 					<li>Starkrush: 1983</li>
+					<li>Ohrami2: 1980</li>
 					<li>Moranki: 1976</li>
 					<li>near1337: 1940</li>
 					<li>SexGodMedusa: 1939</li>
 					<li>1on1: 1920</li>
 					<li>SOOOOZE: 1907</li>
 					<li>NotAnAlt7: 1903</li>
-					<li>casdude: 1896</li>
 				</ol>
-				<hr />
+				<hr style={{ width: '100%' }} />
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome to Season 11!</p>
 				</div>
