@@ -16,8 +16,8 @@ class Changelog extends React.Component {
 				<h3>New Features:</h3>
 				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Games</strong> - 1/2/3 for discarding a card as president, 1/2
-					for discarding a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections,
-					and is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
+					for playing a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections, and
+					is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
 				</p>
 				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Execution Confirmation Menu</strong> - a popup to confirm your shot in-game, to prevent
