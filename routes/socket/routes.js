@@ -79,7 +79,7 @@ const gamesGarbageCollector = () => {
 			currentGame.general.timeStarted &&
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
-			new Date(games[gameName].general.timeStarted + 180000);
+			new Date(games[gameName].general.timeStarted + 0);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -169,7 +169,7 @@ const gatherStaffUsernames = () => {
 };
 
 module.exports.socketRoutes = () => {
-	setInterval(gamesGarbageCollector, 30000);
+	setInterval(gamesGarbageCollector, 180000);
 
 	gatherStaffUsernames();
 
