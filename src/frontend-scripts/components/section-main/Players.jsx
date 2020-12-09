@@ -234,7 +234,19 @@ class Players extends React.Component {
 			<div
 				key={i}
 				onClick={() => {
-					this.handlePlayerClick(i);
+					if (!gameSettings.disableKillConfirmation && gameState.phase === 'execution') {
+						Swal.fire({
+							title: `Are you sure you want to execute {${i + 1}} ${player.userName}?`,
+							showCancelButton: true,
+							icon: 'warning'
+						}).then(result => {
+							if (result.value) {
+								this.handlePlayerClick(i);
+							}
+						});
+					} else {
+						this.handlePlayerClick(i);
+					}
 				}}
 				style={
 					player.customCardback &&
