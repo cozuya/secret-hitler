@@ -134,11 +134,11 @@ module.exports.makeReport = (data, game, type = 'report') => {
 							throwerIP.includes('.') &&
 							ip
 								.split('.')
-								.splice(0, -1)
+								.splice(0, 3)
 								.join('.') === // Splice off last block
 								throwerIP
 									.split('.')
-									.splice(0, -1)
+									.splice(0, 3)
 									.join('.') // to determine if the IPs are a 3-block match
 						) {
 							matches[seat] = `${account.username} {${seat + 1}} (3-block)`;
