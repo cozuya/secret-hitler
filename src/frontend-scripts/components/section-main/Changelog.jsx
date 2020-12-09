@@ -10,9 +10,6 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
-				<div className="ui header" style={{ fontSize: '1.1em' }}>
-					<p>Welcome to Season 12!</p>
-				</div>
 				<div className="ui header">
 					<p>Version 1.7.2 released 12-8-2020</p>
 				</div>
@@ -22,15 +19,35 @@ class Changelog extends React.Component {
 					for discarding a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections,
 					and is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
 				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Execution Confirmation Menu</strong> - a popup to confirm your shot in-game, to prevent
+					trigger slips, is now present (can be disabled in settings)
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Reverse Investigation in Replays</strong> - reverse investigation now properly displays in
+					replays
+				</p>
 
 				<h3>Minor Changes:</h3>
 				<p>
 					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Adds Merriweather font</strong>
 				</p>
 				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Practice games no longer count towards profile winrate</strong>
+				</p>
+				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
 				</p>
-
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various new emotes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various moderation improvements</strong>
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 12!</p>
+				</div>
 				<div className="ui header">
 					<p>Version 1.7.1 released 10-1-2020</p>
 				</div>
