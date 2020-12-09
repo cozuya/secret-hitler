@@ -1413,7 +1413,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[0]}p`
-				}
+				},
+				discard: true
 			},
 			{
 				position: 'middle-center',
@@ -1422,7 +1423,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[1]}p`
-				}
+				},
+				discard: true
 			},
 			{
 				position: 'middle-far-right',
@@ -1431,7 +1433,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[2]}p`
-				}
+				},
+				discard: true
 			}
 		];
 		sendInProgressGameUpdate(game);

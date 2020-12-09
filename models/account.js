@@ -47,6 +47,7 @@ const Account = new Schema({
 		disableElo: Boolean,
 		fullheight: Boolean,
 		safeForWork: Boolean,
+		keyboardShortcuts: String,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,
