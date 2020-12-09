@@ -79,7 +79,7 @@ const gamesGarbageCollector = () => {
 			currentGame.general.timeStarted &&
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
-			new Date(games[gameName].general.timeStarted + 0);
+			new Date(games[gameName].general.timeStarted + 180000);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
