@@ -249,7 +249,7 @@ class Players extends React.Component {
 			<div
 				key={i}
 				onClick={() => {
-					this.handlePlayerClick(i, player);
+					this.handlePlayerClick(i, player.userName);
 				}}
 				style={
 					player.customCardback &&
