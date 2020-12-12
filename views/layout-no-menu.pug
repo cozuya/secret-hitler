@@ -18,7 +18,7 @@ html(lang="en")
 				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
 			else
 				link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
-		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
+		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab|Merriweather", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
 		link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
@@ -169,7 +169,9 @@ html(lang="en")
 			ga('create', 'UA-105770066-1', 'auto');
 			ga('send', 'pageview');
 
-		script(async defer data-domain="secrethitler.io" src="https://plausible.vigneshjoglekar.com/js/plausible.js")
+		script(async defer data-domain="secrethitler.io" src="https://plausible.vigneshjoglekar.com/js/plausible.hash.js")
+		script.
+			window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 
 		if game
 			if prodCacheBustToken

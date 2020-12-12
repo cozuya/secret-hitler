@@ -168,7 +168,7 @@ class ProfileWrapper extends React.Component {
 			const words = text.split(' ');
 
 			words.forEach((word, index) => {
-				const validSiteURL = /http[s]?:\/\/(secrethitler\.io|localhost:8080)\/([a-zA-Z0-9#?=&\/\._]*)/i;
+				const validSiteURL = /http[s]?:\/\/(secrethitler\.io|localhost:8080)\/([a-zA-Z0-9#?=&\/\._-]*)/i;
 				if (validSiteURL.test(word)) {
 					const data = validSiteURL.exec(word);
 					const replayURL = data[2].startsWith('game/#/replay/');

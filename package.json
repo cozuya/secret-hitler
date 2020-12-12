@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.7.1",
+	"version": "1.7.2",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -14,7 +14,7 @@
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
 	"engines": {
-		"node": ">=12.0"
+		"node": "^12.0.0"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.4.4",
@@ -137,9 +137,9 @@
 		"prepare": "npm-run-all --parallel build-css:dark build-css:web",
 		"format": "prettier \"**/*.{js,scss,json,jsx}\" --write",
 		"dev": "node scripts/processEmotes && concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
-		"dev-no-server": "npm-run-all --parallel db start",
-		"dev-packed": "npm-run-all --parallel db inspect build",
-		"dev-docker": "npm-run-all --parallel db-docker server start",
+		"dev-no-db": "node scripts/processEmotes && concurrently --names \"SERVER,WEBPACK\" -c \"bgCyanBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:start\"",
+		"dev-no-db-inspect": "node scripts/processEmotes && concurrently --names \"SERVER,WEBPACK\" -c \"bgCyanBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:server\" \"yarn:start\"",
+		"dev-no-server": "node scripts/processEmotes && concurrently --names \"MONGO,WEBPACK\" -c \"bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:db\" \"yarn:start\"",
 		"create-accounts": "node scripts/createAccounts.js",
 		"assign-local-mod": "node scripts/assignLocalMod.js",
 		"test": "jest",
