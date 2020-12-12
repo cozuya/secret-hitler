@@ -54,13 +54,27 @@ export default function(snapshot, game, userInfo) {
 				return [text('normal', 'A'), text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)), text('normal', 'policy is enacted.')];
 			}
 		case 'investigation':
-			return [
-				text('player', usernameOf(snapshot.presidentId)),
-				text('normal', 'investigates'),
-				text('player', usernameOf(snapshot.investigationId)),
-				text('normal', 'and claims'),
-				claimToText(snapshot.investigationClaim.map(i => text(i, capitalize(i))))
-			];
+			const investigator = snapshot.investigatorId ?? snapshot.presidentId;
+			if (investigator === snapshot.presidentId) {
+				// normal investigation, and reverse investigations before the introduction of "investigatorId"
+				return [
+					text('player', usernameOf(investigator)),
+					text('normal', 'investigates'),
+					text('player', usernameOf(snapshot.investigationId)),
+					text('normal', 'and claims'),
+					claimToText(snapshot.investigationClaim.map(i => text(i, capitalize(i))))
+				];
+			} else {
+				// reverse investigation
+				return [
+					text('player', usernameOf(snapshot.investigationId)),
+					text('normal', 'shows their party to'),
+					text('player', usernameOf(investigator)),
+					text('normal', 'who claims'),
+					claimToText(snapshot.investigationClaim.map(i => text(i, capitalize(i))))
+				];
+			}
+
 		case 'policyPeek':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'peeks')]
 				.concat(handToText(snapshot.policyPeek, userInfo))

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function (event) {
+document.addEventListener('DOMContentLoaded', function(event) {
 	// this page/code is total shit but I would need to get a different graphing library to make it better.
 
 	const processWinrateData = (fascistWinCount, totalGameCount) => {
@@ -7,16 +7,16 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 		return {
 			series: [fWins, lWins],
-			labels: [`${fWins.toFixed()}% Fascist wins`, `${lWins.toFixed()}% Liberal wins`],
+			labels: [`${fWins.toFixed()}% Fascist wins`, `${lWins.toFixed()}% Liberal wins`]
 		};
 	};
 
 	$.ajax({
 		url: 'data',
-		success: function (data) {
+		success: function(data) {
 			new Chartist.Pie('#chart-allplayer-games-winrate', processWinrateData(data.allPlayerGameData.fascistWinCount, data.allPlayerGameData.totalGameCount), {
 				width: '400px',
-				height: '400px',
+				height: '400px'
 			});
 
 			$('#chart-allplayer-games-winrate').after(
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 			new Chartist.Pie('#chart-fiveplayer-games-winrate', processWinrateData(data.fivePlayerGameData.fascistWinCount, data.fivePlayerGameData.totalGameCount), {
 				width: '400px',
-				height: '400px',
+				height: '400px'
 			});
 
 			$('#chart-fiveplayer-games-winrate').after(
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 			new Chartist.Pie('#chart-sixplayer-games-winrate', processWinrateData(data.sixPlayerGameData.fascistWinCount, data.sixPlayerGameData.totalGameCount), {
 				width: '400px',
-				height: '400px',
+				height: '400px'
 			});
 
 			$('#chart-sixplayer-games-winrate').after(
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 			new Chartist.Pie('#chart-nineplayer-games-winrate', processWinrateData(data.ninePlayerGameData.fascistWinCount, data.ninePlayerGameData.totalGameCount), {
 				width: '400px',
-				height: '400px',
+				height: '400px'
 			});
 
 			$('#chart-nineplayer-games-winrate').after(
@@ -96,12 +96,12 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 			new Chartist.Pie('#chart-tenplayer-games-winrate', processWinrateData(data.tenPlayerGameData.fascistWinCount, data.tenPlayerGameData.totalGameCount), {
 				width: '400px',
-				height: '400px',
+				height: '400px'
 			});
 
 			$('#chart-tenplayer-games-winrate').after(
 				`<p style="text-align: center">Total 10 player games played: ${data.tenPlayerGameData.totalGameCount.toLocaleString()} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">40%</span></p>`
 			);
-		},
+		}
 	});
 });

@@ -6,7 +6,9 @@ describe('CardFlinger', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			isHovered: false,
-			hoveredClass: null
+			hoveredClass: null,
+			expandingIndex: null,
+			expansionTimer: 0
 		};
 		const component = shallow(
 			<CardFlinger userInfo={{ userName: '' }} gameInfo={{ cardFlingerState: [], publicPlayersState: [], general: { status: '' }, gameState: { phase: '' } }} />

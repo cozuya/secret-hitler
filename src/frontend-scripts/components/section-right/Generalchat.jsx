@@ -10,7 +10,6 @@ export default class Generalchat extends React.Component {
 
 	state = {
 		lock: false,
-		stickyEnabled: true,
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
@@ -24,17 +23,6 @@ export default class Generalchat extends React.Component {
 	componentDidMount() {
 		if (this.scrollbar) {
 			this.scrollbar.scrollToBottom();
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { generalChats } = this.props;
-		const nextGeneralChats = nextProps.generalChats;
-
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
-			this.setState({
-				stickyEnabled: true
-			});
 		}
 	}
 
@@ -371,13 +359,13 @@ export default class Generalchat extends React.Component {
 							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === 'spring2020captain' && (
-								<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+							chat.specialTournamentStatus === '4captain' && (
+								<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
 							)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === 'spring2020' && (
-								<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+							chat.specialTournamentStatus === '4' && (
+								<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
 							)}
 						<span
 							className={
@@ -425,24 +413,6 @@ export default class Generalchat extends React.Component {
 				);
 			})
 		);
-	}
-
-	renderSticky() {
-		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
-			const dismissSticky = () => {
-				this.setState({ stickyEnabled: false });
-			};
-
-			return (
-				<div className="sticky">
-					<span>
-						<span>Sticky: </span>
-						{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
-					</span>
-					<i className="remove icon" onClick={dismissSticky} />
-				</div>
-			);
-		}
 	}
 
 	renderEmoteHelper() {
@@ -506,7 +476,6 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<section className="segment chats">
-					{this.renderSticky()}
 					{emoteColonIndex >= 0 && this.renderEmoteHelper()}
 					<Scrollbars
 						ref={c => (this.scrollbar = c)}

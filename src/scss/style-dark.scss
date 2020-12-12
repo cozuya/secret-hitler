@@ -93,7 +93,7 @@
 	.crown-icon {
 		width: 24px;
 		height: 16px;
-		background: url('/images/crown-spring2020.png') no-repeat;
+		background: url('/images/crown-4.png') no-repeat;
 		display: inline-block;
 		margin-right: 2px;
 		margin-bottom: -3px;
@@ -101,7 +101,7 @@
 	.crown-captain-icon {
 		width: 24px;
 		height: 16px;
-		background: url('/images/crown-captain-spring2020.png') no-repeat;
+		background: url('/images/crown-captain-4.png') no-repeat;
 		display: inline-block;
 		margin-right: 2px;
 		margin-bottom: -3px;
@@ -1099,6 +1099,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 .player-small-cardback.thejuststopo {
 	box-shadow: 0 0 5px 2px #dc143c !important;
+}
+
+.bruno {
+	color: #70deaa !important;
+}
+.player-small-cardback.bruno {
+	box-shadow: 0 0 5px 2px #70deaa !important;
 }
 
 #confetti {

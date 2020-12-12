@@ -32,7 +32,7 @@ function profileDelta(username, game) {
 	const shots = game.shotsOf(username).value();
 	const accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
 
-	if (game.casualGame) {
+	if (game.casualGame || game.practiceGame) {
 		return {
 			stats: {
 				matches: {
