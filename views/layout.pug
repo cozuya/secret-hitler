@@ -305,6 +305,16 @@ html(lang="en")
           }
         }
       });
+
+      function toggle(id) {
+        const elem = document.getElementById(id);
+
+        if (elem.style.display === 'none') {
+          elem.style.display = 'inline';
+        } else {
+          elem.style.display = 'none';
+        }
+      }
     script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
