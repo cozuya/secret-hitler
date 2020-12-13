@@ -9,6 +9,7 @@ import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
+import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
 
@@ -45,7 +46,7 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick = userName => {
+	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
 		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
@@ -55,7 +56,7 @@ class Players extends React.Component {
 		}
 	};
 
-	handlePlayerClick = index => {
+	handlePlayerClick = (index, name) => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -89,10 +90,25 @@ class Players extends React.Component {
 
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-				socket.emit('selectedPlayerToExecute', {
-					playerIndex: index,
-					uid: gameInfo.general.uid
-				});
+				if (!gameSettings.disableKillConfirmation) {
+					Swal.fire({
+						title: `Are you sure you want to execute {${index + 1}} ${name}?`,
+						showCancelButton: true,
+						icon: 'warning'
+					}).then(result => {
+						if (result.value) {
+							socket.emit('selectedPlayerToExecute', {
+								playerIndex: index,
+								uid: gameInfo.general.uid
+							});
+						}
+					});
+				} else {
+					socket.emit('selectedPlayerToExecute', {
+						playerIndex: index,
+						uid: gameInfo.general.uid
+					});
+				}
 			}
 		}
 
@@ -205,14 +221,14 @@ class Players extends React.Component {
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === 'spring2020captain' && (
-							<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+						player.specialTournamentStatus === '4captain' && (
+							<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
 						)}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === 'spring2020' && (
-							<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+						player.specialTournamentStatus === '4' && (
+							<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
 						)}
 					{str}
 				</span>
@@ -233,7 +249,7 @@ class Players extends React.Component {
 			<div
 				key={i}
 				onClick={() => {
-					this.handlePlayerClick(i);
+					this.handlePlayerClick(i, player);
 				}}
 				style={
 					player.customCardback &&
@@ -267,35 +283,35 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<div
-					title={
-						isBlind || player.isPrivate
-							? 'Double click to open a modal to report this player to the moderator team'
-							: `Double click to open a modal to report ${player.userName} to the moderator team`
-					}
-					onDoubleClick={() => {
-						this.handlePlayerDoubleClick(player.userName);
-					}}
-					className={(() => {
-						let classes = 'player-number';
-
-						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
-							classes = `${classes} ${playersState[i].nameStatus}`;
-						} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+				<UserPopup userName={player.userName} socket={this.props.socket} index={i}>
+					<div
+						title={
+							isBlind || player.isPrivate
+								? 'Double click to open a modal to report this player to the moderator team'
+								: `Double click to open a modal to report ${player.userName} to the moderator team`
 						}
+						className={(() => {
+							let classes = 'player-number';
 
-						if (publicPlayersState[i].leftGame) {
-							classes = `${classes} leftgame`;
-						} else if (!publicPlayersState[i].connected) {
-							classes = `${classes} disconnected`;
-						}
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+							}
 
-						return classes;
-					})()}
-				>
-					{renderPlayerName(player, i)}
-				</div>
+							if (publicPlayersState[i].leftGame) {
+								classes = `${classes} leftgame`;
+							} else if (!publicPlayersState[i].connected) {
+								classes = `${classes} disconnected`;
+							}
+
+							return classes;
+						})()}
+					>
+						{renderPlayerName(player, i)}
+					</div>
+				</UserPopup>
+
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}

@@ -238,7 +238,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input id="playernameelem" placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input id="playernameelem" placeholder="Username or Game UID" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
 			</div>
 		);
 	}
@@ -587,7 +587,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut3');
 					}}
 				>
-					Timeout - 1 Hour (IP)
+					IP Timeout - 1 Hour
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -595,7 +595,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut4');
 					}}
 				>
-					Timeout - 6 Hours (non-IP)
+					Timeout - 6 Hours
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -603,7 +603,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut');
 					}}
 				>
-					Timeout - 18 Hours (IP)
+					IP Timeout - 18 Hours
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -611,7 +611,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut2');
 					}}
 				>
-					Timeout - 18 Hours (non-IP)
+					Timeout - 18 Hours
 				</button>
 				<div className="ui horizontal divider">User Actions</div>
 				<button
@@ -712,7 +712,7 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeout');
 					}}
 				>
-					Restore User - Remove any pre-existing timeout or ban.
+					Restore User
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -720,7 +720,15 @@ export default class Moderation extends React.Component {
 						takeModAction('clearTimeoutIP');
 					}}
 				>
-					Restore IP - Remove any pre-existing IP ban.
+					Restore IP
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeoutAndTimeoutIP');
+					}}
+				>
+					Restore User and IP
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
@@ -1160,12 +1168,13 @@ export default class Moderation extends React.Component {
 			disableVPNCheck: 'Disable VPN Check',
 			togglePrivate: 'Toggle Private (Permanent)',
 			togglePrivateEighteen: 'Toggle Private (Temporary)',
-			timeOut: 'Timeout 18 Hours (IP)',
+			timeOut: 'Timeout and IP Timeout 18 Hours',
 			timeOut2: 'Timeout 18 Hours',
-			timeOut3: 'Timeout 1 Hour (IP)',
+			timeOut3: 'Timeout and IP Timeout 1 Hour',
 			timeOut4: 'Timeout 6 Hours',
 			clearTimeout: 'Clear Timeout',
 			clearTimeoutIP: 'Clear IP Ban',
+			clearTimeoutAndTimeoutIP: 'Clear Timeout and IP Timeout',
 			modEndGame: 'End Game',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
@@ -1398,7 +1407,7 @@ export default class Moderation extends React.Component {
 				<div>
 					{this.state.playerListState === 0 && (
 						<div className="modplayerlist">
-							<h3>Current player list</h3>
+							<h3>Current Player List</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
 
@@ -1535,7 +1544,7 @@ export default class Moderation extends React.Component {
 					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>
-							Moderation log{' '}
+							Moderation Log{' '}
 							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
 								{this.state.modLogToday ? 'Show all' : 'Show today only'}
 							</a>

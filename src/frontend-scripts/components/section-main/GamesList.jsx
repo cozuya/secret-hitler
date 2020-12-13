@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
 import { CURRENTSEASONNUMBER } from '../../constants';
+import { Message } from 'semantic-ui-react';
+import { processEmotes } from '../../emotes';
 
 export class GamesList extends React.Component {
 	state = {
@@ -15,6 +17,30 @@ export class GamesList extends React.Component {
 
 		gameFilter[value] = !gameFilter[value];
 		changeGameFilter(gameFilter);
+	};
+
+	componentWillReceiveProps(nextProps) {
+		const { generalChats } = this.props;
+		const nextGeneralChats = nextProps.generalChats;
+
+		if (!this.props.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
+			this.props.setStickyEnabled(true);
+		}
+	}
+
+	renderSticky = () => {
+		if (this.props.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
+			return (
+				<Message
+					onDismiss={() => {
+						this.props.setStickyEnabled(false);
+					}}
+					color="blue"
+				>
+					{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
+				</Message>
+			);
+		}
 	};
 
 	renderFilters() {
@@ -211,9 +237,9 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2020-07-03')
+						{new Date() > new Date('2020-10-03')
 							? `Season ends ${moment(
-									new Date(new Date('2020-10-01 00:00:00.000').getTime() + new Date('2020-10-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * -5)
+									new Date(new Date('2021-01-01 00:00:00.000').getTime() + new Date('2021-01-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * 5)
 							  ).fromNow()}`
 							: `Welcome to season ${CURRENTSEASONNUMBER}`}
 						.
@@ -243,7 +269,10 @@ export class GamesList extends React.Component {
 				<a href="#/leaderboards" className="leaderboard">
 					Leaderboards
 				</a>
-				<div className="browser-body">{this.renderGameList()}</div>
+				<div className="browser-body">
+					{this.renderSticky()}
+					{this.renderGameList()}
+				</div>
 			</section>
 		);
 	}
@@ -262,7 +291,9 @@ GamesList.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameFilter: PropTypes.object,
-	changeGameFilter: PropTypes.func
+	changeGameFilter: PropTypes.func,
+	generalChats: PropTypes.object,
+	allEmotes: PropTypes.object
 };
 
 export default GamesList;
