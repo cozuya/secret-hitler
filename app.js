@@ -16,22 +16,22 @@ const { expandAndSimplify } = require('./routes/socket/ip-obf');
 
 let store;
 
-if (process.env.NODE_ENV !== 'production') {
-	const MongoDBStore = require('connect-mongodb-session')(session);
-	store = new MongoDBStore({
-		uri: 'mongodb://localhost:27017/secret-hitler-app',
-		collection: 'sessions'
-	});
-} else {
-	const redis = require('redis').createClient();
-	const RedisStore = require('connect-redis')(session);
-	store = new RedisStore({
-		host: '127.0.0.1',
-		port: 6379,
-		client: redis,
-		ttl: 2 * 604800 // 2 weeks
-	});
-}
+// if (process.env.NODE_ENV !== 'production') {
+// 	const MongoDBStore = require('connect-mongodb-session')(session);
+// 	store = new MongoDBStore({
+// 		uri: 'mongodb://localhost:27017/secret-hitler-app',
+// 		collection: 'sessions'
+// 	});
+// } else {
+const redis = require('redis').createClient();
+const RedisStore = require('connect-redis')(session);
+store = new RedisStore({
+	host: '127.0.0.1',
+	port: 6379,
+	client: redis,
+	ttl: 2 * 604800 // 2 weeks
+});
+// }
 
 // needs to be first
 app.use((req, res, next) => {

@@ -25,10 +25,11 @@ const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
-// const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
 const moment = require('moment');
+const ipc = require('node-ipc');
+
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -2395,12 +2396,8 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			newChat.staffRole = 'moderator';
 			newChat.userName = 'Incognito';
 		}
-		generalChats.list.push(newChat);
 
-		if (generalChats.list.length > 99) {
-			generalChats.list.shift();
-		}
-		io.sockets.emit('generalChats', generalChats);
+		ipc.of.cache.emit('addGeneralChat', newChat);
 	}
 };
 
