@@ -42,6 +42,7 @@ class Settings extends React.Component {
 		staffDisableVisibleElo: '',
 		staffDisableStaffColor: '',
 		staffIncognito: '',
+		staffEditorCustomColour: '#05bba0',
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
@@ -56,7 +57,8 @@ class Settings extends React.Component {
 		secondaryPickerVisible: false,
 		tertiaryPickerVisible: false,
 		backgroundPickerVisible: false,
-		textPickerVisible: false
+		textPickerVisible: false,
+		editorColourPickerVisible: false
 	};
 
 	componentDidMount() {
@@ -82,6 +84,7 @@ class Settings extends React.Component {
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
+			staffEditorCustomColour: gameSettings.staffEditorCustomColour || '#05bba0',
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork || false,
@@ -302,7 +305,8 @@ class Settings extends React.Component {
 			secondaryPickerVisible,
 			tertiaryPickerVisible,
 			backgroundPickerVisible,
-			textPickerVisible
+			textPickerVisible,
+			editorColourPickerVisible
 		} = this.state;
 		const { socket } = this.props;
 		const docStyle = document.documentElement.style;
@@ -352,6 +356,40 @@ class Settings extends React.Component {
 
 								socket.emit('handleUpdatedTheme', {
 									[`${name}Color`]: newColor
+								});
+							}
+						);
+					}}
+				/>
+			</div>
+		);
+
+		const renderEditorPicker = () => (
+			<div className="picker-container">
+				<div
+					className="picker-close-button"
+					onClick={() => {
+						this.setState({ [`editorColourPickerVisible`]: false });
+					}}
+				>
+					X
+				</div>
+				<SketchPicker
+					disableAlpha
+					color={this.state[`staffEditorCustomColour`]}
+					onChangeComplete={color => {
+						const { hsl } = color;
+						const newColor = getHSLstring(hsl);
+
+						this.setState(
+							{
+								[`staffEditorCustomColour`]: newColor
+							},
+							() => {
+								docStyle.setProperty(`--staffEditorCustomColour`, newColor);
+
+								socket.emit('updateGameSettings', {
+									staffEditorCustomColour: newColor
 								});
 							}
 						);
@@ -439,6 +477,23 @@ class Settings extends React.Component {
 					<h3 className="ui header">Color theme</h3>
 				</div>
 				<div className="row centered themes">
+					{window.staffRole && window.staffRole === 'editor' && (
+						<div className="two wide column">
+							<h5 className="ui header">Editor</h5>
+							<div
+								className="color-box"
+								onClick={() => {
+									if (!editorColourPickerVisible) {
+										this.setState({
+											editorColourPickerVisible: true
+										});
+									}
+								}}
+								style={{ background: this.state.staffEditorCustomColour }}
+							></div>
+							{editorColourPickerVisible && renderEditorPicker()}
+						</div>
+					)}
 					<div className="two wide column">
 						<h5 className="ui header">Primary</h5>
 						<div
