@@ -15,7 +15,9 @@ const gameSummary = new Schema({
 		rebalance7p: Boolean,
 		rebalance9p: Boolean,
 		rerebalance9p: Boolean,
-		casualGame: Boolean
+		casualGame: Boolean,
+		practiceGame: Boolean,
+		unlisted: Boolean
 	},
 	players: [
 		{
@@ -72,6 +74,7 @@ const gameSummary = new Schema({
 				reds: Number,
 				blues: Number
 			},
+			investigatorId: Number,
 			investigationId: Number,
 			investigationClaim: String,
 			specialElection: Number,

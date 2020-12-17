@@ -399,11 +399,7 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatLockClick = () => {
-		if (this.state.lock) {
-			this.setState({ lock: false });
-		} else {
-			this.setState({ lock: true });
-		}
+		this.setState({ lock: !this.state.lock });
 	};
 
 	handleClickedClaimButton = () => {
@@ -773,12 +769,12 @@ class Gamechat extends React.Component {
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020captain' &&
-								!isBlind && <span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />}
+								chat.specialTournamentStatus === '4captain' &&
+								!isBlind && <span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020' &&
-								!isBlind && <span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />}
+								chat.specialTournamentStatus === '4' &&
+								!isBlind && <span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
@@ -1090,7 +1086,7 @@ class Gamechat extends React.Component {
 							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
 						/>
 					</a>
-					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
+					<div style={{ overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
 						{userInfo &&
 							!userInfo.isSeated &&
 							isStaff &&

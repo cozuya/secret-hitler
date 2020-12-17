@@ -10,6 +10,76 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+				<div className="ui header">
+					<p>Version 1.7.2 released 12-8-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Games</strong> - 1/2/3 for discarding a card as president, 1/2
+					for playing a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections, and
+					is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Execution Confirmation Menu</strong> - a popup to confirm your shot in-game, to prevent
+					trigger slips, is now present (can be disabled in settings)
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Reverse Investigation in Replays</strong> - reverse investigation now properly displays in
+					replays
+				</p>
+
+				<h3>Minor Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Adds Merriweather font</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Practice games no longer count towards profile winrate</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various new emotes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various moderation improvements</strong>
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 12!</p>
+				</div>
+				<div className="ui header">
+					<p>Version 1.7.1 released 10-1-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various New Emotes</strong> - various contributors have graciously added many new emotes,
+					check them all out!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Replay Menu</strong> - j/k to go backwards or forwards one
+					step, and h/l to go backwards or forwards one turn.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds new user-popup menu to allow better interaction with users</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
+				</p>
+				<h4>The top 10 players of season 11 are:</h4>
+				<ol>
+					<li>CuSith: 2071</li>
+					<li>imbapingu: 2068</li>
+					<li>Starkrush: 1983</li>
+					<li>Ohrami2: 1980</li>
+					<li>Moranki: 1976</li>
+					<li>near1337: 1940</li>
+					<li>SexGodMedusa: 1939</li>
+					<li>1on1: 1920</li>
+					<li>SOOOOZE: 1907</li>
+					<li>NotAnAlt7: 1903</li>
+				</ol>
+				<hr style={{ width: '100%' }} />
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome to Season 11!</p>
 				</div>

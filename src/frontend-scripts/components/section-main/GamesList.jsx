@@ -9,8 +9,7 @@ import { processEmotes } from '../../emotes';
 
 export class GamesList extends React.Component {
 	state = {
-		filtersVisible: false,
-		stickyEnabled: true
+		filtersVisible: false
 	};
 
 	toggleFilter = value => {
@@ -24,21 +23,20 @@ export class GamesList extends React.Component {
 		const { generalChats } = this.props;
 		const nextGeneralChats = nextProps.generalChats;
 
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
-			this.setState({
-				stickyEnabled: true
-			});
+		if (!this.props.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
+			this.props.setStickyEnabled(true);
 		}
 	}
 
 	renderSticky = () => {
-		if (this.state.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
-			const dismissSticky = () => {
-				this.setState({ stickyEnabled: false });
-			};
-
+		if (this.props.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
 			return (
-				<Message onDismiss={dismissSticky} color="blue">
+				<Message
+					onDismiss={() => {
+						this.props.setStickyEnabled(false);
+					}}
+					color="blue"
+				>
 					{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
 				</Message>
 			);
@@ -239,9 +237,9 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2020-07-03')
+						{new Date() > new Date('2020-10-03')
 							? `Season ends ${moment(
-									new Date(new Date('2020-10-01 00:00:00.000').getTime() + new Date('2020-10-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * -5)
+									new Date(new Date('2021-01-01 00:00:00.000').getTime() + new Date('2021-01-01 00:00:00.000').getTimezoneOffset() * 60000 + 3600000 * 5)
 							  ).fromNow()}`
 							: `Welcome to season ${CURRENTSEASONNUMBER}`}
 						.
