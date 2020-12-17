@@ -479,7 +479,9 @@ class Settings extends React.Component {
 				<div className="row centered themes">
 					{window.staffRole && window.staffRole === 'editor' && (
 						<div className="two wide column">
-							<h5 className="ui header">Editor</h5>
+							<h5 className="ui header" style={{ color: '#05bba0' }}>
+								Editor
+							</h5>
 							<div
 								className="color-box"
 								onClick={() => {
