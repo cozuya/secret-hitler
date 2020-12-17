@@ -179,7 +179,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('manualReplayRequest', uid => {
-			window.location.hash = uid ? `#/replay/${uid}` : /#/;
+			window.location.hash = uid ? `#/replay/${uid}` : '#/';
 		});
 
 		socket.on('manualReload', () => {
