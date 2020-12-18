@@ -2429,6 +2429,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'staffDisableVisibleElo',
 					'staffDisableStaffColor',
 					'staffIncognito',
+					'staffEditorCustomColour',
 					'newReport',
 					'previousSeasonAward',
 					'specialTournamentStatus',
@@ -2441,6 +2442,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
 					(setting === 'staffIncognito' && aem) ||
+					(setting === 'staffEditorCustomColour' && account.staffRole && account.staffRole === 'editor') ||
 					(setting === 'staffDisableStaffColor' && (aem || veteran))
 				) {
 					account.gameSettings[setting] = data[setting];
@@ -2454,6 +2456,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 						staffIncognito: account.gameSettings.staffIncognito,
+						staffEditorCustomColour: account.gameSettings.staffEditorCustomColour,
 						wins: account.wins,
 						losses: account.losses,
 						rainbowWins: account.rainbowWins,
@@ -2479,6 +2482,11 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
 					if (userIdx !== -1) userList.splice(userIdx, 1);
 					userList.push(userListInfo);
+					sendUserList();
+				}
+
+				if (setting === 'staffEditorCustomColour' && account.staffRole && account.staffRole === 'editor') {
+					if (userIdx !== -1) userList[userIdx]['staffEditorCustomColour'] = data[setting];
 					sendUserList();
 				}
 			}

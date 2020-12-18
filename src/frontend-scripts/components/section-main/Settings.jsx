@@ -386,8 +386,6 @@ class Settings extends React.Component {
 								[`staffEditorCustomColour`]: newColor
 							},
 							() => {
-								docStyle.setProperty(`--staffEditorCustomColour`, newColor);
-
 								socket.emit('updateGameSettings', {
 									staffEditorCustomColour: newColor
 								});
@@ -478,7 +476,7 @@ class Settings extends React.Component {
 				</div>
 				<div className="row centered themes">
 					{window.staffRole && window.staffRole === 'editor' && (
-						<div className="two wide column">
+						<div className="four wide column" style={{ paddingRight: '30px' }}>
 							<h5 className="ui header" style={{ color: '#05bba0' }}>
 								Editor
 							</h5>

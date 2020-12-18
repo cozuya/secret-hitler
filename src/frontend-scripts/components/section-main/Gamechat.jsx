@@ -785,6 +785,7 @@ class Gamechat extends React.Component {
 											: 'chat-user'
 										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
+								style={playerListPlayer && playerListPlayer.staffRole === 'editor' ? { color: playerListPlayer.staffEditorCustomColour } : {}}
 							>
 								{isSeated ? (
 									''
@@ -806,6 +807,7 @@ class Gamechat extends React.Component {
 														: 'chat-user'
 													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
+											style={playerListPlayer && playerListPlayer.staffRole === 'editor' ? { color: playerListPlayer.staffEditorCustomColour } : {}}
 										>
 											(Editor) 🔰
 										</span>

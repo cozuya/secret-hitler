@@ -202,6 +202,7 @@ module.exports.sendUserGameSettings = socket => {
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 					staffIncognito: account.gameSettings.staffIncognito,
+					staffEditorCustomColour: account.gameSettings.staffEditorCustomColour,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,

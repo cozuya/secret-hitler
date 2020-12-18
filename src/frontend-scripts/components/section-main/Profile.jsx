@@ -312,9 +312,17 @@ class ProfileWrapper extends React.Component {
 				{profile.customCardback && (
 					<div
 						className={userClasses}
-						style={{
-							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
-						}}
+						style={(() => {
+							const style = {
+								backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
+							};
+
+							if (user && user.staffRole === 'editor') {
+								style[`boxShadow`] = `0 0 5px 2px ${user.staffEditorCustomColour || '#05bba0'}`;
+							}
+
+							return style;
+						})()}
 					/>
 				)}
 				<div className="ui grid">

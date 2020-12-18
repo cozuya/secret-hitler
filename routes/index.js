@@ -178,7 +178,6 @@ module.exports = () => {
 					primaryColor: account.primaryColor || DEFAULTTHEMECOLORS.primaryColor,
 					secondaryColor: account.secondaryColor || DEFAULTTHEMECOLORS.secondaryColor,
 					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor,
-					staffEditorCustomColour: account.gameSettings.staffEditorCustomColour || '#05bba0',
 					backgroundColor,
 					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
 						backgroundLightness > 50 ? backgroundLightness - 7 : backgroundLightness + 7

@@ -321,6 +321,7 @@ const DisplayLobbies = props => {
 				players[index].eloSeason = userStats.eloSeason;
 				players[index].staffRole = userStats.staffRole;
 				players[index].isContributor = userStats.isContributor;
+				players[index].staffEditorCustomColour = userStats.staffEditorCustomColour;
 			}
 		});
 
@@ -329,13 +330,41 @@ const DisplayLobbies = props => {
 
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(
-					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
+					<div
+						key={total.length}
+						className={classes}
+						data-tooltip={player.userName}
+						data-inverted=""
+						style={(() => {
+							const style = {};
+
+							if (player && player.staffRole === 'editor') {
+								style[`box-shadow`] = `0 0 5px 2px ${player.staffEditorCustomColour || '#05bba0'}`;
+							}
+
+							return style;
+						})()}
+					>
 						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
 					</div>
 				);
 			} else {
 				total.push(
-					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
+					<div
+						key={total.length}
+						className={classes}
+						data-tooltip={player.userName}
+						data-inverted=""
+						style={(() => {
+							const style = {};
+
+							if (player && player.staffRole === 'editor') {
+								style[`box-shadow`] = `0 0 5px 2px ${player.staffEditorCustomColour || '#05bba0'}`;
+							}
+
+							return style;
+						})()}
+					>
 						<img src={`../images/default_cardback.png`} />
 					</div>
 				);

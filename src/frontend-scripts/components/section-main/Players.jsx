@@ -251,17 +251,26 @@ class Players extends React.Component {
 				onClick={() => {
 					this.handlePlayerClick(i, player);
 				}}
-				style={
-					player.customCardback &&
-					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
-						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
-						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-						  }
-				}
+				style={(() => {
+					const user = userList.list && userList.list.find(play => play.userName === player.userName);
+					const style = {};
+
+					if (
+						player.customCardback &&
+						!isBlind &&
+						(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+					) {
+						style.backgroundImage = `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`;
+					} else {
+						style.backgroundImage = `url(../images/default_cardback.png)`;
+					}
+
+					if (user && user.staffRole && user.staffRole === 'editor' && user.staffEditorCustomColour) {
+						style['box-shadow'] = `0 0 5px 2px ${user.staffEditorCustomColour}`;
+					}
+
+					return style;
+				})()}
 				className={(() => {
 					let classes = 'player-container';
 					const user = userList.list && userList.list.find(play => play.userName === player.userName);

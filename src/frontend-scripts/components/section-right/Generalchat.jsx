@@ -394,6 +394,7 @@ export default class Generalchat extends React.Component {
 							<a
 								href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
 								className={chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'genchat-user moderatorcolor' : userClasses}
+								style={user && user.staffRole === 'editor' ? { color: user.staffEditorCustomColour } : {}}
 							>
 								{`${
 									chat.staffRole === 'moderator' &&
