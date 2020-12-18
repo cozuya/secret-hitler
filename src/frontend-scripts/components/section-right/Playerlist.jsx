@@ -340,7 +340,7 @@ class Playerlist extends React.Component {
 
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses} style={{ color: `${user.staffEditorCustomColour}` }}>
+											<span className={userClasses} style={user.staffRole === 'editor' ? { color: `${user.staffEditorCustomColour}` } : {}}>
 												{prefix}
 												{` ${user.userName}`}
 											</span>
