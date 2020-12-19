@@ -723,7 +723,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 					{
 						player: chancellor.userName,
 						seat: chancellorIndex + 1,
-						role: 'Liberal',
+						role: chancellor.role.cardName,
 						situation: `was given choice as chancellor, and played fascist.`,
 						election: game.general.electionCount,
 						title: game.general.name,
@@ -745,7 +745,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 					{
 						player: chancellor.userName,
 						seat: chancellorIndex + 1,
-						role: 'Fascist',
+						role: chancellor.role.cardName,
 						situation: `was given choice as chancellor with 4 blues on the track, and played liberal.`,
 						election: game.general.electionCount,
 						title: game.general.name,
@@ -1011,7 +1011,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Liberal',
+									role: president.role.cardName,
 									situation: `got BRR with 4 blues on the track, and tossed the blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1027,7 +1027,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Liberal',
+									role: president.role.cardName,
 									situation: `got BBR with 4 blues on the track, and did not force.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1045,7 +1045,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Liberal',
+									role: president.role.cardName,
 									situation: `got BRR before HZ, and tossed the blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1063,7 +1063,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Liberal',
+									role: president.role.cardName,
 									situation: `got BRR during veto zone, and tossed the blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1079,7 +1079,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Liberal',
+									role: president.role.cardName,
 									situation: `got BBR during veto zone, and did not force 5th blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1102,7 +1102,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Fascist',
+									role: president.role.cardName,
 									situation: `got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1118,7 +1118,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Fascist',
+									role: president.role.cardName,
 									situation: `got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1136,7 +1136,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Fascist',
+									role: president.role.cardName,
 									situation: `got BBR with 5 reds on the track, and forced blues on a fascist chancellor.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1152,7 +1152,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
-									role: 'Fascist',
+									role: president.role.cardName,
 									situation: `got BRR with 5 reds on the track, and offered choice to a liberal chancellor.`,
 									election: game.general.electionCount,
 									title: game.general.name,
@@ -1355,7 +1355,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				{
 					player: 'A Player',
 					seat: presidentIndex + 1,
-					role: 'Liberal',
+					role: president.role.cardName,
 					situation: `has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`,
 					election: game.general.electionCount,
 					title: game.general.name,
@@ -1413,7 +1413,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[0]}p`
-				}
+				},
+				discard: true
 			},
 			{
 				position: 'middle-center',
@@ -1422,7 +1423,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[1]}p`
-				}
+				},
+				discard: true
 			},
 			{
 				position: 'middle-far-right',
@@ -1431,7 +1433,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					isFlipped: false,
 					cardFront: 'policy',
 					cardBack: `${game.private.currentElectionPolicies[2]}p`
-				}
+				},
+				discard: true
 			}
 		];
 		sendInProgressGameUpdate(game);

@@ -1086,7 +1086,7 @@ class Gamechat extends React.Component {
 							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
 						/>
 					</a>
-					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
+					<div style={{ overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
 						{userInfo &&
 							!userInfo.isSeated &&
 							isStaff &&

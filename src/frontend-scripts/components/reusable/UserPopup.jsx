@@ -81,7 +81,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 	);
 };
 
-const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top center', index }) => {
+const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, position = 'top', index }) => {
 	const [reportVisible, setReportVisible] = useState(false);
 	const user = userList && userList.list && userList.list.find(play => play.userName === userName);
 	const { gameSettings } = userInfo;
@@ -134,7 +134,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 										</Grid.Column>
 										<Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
 											<List.Icon name="calendar alternate outline" />
-											{user.eloSeasonal || 1600}
+											{user.eloSeason || 1600}
 										</Grid.Column>
 									</Grid.Row>
 								</Grid>

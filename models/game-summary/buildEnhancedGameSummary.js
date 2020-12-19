@@ -21,6 +21,7 @@ function buildEnhancedGameSummary(_summary) {
 			'chancellorVeto',
 			'policyPeek',
 			'policyPeekClaim',
+			'investigatorId',
 			'investigationId',
 			'investigationClaim',
 			'specialElection',
@@ -78,6 +79,8 @@ function buildEnhancedGameSummary(_summary) {
 		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
 
 	const casualGame = summary.gameSetting.casualGame;
+	const practiceGame = summary.gameSetting.practiceGame;
+	const unlisted = summary.gameSetting.practiceGame;
 
 	// String
 	const winningTeam = (() => {
@@ -135,13 +138,15 @@ function buildEnhancedGameSummary(_summary) {
 	// Option[List[Option[{ ja: Boolean, presidentId: Int, chancellorId: Int }]]]
 	const votesOf = username => {
 		return indexOf(username).map(i =>
-			turns.map(t =>
-				t.votes.get(i).map(v => ({
-					ja: v,
-					presidentId: t.presidentId,
-					chancellorId: t.chancellorId
-				}))
-			)
+			turns
+				.filter(t => t.votes.get(i))
+				.map(t => {
+					return t.votes.get(i).map(v => ({
+						ja: v,
+						presidentId: t.presidentId,
+						chancellorId: t.chancellorId
+					}));
+				})
 		);
 	};
 
@@ -166,6 +171,8 @@ function buildEnhancedGameSummary(_summary) {
 		winningTeam,
 		isRebalanced,
 		casualGame,
+		practiceGame,
+		unlisted,
 		usernameOf,
 		tagOf,
 		indexOf,

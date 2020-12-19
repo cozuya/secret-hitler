@@ -477,7 +477,7 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 	}
 
 	if (game.gameState.phase !== 'presidentVoteOnBurn') {
-		return;	
+		return;
 	}
 
 	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -665,7 +665,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 	}
 
 	if (game.gameState.phase !== 'selectPartyMembershipInvestigate') {
-		return;	
+		return;
 	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -680,7 +680,8 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 			});
 
 			game.private.summary = game.private.summary.updateLog({
-				investigationId: playerIndex
+				investigationId: playerIndex,
+				investigatorId: presidentIndex
 			});
 
 			game.publicPlayersState[presidentIndex].isLoader = false;
@@ -876,7 +877,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 	}
 
 	if (game.gameState.phase !== 'selectPartyMembershipInvestigateReverse') {
-		return;	
+		return;
 	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigateReverse && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -892,7 +893,8 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 			});
 
 			game.private.summary = game.private.summary.updateLog({
-				investigationId: playerIndex
+				investigationId: presidentIndex,
+				investigatorId: playerIndex
 			});
 
 			game.publicPlayersState[presidentIndex].isLoader = false;
@@ -1103,7 +1105,7 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	}
 
 	if (game.gameState.phase !== 'specialElection') {
-		return;	
+		return;
 	}
 
 	if (game.general.timedMode && game.private.timerId) {
@@ -1263,7 +1265,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	}
 
 	if (game.gameState.phase !== 'execution') {
-		return;	
+		return;
 	}
 
 	const nonPresidentChat = {
