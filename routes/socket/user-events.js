@@ -11,7 +11,9 @@ const {
 	currentSeasonNumber,
 	newStaff,
 	createNewBypass,
-	testIP
+	testIP,
+	setLastGenchatModPingAsync,
+	getLastGenchatModPingAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -38,6 +40,7 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants')
 const { makeReport } = require('./report.js');
 const { chatReplacements } = require('./chatReplacements');
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
+
 /**
  * @param {object} game - game to act on.
  * @return {string} status text.
@@ -2308,7 +2311,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  */
-module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+module.exports.handleNewGeneralChat = async (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
@@ -2327,6 +2330,31 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			},
 			{ time: new Date(0) }
 		);
+
+	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(data.chat);
+
+	if (pingMods) {
+		try {
+			const lastModPing = await getLastGenchatModPingAsync();
+			if (!lastModPing || Date.now() > lastModPing + 180000) {
+				makeReport(
+					{
+						player: passport.user,
+						situation: `"${pingMods[2]}".`,
+						homepage: true
+					},
+					null,
+					'ping'
+				);
+				await setLastGenchatModPingAsync(Date.now());
+			} else {
+				socket.emit('sendAlert', `You can't ping mods for another ${(lastModPing + 180000 - Date.now()) / 1000} seconds.`);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+		return;
+	}
 
 	if (lastMessage.chat) {
 		let leniency; // How much time (in seconds) must pass before allowing the message.
