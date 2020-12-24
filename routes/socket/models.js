@@ -15,6 +15,8 @@ const globalSettingsClient = redis.createClient({
 	db: 1
 });
 
+module.exports.globalSettingsClient = globalSettingsClient;
+
 const getGlobalSetting = promisify(globalSettingsClient.get).bind(globalSettingsClient);
 const setGlobalSetting = promisify(globalSettingsClient.set).bind(globalSettingsClient);
 
