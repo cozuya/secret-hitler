@@ -493,7 +493,8 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+			// TODO delete this to allow chat claiming in silent
+			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
@@ -533,7 +534,7 @@ class Gamechat extends React.Component {
 			}
 
 			if (
-				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) &&
+				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
 				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {

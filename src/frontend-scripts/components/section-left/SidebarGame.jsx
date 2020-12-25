@@ -101,11 +101,16 @@ const SidebarGame = ({ game, socket }) => {
 							status = 'Speed';
 						}
 
-						if (game.disableChat) {
+						if (game.playerChats === 'disabled') {
 							if (status) {
 								status += ' | ';
 							}
 							status += 'No chat';
+						} else if (game.playerChats === 'emoji') {
+							if (status) {
+								status += ' | ';
+							}
+							status += 'Emoji only';
 						}
 
 						if (game.disableGamechat) {

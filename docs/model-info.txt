@@ -46,7 +46,7 @@ general
 	timeCreated date
 	experiencedMode bool
 	casualGame bool
-	disableChat bool
+	playerChats string in [enabled, disabled, emoji]
 	disableGamechat bool
 	disableObserverLobby bool
 	disableObserver bool

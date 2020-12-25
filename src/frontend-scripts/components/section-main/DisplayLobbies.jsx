@@ -59,8 +59,8 @@ const DisplayLobbies = props => {
 	const optionIcons = () => {
 		let rebalance;
 		let rebalanceTooltip;
-		let disableChat;
-		let disableChatTooltip;
+		let playerChats;
+		let playerChatsTooltip;
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
@@ -126,9 +126,12 @@ const DisplayLobbies = props => {
 			}
 		}
 
-		if (game.disableChat) {
-			disableChat = <i className="unmute icon" />;
-			disableChatTooltip = 'Player Chat Disabled';
+		if (game.playerChats === 'disabled') {
+			playerChats = <i className="mute icon" />;
+			playerChatsTooltip = 'Player Chat Disabled';
+		} else if (game.playerChats === 'emoji') {
+			playerChats = <i className="smile icon" />;
+			playerChatsTooltip = 'Emoji Only';
 		}
 
 		if (game.privateOnly) {
@@ -228,9 +231,9 @@ const DisplayLobbies = props => {
 						{rebalance}
 					</span>
 				)}
-				{disableChat && (
-					<span data-tooltip={disableChatTooltip} data-inverted="">
-						{disableChat}
+				{playerChats && (
+					<span data-tooltip={playerChatsTooltip} data-inverted="">
+						{playerChats}
 					</span>
 				)}
 				{disableGamechat && (

@@ -11,7 +11,8 @@ const {
 	currentSeasonNumber,
 	newStaff,
 	createNewBypass,
-	testIP
+	testIP,
+	emoteList
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -698,7 +699,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
-			disableChat: data.disableChat,
+			playerChats: data.playerChats,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserverLobby: data.disableObserverLobby,
 			disableObserver: data.disableObserverLobby || (data.disableObserver && !data.isTourny),
@@ -1643,7 +1644,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	// if (!AEM && game.general.disableChat) return;
 	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
-		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
+		if (game.general.playerChats === 'disabled' && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
 			return;
 		}
 		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
@@ -2273,7 +2274,26 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
 
-		game.chats.push(data);
+		if (game.general.playerChats === 'emoji') {
+			if (!emoteList || !data.chat) return;
+			let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
+			const emotes = emoteList.map(emote => emote[0].toLowerCase());
+
+			// filter valid :emotes:
+			newChatSplit = newChatSplit.map(block => {
+				if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
+					return block.replace(/[\w!@#$%^&*(){}\[\]|~`;':"<>,.?/_\-\+=\s\\]/gi, '');
+				} else {
+					if (emotes.includes(block.substring(1, block.length - 1))) return ` ${block} `;
+					return '';
+				}
+			});
+
+			const newChat = newChatSplit.join('');
+			if (newChat.length) game.chats.push({ ...data, chat: newChat });
+		} else {
+			game.chats.push(data);
+		}
 
 		if (game.gameState.isTracksFlipped) {
 			sendPlayerChatUpdate(game, data);
