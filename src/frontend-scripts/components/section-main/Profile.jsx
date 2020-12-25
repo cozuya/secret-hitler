@@ -289,11 +289,27 @@ class ProfileWrapper extends React.Component {
 				: this.state.userListFilter === 'all'
 				? 'lossesSeason'
 				: 'rainbowLossesSeason';
+		const wP =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'winsPractice'
+					: 'rainbowWinsPractice'
+				: this.state.userListFilter === 'all'
+				? 'winsSeasonPractice'
+				: 'rainbowWinsSeasonPractice';
+		const lP =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'lossesPractice'
+					: 'rainbowLossesPractice'
+				: this.state.userListFilter === 'all'
+				? 'lossesSeasonPractice'
+				: 'rainbowLossesSeasonPractice';
 		let userClasses = 'profile-picture';
 		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
+				user[w] + user[l] + Math.min(20, user[wP] + user[lP]) > 49 || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -301,9 +317,9 @@ class ProfileWrapper extends React.Component {
 							{ clickable: this.props.isUserClickable }
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
-			const { wins = 0, losses = 0 } = user;
-			if (wins + losses < 50) {
-				gamesUntilRainbow = 50 - wins - losses;
+			const { wins = 0, losses = 0, winsPractice = 0, lossesPractice = 0 } = user;
+			if (wins + losses + Math.min(20, winsPractice + lossesPractice) < 50) {
+				gamesUntilRainbow = 50 - wins - losses - Math.min(20, winsPractice + lossesPractice);
 			}
 		}
 

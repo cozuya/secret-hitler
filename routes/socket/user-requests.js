@@ -206,6 +206,10 @@ module.exports.sendUserGameSettings = socket => {
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
+					winsPractice: account.winsPractice,
+					lossesPractice: account.lossesPractice,
+					rainbowWinsPractice: account.rainbowWinsPractice,
+					rainbowLossePractices: account.rainbowLossesPractice,
 					isPrivate: account.gameSettings.isPrivate,
 					tournyWins: account.gameSettings.tournyWins,
 					blacklist: account.gameSettings.blacklist,
@@ -225,6 +229,10 @@ module.exports.sendUserGameSettings = socket => {
 				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
 				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
 				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
+				userListInfo[`winsSeason${CURRENTSEASONNUMBER}Practice`] = account[`winsSeason${CURRENTSEASONNUMBER}Practice`];
+				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}Practice`] = account[`lossesSeason${CURRENTSEASONNUMBER}Practice`];
+				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}Practice`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}Practice`];
+				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}Practice`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}Practice`];
 				userList.push(userListInfo);
 				sendUserList();
 			}

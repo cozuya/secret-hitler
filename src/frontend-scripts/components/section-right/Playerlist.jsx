@@ -101,10 +101,26 @@ class Playerlist extends React.Component {
 				: this.state.userListFilter === 'all'
 				? 'lossesSeason'
 				: 'rainbowLossesSeason';
+		const wP =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'winsPractice'
+					: 'rainbowWinsPractice'
+				: this.state.userListFilter === 'all'
+				? 'winsSeasonPractice'
+				: 'rainbowWinsSeasonPractice';
+		const lP =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'lossesPractice'
+					: 'rainbowLossesPractice'
+				: this.state.userListFilter === 'all'
+				? 'lossesSeasonPractice'
+				: 'rainbowLossesSeasonPractice';
 
 		return (a, b) => {
-			const wl1 = a[w] + a[l];
-			const wl2 = b[w] + b[l];
+			const wl1 = a[w] + a[l] + a[wP] + a[lP];
+			const wl2 = b[w] + b[l] + b[wP] + b[lP];
 			const e1 = wl1 >= 50 && a[elo] ? a[elo] : 0;
 			const e2 = wl2 >= 50 && b[elo] ? b[elo] : 0;
 			if (e1 !== e2) {
@@ -227,6 +243,22 @@ class Playerlist extends React.Component {
 					: this.state.userListFilter === 'all'
 					? 'lossesSeason'
 					: 'rainbowLossesSeason';
+			const wP =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all'
+						? 'winsPractice'
+						: 'rainbowWinsPractice'
+					: this.state.userListFilter === 'all'
+					? 'winsSeasonPractice'
+					: 'rainbowWinsSeasonPractice';
+			const lP =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all'
+						? 'lossesPractice'
+						: 'rainbowLossesPractice'
+					: this.state.userListFilter === 'all'
+					? 'lossesSeasonPractice'
+					: 'rainbowLossesSeasonPractice';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const isStaff = Boolean(
 				Object.keys(userInfo).length &&
@@ -248,10 +280,10 @@ class Playerlist extends React.Component {
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
 				? nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + user[wP] + user[lP] >= 50)
 						.sort(this.sortByElo(this.alphabetical()))
 				: nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + user[wP] + user[lP] >= 50)
 						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
@@ -453,6 +485,22 @@ class Playerlist extends React.Component {
 					: this.state.userListFilter === 'all'
 					? 'lossesSeason'
 					: 'rainbowLossesSeason';
+			const wP =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all'
+						? 'winsPractice'
+						: 'rainbowWinsPractice'
+					: this.state.userListFilter === 'all'
+					? 'winsSeasonPractice'
+					: 'rainbowWinsSeasonPractice';
+			const lP =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all'
+						? 'lossesPractice'
+						: 'rainbowLossesPractice'
+					: this.state.userListFilter === 'all'
+					? 'lossesSeasonPractice'
+					: 'rainbowLossesSeasonPractice';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -475,8 +523,8 @@ class Playerlist extends React.Component {
 			aem.push(...contributors);
 
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
-				: visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
+				? visible.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP]) >= 50).sort(this.sortByElo(this.alphabetical()))
+				: visible.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP]) >= 50).sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 

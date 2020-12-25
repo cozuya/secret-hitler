@@ -239,6 +239,8 @@ const continueSignup = config => {
 				verified: true,
 				wins: 0,
 				losses: 0,
+				winsPractice: 0,
+				lossesPractice: 0,
 				created: new Date(),
 				signupIP: signupIP,
 				hasNotDismissedSignupModal: true,
@@ -448,6 +450,8 @@ module.exports.accounts = torIpsParam => {
 			games: [],
 			wins: 0,
 			losses: 0,
+			winsPractice: 0,
+			lossesPractice: 0,
 			created: new Date(),
 			signupIP,
 			lastConnectedIP: signupIP
