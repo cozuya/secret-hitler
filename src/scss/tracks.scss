@@ -487,9 +487,43 @@
 	box-shadow: 0 0 26px 6px #fbbd08;
 }
 
+// .cardflinger-card-container.selected::after {
+// 	box-shadow: 0 0 2px 14px lightgreen;
+// 	animation-duration: 0s;
+// }
+
+@keyframes expand-select {
+	from {
+		top: 50%;
+		left: 50%;
+		height: 0;
+		width: 0;
+	}
+	to {
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+	}
+}
+
+.cardflinger-card-container.expanding::after {
+	box-shadow: 0 0 2px 14px lightgreen;
+	animation: 2s ease-in expand-select;
+}
+
 .cardflinger-card-container.selected::after {
 	box-shadow: 0 0 2px 14px lightgreen;
 	animation-duration: 0s;
+}
+
+.cardflinger-card-container.selected.discard::after {
+	box-shadow: 0 0 2px 14px red;
+	animation-duration: 0s;
+}
+
+.cardflinger-card-container.expanding.discard::after {
+	box-shadow: 0 0 2px 14px red;
 }
 
 .cardflinger-card-container.selected.display-help-icons {

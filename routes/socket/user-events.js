@@ -1193,8 +1193,9 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					{
 						investigationClaim: data.claimState
 					},
-					{ presidentId: playerIndex }
+					{ investigatorId: playerIndex }
 				);
+
 				switch (data.claimState) {
 					case 'fascist':
 						text.push(
@@ -2698,7 +2699,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 
 	output += '</table>';
 	socket.emit('sendAlert', output);
-	timeRemaking;
 };
 
 /**
@@ -3327,8 +3327,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err, 'timeout2 user err');
 						});
-				case 'timeOut3':
 					break;
+				case 'timeOut3':
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
@@ -3854,7 +3854,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 			const modAction = JSON.stringify({
 				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
-					modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
+					modaction.actionTaken}**\nUser: **${modaction.userActedOn} **\nComment: **${modaction.modNotes}**.`
 			});
 
 			const modOptions = {
@@ -3997,10 +3997,12 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 			});
 		});
 
-		if (reportError) {
-			callback({ success: false, error: 'Error submitting report.' });
-		} else {
-			callback({ success: true });
+		if (typeof callback === 'function') {
+			if (reportError) {
+				callback({ success: false, error: 'Error submitting report.' });
+			} else {
+				callback({ success: true });
+			}
 		}
 	});
 };

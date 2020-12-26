@@ -56,7 +56,7 @@ class Players extends React.Component {
 		}
 	};
 
-	handlePlayerClick = index => {
+	handlePlayerClick = (index, name) => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -90,10 +90,25 @@ class Players extends React.Component {
 
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-				socket.emit('selectedPlayerToExecute', {
-					playerIndex: index,
-					uid: gameInfo.general.uid
-				});
+				if (!gameSettings.disableKillConfirmation) {
+					Swal.fire({
+						title: `Are you sure you want to execute {${index + 1}} ${name}?`,
+						showCancelButton: true,
+						icon: 'warning'
+					}).then(result => {
+						if (result.value) {
+							socket.emit('selectedPlayerToExecute', {
+								playerIndex: index,
+								uid: gameInfo.general.uid
+							});
+						}
+					});
+				} else {
+					socket.emit('selectedPlayerToExecute', {
+						playerIndex: index,
+						uid: gameInfo.general.uid
+					});
+				}
 			}
 		}
 
@@ -234,7 +249,7 @@ class Players extends React.Component {
 			<div
 				key={i}
 				onClick={() => {
-					this.handlePlayerClick(i);
+					this.handlePlayerClick(i, player);
 				}}
 				style={
 					player.customCardback &&

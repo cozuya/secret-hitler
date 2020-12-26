@@ -9,8 +9,7 @@ import { processEmotes } from '../../emotes';
 
 export class GamesList extends React.Component {
 	state = {
-		filtersVisible: false,
-		stickyEnabled: true
+		filtersVisible: false
 	};
 
 	toggleFilter = value => {
@@ -24,21 +23,20 @@ export class GamesList extends React.Component {
 		const { generalChats } = this.props;
 		const nextGeneralChats = nextProps.generalChats;
 
-		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
-			this.setState({
-				stickyEnabled: true
-			});
+		if (!this.props.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
+			this.props.setStickyEnabled(true);
 		}
 	}
 
 	renderSticky = () => {
-		if (this.state.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
-			const dismissSticky = () => {
-				this.setState({ stickyEnabled: false });
-			};
-
+		if (this.props.stickyEnabled && this.props.generalChats && this.props.generalChats.sticky) {
 			return (
-				<Message onDismiss={dismissSticky} color="blue">
+				<Message
+					onDismiss={() => {
+						this.props.setStickyEnabled(false);
+					}}
+					color="blue"
+				>
 					{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
 				</Message>
 			);
