@@ -8,6 +8,7 @@ import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { Popup } from 'semantic-ui-react';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.modal = Modal;
@@ -503,6 +504,9 @@ class Playerlist extends React.Component {
 					? 'lossesSeasonPractice'
 					: 'rainbowLossesSeasonPractice';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
+			const routeToProfile = userName => {
+				window.location.hash = `#/profile/${userName}`;
+			};
 			const isStaff = Boolean(
 				Object.keys(userInfo).length &&
 					userInfo.staffRole &&
@@ -533,7 +537,6 @@ class Playerlist extends React.Component {
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
 			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
-				const popperRef = createRef();
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
@@ -629,20 +632,24 @@ class Playerlist extends React.Component {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
-										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses}>
-												{prefix}
-												{` ${user.userName}`}
-											</span>
-										</UserPopup>
+										<Popup
+											inverted
+											className="admin-popup"
+											trigger={
+												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+													{prefix}
+													{` ${user.userName}`}
+												</span>
+											}
+											content={userAdminRole}
+										/>
 									);
 								} else {
 									return (
-										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses} ref={popperRef}>
-												{user.userName}
-											</span>
-										</UserPopup>
+										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+											{user.isPrivate ? 'P - ' : ''}
+											{user.userName}
+										</span>
 									);
 								}
 							})()}

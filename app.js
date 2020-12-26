@@ -9,11 +9,9 @@ const compression = require('compression');
 const LocalStrategy = require('passport-local').Strategy;
 const DiscordStrategy = require('passport-discord').Strategy;
 const GithubStrategy = require('passport-github2').Strategy;
-const session = require('express-session');
-const helmet = require('helmet');
-
-const routesIndex = require('./routes/index');
 const Account = require('./models/account');
+const routesIndex = require('./routes/index');
+const session = require('express-session');
 const { expandAndSimplify } = require('./routes/socket/ip-obf');
 
 let store;
@@ -66,11 +64,6 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '200kb' })); // limit ne
 app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
-app.use(
-	helmet.frameguard({
-		action: 'deny'
-	})
-);
 
 const sessionSettings = {
 	secret: process.env.SECRETSESSIONKEY || 'hunter2',

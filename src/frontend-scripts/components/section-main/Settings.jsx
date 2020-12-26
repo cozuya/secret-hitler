@@ -33,7 +33,6 @@ class Settings extends React.Component {
 		disableCrowns: '',
 		disableSeasonal: '',
 		disableElo: '',
-		disableKillConfirmation: '',
 		disableAggregations: '',
 		soundStatus: '',
 		isPrivate: '',
@@ -45,7 +44,6 @@ class Settings extends React.Component {
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
-		keyboardShortcuts: 'disable',
 		claimCharacters: 'short',
 		primaryColor: 'hsl(225, 73%, 57%)',
 		secondaryColor: 'hsl(225, 48%, 57%)',
@@ -75,7 +73,6 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti || '',
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
-			disableKillConfirmation: gameSettings.disableKillConfirmation || '',
 			disableAggregations: gameSettings.disableAggregations || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
@@ -85,7 +82,6 @@ class Settings extends React.Component {
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork || false,
-			keyboardShortcuts: gameSettings.keyboardShortcuts || 'disable',
 			claimCharacters: gameSettings.claimCharacters || 'short',
 			primaryColor: window
 				.getComputedStyle(document.documentElement)
@@ -131,19 +127,6 @@ class Settings extends React.Component {
 			() => {
 				this.props.socket.emit('updateGameSettings', {
 					claimCharacters: this.state.claimCharacters
-				});
-			}
-		);
-	};
-
-	handleKeyboardShortcutsChange = e => {
-		this.setState(
-			{
-				keyboardShortcuts: e.target.value
-			},
-			() => {
-				this.props.socket.emit('updateGameSettings', {
-					keyboardShortcuts: this.state.keyboardShortcuts
 				});
 			}
 		);
@@ -264,26 +247,6 @@ class Settings extends React.Component {
 							}}
 						>
 							The quick brown fascist jumped over the lazy liberal. (roboto slab)
-						</label>
-					</div>
-				</div>
-				<div className="field">
-					<div className="ui radio merriweather checkbox">
-						<input
-							type="radio"
-							id="merriweather"
-							onChange={() => {
-								changeFontSubmit('merriweather');
-							}}
-							checked={this.state.fontChecked === 'merriweather'}
-						/>
-						<label
-							htmlFor="merriweather"
-							style={{
-								fontSize: this.state.fontSize
-							}}
-						>
-							The quick brown fascist jumped over the lazy liberal. (merriweather)
 						</label>
 					</div>
 				</div>
@@ -716,12 +679,6 @@ class Settings extends React.Component {
 									</div>
 								</React.Fragment>
 							)}
-							<h4 className="ui header">Keyboard shortcuts</h4>
-							<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
-								<option value="disable">Disable keyboard shortcuts</option>
-								<option value="2s">Shortcuts with 2s delay</option>
-								<option value="0s">Shortcuts with no delay</option>
-							</select>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -815,16 +772,6 @@ class Settings extends React.Component {
 									name="disableaggregations"
 									checked={this.state.disableAggregations}
 									onChange={() => this.toggleGameSettings('disableAggregations')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Disable kill confirmation</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disablekillconfirmation"
-									checked={this.state.disableKillConfirmation}
-									onChange={() => this.toggleGameSettings('disableKillConfirmation')}
 								/>
 								<label />
 							</div>

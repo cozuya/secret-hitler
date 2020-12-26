@@ -31,7 +31,6 @@ const Account = new Schema({
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
 		disableAggregations: Boolean,
-		disableKillConfirmation: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
@@ -47,7 +46,6 @@ const Account = new Schema({
 		disableElo: Boolean,
 		fullheight: Boolean,
 		safeForWork: Boolean,
-		keyboardShortcuts: String,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,

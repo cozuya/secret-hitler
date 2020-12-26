@@ -18,8 +18,7 @@ describe('Main', () => {
 				casualgame: false
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
-			newPlayerModalPageIndex: 0,
-			stickyEnabled: true
+			newPlayerModalPageIndex: 0
 		};
 
 		const component = shallow(<Main userInfo={{}} />);
