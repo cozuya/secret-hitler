@@ -60,7 +60,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 		.then(actions => {
 			const list = users.map(user => ({
 				status: userList.find(userListUser => user.username === userListUser.userName).status,
-				isRainbow: user.wins + user.losses > 49,
+				isRainbow: user.wins + user.losses + Math.min(20, user.winsPractice + user.lossesPractice || 0) > 49,
 				userName: user.username,
 				ip: user.lastConnectedIP || user.signupIP,
 				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`

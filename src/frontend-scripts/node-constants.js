@@ -91,14 +91,14 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const gradeObj = {};
 		gradeObj['elo' + grade.toFixed(0)] = true;
 
-		return w + l + Math.min(20, wP + lP) >= 50
+		return w + l + Math.min(20, wP + lP || 0) >= 50
 			? eloDisabled
 				? cn(defaultClass, {
-						experienced1: w + l > 49,
-						experienced2: w + l > 99,
-						experienced3: w + l > 199,
-						experienced4: w + l > 299,
-						experienced5: w + l > 499,
+						experienced1: w + l + Math.min(20, wP + lP || 0) > 49,
+						experienced2: w + l + Math.min(20, wP + lP || 0) > 99,
+						experienced3: w + l + Math.min(20, wP + lP || 0) > 199,
+						experienced4: w + l + Math.min(20, wP + lP || 0) > 299,
+						experienced5: w + l + Math.min(20, wP + lP || 0) > 499,
 						onfire1: w / (w + l) > 0.52,
 						onfire2: w / (w + l) > 0.54,
 						onfire3: w / (w + l) > 0.56,

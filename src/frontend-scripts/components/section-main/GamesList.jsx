@@ -170,7 +170,8 @@ export class GamesList extends React.Component {
 
 		const thisUser = userInfo.userName && userList.list && userList.list.find(u => u.userName == userInfo.userName);
 		const sortTypeThenName = (a, b) => {
-			const isRainbow = thisUser && !thisUser.isPrivate && thisUser.wins + thisUser.losses >= 50;
+			const isRainbow =
+				thisUser && !thisUser.isPrivate && thisUser.wins + thisUser.losses + Math.min(20, thisUser.winsPractice + thisUser.lossesPractice || 0) >= 50;
 			const isPrivate = thisUser && thisUser.isPrivate;
 
 			let aType;

@@ -85,7 +85,7 @@ const Account = new Schema({
 	losses: Number,
 	rainbowWins: Number,
 	rainbowLosses: Number,
-	winsPractice: Number, // min(20, practiceWins + practiceLosses) + wins + losses >= 50 #=> rainbow
+	winsPractice: Number,
 	lossesPractice: Number,
 	rainbowWinsPractice: Number,
 	rainbowLossesPractice: Number,

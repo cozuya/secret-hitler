@@ -267,7 +267,9 @@ class Playerlist extends React.Component {
 					userInfo.staffRole !== 'altmod' &&
 					userInfo.staffRole !== 'veteran'
 			);
-			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			const visible = list.filter(
+				user => (this.state.userListFilter === 'all' || user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) > 49) && (!user.isPrivate || isStaff)
+			);
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
@@ -280,10 +282,10 @@ class Playerlist extends React.Component {
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
 				? nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + user[wP] + user[lP] >= 50)
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) >= 50)
 						.sort(this.sortByElo(this.alphabetical()))
 				: nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + user[wP] + user[lP] >= 50)
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) >= 50)
 						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
@@ -302,7 +304,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
+					user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -512,7 +514,9 @@ class Playerlist extends React.Component {
 					userInfo.staffRole !== 'altmod' &&
 					userInfo.staffRole !== 'veteran'
 			);
-			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			const visible = list.filter(
+				user => (this.state.userListFilter === 'all' || user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) > 49) && (!user.isPrivate || isStaff)
+			);
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
@@ -523,8 +527,12 @@ class Playerlist extends React.Component {
 			aem.push(...contributors);
 
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP]) >= 50).sort(this.sortByElo(this.alphabetical()))
-				: visible.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP]) >= 50).sort(this.winRate(this.alphabetical()));
+				? visible
+						.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) >= 50)
+						.sort(this.sortByElo(this.alphabetical()))
+				: visible
+						.filter(user => !aem.includes(user) && user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) >= 50)
+						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
@@ -540,7 +548,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
+					user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },

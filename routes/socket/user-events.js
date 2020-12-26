@@ -498,7 +498,9 @@ const updateSeatedUser = (socket, passport, data) => {
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
+		const isRainbowSafe =
+			!game.general.rainbowgame ||
+			(game.general.rainbowgame && account.wins + account.losses + Math.min(20, account.winsPractice + account.lossesPractice || 0) > 49);
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
@@ -706,7 +708,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),
 			disableGamechat: data.disableGamechat,
-			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
+			rainbowgame: user.wins + user.losses + Math.min(user.winsPractice + user.lossesPractice || 0, 20) > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
@@ -2457,6 +2459,10 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						losses: account.losses,
 						rainbowWins: account.rainbowWins,
 						rainbowLosses: account.rainbowLosses,
+						winsPractice: account.winsPractice,
+						lossesPractice: account.lossesPractice,
+						rainbowWinsPractice: account.rainbowWinsPractice,
+						rainbowLossesPractice: account.rainbowLossesPractice,
 						isPrivate: account.gameSettings.isPrivate,
 						tournyWins: account.gameSettings.tournyWins,
 						blacklist: account.gameSettings.blacklist,
@@ -2476,6 +2482,10 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+					userListInfo[`winsSeason${currentSeasonNumber}Practice`] = account[`winsSeason${currentSeasonNumber}Practice`];
+					userListInfo[`lossesSeason${currentSeasonNumber}Practice`] = account[`lossesSeason${currentSeasonNumber}Practice`];
+					userListInfo[`rainbowWinsSeason${currentSeasonNumber}Practice`] = account[`rainbowWinsSeason${currentSeasonNumber}Practice`];
+					userListInfo[`rainbowLossesSeason${currentSeasonNumber}Practice`] = account[`rainbowLossesSeason${currentSeasonNumber}Practice`];
 					if (userIdx !== -1) userList.splice(userIdx, 1);
 					userList.push(userListInfo);
 					sendUserList();

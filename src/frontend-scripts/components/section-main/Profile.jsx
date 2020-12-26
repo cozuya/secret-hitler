@@ -309,7 +309,7 @@ class ProfileWrapper extends React.Component {
 		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
-				user[w] + user[l] + Math.min(20, user[wP] + user[lP]) > 49 || Boolean(user.staffRole) || user.isContributor
+				user[w] + user[l] + Math.min(20, user[wP] + user[lP] || 0) > 49 || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -318,8 +318,8 @@ class ProfileWrapper extends React.Component {
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
 			const { wins = 0, losses = 0, winsPractice = 0, lossesPractice = 0 } = user;
-			if (wins + losses + Math.min(20, winsPractice + lossesPractice) < 50) {
-				gamesUntilRainbow = 50 - wins - losses - Math.min(20, winsPractice + lossesPractice);
+			if (wins + losses + Math.min(20, winsPractice + lossesPractice || 0) < 50) {
+				gamesUntilRainbow = 50 - wins - losses - Math.min(20, winsPractice + lossesPractice || 0);
 			}
 		}
 
