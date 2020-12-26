@@ -283,7 +283,7 @@ class Players extends React.Component {
 					return classes;
 				})()}
 			>
-				<UserPopup userName={player.userName} socket={this.props.socket} index={i}>
+				<UserPopup userName={player.userName} socket={this.props.socket} position="top center" index={i}>
 					<div
 						title={
 							isBlind || player.isPrivate

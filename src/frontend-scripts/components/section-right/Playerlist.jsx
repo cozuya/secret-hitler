@@ -319,7 +319,7 @@ class Playerlist extends React.Component {
 				// 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
 				return (
-					<div key={i} className="user-container">
+					<div key={user.userName} className="user-container">
 						<div className="userlist-username">
 							{renderStatus()}
 							{(() => {
@@ -339,7 +339,7 @@ class Playerlist extends React.Component {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
-										<UserPopup socket={this.props.socket} userName={user.userName}>
+										<UserPopup socket={this.props.socket} userName={user.userName} position="bottom center">
 											<span className={userClasses}>
 												{prefix}
 												{` ${user.userName}`}
