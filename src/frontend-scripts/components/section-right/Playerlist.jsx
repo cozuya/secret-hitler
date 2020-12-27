@@ -584,6 +584,7 @@ class Playerlist extends React.Component {
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName}>
 											<span className={userClasses} ref={popperRef}>
+												{user.isPrivate ? 'P - ' : ''}
 												{user.userName}
 											</span>
 										</UserPopup>
