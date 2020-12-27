@@ -47,6 +47,7 @@ class Settings extends React.Component {
 		safeForWork: false,
 		keyboardShortcuts: 'disable',
 		claimCharacters: 'short',
+		claimButtons: 'text',
 		primaryColor: 'hsl(225, 73%, 57%)',
 		secondaryColor: 'hsl(225, 48%, 57%)',
 		tertiaryColor: 'hsl(265, 73%, 57%)',
@@ -87,6 +88,7 @@ class Settings extends React.Component {
 			safeForWork: gameSettings.safeForWork || false,
 			keyboardShortcuts: gameSettings.keyboardShortcuts || 'disable',
 			claimCharacters: gameSettings.claimCharacters || 'short',
+			claimButtons: gameSettings.claimButtons || 'text',
 			primaryColor: window
 				.getComputedStyle(document.documentElement)
 				.getPropertyValue('--theme-primary')
@@ -131,6 +133,19 @@ class Settings extends React.Component {
 			() => {
 				this.props.socket.emit('updateGameSettings', {
 					claimCharacters: this.state.claimCharacters
+				});
+			}
+		);
+	};
+
+	handleClaimButtonsChange = e => {
+		this.setState(
+			{
+				claimButtons: e.target.value
+			},
+			() => {
+				this.props.socket.emit('updateGameSettings', {
+					claimButtons: this.state.claimButtons
 				});
 			}
 		);
@@ -705,6 +720,11 @@ class Settings extends React.Component {
 								<option value="full">Full (liberal/fascist)</option>
 								<option value="legacy">Legacy (B/R)</option>
 							</select>
+							<h4 className="ui header">Claim Buttons</h4>
+							<select onChange={this.handleClaimButtonsChange} value={this.state.claimButtons}>
+								<option value="text">Legacy (Text)</option>
+								<option value="cards">Cards</option>
+							</select>
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
@@ -716,12 +736,6 @@ class Settings extends React.Component {
 									</div>
 								</React.Fragment>
 							)}
-							<h4 className="ui header">Keyboard shortcuts</h4>
-							<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
-								<option value="disable">Disable keyboard shortcuts</option>
-								<option value="2s">Shortcuts with 2s delay</option>
-								<option value="0s">Shortcuts with no delay</option>
-							</select>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -769,6 +783,12 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
+							<h4 className="ui header">Keyboard shortcuts</h4>
+							<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
+								<option value="disable">Disable keyboard shortcuts</option>
+								<option value="2s">Shortcuts with 2s delay</option>
+								<option value="0s">Shortcuts with no delay</option>
+							</select>
 
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>

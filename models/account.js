@@ -69,7 +69,8 @@ const Account = new Schema({
 		playerNotes: Array,
 		ignoreIPBans: Boolean,
 		truncatedSize: Number,
-		claimCharacters: String
+		claimCharacters: String,
+		claimButtons: String
 	},
 	verification: {
 		email: String
