@@ -247,7 +247,7 @@ class Players extends React.Component {
 
 		return publicPlayersState.map((player, i) => (
 			<div
-				key={i}
+				key={player.userName}
 				onClick={() => {
 					this.handlePlayerClick(i, player.userName);
 				}}
