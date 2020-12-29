@@ -428,7 +428,7 @@ export default class Creategame extends React.Component {
 				styles={style}
 				value={findValue(this.state.gameType)}
 				onChange={(inputValue, action) => {
-					const resetPlayerChats = ['ranked', 'practice'].includes(inputValue.value) && this.state.playerChats === 'emoji';
+					const resetPlayerChats = ['ranked', 'practice'].includes(inputValue.value) && this.state.playerChats === 'emotes';
 					this.setState({
 						gameType: inputValue.value,
 						customGameSettings: { ...this.state.customGameSettings, enabled: inputValue.value === 'custom' },
@@ -464,10 +464,10 @@ export default class Creategame extends React.Component {
 
 		if (!['ranked', 'practice'].includes(this.state.gameType)) {
 			options.push({
-				value: 'emoji',
+				value: 'emotes',
 				label: (
 					<>
-						<span title="Only emoji are allowed in game.">Emoji Only</span>
+						<span title="Only emotes and numbers are allowed in game.">Emotes Only</span>
 					</>
 				)
 			});

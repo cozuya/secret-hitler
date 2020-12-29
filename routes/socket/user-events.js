@@ -1640,8 +1640,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	// console.log(isTourneyMod, AEM, game.general.unlisted, playerIndex);
-
 	// if (!AEM && game.general.disableChat) return;
 	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
 		if (game.general.playerChats === 'disabled' && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
@@ -2274,15 +2272,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
 
-		if (game.general.playerChats === 'emoji') {
+		if (game.general.playerChats === 'emotes' && !game.gameState.isCompleted && game.gameState.isStarted && !(AEM && playerIndex === -1)) {
 			if (!emoteList || !data.chat) return;
 			let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
 			const emotes = emoteList.map(emote => emote[0].toLowerCase());
 
-			// filter valid :emotes:
+			// filter valid in-game :emotes: and numbers
 			newChatSplit = newChatSplit.map(block => {
 				if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
-					return block.replace(/[\w!@#$%^&*(){}\[\]|~`;':"<>,.?/_\-\+=\s\\]/gi, '');
+					return block.replace(/[^0-9]/g, '');
 				} else {
 					if (emotes.includes(block.substring(1, block.length - 1))) return ` ${block} `;
 					return '';
@@ -2290,10 +2288,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			});
 
 			const newChat = newChatSplit.join('');
-			if (newChat.length) game.chats.push({ ...data, chat: newChat });
-		} else {
-			game.chats.push(data);
+			if (!newChat.length) return;
+			data.chat = newChat;
 		}
+
+		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
 			sendPlayerChatUpdate(game, data);

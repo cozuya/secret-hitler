@@ -129,9 +129,9 @@ const DisplayLobbies = props => {
 		if (game.playerChats === 'disabled') {
 			playerChats = <i className="mute icon" />;
 			playerChatsTooltip = 'Player Chat Disabled';
-		} else if (game.playerChats === 'emoji') {
+		} else if (game.playerChats === 'emotes') {
 			playerChats = <i className="smile icon" />;
-			playerChatsTooltip = 'Emoji Only';
+			playerChatsTooltip = 'Emotes Only';
 		}
 
 		if (game.privateOnly) {
