@@ -7,7 +7,7 @@ html(lang="en")
     meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
     meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
     link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
-    
+
     if game
       if prodCacheBustToken
         link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
@@ -272,7 +272,7 @@ html(lang="en")
         .field
           label
             input#private-player(type="checkbox", style="margin-right: 5px", name="privateWarning")
-            span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, 
+            span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat,
             b(style="color: #555") you can't play in public games.
         .field
           label
@@ -283,21 +283,12 @@ html(lang="en")
           .ui.text.loader Signing up..
         .ui.negative.hidden.message
 
-    script.
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-105770066-1', 'auto');
-      ga('send', 'pageview');			
-
       var privateWarning = document.querySelector("input[name=privateWarning]");
 
       privateWarning.addEventListener(  'change', function() {
         if (this.checked) {
           var confirmPrompt = prompt("Are you sure you want to only be able to play private games? If so type OK and click OK. If not click cancel.", "");
-        
+
           if (confirmPrompt == "ok" || confirmPrompt == "OK" || confirmPrompt == "Ok" || confirmPrompt == "oK") {
             document.getElementById("private-player").checked = true;
           } else {
