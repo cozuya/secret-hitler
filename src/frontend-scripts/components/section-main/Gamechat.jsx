@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import classnames from 'classnames';
@@ -17,6 +17,56 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = ({ notesActive }) => ({ notesActive });
+
+const ClaimButton = ({ cards, onClick }) => {
+	return (
+		<div className="card-container" onClick={onClick}>
+			{['fascist', 'liberal'].includes(cards) ? (
+				<div className={`card ${cards}`}></div>
+			) : (
+				cards.split('').map(card => {
+					if (card === 'r') {
+						return <div className="card fascist"></div>;
+					} else {
+						return <div className="card liberal"></div>;
+					}
+				})
+			)}
+		</div>
+	);
+};
+
+const ClaimButtons = ({ claimOptions, handleClaimButtonClick }) => (
+	<div className="claim-button-container">
+		{claimOptions.map(claimOption => (
+			<ClaimButton
+				key={claimOption}
+				cards={claimOption}
+				onClick={e => {
+					handleClaimButtonClick(e, claimOption);
+				}}
+			/>
+		))}
+	</div>
+);
+
+const ClaimPeek = ({ handleClaimButtonClick }) => {
+	const [claimCards, setClaimCards] = useState('');
+	const handleCardsClick = (e, claim) => {
+		if (claim === 'rrr' || claim === 'bbb') {
+			handleClaimButtonClick(e, claim);
+		} else {
+			setClaimCards(claim);
+		}
+	};
+	if (!claimCards) {
+		return <ClaimButtons claimOptions={['rrr', 'rrb', 'rbb', 'bbb']} handleClaimButtonClick={handleCardsClick} />;
+	} else if (claimCards === 'rrb') {
+		return <ClaimButtons claimOptions={['rrb', 'rbr', 'brr']} handleClaimButtonClick={handleClaimButtonClick} />;
+	} else if (claimCards === 'rbb') {
+		return <ClaimButtons claimOptions={['rbb', 'brb', 'bbr']} handleClaimButtonClick={handleClaimButtonClick} />;
+	}
+};
 
 class Gamechat extends React.Component {
 	defaultEmotes = ['ja', 'nein', 'blobsweat', 'wethink', 'limes'];
@@ -1274,6 +1324,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
+						const claimButtons = (userInfo.gameSettings && userInfo.gameSettings.claimButtons) || 'text';
 						if (this.state.claim && !gameInfo.gameState.isCompleted) {
 							const handleClaimButtonClick = (e, claim) => {
 								const chat = {
@@ -1290,7 +1341,12 @@ class Gamechat extends React.Component {
 
 							switch (this.state.claim) {
 								case 'wasPresident':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, I drew...</p>
+											<ClaimButtons claimOptions={['rrr', 'rrb', 'rbb', 'bbb']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, I drew...</p>
 											<button
@@ -1328,7 +1384,12 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'wasChancellor':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As chancellor, I received...</p>
+											<ClaimButtons claimOptions={['rr', 'rb', 'bb']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As chancellor, I received...</p>
 											<button
@@ -1380,12 +1441,17 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'didSinglePolicyPeek':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, when I looked at the top card I saw ...</p>
+											<ClaimButtons claimOptions={['fascist', 'liberal']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, when I looked at the top card I saw a...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'fascist');
+													handleClaimButtonClick(e, 'r');
 												}}
 												className="ui button threefascist"
 											>
@@ -1393,7 +1459,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'liberal');
+													handleClaimButtonClick(e, 'b');
 												}}
 												className="ui button threeliberal"
 											>
@@ -1402,7 +1468,12 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'didPolicyPeek':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, I peeked and saw... </p>
+											<ClaimPeek handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, I peeked and saw... </p>
 											<button
