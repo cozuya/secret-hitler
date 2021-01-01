@@ -36,7 +36,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 12;
+module.exports.CURRENTSEASONNUMBER = 13;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -68,7 +68,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			max: user.userName === 'Max' && user.staffRole === 'editor',
 			moira: user.userName === 'moira' && user.staffRole === 'editor',
 			bruno: user.userName === 'Bruno' && user.staffRole === 'editor',
-			anji: user.userName === 'Anji' && user.staffRole === 'editor',
+			anji: user.userName === 'Anji' && user.staffRole === 'editor'
 		});
 	} else if (
 		user.isContributor &&

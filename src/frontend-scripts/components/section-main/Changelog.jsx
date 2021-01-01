@@ -11,6 +11,65 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Welcome to 2021 🥂 and to Season 13!</p>
+				</div>
+				<h4>The top 10 players of season 12 are:</h4>
+				<ol>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+				</ol>
+
+				<div className="ui header">
+					<p>Version 1.7.3 released 1-2-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds card-based claim menu with order claiming for peek</strong> - Check out your settings
+					to change to the new format, the order-claiming is only available in the new mode for now.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds @mod pings to general chat</strong> - Please still use in-game pings for
+					game-specific issues, when applicable.
+				</p>
+
+				<h3>Minor Changes:</h3>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>
+						Removes Google Analytics in favor or more privacy-friendly <a href="https://plausible.io">Plausible Analytics</a>
+					</strong>{' '}
+				</p>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Custom games now correctly don't count towards winrate</strong>{' '}
+				</p>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixes execution verification modal</strong>{' '}
+				</p>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various new Emotes</strong>{' '}
+				</p>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various moderation changes</strong>{' '}
+				</p>
+				<p>
+					{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various changes to routing</strong>{' '}
+				</p>
+
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
 					<p>Version 1.7.2 released 12-8-2020</p>
 				</div>
 				<h3>New Features:</h3>
@@ -217,7 +276,7 @@ class Changelog extends React.Component {
 					<p>Welcome to 2020 and to Season 9!</p>
 				</div>
 				<h4>The top 10 players of season 8 are:</h4>
-				<ul>
+				<ol>
 					<li> godhemzelve: 2067</li>
 					<li> Scorcha: 2024</li>
 					<li> imbapingu: 2013</li>
@@ -228,7 +287,7 @@ class Changelog extends React.Component {
 					<li> codingwizard: 1888</li>
 					<li> trump: 1872</li>
 					<li> IThanosI: 1870</li>
-				</ul>
+				</ol>
 
 				<div className="ui header">
 					<p>Version 1.6.5 released 10-5-2019</p>
