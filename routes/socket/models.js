@@ -2,12 +2,30 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
+const redis = require('redis');
+const { promisify } = require('util');
 
 const fs = require('fs');
 const emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
+
+const globalSettingsClient = redis.createClient({
+	db: 1
+});
+
+module.exports.globalSettingsClient = globalSettingsClient;
+
+const getGlobalSetting = promisify(globalSettingsClient.get).bind(globalSettingsClient);
+const setGlobalSetting = promisify(globalSettingsClient.set).bind(globalSettingsClient);
+
+module.exports.getLastGenchatModPingAsync = async () => {
+	return JSON.parse(await getGlobalSetting('genchat-mod-ping'));
+};
+module.exports.setLastGenchatModPingAsync = async date => {
+	await setGlobalSetting('genchat-mod-ping', JSON.stringify(date));
+};
 
 // Ordered list of sizes, used for good packing of images with a fixed size.
 // It will also not go over 10 in a given dimension (making 10x10 the max), to avoid sizes like 23x1 (resorting 6x4 instead).

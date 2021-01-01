@@ -57,11 +57,14 @@ function sendReport(game, report, data, type) {
 }
 
 module.exports.makeReport = (data, game, type = 'report') => {
-	// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
-	if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
-	// No Auto-Reports from Casual games
-	if (game.general.casualGame && (type === 'report' || type === 'reportdelayed')) return;
-	const { player, seat, role, election, situation, uid, gameType } = data;
+	const { player, seat, role, election, situation, uid, gameType, homepage } = data;
+
+	if (!homepage) {
+		// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
+		if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
+		// No Auto-Reports from Casual games
+		if (game.general.casualGame && (type === 'report' || type === 'reportdelayed')) return;
+	}
 
 	let report;
 
@@ -70,11 +73,18 @@ module.exports.makeReport = (data, game, type = 'report') => {
 	}
 
 	if (type === 'ping') {
+		const httpEscapedSituation = situation.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
+
 		report = JSON.stringify({
-			content: `${process.env.DISCORDMODPING}\n__**Player**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			content: `${process.env.DISCORDMODPING}\n__**Player**__: ${player} ${
+				homepage
+					? `(from homepage)\n__**Message**__: ${httpEscapedSituation}\n`
+					: `\n__**Message**__: ${httpEscapedSituation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`
+			}`,
 			username: '@Mod Ping',
 			avatar_url: 'https://cdn.discordapp.com/emojis/612042360318328842.png?v=1'
 		});
+
 		if (process.env.NODE_ENV === 'production') {
 			try {
 				const req = https.request({
@@ -91,7 +101,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 				console.log(e);
 			}
 		} else {
-			console.log(`${text}\n${game.general.uid}`);
+			console.log(report);
 		}
 		return;
 	}
