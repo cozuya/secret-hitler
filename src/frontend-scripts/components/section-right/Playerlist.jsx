@@ -539,7 +539,7 @@ class Playerlist extends React.Component {
 				// 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
 				return (
-					<div key={i} className="user-container">
+					<div key={user.userName} className="user-container">
 						<div className="userlist-username">
 							{/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&

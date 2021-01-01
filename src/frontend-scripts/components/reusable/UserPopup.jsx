@@ -4,14 +4,21 @@ import { Popup, List, Grid, Button, Form } from 'semantic-ui-react';
 
 const mapStateToProps = state => state;
 
-const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
+const Report = ({ socket, userInfo, gameInfo, reportedPlayer, userList }) => {
 	const defaultOptions = ['Abusive chat', 'Other']; // outside started games.
 	const casualOptions = ['AFK/Leaving Game', 'Abusive chat', 'Other'];
 	const ratedOptions = ['AFK/Leaving Game', 'Abusive chat', 'Cheating', 'Gamethrowing', 'Stalling', 'Other'];
 
-	const inGame = gameInfo && gameInfo.gameState;
+	const inGame = gameInfo?.gameState && gameInfo?.publicPlayersState?.find(p => p.userName === reportedPlayer);
 	const inStartedGame = inGame && gameInfo.gameState.isStarted;
-	const casualGame = inGame && gameInfo.general && gameInfo.general.casualGame;
+	const casualGame = inGame && gameInfo.general?.casualGame;
+	let uid = '';
+	if (gameInfo?.general?.uid) uid = gameInfo.general.uid;
+	const userInList = userList?.list?.find(u => u.userName === reportedPlayer);
+	if (userInList?.status?.type === 'playing') {
+		uid = userInList.status.gameId;
+	}
+
 	const opt = inStartedGame ? (casualGame ? casualOptions : ratedOptions) : defaultOptions;
 
 	const [reason, setReason] = useState('');
@@ -28,27 +35,25 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer }) => {
 		setSubmittingReport(true);
 
 		const index = inStartedGame ? gameInfo.publicPlayersState.findIndex(player => player.userName === reportedPlayer) : undefined;
-		if (comment.length <= 140) {
-			socket.emit(
-				'playerReport',
-				{
-					uid: inGame && gameInfo.general.uid,
-					userName: userInfo.userName || 'from replay',
-					gameType: inGame ? (gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard') : 'homepage',
-					reportedPlayer: `${inStartedGame ? `{${index + 1}} ${reportedPlayer}` : reportedPlayer}`,
-					reason: reason,
-					comment: comment
-				},
-				response => {
-					if (response.success) {
-						setSuccessMessage('Report submitted successfully.');
-					} else {
-						setErrorMessage(reponse.error);
-					}
-					setSubmittingReport(false);
+		socket.emit(
+			'playerReport',
+			{
+				uid,
+				userName: userInfo.userName || 'from replay',
+				gameType: inGame ? (gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard') : 'homepage',
+				reportedPlayer: `${inStartedGame && index + 1 ? `{${index + 1}}` : ''} ${reportedPlayer}`,
+				reason: reason,
+				comment: comment
+			},
+			response => {
+				if (response.success) {
+					setSuccessMessage('Report submitted successfully.');
+				} else {
+					setErrorMessage(reponse.error);
 				}
-			);
-		}
+				setSubmittingReport(false);
+			}
+		);
 	};
 
 	return (
@@ -172,7 +177,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							</List.Content>
 						</List.Item>
 					)}
-					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} />}
+					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} userList={userList} />}
 					{!blindMode && !isMe && !(userSeated && gameStarted) && (
 						<List.Item>
 							<List.Icon name="x" />
