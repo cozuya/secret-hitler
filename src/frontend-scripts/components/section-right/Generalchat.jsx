@@ -360,12 +360,12 @@ export default class Generalchat extends React.Component {
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
 							chat.specialTournamentStatus === '4captain' && (
-								<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
+								<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
 							)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
 							chat.specialTournamentStatus === '4' && (
-								<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
+								<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
 							)}
 						<span
 							className={

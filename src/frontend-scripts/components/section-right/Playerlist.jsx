@@ -365,12 +365,12 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
 								user.specialTournamentStatus === '4captain' && (
-									<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
+									<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
 								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
 								user.specialTournamentStatus === '4' && (
-									<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
+									<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
 								)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
@@ -548,12 +548,12 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
 								user.specialTournamentStatus === '4captain' && (
-									<span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />
+									<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
 								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.specialTournamentStatus &&
 								user.specialTournamentStatus === '4' && (
-									<span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />
+									<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
 								)}
 							{(() => {
 								const userAdminRole = user.staffIncognito

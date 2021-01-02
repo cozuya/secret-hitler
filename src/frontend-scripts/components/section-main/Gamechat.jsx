@@ -820,11 +820,11 @@ class Gamechat extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
 								chat.specialTournamentStatus === '4captain' &&
-								!isBlind && <span title="This player was the captain of the winning team of the 4th Official Tournament." className="crown-captain-icon" />}
+								!isBlind && <span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
 								chat.specialTournamentStatus === '4' &&
-								!isBlind && <span title="This player was part of the winning team of the 4th Official Tournament." className="crown-icon" />}
+								!isBlind && <span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
