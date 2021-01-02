@@ -15,20 +15,20 @@ class Changelog extends React.Component {
 				</div>
 				<h4>The top 10 players of season 12 are:</h4>
 				<ol>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
+					<li> pinguREFORMED: 2150 </li>
+					<li> Mell0: 2046 </li>
+					<li> Ohrami2: 2016 </li>
+					<li> DaddyRiddler: 1974 </li>
+					<li> thijsdb: 1968 </li>
+					<li> LyingLizard: 1935 </li>
+					<li> Freekin: 1930 </li>
+					<li> NotKexhiluz: 1929 </li>
+					<li> RichRobby: 1913 </li>
+					<li> CucuOnly: 1912 </li>
 				</ol>
 
 				<div className="ui header">
-					<p>Version 1.7.3 released 1-2-2020</p>
+					<p>Version 1.7.3 released 1-2-2021</p>
 				</div>
 				<h3>New Features:</h3>
 				<p>
