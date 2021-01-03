@@ -39,6 +39,7 @@ const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
 const { chatReplacements } = require('./chatReplacements');
+const fs = require('fs');
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
 
 /**
@@ -3189,6 +3190,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 											success = true;
 										});
 									});
+
+									fs.copyFile(`public/images/custom-cardbacks/${data.userName}.png`, `public/images/custom-cardbacks/${data.comment}.png`, () => {});
+									fs.unlink(`public/images/custom-cardbacks/${data.userName}.png`, () => {});
 								});
 							}
 						});
