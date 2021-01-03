@@ -1330,7 +1330,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			previousElectedGovernment: [],
 			undrawnPolicyCount: 17,
 			discardedPolicyCount: 0,
-			presidentIndex: -1
+			presidentIndex: -1,
+			isCompleted: false,
+			timeCompleted: undefined
 		};
 
 		newGame.chats = [];
