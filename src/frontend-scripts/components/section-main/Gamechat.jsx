@@ -497,7 +497,7 @@ class Gamechat extends React.Component {
 			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
 					isDisabled: false,
-					placeholder: 'Chat claiming only'
+					placeholder: 'Chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 		} else {
