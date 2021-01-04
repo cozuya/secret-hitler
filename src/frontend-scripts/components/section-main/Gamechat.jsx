@@ -496,8 +496,8 @@ class Gamechat extends React.Component {
 			// TODO delete this to allow chat claiming in silent
 			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
-					isDisabled: true,
-					placeholder: 'Chat disabled'
+					isDisabled: false,
+					placeholder: 'Chat claiming only'
 				};
 			}
 		} else {
