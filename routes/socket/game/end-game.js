@@ -162,6 +162,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;
+	game.gameState.timeCompleted = Date.now();
 	sendGameList();
 
 	publicPlayersState.forEach((publicPlayer, index) => {
