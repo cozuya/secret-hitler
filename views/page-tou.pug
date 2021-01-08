@@ -30,16 +30,22 @@ block content
 			li Encouraging/glorifying harm or self-harm of others, including malicious, directed use of "die", "kys", etc. If you or someone you know is at risk of self-harm, #[a(href="https://en.wikipedia.org/wiki/List_of_suicide_crisis_lines") please seek help from a professional or the authorities.]
 			h4
 				strong Explicitly Forbidden Words:
+			li You can see the
+				em  uncensored
+				span  word by clicking on the "Click to see"
+			br
 			li N word -- likely ban on sight --
+				p(class="revealer" onclick="toggle('nword')") Click to see:
+				p(class="hide" id="nword" style="display: none") nigger
 			li F slur -- likely timeout on sight --
 				p(class="revealer" onclick="toggle('fword')") Click to see:
-				p(class="hide" id="fword") faggot
+				p(class="hide" id="fword" style="display: none") faggot
 			li R word --
 				p(class="revealer" onclick="toggle('rword')") Click to see:
-				p(class="hide" id="rword") retard
+				p(class="hide" id="rword" style="display: none") retard
 			li Words that are equivalent to those listed above --
 				p(class="revealer" onclick="toggle('example')") Click to see:
-				p(class="hide" id="example") (e.g., &quot;libtard&quot; for &quot;r*tard&quot;).
+				p(class="hide" id="example" style="display: none") (e.g., &quot;libtard&quot; for &quot;retard&quot;).
 			h4
 				strong Forbidden behavior:
 			li Spamming - sending the same or similar messages repetitively such that it prevents or hinders discussion (including copypastas).
