@@ -156,6 +156,7 @@ const Account = new Schema({
 	githubUsername: String,
 	githubMFA: Boolean,
 	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
+	feedbackSubmissions: Array, // array of dates, only stores 2 most recent
 	primaryColor: String,
 	secondaryColor: String,
 	tertiaryColor: String,

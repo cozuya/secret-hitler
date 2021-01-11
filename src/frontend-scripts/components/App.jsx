@@ -164,6 +164,14 @@ export class App extends React.Component {
 			});
 		});
 
+		socket.on('feedbackReceived', () => {
+			Swal.fire('Thank you for submitting feedback!', '', 'success');
+		});
+
+		socket.on('feedbackRejected', err => {
+			Swal.fire(err, '', 'error');
+		});
+
 		socket.on('emoteList', list => {
 			const mapping = {};
 
