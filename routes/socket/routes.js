@@ -313,35 +313,40 @@ module.exports.socketRoutes = () => {
 
 			socket.on('feedbackForm', data => {
 				if (!(passport && passport.user && authenticated)) {
-					socket.emit('feedbackRejected', 'You are not logged in.');
+					socket.emit('feedbackResponse', { status: 'error', message: 'You are not logged in.' });
 					return;
 				}
 
 				if (!(data && data.feedback)) {
-					socket.emit('feedbackRejected', 'You cannot submit empty feedback.');
+					socket.emit('feedbackResponse', { status: 'error', message: 'You cannot submit empty feedback.' });
 					return;
 				}
 
 				if (data.feedback.length <= 1900) {
 					Account.findOne({ username: passport.user }).then(account => {
 						if (!account.feedbackSubmissions) account.feedbackSubmissions = [];
+						const newFeedback = {
+							date: new Date(),
+							feedback: data.feedback
+						};
 
 						if (account.feedbackSubmissions.length >= 2) {
-							if (new Date() - account.feedbackSubmissions[0] > 1000 * 60 * 60 * 24) {
+							const secondMostRecentIndex = account.feedbackSubmissions.length - 2;
+							if (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date > 1000 * 60 * 60 * 24) {
 								// if it's been 24 hours since the *2nd* most recent feedback submission
-								account.feedbackSubmissions.push(new Date());
-								if (account.feedbackSubmissions.length > 2) account.feedbackSubmissions.splice(0, 1);
+								account.feedbackSubmissions.push(newFeedback);
 							} else {
-								socket.emit(
-									'feedbackRejected',
-									'You can only submit feedback twice a day. You can submit feedback again in ' +
-										moment.duration(24 * 60 * 60 * 1000 - (new Date() - account.feedbackSubmissions[0])).humanize() +
+								socket.emit('feedbackResponse', {
+									status: 'error',
+									message:
+										'You can only submit feedback twice a day. You can submit feedback again in ' +
+										moment.duration(24 * 60 * 60 * 1000 - (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date)).humanize() +
 										'.'
-								);
+								});
 								return;
 							}
 						} else {
-							account.feedbackSubmissions.push(new Date());
+							account.feedbackSubmissions.push(newFeedback);
 						}
 
 						let feedback = {
@@ -363,16 +368,16 @@ module.exports.socketRoutes = () => {
 								}
 							});
 							req.end(feedback);
-							socket.emit('feedbackReceived');
+							socket.emit('feedbackResponse', { status: 'success', message: 'Thank you for submitting feedback!' });
 						} catch (e) {
 							console.log(e);
-							socket.emit('feedbackRejected', 'An unknown error occurred.');
+							socket.emit('feedbackResponse', { status: 'error', message: 'An unknown error occurred.' });
 						}
 
 						account.save();
 					});
 				} else {
-					socket.emit('feedbackRejected', 'Your feedback is too long.');
+					socket.emit('feedbackResponse', { status: 'error', message: 'Your feedback is too long.' });
 				}
 			});
 

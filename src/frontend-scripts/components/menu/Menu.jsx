@@ -231,7 +231,7 @@ class Menu extends React.Component {
 												allowOutsideClick: false,
 												title: 'Feedback',
 												html:
-													'Please enter your feedback here. You can submit feedback twice a day.<br>For feature requests or bug reports, please use <a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">the Issues page.</a><br>For moderation assistance, please use #mod-support on Discord.',
+													'Please enter your feedback here. Reporting players and other time-sensitive moderation issues should go to #mod-support on our Discord.',
 												input: 'textarea',
 												inputAttributes: {
 													maxlength: 1900
