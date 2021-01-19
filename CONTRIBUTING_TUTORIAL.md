@@ -31,6 +31,12 @@ Download it [here.](https://git-scm.com/downloads) The default options are usual
 #### Linux Installation
 You should have a package called `git` in your repositories. It is almost certainly pre-installed though.
 
+### 5. redis
+#### Windows Installation
+Download and build from [the official site](https://redis.io/download). Many tutorials and prebuilt binaries are out of date. 
+#### Linux Installation
+You should have a package called `redis` or `redis-server` in your repositories.
+
 ### 5. Finish up
 If your computer ever asks you to reboot, do so now.
 
