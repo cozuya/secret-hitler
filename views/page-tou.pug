@@ -30,10 +30,17 @@ block content
 			li Encouraging/glorifying harm or self-harm of others, including malicious, directed use of "die", "kys", etc. If you or someone you know is at risk of self-harm, #[a(href="https://en.wikipedia.org/wiki/List_of_suicide_crisis_lines") please seek help from a professional or the authorities.]
 			h4
 				strong Explicitly Forbidden Words:
+			p You can see the <em>uncensored</em> word by clicking "Click to see"
 			li N word -- likely ban on sight
-			li F slur -- likely timeout on sight
-			li &quot;R*tard&quot;
-			li Words that are equivalent to those listed above (e.g., &quot;libtard&quot; for &quot;r*tard&quot;).
+			li F slur -- likely timeout on sight --
+				a(class="revealer" onclick="toggle('fword')")  Click to see ->
+				p(class="hide" id="fword" style="display: none") faggot
+			li R word --
+				a(class="revealer" onclick="toggle('rword')")  Click to see ->
+				p(class="hide" id="rword" style="display: none")  retard
+			li Words that are equivalent to those listed above --
+				a(class="revealer" onclick="toggle('example')")  Click to see ->
+				p(class="hide" id="example" style="display: none") (e.g., &quot;libtard&quot; for &quot;retard&quot;).
 			h4
 				strong Forbidden behavior:
 			li Spamming - sending the same or similar messages repetitively such that it prevents or hinders discussion (including copypastas).
@@ -113,7 +120,7 @@ block content
 					li Talking about a game as an observer ( eg., possible fascist lines) after a seated player asks you to stop.
 			br
 			p
-				strong Lying as liberal may be treated as a violation, unless it benefits your team. Any conflicts (e.g., BRR vs RR) started by a liberal must be resolved before the next government, unless you can prove it is beneficial to maintain it. However, lies in general should be resolved by the time the deck ends, or when hitler zone starts.
+				strong Lying as liberal may be treated as a violation, unless it benefits your team. Any conflicts (e.g., BRR vs RR) started by a liberal must be resolved before the next government, unless you can prove it is beneficial to maintain it. However, not resolving lies by the time the current deck ends or when hitler zone starts (whichever comes first) will be treated as suboptimal play.
 			p  Examples of when to lie as liberal (not a complete list):
 			li Claiming BBR when receiving BBB (discourages fascists from discarding blues).
 			li Claiming BR when receiving BB (testing to see if hitler is president).
@@ -122,6 +129,7 @@ block content
 			h4
 				strong The following is permitted:
 			li Ignoring &ldquo;meta&rdquo; or &ldquo;correct order&rdquo; of play.
+			li Discarding blue policies to attain powers or give powers to a president, provided that if a claim is made, the intention is expressed clearly to the table
 			li Using a personal meta, as long as there is no conflict with any other rule.
 			li Having a discussion on what to do, even if it takes a long time, unless this conflicts with the stalling rule.
 			br
