@@ -493,7 +493,13 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			// TODO delete this to allow chat claiming in silent
+			if (gameInfo.general.playerChats === 'emotes' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+				return {
+					isDisabled: false,
+					placeholder: 'Emotes only'
+				};
+			}
+
 			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
 					isDisabled: false,

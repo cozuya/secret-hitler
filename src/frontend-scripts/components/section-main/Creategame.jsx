@@ -565,20 +565,20 @@ export default class Creategame extends React.Component {
 		}
 
 		switch (preset) {
-			case 'Meoww':
+			case 'Emote Only':
 				this.setState({
-					gameName: 'Meoww',
-					gameType: 'ranked',
-					sliderValues: [5, 5],
+					gameName: 'Emote Only',
+					gameType: 'casual',
+					sliderValues: [7, 7],
 					experiencedmode: true,
-					playerChats: 'enabled',
+					playerChats: 'emotes',
 					disablegameChat: false,
-					disableobserverlobby: true,
-					disableobserver: true,
+					disableobserverlobby: false,
+					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
-					checkedSliderValues: [true, false, false, false, false, false],
+					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
 					unlistedGame: false,
@@ -588,8 +588,8 @@ export default class Creategame extends React.Component {
 					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
-					eloSliderValue: [1700],
-					isEloLimited: true,
+					eloSliderValue: [1600],
+					isEloLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -1654,8 +1654,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('Tourney Game')}>
 					Tournament
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
-					Meoww
+				<button className="preset" onClick={() => this.presetSelector('Emote Only')}>
+					Emote Only
 				</button>
 				<br />
 				<button className="preset" onClick={() => this.presetSelector('Silent Game')}>
