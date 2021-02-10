@@ -34,8 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	$(document).keydown(e => {
-		if (e.ctrlKey && e.keyCode === 65) {
-			return false;
+		if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+		if (e.ctrlKey && [65, 83].includes(e.keyCode)) {
+			e.preventDefault();
 		}
 	});
 });
