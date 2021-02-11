@@ -543,10 +543,17 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+			if (gameInfo.general.playerChats === 'emotes' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
-					isDisabled: true,
-					placeholder: 'Chat disabled'
+					isDisabled: false,
+					placeholder: 'Emotes only'
+				};
+			}
+
+			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+				return {
+					isDisabled: false,
+					placeholder: 'Chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 		} else {
@@ -583,7 +590,7 @@ class Gamechat extends React.Component {
 			}
 
 			if (
-				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) &&
+				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
 				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {

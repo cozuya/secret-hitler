@@ -394,7 +394,7 @@ export class App extends React.Component {
 			excludedPlayerCount: [6],
 			maxPlayersCount: 5,
 			experiencedMode: false,
-			disableChat: false,
+			playerChats: 'enabled',
 			disableObserverLobby: false,
 			disableObserver: false,
 			isTourny: false,

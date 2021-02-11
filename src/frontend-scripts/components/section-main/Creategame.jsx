@@ -24,7 +24,7 @@ export default class Creategame extends React.Component {
 			gameType: 'ranked',
 			sliderValues: [7, 7],
 			experiencedmode: true,
-			disablechat: false,
+			playerChats: 'enabled',
 			disablegameChat: false,
 			disableobserverlobby: false,
 			disableobserver: false,
@@ -428,13 +428,81 @@ export default class Creategame extends React.Component {
 				styles={style}
 				value={findValue(this.state.gameType)}
 				onChange={(inputValue, action) => {
+					const resetPlayerChats = ['ranked', 'practice'].includes(inputValue.value) && this.state.playerChats === 'emotes';
 					this.setState({
 						gameType: inputValue.value,
-						customGameSettings: { ...this.state.customGameSettings, enabled: inputValue.value === 'custom' }
+						customGameSettings: { ...this.state.customGameSettings, enabled: inputValue.value === 'custom' },
+						playerChats: resetPlayerChats ? 'enabled' : this.state.playerChats
 					});
 				}}
 				menuPlacement={'auto'}
 				isDisabled={this.state.unlistedGame || this.state.customGameSettings.enabled}
+				menuShouldScrollIntoView={true}
+			/>
+		);
+	}
+
+	renderPlayerChatDropdown() {
+		const options = [
+			{
+				value: 'enabled',
+				label: (
+					<>
+						<span title="Player chats are enabled">Enabled</span>
+					</>
+				)
+			},
+			{
+				value: 'disabled',
+				label: (
+					<>
+						<span title="Player chats are disabled (e.g. for voice chat games)">Disabled</span>
+					</>
+				)
+			}
+		];
+
+		if (!['ranked', 'practice'].includes(this.state.gameType)) {
+			options.push({
+				value: 'emotes',
+				label: (
+					<>
+						<span title="Only emotes and numbers are allowed in game.">Emotes Only</span>
+					</>
+				)
+			});
+		}
+
+		const style = {
+			option: (styles, state) => ({
+				...styles,
+				backgroundColor: state.isSelected ? 'rgba(127, 65, 225, 0.75)' : state.isFocused ? 'rgba(98, 124, 200, 0.1)' : null,
+				color: 'black',
+				padding: '5px',
+				fontWeight: state.isSelected ? 'bold' : null
+			})
+		};
+
+		const findValue = val => {
+			for (const value of options) {
+				if (val === value.value) {
+					return value;
+				}
+			}
+		};
+
+		return (
+			<Select
+				defaultValue={options[0]}
+				options={options}
+				styles={style}
+				value={findValue(this.state.playerChats)}
+				onChange={(inputValue, _action) => {
+					this.setState({
+						playerChats: inputValue.value
+					});
+				}}
+				menuPlacement={'auto'}
 				menuShouldScrollIntoView={true}
 			/>
 		);
@@ -497,20 +565,20 @@ export default class Creategame extends React.Component {
 		}
 
 		switch (preset) {
-			case 'Meoww':
+			case 'Emote Only':
 				this.setState({
-					gameName: 'Meoww',
-					gameType: 'ranked',
-					sliderValues: [5, 5],
+					gameName: 'Emote Only',
+					gameType: 'casual',
+					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'emotes',
 					disablegameChat: false,
-					disableobserverlobby: true,
-					disableobserver: true,
+					disableobserverlobby: false,
+					disableobserver: false,
 					privateShowing: false,
 					containsBadWord: false,
 					rainbowgame: true,
-					checkedSliderValues: [true, false, false, false, false, false],
+					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
 					unlistedGame: false,
@@ -520,8 +588,8 @@ export default class Creategame extends React.Component {
 					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
-					eloSliderValue: [1700],
-					isEloLimited: true,
+					eloSliderValue: [1600],
+					isEloLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -542,7 +610,7 @@ export default class Creategame extends React.Component {
 					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: true,
 					disableobserver: true,
@@ -581,7 +649,7 @@ export default class Creategame extends React.Component {
 					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: false,
 					disableobserver: false,
@@ -620,7 +688,7 @@ export default class Creategame extends React.Component {
 					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: true,
+					playerChats: 'disabled',
 					disablegameChat: false,
 					disableobserverlobby: false,
 					disableobserver: true,
@@ -660,7 +728,7 @@ export default class Creategame extends React.Component {
 					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: true,
+					playerChats: 'disabled',
 					disablegameChat: false,
 					disableobserverlobby: true,
 					disableobserver: true,
@@ -700,7 +768,7 @@ export default class Creategame extends React.Component {
 					gameType: 'casual',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: true,
 					disableobserver: true,
@@ -740,7 +808,7 @@ export default class Creategame extends React.Component {
 					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: false,
 					disableobserver: false,
@@ -780,7 +848,7 @@ export default class Creategame extends React.Component {
 					gameType: 'custom',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: false,
 					disableobserver: false,
@@ -820,7 +888,7 @@ export default class Creategame extends React.Component {
 					gameType: 'ranked',
 					sliderValues: [7, 7],
 					experiencedmode: true,
-					disablechat: false,
+					playerChats: 'enabled',
 					disablegameChat: false,
 					disableobserverlobby: false,
 					disableobserver: false,
@@ -951,7 +1019,7 @@ export default class Creategame extends React.Component {
 				excludedPlayerCount,
 				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
-				disableChat: this.state.disablechat,
+				playerChats: this.state.playerChats,
 				disableObserverLobby: this.state.disableobserverlobby,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
@@ -1586,8 +1654,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('Tourney Game')}>
 					Tournament
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
-					Meoww
+				<button className="preset" onClick={() => this.presetSelector('Emote Only')}>
+					Emote Only
 				</button>
 				<br />
 				<button className="preset" onClick={() => this.presetSelector('Silent Game')}>
@@ -1913,23 +1981,10 @@ export default class Creategame extends React.Component {
 					)}
 					{this.renderEloSlider()}
 					<div className="row sliderrow">
-						<div className="four wide column disablechat">
+						<div className="four wide column playerchats">
 							<i className="big unmute icon" />
-							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
-							<Switch
-								className="create-game-switch"
-								onChange={checked => {
-									this.setState({ disablechat: checked });
-								}}
-								checked={this.state.disablechat}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
+							<h4 className="ui header">Player chat - disable to only allow claiming and game messages</h4>
+							{this.renderPlayerChatDropdown()}
 						</div>
 						<div className="four wide column disablegamechat">
 							<i className="big game icon" />
