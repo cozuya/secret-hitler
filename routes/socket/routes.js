@@ -352,7 +352,6 @@ module.exports.socketRoutes = () => {
 						let feedback = {
 							content: `__**Player**__: ${passport.user}\n__**Feedback**__: ${data.feedback}`,
 							username: 'Feedback',
-							avatar_url: 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1',
 							allowed_mentions: { parse: [] }
 						};
 
