@@ -12,6 +12,7 @@ const {
 	newStaff,
 	createNewBypass,
 	testIP,
+	emoteList,
 	setLastGenchatModPingAsync,
 	getLastGenchatModPingAsync
 } = require('./models');
@@ -702,7 +703,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
-			disableChat: data.disableChat,
+			playerChats: data.playerChats,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserverLobby: data.disableObserverLobby,
 			disableObserver: data.disableObserverLobby || (data.disableObserver && !data.isTourny),
@@ -1645,13 +1646,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	// console.log(isTourneyMod, AEM, game.general.unlisted, playerIndex);
-
 	// if (!AEM && game.general.disableChat) return;
 	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
-		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
-			return;
-		}
 		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
 			return;
 		}
@@ -2277,6 +2273,33 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
+		}
+
+		if (!game.gameState.isCompleted && game.gameState.isStarted) {
+			if (game.general.playerChats === 'emotes' && !(AEM && playerIndex === -1)) {
+				// emote games
+				if (!emoteList || !data.chat) return;
+				let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
+				const emotes = emoteList.map(emote => emote[0].toLowerCase());
+
+				// filter valid in-game :emotes: and numbers
+				newChatSplit = newChatSplit.map(block => {
+					if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
+						return block.replace(/[^0-9]/g, '');
+					} else {
+						if (emotes.includes(block.substring(1, block.length - 1))) return ` ${block} `;
+						return '';
+					}
+				});
+
+				const newChat = newChatSplit.join('');
+				if (!newChat.length) return;
+				data.chat = newChat;
+			} else if (game.general.playerChats === 'disabled' && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
+				// silent games
+				socket.emit('sendAlert', 'Player chats are disabled in this game.');
+				return;
+			}
 		}
 
 		game.chats.push(data);

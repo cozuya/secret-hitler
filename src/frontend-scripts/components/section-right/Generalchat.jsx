@@ -443,13 +443,9 @@ export default class Generalchat extends React.Component {
 						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
 					>
 						<img
-							src="../images/blank.png"
+							src={allEmotes[`:${el}:`]}
 							style={{
-								width: '28px',
 								height: '28px',
-								backgroundImage: 'url("../images/emotesheet.png")',
-								backgroundPositionX: `-${allEmotes[`:${el}:`][0] * 28}px`,
-								backgroundPositionY: `-${allEmotes[`:${el}:`][1] * 28}px`,
 								margin: '2px 10px 2px 5px'
 							}}
 						/>

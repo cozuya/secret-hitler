@@ -307,6 +307,10 @@
 	cursor: pointer;
 	resize: none;
 	justify-content: center;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 	div {
 		margin: 0 2px 0 2px;
 		&:active {

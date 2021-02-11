@@ -156,6 +156,7 @@ const Account = new Schema({
 	githubUsername: String,
 	githubMFA: Boolean,
 	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
+	feedbackSubmissions: Array, // { time: Date, text: String }
 	primaryColor: String,
 	secondaryColor: String,
 	tertiaryColor: String,
