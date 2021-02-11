@@ -63,7 +63,7 @@ class CardFlinger extends React.Component {
 		const { gameState } = gameInfo;
 		const { phase } = gameState;
 
-		if (!phase) return;
+		if (!phase || !keyboardShortcuts[phase]) return;
 
 		const { cardFlingerState } = this.props.gameInfo;
 		const keyboardShortcutsSetting = (userInfo && userInfo.gameSettings && userInfo.gameSettings.keyboardShortcuts) || 'disable';

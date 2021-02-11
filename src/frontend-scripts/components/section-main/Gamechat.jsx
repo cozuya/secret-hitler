@@ -1447,7 +1447,7 @@ class Gamechat extends React.Component {
 											<p> As president, when I looked at the top card I saw a...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'r');
+													handleClaimButtonClick(e, 'fascist');
 												}}
 												className="ui button threefascist"
 											>
@@ -1455,7 +1455,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'b');
+													handleClaimButtonClick(e, 'liberal');
 												}}
 												className="ui button threeliberal"
 											>
