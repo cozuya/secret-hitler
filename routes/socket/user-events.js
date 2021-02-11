@@ -2280,15 +2280,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				// emote games
 				if (!emoteList || !data.chat) return;
 				let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
-				const emotes = emoteList.map(emote => emote[0].toLowerCase());
+				const emotes = Object.keys(emoteList);
 
 				// filter valid in-game :emotes: and numbers
 				newChatSplit = newChatSplit.map(block => {
 					if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
 						return block.replace(/[^0-9]/g, '');
-					} else {
-						if (emotes.includes(block.substring(1, block.length - 1))) return ` ${block} `;
-						return '';
+					}
+					if (emotes.includes(block)) {
+						return ` ${block} `;
 					}
 				});
 
