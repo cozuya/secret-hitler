@@ -191,16 +191,7 @@ const checkIP = config => {
 
 									if (vpnScore < 0) {
 										res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
-										console.log(
-											'Error in Get IP Intel, score given: ',
-											vpnScore,
-											'IP: ',
-											signupIP,
-											'Message: ',
-											json.message,
-											'IPv6?',
-											req.headers['X-Forwarded-For']
-										);
+										console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP, 'Message: ', json.message);
 										return;
 									}
 									config.vpnScore = VPNCache[signupIP] = vpnScore;
