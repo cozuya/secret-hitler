@@ -7,7 +7,7 @@ export const renderEmotesButton = (handleInsertEmote, allEmotes) => (
 		<Popup.Content>
 			<div className="emotes-popup-content">
 				{Object.keys(allEmotes).map((keyName, index) => (
-					<div key={index} data-tooltip={keyName} data-inverted onClick={() => handleInsertEmote(keyName)}>
+					<div key={index} data-tooltip={keyName.replace(/:/g, '')} data-inverted onClick={() => handleInsertEmote(keyName)}>
 						<img src={allEmotes[keyName]} style={{ height: 28 }}></img>
 					</div>
 				))}
@@ -23,13 +23,14 @@ export function processEmotes(input, isMod, mapping) {
 
 	const message = input.split(' ');
 	const formatedMsg = [];
+	const size = message.every(a => mapping[a] || !a) ? 36 : 28;
 
 	message.forEach((word, index) => {
 		const validSiteURL = /^http[s]?:\/\/(secrethitler\.io|localhost:8080|github\.com\/cozuya\/secret-hitler)\/([a-zA-Z0-9#?=&\/\._-]*)$/i;
 		if (mapping[word]) {
 			formatedMsg.push(
 				<span key={index} data-tooltip={word} data-inverted>
-					<img src={mapping[word]} style={{ height: 28, marginRight: 2 }}></img>
+					<img src={mapping[word]} style={{ height: size, marginRight: 2 }}></img>
 				</span>
 			);
 		} else if (validSiteURL.test(word)) {
