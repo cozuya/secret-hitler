@@ -165,10 +165,6 @@ export class App extends React.Component {
 		});
 
 		socket.on('emoteList', allEmotes => {
-			// preload emotes
-			Object.values(allEmotes).forEach(emoteURL => {
-				new Image().src = emoteURL;
-			});
 			this.setState({ allEmotes });
 		});
 
