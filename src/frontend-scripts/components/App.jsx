@@ -164,14 +164,12 @@ export class App extends React.Component {
 			});
 		});
 
-		socket.on('emoteList', list => {
-			const mapping = {};
-
-			list.forEach(e => (mapping[`:${e[0].toLowerCase()}:`] = e[1]));
-
-			this.setState({
-				allEmotes: mapping
+		socket.on('emoteList', allEmotes => {
+			// preload emotes
+			Object.values(allEmotes).forEach(emoteURL => {
+				new Image().src = emoteURL;
 			});
+			this.setState({ allEmotes });
 		});
 
 		socket.on('manualDisconnection', () => {

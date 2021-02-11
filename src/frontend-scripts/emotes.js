@@ -8,16 +8,7 @@ export const renderEmotesButton = (handleInsertEmote, allEmotes) => (
 			<div className="emotes-popup-content">
 				{Object.keys(allEmotes).map((keyName, index) => (
 					<div key={index} data-tooltip={keyName} data-inverted onClick={() => handleInsertEmote(keyName)}>
-						<img
-							src="../images/blank.png"
-							style={{
-								backgroundImage: 'url("../images/emotesheet.png")',
-								backgroundPositionX: `-${allEmotes[keyName][0] * 28}px`,
-								backgroundPositionY: `-${allEmotes[keyName][1] * 28}px`,
-								width: '28px',
-								height: '28px'
-							}}
-						/>
+						<img src={allEmotes[keyName]} style={{ height: 28 }}></img>
 					</div>
 				))}
 			</div>
@@ -38,15 +29,7 @@ export function processEmotes(input, isMod, mapping) {
 		if (mapping[word]) {
 			formatedMsg.push(
 				<span key={index} data-tooltip={word} data-inverted>
-					<img
-						src="../images/blank.png"
-						style={{
-							background: `url("../images/emotesheet.png") -${mapping[word][0] * 28}px -${mapping[word][1] * 28}px`,
-							width: '28px',
-							height: '28px',
-							marginRight: '2px'
-						}}
-					/>
+					<img src={mapping[word]} style={{ height: 28, marginRight: 2 }}></img>
 				</span>
 			);
 		} else if (validSiteURL.test(word)) {
