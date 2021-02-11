@@ -164,18 +164,12 @@ export class App extends React.Component {
 			});
 		});
 
+		socket.on('emoteList', allEmotes => {
+			this.setState({ allEmotes });
+    });
+
 		socket.on('feedbackResponse', data => {
 			Swal.fire(data.message, '', data.status);
-		});
-
-		socket.on('emoteList', list => {
-			const mapping = {};
-
-			list.forEach(e => (mapping[`:${e[0].toLowerCase()}:`] = e[1]));
-
-			this.setState({
-				allEmotes: mapping
-			});
 		});
 
 		socket.on('manualDisconnection', () => {
