@@ -164,6 +164,10 @@ export class App extends React.Component {
 			});
 		});
 
+		socket.on('feedbackResponse', data => {
+			Swal.fire(data.message, '', data.status);
+		});
+
 		socket.on('emoteList', list => {
 			const mapping = {};
 
