@@ -212,7 +212,7 @@ module.exports.formattedGameList = () => {
 			return undefined;
 		})(),
 		experiencedMode: games[gameName].general.experiencedMode || undefined,
-		disableChat: games[gameName].general.disableChat || undefined,
+		playerChats: games[gameName].general.playerChats || undefined,
 		disableGamechat: games[gameName].general.disableGamechat || undefined,
 		blindMode: games[gameName].general.blindMode || undefined,
 		enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,

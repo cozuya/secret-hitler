@@ -166,6 +166,10 @@ export class App extends React.Component {
 
 		socket.on('emoteList', allEmotes => {
 			this.setState({ allEmotes });
+    });
+
+		socket.on('feedbackResponse', data => {
+			Swal.fire(data.message, '', data.status);
 		});
 
 		socket.on('manualDisconnection', () => {
@@ -384,7 +388,7 @@ export class App extends React.Component {
 			excludedPlayerCount: [6],
 			maxPlayersCount: 5,
 			experiencedMode: false,
-			disableChat: false,
+			playerChats: 'enabled',
 			disableObserverLobby: false,
 			disableObserver: false,
 			isTourny: false,
