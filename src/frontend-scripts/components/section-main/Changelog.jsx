@@ -11,6 +11,23 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.7.4 released 2-12-2021</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Emote Only games</strong> - Emote only games are here! Enable them in your casual or
+					custom games to only allow chats to use emotes.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Crispy HD Emotes + Lots of new/reworked emotes</strong> - Thanks to jules and rifleman for
+					all the work on these, you can now use lots of upgraded, improved, and new emotes, with more on the way!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Send feedback from site directly</strong> - you can now send semi-anonymous feedback
+					requests directly from the site header - ToU still applies, of course.
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
 					<p>Welcome to 2021 🥂 and to Season 13!</p>
 				</div>
 				<h4>The top 10 players of season 12 are:</h4>
@@ -42,30 +59,24 @@ class Changelog extends React.Component {
 
 				<h3>Minor Changes:</h3>
 				<p>
-					{' '}
 					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>
 						Removes Google Analytics in favor or more privacy-friendly <a href="https://plausible.io">Plausible Analytics</a>
-					</strong>{' '}
+					</strong>
 				</p>
 				<p>
-					{' '}
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Custom games now correctly don't count towards winrate</strong>{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Custom games now correctly don't count towards winrate</strong>
 				</p>
 				<p>
-					{' '}
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixes execution verification modal</strong>{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixes execution verification modal</strong>
 				</p>
 				<p>
-					{' '}
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various new Emotes</strong>{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various new Emotes</strong>
 				</p>
 				<p>
-					{' '}
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various moderation changes</strong>{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various moderation changes</strong>
 				</p>
 				<p>
-					{' '}
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various changes to routing</strong>{' '}
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various changes to routing</strong>
 				</p>
 
 				<hr style={{ width: '100%' }} />
@@ -168,7 +179,7 @@ class Changelog extends React.Component {
 					<img src="../images/1.7.0-images/1-7Timer.png" alt="Timer UI Shown"></img>
 				</div>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Terms of Use Version 1.5</strong> - a new version of the Terms of Use has been published{' '}
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Terms of Use Version 1.5</strong> - a new version of the Terms of Use has been published
 					<a href="/tou">here</a>.
 				</p>
 				<p>
