@@ -15,6 +15,10 @@ class Changelog extends React.Component {
 				</div>
 				<h3>New Features:</h3>
 				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Valentines themed banner and role cards</strong> - Thanks to jules and Kvon for these!
+					Hopefully we can keep them coming for other seasonal events.
+				</p>
+				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Emote Only games</strong> - Emote only games are here! Enable them in your casual or
 					custom games to only allow chats to use emotes.
 				</p>
