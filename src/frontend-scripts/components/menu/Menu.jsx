@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
+import * as Swal from 'sweetalert2';
+import socket from '../../socket';
 
 const mapStateToProps = ({ version }) => ({ version });
 
@@ -222,7 +224,37 @@ class Menu extends React.Component {
 									{`v${this.props.version.current.number}`}{' '}
 								</a>
 								|{' '}
-								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+								<a
+									onClick={() => {
+										if (userInfo.userName) {
+											Swal.fire({
+												allowOutsideClick: false,
+												title: 'Feedback',
+												html:
+													'Please enter your feedback here. Reporting players and other time-sensitive moderation issues should go to #mod-support on our Discord.',
+												input: 'textarea',
+												inputAttributes: {
+													maxlength: 1900
+												},
+												confirmButtonText: 'Submit',
+												showCancelButton: true,
+												cancelButtonText: 'Cancel'
+											}).then(result => {
+												if (result.value) {
+													// result.value holds the feedback
+													socket.emit('feedbackForm', {
+														feedback: result.value
+													});
+												}
+											});
+										} else {
+											Swal.fire({
+												icon: 'error',
+												title: 'You must log in to submit feedback!'
+											});
+										}
+									}}
+								>
 									Feedback
 								</a>{' '}
 								|{' '}

@@ -543,10 +543,17 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+			if (gameInfo.general.playerChats === 'emotes' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
-					isDisabled: true,
-					placeholder: 'Chat disabled'
+					isDisabled: false,
+					placeholder: 'Emotes only'
+				};
+			}
+
+			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+				return {
+					isDisabled: false,
+					placeholder: 'Chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 		} else {
@@ -583,7 +590,7 @@ class Gamechat extends React.Component {
 			}
 
 			if (
-				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) &&
+				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
 				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {
@@ -924,13 +931,9 @@ class Gamechat extends React.Component {
 						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
 					>
 						<img
-							src="../images/blank.png"
+							src={allEmotes[`:${el}:`]}
 							style={{
-								width: '28px',
 								height: '28px',
-								backgroundImage: 'url("../images/emotesheet.png")',
-								backgroundPositionX: `-${allEmotes[`:${el}:`][0] * 28}px`,
-								backgroundPositionY: `-${allEmotes[`:${el}:`][1] * 28}px`,
 								margin: '2px 10px 2px 5px'
 							}}
 						/>
@@ -1451,7 +1454,7 @@ class Gamechat extends React.Component {
 											<p> As president, when I looked at the top card I saw a...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'r');
+													handleClaimButtonClick(e, 'fascist');
 												}}
 												className="ui button threefascist"
 											>
@@ -1459,7 +1462,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'b');
+													handleClaimButtonClick(e, 'liberal');
 												}}
 												className="ui button threeliberal"
 											>

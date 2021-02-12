@@ -114,8 +114,8 @@ class Tracks extends React.Component {
 
 		let rebalance69p;
 		let rebalance69pTooltip;
-		let disableChat;
-		let disableChatTooltip;
+		let playerChats;
+		let playerChatsTooltip;
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
@@ -165,9 +165,12 @@ class Tracks extends React.Component {
 				: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
 		}
 
-		if (game.disableChat) {
-			disableChat = <i className="unmute icon" />;
-			disableChatTooltip = 'Player Chat Disabled';
+		if (game.playerChats === 'disabled') {
+			playerChats = <i className="mute icon" />;
+			playerChatsTooltip = 'Player Chat Disabled';
+		} else if (game.playerChats === 'emotes') {
+			playerChats = <i className="smile icon" />;
+			playerChatsTooltip = 'Emotes Only';
 		}
 
 		if (game.isVerifiedOnly) {
@@ -268,9 +271,9 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
 					</span>
 				)}
-				{disableChat && (
+				{playerChats && (
 					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={disableChat} content={disableChatTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={playerChats} content={playerChatsTooltip} />
 					</span>
 				)}
 				{disableGamechat && (

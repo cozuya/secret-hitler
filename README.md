@@ -32,6 +32,8 @@ Install [git](https://git-scm.com/downloads), have it in your path.
 
 Install [mongodb](https://www.mongodb.com/download-center/community), have it in your path.
 
+Install [redis](https://redis.io/download), have it in your path.
+
 Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
 
 then
