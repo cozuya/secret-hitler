@@ -9,7 +9,7 @@ const { accountCreationDisabled, bypassVPNCheck, verifyBypass, consumeBypass, te
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
-const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP, doesIPMatchCIDR } = require('./socket/ip-obf');
 const prodCacheBustToken = require('./prodCacheBustToken');
 
 /**
@@ -105,24 +105,28 @@ const checkIP = config => {
 		});
 	} else {
 		let ipBanned = false;
+		const checkFragban = ban => {
+			const regexTwoBlock = new RegExp( // backwards compatability
+				`^${signupIP
+					.split('.')
+					.slice(0, 2)
+					.join('.')}$`
+			);
+			const regexThreeBlock = new RegExp(
+				`^${signupIP
+					.split('.')
+					.slice(0, 3)
+					.join('.')}$`
+			);
+			return (
+				(new Date() < ban.bannedDate && doesIPMatchCIDR(ban.ip, signupIP)) ||
+				(!ban.ip.includes('/') && (regexTwoBlock.exec(ban.ip) || regexThreeBlock.exec(ban.ip)))
+			);
+		};
 		BannedIP.find({
-			type: ['fragbanSmall', 'fragbanLarge'],
-			ip: [
-				new RegExp(
-					`^${signupIP
-						.split('.')
-						.slice(0, 2)
-						.join('.')}$`
-				),
-				new RegExp(
-					`^${signupIP
-						.split('.')
-						.slice(0, 3)
-						.join('.')}$`
-				)
-			]
+			type: ['fragbanSmall', 'fragbanLarge']
 		}).then(bans => {
-			if (bans.some(ban => new Date() < ban.bannedDate) && !hasBypass) {
+			if (bans.some(checkFragban) && !hasBypass) {
 				const fragSignup = new Signups({
 					date: new Date(),
 					userName: username,
