@@ -43,7 +43,7 @@ module.exports.expandAndSimplify = ip => {
 	return ip; // IPv4
 };
 
-ipToBinaryArray = ip => {
+const ipToBinaryArray = ip => {
 	if (ip.includes(':')) {
 		return ip
 			.split(':')
@@ -68,7 +68,7 @@ ipToBinaryArray = ip => {
 };
 
 // checks to see if an IP has a valid CIDR suffix
-validateCIDR = ip => {
+const validateCIDR = ip => {
 	const ipSections = ip.split('/');
 	if (ipSections.length !== 2) return false;
 	const rawIP = ipSections[0];
