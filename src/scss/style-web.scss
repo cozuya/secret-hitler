@@ -47,7 +47,7 @@ html {
 	margin: 55px auto 0;
 	background: no-repeat center center url('../images/banner-valentines.png'); /* #14204f;  #f2654b; */
 	background-size: contain;
-	// padding-top: 46%;
+	padding-top: 40%;
 
 	.online-count {
 		padding: 5px;
@@ -82,7 +82,8 @@ html {
 
 @media only screen and (max-width: 617px) {
 	#header-container {
-		padding-top: 60%;
+		padding-top: 40%;
+		width: 97%;
 	}
 }
 
