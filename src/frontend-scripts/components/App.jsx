@@ -164,14 +164,12 @@ export class App extends React.Component {
 			});
 		});
 
-		socket.on('emoteList', list => {
-			const mapping = {};
+		socket.on('emoteList', allEmotes => {
+			this.setState({ allEmotes });
+    });
 
-			list.forEach(e => (mapping[`:${e[0].toLowerCase()}:`] = e[1]));
-
-			this.setState({
-				allEmotes: mapping
-			});
+		socket.on('feedbackResponse', data => {
+			Swal.fire(data.message, '', data.status);
 		});
 
 		socket.on('manualDisconnection', () => {
@@ -390,7 +388,7 @@ export class App extends React.Component {
 			excludedPlayerCount: [6],
 			maxPlayersCount: 5,
 			experiencedMode: false,
-			disableChat: false,
+			playerChats: 'enabled',
 			disableObserverLobby: false,
 			disableObserver: false,
 			isTourny: false,

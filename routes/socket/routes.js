@@ -56,6 +56,8 @@ const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
+const https = require('https');
+const moment = require('moment');
 
 let modUserNames = [],
 	editorUserNames = [],
@@ -306,6 +308,75 @@ module.exports.socketRoutes = () => {
 					sendSpecificUserList(socket, 'moderator');
 				} else {
 					sendSpecificUserList(socket);
+				}
+			});
+
+			socket.on('feedbackForm', data => {
+				if (!(passport && passport.user && authenticated)) {
+					socket.emit('feedbackResponse', { status: 'error', message: 'You are not logged in.' });
+					return;
+				}
+
+				if (!(data && data.feedback)) {
+					socket.emit('feedbackResponse', { status: 'error', message: 'You cannot submit empty feedback.' });
+					return;
+				}
+
+				if (data.feedback.length <= 1900) {
+					Account.findOne({ username: passport.user }).then(account => {
+						if (!account.feedbackSubmissions) account.feedbackSubmissions = [];
+						const newFeedback = {
+							date: new Date(),
+							feedback: data.feedback
+						};
+
+						if (account.feedbackSubmissions.length >= 2) {
+							const secondMostRecentIndex = account.feedbackSubmissions.length - 2;
+							if (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date > 1000 * 60 * 60 * 24) {
+								// if it's been 24 hours since the *2nd* most recent feedback submission
+								account.feedbackSubmissions.push(newFeedback);
+							} else {
+								socket.emit('feedbackResponse', {
+									status: 'error',
+									message:
+										'You can only submit feedback twice a day. You can submit feedback again in ' +
+										moment.duration(24 * 60 * 60 * 1000 - (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date)).humanize() +
+										'.'
+								});
+								return;
+							}
+						} else {
+							account.feedbackSubmissions.push(newFeedback);
+						}
+
+						let feedback = {
+							content: `__**Player**__: ${passport.user}\n__**Feedback**__: ${data.feedback}`,
+							username: 'Feedback',
+							allowed_mentions: { parse: [] }
+						};
+
+						try {
+							feedback = JSON.stringify(feedback);
+							const req = https.request({
+								hostname: 'discordapp.com',
+								path: process.env.DISCORDFEEDBACKURL,
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									'Content-Length': Buffer.byteLength(feedback)
+								}
+							});
+							req.end(feedback);
+							socket.emit('feedbackResponse', { status: 'success', message: 'Thank you for submitting feedback!' });
+						} catch (e) {
+							console.log(e);
+							socket.emit('feedbackResponse', { status: 'error', message: 'An unknown error occurred.' });
+						}
+
+						account.save();
+					});
+				} else {
+					socket.emit('feedbackResponse', { status: 'error', message: 'Your feedback is too long.' });
 				}
 			});
 
