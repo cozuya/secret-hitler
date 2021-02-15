@@ -48,9 +48,9 @@ ipToBinaryArray = ip => {
 		return ip
 			.split(':')
 			.map(block =>
-				parseInt(block, 16)
+				parseInt(block, 16) // ipv6
 					.toString(2)
-					.padStart(4, '0')
+					.padStart(16, '0')
 			)
 			.flat()
 			.join('');
@@ -59,7 +59,7 @@ ipToBinaryArray = ip => {
 	return ip
 		.split('.')
 		.map(block =>
-			parseInt(block)
+			parseInt(block) // ipv4
 				.toString(2)
 				.padStart(8, '0')
 		)

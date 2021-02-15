@@ -106,21 +106,21 @@ const checkIP = config => {
 	} else {
 		let ipBanned = false;
 		const checkFragban = ban => {
-			const regexTwoBlock = new RegExp( // backwards compatability
-				`^${signupIP
-					.split('.')
-					.slice(0, 2)
-					.join('.')}$`
-			);
-			const regexThreeBlock = new RegExp(
-				`^${signupIP
-					.split('.')
-					.slice(0, 3)
-					.join('.')}$`
-			);
 			return (
 				(new Date() < ban.bannedDate && doesIPMatchCIDR(ban.ip, signupIP)) ||
-				(!ban.ip.includes('/') && (regexTwoBlock.exec(ban.ip) || regexThreeBlock.exec(ban.ip)))
+				(!ban.ip.includes('/') &&
+				ban.ip.includes('.') &&
+				signupIP.includes('.') && // backwards compatability
+					(ban.ip ===
+						signupIP
+							.split('.')
+							.slice(0, 3)
+							.join('.') ||
+						ban.ip ===
+							signupIP
+								.split('.')
+								.slice(0, 2)
+								.join('.')))
 			);
 		};
 		BannedIP.find({
