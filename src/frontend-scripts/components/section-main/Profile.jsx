@@ -85,6 +85,42 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+	ELO() {
+		return (
+			<Table
+				headers={['Seasonal', 'Overall']}
+				rows={[
+					[
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
+					]
+				]}
+			/>
+		);
+	}
+
+	Misc() {
+		const headers = [];
+		const row = [];
+
+		if (this.props.profile.signupIP) {
+			headers.push('Signup IP');
+			row.push(this.props.profile.signupIP);
+		}
+
+		if (this.props.profile.lastConnectedIP) {
+			headers.push('Last Connected IP');
+			row.push(this.props.profile.lastConnectedIP);
+		}
+
+		return (
+			<div>
+				<Table uiTable={'breakAll'} headers={['Last Connected']} rows={[[this.props.profile.lastConnected]]} />
+				<Table uiTable={'breakAll'} headers={headers} rows={[row]} />
+			</div>
+		);
+	}
+
 	Stats() {
 		const { activeStat } = this.props.profile;
 		const { updateActiveStats } = this.props;
@@ -94,6 +130,10 @@ class ProfileWrapper extends React.Component {
 					return this.Matches();
 				case 'ACTIONS':
 					return this.Actions();
+				case 'ELO':
+					return this.ELO();
+				case 'MISC':
+					return this.Misc();
 			}
 		})();
 		const toActive = stat => (activeStat === stat ? 'active' : '');
@@ -112,6 +152,12 @@ class ProfileWrapper extends React.Component {
 					</a>
 					<a className={`${toActive('ACTIONS')} item`} onClick={updateActiveStats.bind(null, 'ACTIONS')}>
 						Actions
+					</a>
+					<a className={`${toActive('ELO')} item`} onClick={updateActiveStats.bind(null, 'ELO')}>
+						ELO
+					</a>
+					<a className={`${toActive('MISC')} item`} onClick={updateActiveStats.bind(null, 'MISC')}>
+						Misc
 					</a>
 				</div>
 				<div className="ui bottom attached segment">{table}</div>
@@ -276,7 +322,8 @@ class ProfileWrapper extends React.Component {
 				? 'lossesSeason'
 				: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
-		let gamesUntilRainbow = null;
+		let gamesUntilRainbow = NaN;
+		let gamesUntilRainbowSeason = NaN;
 		if (user) {
 			userClasses =
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
@@ -291,7 +338,75 @@ class ProfileWrapper extends React.Component {
 			if (wins + losses < 50) {
 				gamesUntilRainbow = 50 - wins - losses;
 			}
+
+			const { winsSeason = 0, lossesSeason = 0 } = user;
+			if (winsSeason + lossesSeason < 50) {
+				gamesUntilRainbowSeason = 50 - winsSeason - lossesSeason;
+			}
 		}
+
+		const userAdminRole = user
+			? user.staffRole === 'admin'
+				? 'Admin'
+				: user.staffRole === 'editor'
+				? 'Editor'
+				: user.staffRole === 'moderator'
+				? 'Moderator'
+				: user.isContributor
+				? 'Contributor'
+				: null
+			: null;
+
+		const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
+
+		let prefix = '';
+		if (userAdminRole) {
+			prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
+		}
+
+		const disableIfUnclickable = f => {
+			if (this.props.isUserClickable) {
+				return f;
+			}
+
+			return () => null;
+		};
+
+		const renderStatus = () => {
+			const status = user ? user.status : null;
+
+			if (!status || status.type === 'none') {
+				return null;
+			} else {
+				const iconClasses = cn(
+					'status',
+					{ unclickable: !this.props.isUserClickable },
+					{ clickable: this.props.isUserClickable },
+					{ search: status.type === 'observing' },
+					{ fav: status.type === 'playing' },
+					{ rainbow: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ private: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: this.routeToGame,
+					observing: this.routeToGame,
+					rainbow: this.routeToGame,
+					replay: this.props.fetchReplay,
+					private: this.routeToGame
+				};
+
+				return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
+			}
+		};
 
 		return (
 			<div>
@@ -304,7 +419,11 @@ class ProfileWrapper extends React.Component {
 					/>
 				)}
 				<div className="ui grid">
-					<h1 className="ui header ten wide column">{profile._id}</h1>
+					<h1 className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`}>
+						{renderStatus()}
+						{prefix}
+						{profile._id}
+					</h1>
 					<div className="ui right aligned five wide column">
 						<span>
 							<strong>
@@ -322,7 +441,16 @@ class ProfileWrapper extends React.Component {
 								<span>{gamesUntilRainbow}</span>
 							</div>
 						)}
-						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						{!isNaN(gamesUntilRainbow) && (
+							<div>
+								<span>
+									<strong>
+										<em>Games Until Rainbow (Season): </em>
+									</strong>
+								</span>
+								<span>{gamesUntilRainbowSeason}</span>
+							</div>
+						)}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist
