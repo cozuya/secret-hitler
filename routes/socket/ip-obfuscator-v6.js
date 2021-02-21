@@ -30,9 +30,10 @@ const obfBlock = number => {
 module.exports.obfBlock = obfBlock; // For testing purposes, should not be used in production.
 
 module.exports.obfIP = ip => {
-	const data = ip.split('/')[0].split(':');
 	return (
-		data
+		ip
+			.split('/')[0]
+			.split(':')
 			.slice(0, 8)
 			.map(obfBlock)
 			.join(':') + (ip.split('/').length > 1 ? '/' + ip.split('/')[1] : '')
