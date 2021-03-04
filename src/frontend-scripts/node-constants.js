@@ -72,6 +72,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		});
 	} else if (
 		user.isContributor &&
+		!user.contributorDisableContributorColor &&
 		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || !user.staffDisableStaffColor)
 	) {
 		return cn(defaultClass, 'contributor');

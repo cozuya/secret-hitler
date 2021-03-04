@@ -528,6 +528,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+				contributorDisableContributorColor: account.gameSettings.contributorDisableContributorColor,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -2487,6 +2488,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'blacklist',
 					'staffDisableVisibleElo',
 					'staffDisableStaffColor',
+					'contributorDisableContributorColor',
 					'staffIncognito',
 					'newReport',
 					'previousSeasonAward',
@@ -2500,7 +2502,8 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
 					(setting === 'staffIncognito' && aem) ||
-					(setting === 'staffDisableStaffColor' && (aem || veteran))
+					(setting === 'staffDisableStaffColor' && (aem || veteran)) ||
+					(setting === 'contributorDisableContributorColor' && account.isContributor)
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
@@ -2512,6 +2515,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						isContributor: account.isContributor || false,
 						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+						contributorDisableContributorColor: account.gameSettings.contributorDisableContributorColor,
 						staffIncognito: account.gameSettings.staffIncognito,
 						wins: account.wins,
 						losses: account.losses,

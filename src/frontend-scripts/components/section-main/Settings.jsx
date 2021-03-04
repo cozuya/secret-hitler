@@ -41,6 +41,7 @@ class Settings extends React.Component {
 		soundSelected: 'Pack 1',
 		staffDisableVisibleElo: '',
 		staffDisableStaffColor: '',
+		contributorDisableContributorColor: false,
 		staffIncognito: '',
 		fullheight: false,
 		truncatedSize: 250,
@@ -83,6 +84,7 @@ class Settings extends React.Component {
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
+			contributorDisableContributorColor: gameSettings.contributorDisableContributorColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork || false,
@@ -859,6 +861,22 @@ class Settings extends React.Component {
 											name="staffDisableStaffColor"
 											checked={this.state.staffDisableStaffColor}
 											onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
+							{window.isContributor && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable contributor color (show elo color)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disableContributorColor"
+											checked={this.state.contributorDisableContributorColor}
+											onChange={() => this.toggleGameSettings('contributorDisableContributorColor')}
 										/>
 										<label />
 									</div>

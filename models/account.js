@@ -16,6 +16,7 @@ const Account = new Schema({
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,
 		staffIncognito: Boolean,
+		contributorDisableContributorColor: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
 		customCardback: String,
