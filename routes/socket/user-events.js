@@ -703,7 +703,12 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
-			playerChats: data.playerChats,
+			playerChats:
+				data.playerChats === 'emotes' && ['casual', 'practice'].includes(data.gameType)
+					? 'emotes'
+					: data.playerChats === 'emotes'
+					? 'enabled'
+					: data.playerChats,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserverLobby: data.disableObserverLobby,
 			disableObserver: data.disableObserverLobby || (data.disableObserver && !data.isTourny),

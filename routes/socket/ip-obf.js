@@ -43,6 +43,50 @@ module.exports.expandAndSimplify = ip => {
 	return ip; // IPv4
 };
 
+const ipToBinaryArray = ip => {
+	if (ip.includes(':')) {
+		return ip
+			.split(':')
+			.map(block =>
+				parseInt(block, 16) // ipv6
+					.toString(2)
+					.padStart(16, '0')
+			)
+			.flat()
+			.join('');
+	}
+
+	return ip
+		.split('.')
+		.map(block =>
+			parseInt(block) // ipv4
+				.toString(2)
+				.padStart(8, '0')
+		)
+		.flat()
+		.join('');
+};
+
+// checks to see if an IP has a valid CIDR suffix
+const validateCIDR = ip => {
+	const ipSections = ip.split('/');
+	if (ipSections.length !== 2) return false;
+	const rawIP = ipSections[0];
+	const subnet = +ipSections[1];
+
+	return subnet <= (rawIP.includes(':') ? 128 : 32);
+};
+
+module.exports.doesIPMatchCIDR = (cidr, ip) => {
+	if (!validateCIDR(cidr)) return false;
+
+	const ipSections = cidr.split('/');
+	const ipToMatch = ipSections[0];
+	const subnet = +ipSections[1];
+
+	return ipToBinaryArray(ipToMatch).substring(0, subnet) === ipToBinaryArray(ip).substring(0, subnet);
+};
+
 const obfCache = {};
 module.exports.obfIP = ip => {
 	if (obfCache[ip]) return obfCache[ip];
