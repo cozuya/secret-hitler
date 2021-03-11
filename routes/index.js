@@ -229,6 +229,9 @@ module.exports = () => {
 			return;
 		}
 
+		renderPage(req, res, '403', '403');
+		return;
+
 		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
 		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
 		const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
