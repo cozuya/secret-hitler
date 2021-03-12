@@ -70,6 +70,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-home', 'home');
 	});
 
+        app.post('/', (req, res) => {
+		renderPage(req, res, 'page-home', 'home');
+	});
+
 	app.get('/rules', (req, res) => {
 		renderPage(req, res, 'page-rules', 'rules');
 	});
@@ -228,6 +232,9 @@ module.exports = () => {
 			res.redirect('/game/');
 			return;
 		}
+
+		renderPage(req, res, '403', '403');
+		return;
 
 		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
 		const textColor = DEFAULTTHEMECOLORS.baseTextColor;

@@ -212,6 +212,9 @@ module.exports.socketRoutes = () => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 					if (account.isTournamentMod) isTourneyMod = true;
 				});
+			} else {
+				socket.disconnect();
+				return;
 			}
 
 			sendGeneralChats(socket);

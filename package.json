@@ -48,7 +48,7 @@
 		"passport-local-mongoose": "^5.0.0",
 		"pngcrush": "^2.0.1",
 		"prop-types": "^15.5.10",
-		"pug": "^2.0.3",
+		"pug": "^3.0.1",
 		"rc-slider": "^8.4.0",
 		"react": "16.8.1",
 		"react-color": "^2.18.0",
