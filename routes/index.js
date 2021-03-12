@@ -70,6 +70,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-home', 'home');
 	});
 
+        app.post('/', (req, res) => {
+		renderPage(req, res, 'page-home', 'home');
+	});
+
 	app.get('/rules', (req, res) => {
 		renderPage(req, res, 'page-rules', 'rules');
 	});
