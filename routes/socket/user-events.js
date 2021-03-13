@@ -2225,10 +2225,17 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			);
 
 			if (game.general.playerChats === 'disabled') {
-				player.gameChats.push({
+				game.private.seatedPlayers
+					.find(x => x.userName === player.userName)
+					.gameChats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [{ text: game.publicPlayersState[affectedPlayerNumber].userName, type: 'player' }, { text: ' has been successfully pinged.' }]
+					});
+				game.private.hiddenInfoChat.push({
 					timestamp: new Date(),
 					gameChat: true,
-					chat: [{ text: game.publicPlayersState[affectedPlayerNumber].userName, type: 'player' }, { text: ' has been successfully pinged.' }]
+					chat: [{ text: `${player.userName} has pinged ${game.publicPlayersState[affectedPlayerNumber].userName}.` }]
 				});
 			} else {
 				game.chats.push({
