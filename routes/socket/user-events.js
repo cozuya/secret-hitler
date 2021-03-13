@@ -2230,7 +2230,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					.gameChats.push({
 						timestamp: new Date(),
 						gameChat: true,
-						chat: [{ text: `${player.userName} has pinged ${game.publicPlayersState[affectedPlayerNumber].userName}.` }]
+						chat: [{ text: game.publicPlayersState[affectedPlayerNumber].userName, type: 'player' }, { text: ' has been successfully pinged.' }]
 					});
 				game.private.hiddenInfoChat.push({
 					timestamp: new Date(),
