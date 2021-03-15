@@ -2140,24 +2140,54 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
 
 	if (pingMods && player) {
-		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-			game.lastModPing = Date.now();
-			sendInProgressGameUpdate(game, false);
-			makeReport(
-				{
-					player: passport.user,
-					situation: `"${pingMods[2]}".`,
-					election: game.general.electionCount,
-					title: game.general.name,
-					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
-				},
-				game,
-				'ping'
+		Account.find({ staffRole: { $exists: true } }).then(accounts => {
+			const staffUserNames = accounts
+				.filter(
+					account =>
+						account.staffRole === 'altmod' ||
+						account.staffRole === 'moderator' ||
+						account.staffRole === 'editor' ||
+						account.staffRole === 'admin' ||
+						account.staffRole === 'trialmod'
+				)
+				.map(account => account.username);
+			const players = game.publicPlayersState.map(player => player.userName);
+			const isStaff = players.some(
+				n =>
+					staffUserNames.includes(n) ||
+					newStaff.altmodUserNames.includes(n) ||
+					newStaff.modUserNames.includes(n) ||
+					newStaff.editorUserNames.includes(n) ||
+					newStaff.trialmodUserNames.includes(n)
 			);
-		} else {
-			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
-		}
+
+			if (isStaff) {
+				socket.emit(
+					'sendAlert',
+					`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+				);
+			} else {
+				// send mod ping
+				if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
+					game.lastModPing = Date.now();
+					sendInProgressGameUpdate(game, false);
+					makeReport(
+						{
+							player: passport.user,
+							situation: `"${pingMods[2]}".`,
+							election: game.general.electionCount,
+							title: game.general.name,
+							uid: game.general.uid,
+							gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+						},
+						game,
+						'ping'
+					);
+				} else {
+					socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
+				}
+			}
+		});
 		return;
 	}
 
