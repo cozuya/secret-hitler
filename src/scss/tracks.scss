@@ -208,10 +208,7 @@
 	}
 }
 
-.tracks.blurred {
-	filter: saturate(60%);
-	opacity: 0.3;
-}
+.tracks.blurred,
 .enactedpolicies-container.blurred {
 	filter: saturate(60%);
 	opacity: 0.3;
