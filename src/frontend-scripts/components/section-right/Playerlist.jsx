@@ -637,7 +637,7 @@ class Playerlist extends React.Component {
 						</p>
 						<p>
 							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO to
-							deep purple as highest ELO, passing through yellow and orange on its way.
+							deep indigo as highest ELO, passing through yellow, orange, red, and purple on its way.
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
