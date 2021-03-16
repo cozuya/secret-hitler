@@ -3994,7 +3994,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 	const body = JSON.stringify({
 		content: `${
 			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>` : 'Report from homepage'
-		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
+		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nGame Type: ${playerReport.gameType}\nComment: ${httpEscapedComment}`
 	});
 
 	const options = {
