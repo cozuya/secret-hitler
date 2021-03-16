@@ -2219,24 +2219,45 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			io.sockets.sockets[affectedSocketId].emit(
 				'pingPlayer',
-				game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
+				game.general.blindMode || game.general.playerChats === 'disabled'
+					? 'Secret Hitler IO: A player has pinged you.'
+					: `Secret Hitler IO: Player ${data.userName} just pinged you.`
 			);
 
-			game.chats.push({
-				gameChat: true,
-				userName: passport.user,
-				timestamp: new Date(),
-				chat: [
-					{
-						text: game.general.blindMode
-							? `A player has pinged player number ${affectedPlayerNumber + 1}.`
-							: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
-					}
-				],
-				previousSeasonAward: user.previousSeasonAward,
-				uid: data.uid,
-				inProgress: game.gameState.isStarted
-			});
+			if (game.general.playerChats === 'disabled') {
+				game.private.seatedPlayers
+					.find(x => x.userName === player.userName)
+					.gameChats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{ text: `${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1})`, type: 'player' },
+							{ text: ' has been successfully pinged.' }
+						]
+					});
+				game.private.hiddenInfoChat.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{ text: `${player.userName} has pinged ${game.publicPlayersState[affectedPlayerNumber].userName}.` }]
+				});
+			} else {
+				game.chats.push({
+					gameChat: true,
+					userName: passport.user,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: game.general.blindMode
+								? `A player has pinged player number ${affectedPlayerNumber + 1}.`
+								: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
+						}
+					],
+					previousSeasonAward: user.previousSeasonAward,
+					uid: data.uid,
+					inProgress: game.gameState.isStarted
+				});
+			}
+
 			sendInProgressGameUpdate(game);
 		} catch (e) {
 			console.log(e, 'caught exception in ping chat');
