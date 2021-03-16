@@ -46,7 +46,7 @@ const beginGame = game => {
 	const roles = [
 		{
 			cardName: 'hitler',
-			icon: 3,
+			icon: 4,
 			team: 'fascist'
 		}
 	]
