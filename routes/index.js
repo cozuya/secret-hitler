@@ -70,7 +70,7 @@ module.exports = () => {
 		renderPage(req, res, 'page-home', 'home');
 	});
 
-        app.post('/', (req, res) => {
+	app.post('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
 	});
 

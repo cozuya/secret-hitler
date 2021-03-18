@@ -721,7 +721,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
-			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 ? true : data.gameType === 'casual',
+			casualGame: data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual',
 			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && data.gameType === 'practice',
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
@@ -2219,24 +2219,45 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			io.sockets.sockets[affectedSocketId].emit(
 				'pingPlayer',
-				game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
+				game.general.blindMode || game.general.playerChats === 'disabled'
+					? 'Secret Hitler IO: A player has pinged you.'
+					: `Secret Hitler IO: Player ${data.userName} just pinged you.`
 			);
 
-			game.chats.push({
-				gameChat: true,
-				userName: passport.user,
-				timestamp: new Date(),
-				chat: [
-					{
-						text: game.general.blindMode
-							? `A player has pinged player number ${affectedPlayerNumber + 1}.`
-							: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
-					}
-				],
-				previousSeasonAward: user.previousSeasonAward,
-				uid: data.uid,
-				inProgress: game.gameState.isStarted
-			});
+			if (game.general.playerChats === 'disabled') {
+				game.private.seatedPlayers
+					.find(x => x.userName === player.userName)
+					.gameChats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{ text: `${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1})`, type: 'player' },
+							{ text: ' has been successfully pinged.' }
+						]
+					});
+				game.private.hiddenInfoChat.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{ text: `${player.userName} has pinged ${game.publicPlayersState[affectedPlayerNumber].userName}.` }]
+				});
+			} else {
+				game.chats.push({
+					gameChat: true,
+					userName: passport.user,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: game.general.blindMode
+								? `A player has pinged player number ${affectedPlayerNumber + 1}.`
+								: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
+						}
+					],
+					previousSeasonAward: user.previousSeasonAward,
+					uid: data.uid,
+					inProgress: game.gameState.isStarted
+				});
+			}
+
 			sendInProgressGameUpdate(game);
 		} catch (e) {
 			console.log(e, 'caught exception in ping chat');
@@ -3993,7 +4014,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 
 	const body = JSON.stringify({
 		content: `${
-			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>` : 'Report from homepage'
+			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}> (${playerReport.gameType})` : 'Report from homepage'
 		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
 	});
 

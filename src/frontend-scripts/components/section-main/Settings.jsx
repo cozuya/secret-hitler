@@ -302,6 +302,26 @@ class Settings extends React.Component {
 						</label>
 					</div>
 				</div>
+				<div className="field">
+					<div className="ui radio inter checkbox">
+						<input
+							type="radio"
+							id="inter"
+							onChange={() => {
+								changeFontSubmit('inter');
+							}}
+							checked={this.state.fontChecked === 'inter'}
+						/>
+						<label
+							htmlFor="inter"
+							style={{
+								fontSize: this.state.fontSize
+							}}
+						>
+							The quick brown fascist jumped over the lazy liberal. (inter)
+						</label>
+					</div>
+				</div>
 			</div>
 		);
 	}
