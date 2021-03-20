@@ -26,9 +26,9 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 ## Installation
 
-Install [node.js version: LTS](https://nodejs.org/en/), have it in your path.
-
 Install [git](https://git-scm.com/downloads), have it in your path.
+
+Install NodeJS LTS version, have it in your path. [NVM](https://github.com/nvm-sh/nvm) is the industry standard way to install Node.
 
 Install [mongodb](https://www.mongodb.com/download-center/community), have it in your path.
 
@@ -50,13 +50,15 @@ If you're receiving an error like "Found incompatible module", try using `yarn -
 
 **Start development:**
 
+Start the redis server.
+
 ```bash
 yarn dev
 ```
 
 Navigate to: http://localhost:8080
 
-You'll most likely need a browser extension such as Chrome's [SessionBox](https://chrome.google.com/webstore/detail/sessionbox-free-multi-log/megbklhjamjbcafknkgmokldgolkdfig?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - my webpack setup isn't great and it doesn't cache bust itself. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+You'll most likely need a browser extension such as Chrome's [SessionBox](https://chrome.google.com/webstore/detail/sessionbox-free-multi-log/megbklhjamjbcafknkgmokldgolkdfig?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - the webpack setup isn't great and it doesn't cache bust itself. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
 
 ```bash
 yarn create-accounts
@@ -81,7 +83,7 @@ Don't. Please respect the maintainers and contributors who have given their time
 
 ## Statistics
 
-Production has a limited set of data on the /stats page, check network traffic for the XHR for that if interested. If you'd like to do more detailed data analysis, please contact the maintainer for a dump of the (anonymized) profile and replay data.
+Production has a limited set of data on the /stats page, check network traffic for the XHR for that if interested. If you'd like to do more detailed data analysis, please contact the maintainers for a dump of the (anonymized) profile and replay data.
 
 ## License and Attribution
 
@@ -92,7 +94,7 @@ license.
 
 ## Alterations to the original game
 
-Minor image alterations and editing (assets available upon request).
+Minor image alterations and editing - assets available in this repository.
 
 Veto power is slightly adjusted so that chancellors need to select a policy prior to saying yes or no to vetoing that policy.
 

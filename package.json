@@ -14,7 +14,7 @@
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
 	"engines": {
-		"node": "^12.0.0"
+		"node": "^14.0.0"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.4.4",
