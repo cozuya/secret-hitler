@@ -139,9 +139,9 @@ const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, 
 		const char = String.fromCharCode(event.keyCode);
 		if (char === 'H' && hasPrev) {
 			backward();
-		} else if (char === 'J' && hasPrev) {
+		} else if (event.keyCode === 37 && hasPrev) {
 			prev();
-		} else if (char === 'K' && hasNext) {
+		} else if (event.keyCode === 39 && hasNext) {
 			next();
 		} else if (char === 'L' && hasNext) {
 			forward();
