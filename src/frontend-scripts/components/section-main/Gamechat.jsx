@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import classnames from 'classnames';
@@ -18,6 +18,56 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = ({ notesActive }) => ({ notesActive });
 
+const ClaimButton = ({ cards, onClick }) => {
+	return (
+		<div className="card-container" onClick={onClick}>
+			{['fascist', 'liberal'].includes(cards) ? (
+				<div className={`card ${cards}`}></div>
+			) : (
+				cards.split('').map(card => {
+					if (card === 'r') {
+						return <div className="card fascist"></div>;
+					} else {
+						return <div className="card liberal"></div>;
+					}
+				})
+			)}
+		</div>
+	);
+};
+
+const ClaimButtons = ({ claimOptions, handleClaimButtonClick }) => (
+	<div className="claim-button-container">
+		{claimOptions.map(claimOption => (
+			<ClaimButton
+				key={claimOption}
+				cards={claimOption}
+				onClick={e => {
+					handleClaimButtonClick(e, claimOption);
+				}}
+			/>
+		))}
+	</div>
+);
+
+const ClaimPeek = ({ handleClaimButtonClick }) => {
+	const [claimCards, setClaimCards] = useState('');
+	const handleCardsClick = (e, claim) => {
+		if (claim === 'rrr' || claim === 'bbb') {
+			handleClaimButtonClick(e, claim);
+		} else {
+			setClaimCards(claim);
+		}
+	};
+	if (!claimCards) {
+		return <ClaimButtons claimOptions={['rrr', 'rrb', 'rbb', 'bbb']} handleClaimButtonClick={handleCardsClick} />;
+	} else if (claimCards === 'rrb') {
+		return <ClaimButtons claimOptions={['rrb', 'rbr', 'brr']} handleClaimButtonClick={handleClaimButtonClick} />;
+	} else if (claimCards === 'rbb') {
+		return <ClaimButtons claimOptions={['rbb', 'brb', 'bbr']} handleClaimButtonClick={handleClaimButtonClick} />;
+	}
+};
+
 class Gamechat extends React.Component {
 	defaultEmotes = ['ja', 'nein', 'blobsweat', 'wethink', 'limes'];
 
@@ -36,6 +86,7 @@ class Gamechat extends React.Component {
 		chatValue: '',
 		processedChats: '',
 		votesPeeked: false,
+		remakeVotesPeeked: false,
 		gameFrozen: false,
 		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
@@ -98,7 +149,11 @@ class Gamechat extends React.Component {
 
 		// DEBUG
 		// console.log(this.state.forceProcess, prevProps.gameInfo.chats.length < gameInfo.chats.length, !this.state.processedChats);
-		if (this.state.forceProcess || prevProps.gameInfo.chats.length < gameInfo.chats.length || (!this.state.processedChats && !gameInfo.general.private)) {
+		if (
+			this.state.forceProcess ||
+			(prevProps.gameInfo && prevProps.gameInfo.chats && gameInfo.chats && prevProps.gameInfo.chats.length < gameInfo.chats.length) ||
+			(!this.state.processedChats && !gameInfo.general.private)
+		) {
 			this.setState(
 				{
 					processedChats: this.processChats(),
@@ -394,11 +449,7 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatLockClick = () => {
-		if (this.state.lock) {
-			this.setState({ lock: false });
-		} else {
-			this.setState({ lock: true });
-		}
+		this.setState({ lock: !this.state.lock });
 	};
 
 	handleClickedClaimButton = () => {
@@ -492,10 +543,17 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+			if (gameInfo.general.playerChats === 'emotes' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
-					isDisabled: true,
-					placeholder: 'Chat disabled'
+					isDisabled: false,
+					placeholder: 'Emotes only'
+				};
+			}
+
+			if (gameInfo.general.playerChats === 'disabled' && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
+				return {
+					isDisabled: false,
+					placeholder: 'Chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 		} else {
@@ -532,7 +590,7 @@ class Gamechat extends React.Component {
 			}
 
 			if (
-				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) &&
+				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
 				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {
@@ -768,12 +826,12 @@ class Gamechat extends React.Component {
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020captain' &&
-								!isBlind && <span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />}
+								chat.specialTournamentStatus === '4captain' &&
+								!isBlind && <span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === 'spring2020' &&
-								!isBlind && <span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />}
+								chat.specialTournamentStatus === '4' &&
+								!isBlind && <span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
@@ -856,7 +914,7 @@ class Gamechat extends React.Component {
 
 		if (emoteHelperSelectedIndex > emoteHelperElements.length) this.setState({ emoteHelperSelectedIndex: 0 });
 
-		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length) return;
+		if (!Number.isInteger(emoteHelperSelectedIndex) || !emoteHelperElements.length || !Object.keys(allEmotes).length) return;
 
 		return (
 			<div className="emote-helper-container">
@@ -873,13 +931,9 @@ class Gamechat extends React.Component {
 						className={emoteHelperSelectedIndex === index ? 'selected' : ''}
 					>
 						<img
-							src="../images/blank.png"
+							src={allEmotes[`:${el}:`]}
 							style={{
-								width: '28px',
 								height: '28px',
-								backgroundImage: 'url("../images/emotesheet.png")',
-								backgroundPositionX: `-${allEmotes[`:${el}:`][0] * 28}px`,
-								backgroundPositionY: `-${allEmotes[`:${el}:`][1] * 28}px`,
 								margin: '2px 10px 2px 5px'
 							}}
 						/>
@@ -1020,6 +1074,13 @@ class Gamechat extends React.Component {
 			});
 		};
 
+		const modGetRemakes = () => {
+			socket.emit('modGetRemakes', {
+				modName: userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		};
+
 		const modFreezeGame = () => {
 			socket.emit('modFreezeGame', {
 				modName: userInfo.userName,
@@ -1078,7 +1139,7 @@ class Gamechat extends React.Component {
 							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
 						/>
 					</a>
-					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
+					<div style={{ overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
 						{userInfo &&
 							!userInfo.isSeated &&
 							isStaff &&
@@ -1134,6 +1195,42 @@ class Gamechat extends React.Component {
 									<div
 										className="ui button primary"
 										onClick={() => {
+											if (!this.state.remakeVotesPeeked) {
+												Swal.fire({
+													title: 'Are you sure you want to see the votes to remake for this game?',
+													showCancelButton: true,
+													icon: 'warning'
+												}).then(result => {
+													if (result.value) {
+														modGetRemakes();
+														this.setState({
+															remakeVotesPeeked: true
+														});
+													}
+												});
+											} else {
+												modGetRemakes();
+											}
+										}}
+										style={{ width: '60px' }}
+									>
+										Get
+										<br />
+										Remakes
+									</div>
+								</div>
+							)}
+						{userInfo &&
+							!userInfo.isSeated &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted && (
+								<div>
+									<div
+										className="ui button primary"
+										onClick={() => {
 											if (!this.state.gameFrozen) {
 												Swal.fire({
 													title: 'Are you sure you want to freeze this game?',
@@ -1172,8 +1269,7 @@ class Gamechat extends React.Component {
 											if (result.value) {
 												Swal.fire({
 													title: 'Enter a reason for deleting this game, leave blank if dead',
-													input: 'text',
-													showCancelButton: true
+													input: 'text'
 												}).then(result => {
 													const reason = result.value || 'Dead';
 													modDeleteGame(reason);
@@ -1231,6 +1327,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
+						const claimButtons = (userInfo.gameSettings && userInfo.gameSettings.claimButtons) || 'text';
 						if (this.state.claim && !gameInfo.gameState.isCompleted) {
 							const handleClaimButtonClick = (e, claim) => {
 								const chat = {
@@ -1247,7 +1344,12 @@ class Gamechat extends React.Component {
 
 							switch (this.state.claim) {
 								case 'wasPresident':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, I drew...</p>
+											<ClaimButtons claimOptions={['rrr', 'rrb', 'rbb', 'bbb']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, I drew...</p>
 											<button
@@ -1285,7 +1387,12 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'wasChancellor':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As chancellor, I received...</p>
+											<ClaimButtons claimOptions={['rr', 'rb', 'bb']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As chancellor, I received...</p>
 											<button
@@ -1337,7 +1444,12 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'didSinglePolicyPeek':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, when I looked at the top card I saw ...</p>
+											<ClaimButtons claimOptions={['fascist', 'liberal']} handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, when I looked at the top card I saw a...</p>
 											<button
@@ -1359,7 +1471,12 @@ class Gamechat extends React.Component {
 										</div>
 									);
 								case 'didPolicyPeek':
-									return (
+									return claimButtons === 'cards' ? (
+										<div>
+											<p> As president, I peeked and saw... </p>
+											<ClaimPeek handleClaimButtonClick={handleClaimButtonClick} />
+										</div>
+									) : (
 										<div>
 											<p> As president, I peeked and saw... </p>
 											<button

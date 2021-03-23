@@ -14,4 +14,4 @@ I only have the following guidelines:
 
 5. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.
 
-See more detailed information [here](https://github.com/cozuya/secret-hitler/wiki/Contribution#contributing-guidelines).
+See more detailed information [here](https://github.com/cozuya/secret-hitler/wiki/Contribution#contributing-guidelines), and a contributing tutorial [here](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING_TUTORIAL.md)

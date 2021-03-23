@@ -134,27 +134,34 @@ module.exports.secureGame = secureGame;
 const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
 
 // Calculates the bias in elo points
-const probToEloPoints = (p) => -400 * Math.log10((1/p) - 1);
+const probToEloPoints = p => -400 * Math.log10(1 / p - 1);
 
 // The probability of this team winning in this game size, given perfectly equal teams, in terms of elo points
-const winnerBiasPoints = (game) => {
+const winnerBiasPoints = game => {
 	const liberalBias = game.gameState.isCompleted === 'liberal' ? 1 : -1;
 	const fascistBias = game.gameState.isCompleted === 'liberal' ? -1 : 1;
 	if (game.general.rebalance6p) {
-		return probToEloPoints(.5 + (0.03 * fascistBias))
+		return probToEloPoints(0.5 + 0.03 * fascistBias);
 	} else if (game.general.rebalance7p) {
-		return probToEloPoints(.5 + (0.01 * fascistBias))
+		return probToEloPoints(0.5 + 0.01 * fascistBias);
 	} else if (game.general.rebalance9p2f) {
-		return probToEloPoints(.5 + (0.07 * fascistBias))
+		return probToEloPoints(0.5 + 0.07 * fascistBias);
 	} else {
 		switch (game.general.playerCount) {
-			case 5: return probToEloPoints(.5 + (0.04 * fascistBias));
-			case 6: return probToEloPoints(.5 + (0.07 * liberalBias));
-			case 7: return probToEloPoints(.5 + (0.02 * fascistBias));
-			case 8: return probToEloPoints(.5 + (0.04 * liberalBias));
-			case 9: return probToEloPoints(.5 + (0.08 * fascistBias));
-			case 10: return probToEloPoints(.5 + (0.04 * fascistBias));
-			default: return 0;
+			case 5:
+				return probToEloPoints(0.5 + 0.04 * fascistBias);
+			case 6:
+				return probToEloPoints(0.5 + 0.07 * liberalBias);
+			case 7:
+				return probToEloPoints(0.5 + 0.02 * fascistBias);
+			case 8:
+				return probToEloPoints(0.5 + 0.04 * liberalBias);
+			case 9:
+				return probToEloPoints(0.5 + 0.08 * fascistBias);
+			case 10:
+				return probToEloPoints(0.5 + 0.04 * fascistBias);
+			default:
+				return 0;
 		}
 	}
 };

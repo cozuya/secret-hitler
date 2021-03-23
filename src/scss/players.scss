@@ -120,6 +120,14 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		box-shadow: 0 0 5px 2px #ff95fb !important;
 	}
 
+	.player-container.bruno {
+		box-shadow: 0 0 5px 2px #70deaa !important;
+	}
+
+	.player-container.anji {
+		box-shadow: 0 0 5px 2px #9073c9 !important;
+	}
+
 	.player-container {
 		user-select: none;
 		max-width: 70px;
@@ -247,11 +255,47 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.fascist5 {
 				background-image: url('../../public/images/cards/fascist5.png');
 			}
+			.card.fascist6 {
+				background-image: url('../../public/images/cards/fascist6.png');
+			}
+			.card.fascist7 {
+				background-image: url('../../public/images/cards/fascist7.png');
+			}
+			.card.fascist8 {
+				background-image: url('../../public/images/cards/fascist8.png');
+			}
+			.card.fascist9 {
+				background-image: url('../../public/images/cards/fascist9.png');
+			}
+			.card.fascist10 {
+				background-image: url('../../public/images/cards/fascist10.png');
+			}
+			.card.fascist11 {
+				background-image: url('../../public/images/cards/fascist11.png');
+			}
+			.card.fascist12 {
+				background-image: url('../../public/images/cards/fascist12.png');
+			}
+			.card.fascist13 {
+				background-image: url('../../public/images/cards/fascist13.png');
+			}
+			.card.fascist14 {
+				background-image: url('../../public/images/cards/fascist14.png');
+			}
 			.card.hitler0 {
 				background-image: url('../../public/images/cards/hitler0.png');
 			}
 			.card.hitler1 {
 				background-image: url('../../public/images/cards/hitler1.png');
+			}
+			.card.hitler2 {
+				background-image: url('../../public/images/cards/hitler2.png');
+			}
+			.card.hitler3 {
+				background-image: url('../../public/images/cards/hitler3.png');
+			}
+			.card.hitler4 {
+				background-image: url('../../public/images/cards/hitler4.png');
 			}
 			.card.ballot {
 				background-image: url('../../public/images/cards/ballot.png');
@@ -443,4 +487,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 .error {
 	color: red;
+}
+
+.user-popup::before {
+	visibility: hidden;
 }

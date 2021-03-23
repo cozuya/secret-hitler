@@ -196,7 +196,7 @@ $(document).ready(function() {
 		$(this)
 			.parent()
 			.next()
-			.text('3-12 alphanumeric characters.')
+			.text('3-16 alphanumeric characters.')
 			.slideDown();
 	});
 

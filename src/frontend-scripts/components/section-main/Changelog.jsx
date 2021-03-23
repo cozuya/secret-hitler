@@ -10,6 +10,150 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+				<div className="ui header">
+					<p>Version 1.7.4 released 2-12-2021</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Valentines themed banner and role cards</strong> - Thanks to jules and Kvon for these!
+					Hopefully we can keep them coming for other seasonal events.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Emote Only games</strong> - Emote only games are here! Enable them in your casual or
+					custom games to only allow chats to use emotes.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Crispy HD Emotes + Lots of new/reworked emotes</strong> - Thanks to jules and rifleman for
+					all the work on these, you can now use lots of upgraded, improved, and new emotes, with more on the way!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Send feedback from site directly</strong> - you can now send semi-anonymous feedback
+					requests directly from the site header - ToU still applies, of course.
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
+					<p>Welcome to 2021 🥂 and to Season 13!</p>
+				</div>
+				<h4>The top 10 players of season 12 are:</h4>
+				<ol>
+					<li> pinguREFORMED: 2150 </li>
+					<li> Mell0: 2046 </li>
+					<li> Ohrami2: 2016 </li>
+					<li> DaddyRiddler: 1974 </li>
+					<li> thijsdb: 1968 </li>
+					<li> LyingLizard: 1935 </li>
+					<li> Freekin: 1930 </li>
+					<li> NotKexhiluz: 1929 </li>
+					<li> RichRobby: 1913 </li>
+					<li> CucuOnly: 1912 </li>
+				</ol>
+
+				<div className="ui header">
+					<p>Version 1.7.3 released 1-2-2021</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds card-based claim menu with order claiming for peek</strong> - Check out your settings
+					to change to the new format, the order-claiming is only available in the new mode for now.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds @mod pings to general chat</strong> - Please still use in-game pings for
+					game-specific issues, when applicable.
+				</p>
+
+				<h3>Minor Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>
+						Removes Google Analytics in favor or more privacy-friendly <a href="https://plausible.io">Plausible Analytics</a>
+					</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Custom games now correctly don't count towards winrate</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Fixes execution verification modal</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various new Emotes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various moderation changes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Various changes to routing</strong>
+				</p>
+
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
+					<p>Version 1.7.2 released 12-8-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Games</strong> - 1/2/3 for discarding a card as president, 1/2
+					for playing a card as chancellor, and j/n for voting "ja" or "nein" on a government. A 2s delay is applied to prevent accidental card selections, and
+					is optionally applied to voting. These shortcuts are disabled by default; enable them in your game settings.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Execution Confirmation Menu</strong> - a popup to confirm your shot in-game, to prevent
+					trigger slips, is now present (can be disabled in settings)
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Reverse Investigation in Replays</strong> - reverse investigation now properly displays in
+					replays
+				</p>
+
+				<h3>Minor Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Adds Merriweather font</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Practice games no longer count towards profile winrate</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various new emotes</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various moderation improvements</strong>
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 12!</p>
+				</div>
+				<div className="ui header">
+					<p>Version 1.7.1 released 10-1-2020</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various New Emotes</strong> - various contributors have graciously added many new emotes,
+					check them all out!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds Keyboard Shortcuts to Replay Menu</strong> - j/k to go backwards or forwards one
+					step, and h/l to go backwards or forwards one turn.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Adds new user-popup menu to allow better interaction with users</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor visual changes</strong>
+				</p>
+				<h4>The top 10 players of season 11 are:</h4>
+				<ol>
+					<li>CuSith: 2071</li>
+					<li>imbapingu: 2068</li>
+					<li>Starkrush: 1983</li>
+					<li>Ohrami2: 1980</li>
+					<li>Moranki: 1976</li>
+					<li>near1337: 1940</li>
+					<li>SexGodMedusa: 1939</li>
+					<li>1on1: 1920</li>
+					<li>SOOOOZE: 1907</li>
+					<li>NotAnAlt7: 1903</li>
+				</ol>
+				<hr style={{ width: '100%' }} />
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome to Season 11!</p>
 				</div>
@@ -39,7 +183,7 @@ class Changelog extends React.Component {
 					<img src="../images/1.7.0-images/1-7Timer.png" alt="Timer UI Shown"></img>
 				</div>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Terms of Use Version 1.5</strong> - a new version of the Terms of Use has been published{' '}
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Terms of Use Version 1.5</strong> - a new version of the Terms of Use has been published
 					<a href="/tou">here</a>.
 				</p>
 				<p>
@@ -107,6 +251,25 @@ class Changelog extends React.Component {
 					<li> Mell0: 1907 </li>
 					<li> RyanLockwood: 1905 </li>
 				</ol>
+
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome to Season 10! 4-1-2020</p>
+				</div>
+
+				<h4>The top 10 players of season 9 are:</h4>
+				<ul>
+					<li> rags009: 1992 </li>
+					<li> ChroIIo: 1942 </li>
+					<li> Scorcha: 1930 </li>
+					<li> NotFat: 1924 </li>
+					<li> ChillMedusa: 1899 </li>
+					<li> arteezy: 1886 </li>
+					<li> DanGheesling14: 1886 </li>
+					<li> olly97: 1882 </li>
+					<li> earring: 1854 </li>
+					<li> lucaanders: 1854 </li>
+				</ul>
+
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
@@ -128,7 +291,7 @@ class Changelog extends React.Component {
 					<p>Welcome to 2020 and to Season 9!</p>
 				</div>
 				<h4>The top 10 players of season 8 are:</h4>
-				<ul>
+				<ol>
 					<li> godhemzelve: 2067</li>
 					<li> Scorcha: 2024</li>
 					<li> imbapingu: 2013</li>
@@ -139,7 +302,7 @@ class Changelog extends React.Component {
 					<li> codingwizard: 1888</li>
 					<li> trump: 1872</li>
 					<li> IThanosI: 1870</li>
-				</ul>
+				</ol>
 
 				<div className="ui header">
 					<p>Version 1.6.5 released 10-5-2019</p>

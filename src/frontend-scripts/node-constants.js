@@ -36,7 +36,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 11;
+module.exports.CURRENTSEASONNUMBER = 13;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -66,7 +66,9 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			veteran: user.staffRole === 'veteran',
 			cbell: user.userName === 'cbell' && user.staffRole === 'editor',
 			max: user.userName === 'Max' && user.staffRole === 'editor',
-			moira: user.userName === 'moira' && user.staffRole === 'editor'
+			moira: user.userName === 'moira' && user.staffRole === 'editor',
+			bruno: user.userName === 'Bruno' && user.staffRole === 'editor',
+			anji: user.userName === 'Anji' && user.staffRole === 'editor'
 		});
 	} else if (
 		user.isContributor &&
@@ -118,7 +120,6 @@ module.exports.getBadWord = text => {
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
 		retard: ['libtard', 'retard', 'tard', 'ret4rd', 't4rd', 'retrd'],
 		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
-		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
 	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /bastard/gi, /big ga/gi, /among/gi, /mongod/gi, /mongolia/gi, /off again/gi, /pokemon game/gi]; // This list for all exceptions to bypass swear filter

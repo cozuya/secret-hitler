@@ -31,6 +31,7 @@ const Account = new Schema({
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
 		disableAggregations: Boolean,
+		disableKillConfirmation: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
@@ -46,6 +47,7 @@ const Account = new Schema({
 		disableElo: Boolean,
 		fullheight: Boolean,
 		safeForWork: Boolean,
+		keyboardShortcuts: String,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,
@@ -67,7 +69,8 @@ const Account = new Schema({
 		playerNotes: Array,
 		ignoreIPBans: Boolean,
 		truncatedSize: Number,
-		claimCharacters: String
+		claimCharacters: String,
+		claimButtons: String
 	},
 	verification: {
 		email: String
@@ -130,8 +133,17 @@ const Account = new Schema({
 	lossesSeason11: Number,
 	rainbowWinsSeason11: Number,
 	rainbowLossesSeason11: Number,
+	winsSeason12: Number,
+	lossesSeason12: Number,
+	rainbowWinsSeason12: Number,
+	rainbowLossesSeason12: Number,
+	winsSeason13: Number,
+	lossesSeason13: Number,
+	rainbowWinsSeason13: Number,
+	rainbowLossesSeason13: Number,
 	previousDayElo: Number,
 	created: Date,
+	isOnFire: Boolean,
 	lastCompletedGame: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean,
@@ -145,17 +157,18 @@ const Account = new Schema({
 	githubUsername: String,
 	githubMFA: Boolean,
 	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
+	feedbackSubmissions: Array, // { time: Date, text: String }
 	primaryColor: String,
 	secondaryColor: String,
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
-	isTournamentMod: Boolean,
 	pastAwards: Array, // [String]
 	eloPercentile: {
 		seasonal: Number,
 		overall: Number
-	}
+	},
+	isTournamentMod: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

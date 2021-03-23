@@ -19,6 +19,7 @@ const {
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
 	handleModPeekVotes,
+	handleModPeekRemakes,
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
@@ -55,6 +56,8 @@ const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
+const https = require('https');
+const moment = require('moment');
 
 let modUserNames = [],
 	editorUserNames = [],
@@ -74,11 +77,10 @@ const gamesGarbageCollector = () => {
 			new Date(currentGame.general.timeCreated.getTime() + 600000);
 		const completedTimer =
 			currentGame &&
-			currentGame.general &&
-			currentGame.general.timeStarted &&
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
-			new Date(games[gameName].general.timeStarted + 0);
+			currentGame.gameState.timeCompleted &&
+			new Date(currentGame.gameState.timeCompleted + 1000 * 60 * 2);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -210,6 +212,9 @@ module.exports.socketRoutes = () => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 					if (account.isTournamentMod) isTourneyMod = true;
 				});
+			} else {
+				socket.disconnect();
+				return;
 			}
 
 			sendGeneralChats(socket);
@@ -306,6 +311,75 @@ module.exports.socketRoutes = () => {
 					sendSpecificUserList(socket, 'moderator');
 				} else {
 					sendSpecificUserList(socket);
+				}
+			});
+
+			socket.on('feedbackForm', data => {
+				if (!(passport && passport.user && authenticated)) {
+					socket.emit('feedbackResponse', { status: 'error', message: 'You are not logged in.' });
+					return;
+				}
+
+				if (!(data && data.feedback)) {
+					socket.emit('feedbackResponse', { status: 'error', message: 'You cannot submit empty feedback.' });
+					return;
+				}
+
+				if (data.feedback.length <= 1900) {
+					Account.findOne({ username: passport.user }).then(account => {
+						if (!account.feedbackSubmissions) account.feedbackSubmissions = [];
+						const newFeedback = {
+							date: new Date(),
+							feedback: data.feedback
+						};
+
+						if (account.feedbackSubmissions.length >= 2) {
+							const secondMostRecentIndex = account.feedbackSubmissions.length - 2;
+							if (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date > 1000 * 60 * 60 * 24) {
+								// if it's been 24 hours since the *2nd* most recent feedback submission
+								account.feedbackSubmissions.push(newFeedback);
+							} else {
+								socket.emit('feedbackResponse', {
+									status: 'error',
+									message:
+										'You can only submit feedback twice a day. You can submit feedback again in ' +
+										moment.duration(24 * 60 * 60 * 1000 - (newFeedback.date - account.feedbackSubmissions[secondMostRecentIndex].date)).humanize() +
+										'.'
+								});
+								return;
+							}
+						} else {
+							account.feedbackSubmissions.push(newFeedback);
+						}
+
+						let feedback = {
+							content: `__**Player**__: ${passport.user}\n__**Feedback**__: ${data.feedback}`,
+							username: 'Feedback',
+							allowed_mentions: { parse: [] }
+						};
+
+						try {
+							feedback = JSON.stringify(feedback);
+							const req = https.request({
+								hostname: 'discordapp.com',
+								path: process.env.DISCORDFEEDBACKURL,
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									'Content-Length': Buffer.byteLength(feedback)
+								}
+							});
+							req.end(feedback);
+							socket.emit('feedbackResponse', { status: 'success', message: 'Thank you for submitting feedback!' });
+						} catch (e) {
+							console.log(e);
+							socket.emit('feedbackResponse', { status: 'error', message: 'An unknown error occurred.' });
+						}
+
+						account.save();
+					});
+				} else {
+					socket.emit('feedbackResponse', { status: 'error', message: 'Your feedback is too long.' });
 				}
 			});
 
@@ -445,10 +519,10 @@ module.exports.socketRoutes = () => {
 					updateSeatedUser(socket, passport, data);
 				}
 			});
-			socket.on('playerReport', data => {
+			socket.on('playerReport', (data, callback) => {
 				if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
 				if (authenticated) {
-					handlePlayerReport(passport, data);
+					handlePlayerReport(passport, data, callback);
 				}
 			});
 			socket.on('playerReportDismiss', () => {
@@ -520,11 +594,24 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('modPeekVotes', data => {
+				if (!data) return;
 				const uid = data.uid;
 				const game = findGame({ uid });
 				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
+					} else {
+						socket.emit('sendAlert', 'Game is missing.');
+					}
+				}
+			});
+			socket.on('modGetRemakes', data => {
+				if (!data) return;
+				const uid = data.uid;
+				const game = findGame({ uid });
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+					if (game && game.private && game.private.seatedPlayers) {
+						handleModPeekRemakes(socket, passport, game, data.modName);
 					} else {
 						socket.emit('sendAlert', 'Game is missing.');
 					}

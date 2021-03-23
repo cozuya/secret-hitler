@@ -46,7 +46,7 @@ general
 	timeCreated date
 	experiencedMode bool
 	casualGame bool
-	disableChat bool
+	playerChats string in ['enabled', 'disabled', 'emotes']
 	disableGamechat bool
 	disableObserverLobby bool
 	disableObserver bool
@@ -116,6 +116,7 @@ private
 		chat string
 		timestamp time
 	votesPeeked
+	remakeVotesPeeked
 	gameFrozen
 	seatedPlayers array 5-10
 		userName string

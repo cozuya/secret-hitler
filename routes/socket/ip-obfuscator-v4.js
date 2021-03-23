@@ -21,9 +21,12 @@ const obfBlock = (number, blockID) => {
 module.exports.obfBlock = obfBlock; // For testing purposes, should not be used in production.
 
 module.exports.obfIP = ip => {
-	return ip
-		.split('.')
-		.map(Number)
-		.map(obfBlock)
-		.join('.');
+	return (
+		ip
+			.split('/')[0]
+			.split('.')
+			.map(Number)
+			.map(obfBlock)
+			.join('.') + (ip.split('/').length > 1 ? '/' + ip.split('/')[1] : '')
+	);
 };

@@ -71,6 +71,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-home', 'home');
 	});
 
+	app.post('/', (req, res) => {
+		renderPage(req, res, 'page-home', 'home');
+	});
+
 	app.get('/rules', (req, res) => {
 		renderPage(req, res, 'page-rules', 'rules');
 	});
@@ -231,6 +235,9 @@ module.exports = () => {
 			return;
 		}
 
+		renderPage(req, res, '403', '403');
+		return;
+
 		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
 		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
 		const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
@@ -285,7 +292,9 @@ module.exports = () => {
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloSeason || 1600).toFixed(2);
 						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloOverall || 1600).toFixed(2);
-						_profile.lastConnected = [account.lastConnected.getMonth() + 1, account.lastConnected.getDate(), account.lastConnected.getFullYear()].join('-');
+						_profile.lastConnected = !!account.lastConnected
+							? [account.lastConnected.getMonth() + 1, account.lastConnected.getDate(), account.lastConnected.getFullYear()].join('-')
+							: '';
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (
