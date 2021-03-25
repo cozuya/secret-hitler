@@ -135,16 +135,18 @@ const Description = ({ description }) => {
 const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => {
 	const onKeyDown = event => {
 		// ignore typing in textboxes
+		const leftKeyCode = 37;
+		const rightKeyCode = 39;
 		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 		const char = String.fromCharCode(event.keyCode);
-		if (char === 'H' && hasPrev) {
-			backward();
-		} else if (event.keyCode === 37 && hasPrev) {
-			prev();
-		} else if (event.keyCode === 39 && hasNext) {
-			next();
-		} else if (char === 'L' && hasNext) {
-			forward();
+		if ((char === 'H' && hasPrev) || (event.shiftKey && event.keyCode == leftKeyCode)) {
+			return backward();
+		} else if (char === 'J' || (event.keyCode === leftKeyCode && hasPrev)) {
+			return prev();
+		} else if ((char === 'L' && hasNext) || (event.shiftKey && event.keyCode == rightKeyCode)) {
+			return forward();
+		} else if (char === 'K' || (event.keyCode === rightKeyCode && hasNext)) {
+			return next();
 		}
 	};
 
