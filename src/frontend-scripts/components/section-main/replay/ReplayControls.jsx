@@ -139,13 +139,13 @@ const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, 
 		const rightKeyCode = 39;
 		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 		const char = String.fromCharCode(event.keyCode);
-		if ((char === 'H' && hasPrev) || (event.shiftKey && event.keyCode == leftKeyCode)) {
+		if ((char === 'H' || (event.shiftKey && event.keyCode == leftKeyCode)) && hasPrev) {
 			return backward();
-		} else if (char === 'J' || (event.keyCode === leftKeyCode && hasPrev)) {
+		} else if ((char === 'J' || event.keyCode === leftKeyCode) && hasPrev) {
 			return prev();
-		} else if ((char === 'L' && hasNext) || (event.shiftKey && event.keyCode == rightKeyCode)) {
+		} else if ((char === 'L' || (event.shiftKey && event.keyCode == rightKeyCode)) && hasNext) {
 			return forward();
-		} else if (char === 'K' || (event.keyCode === rightKeyCode && hasNext)) {
+		} else if ((char === 'K' || event.keyCode === rightKeyCode) && hasNext) {
 			return next();
 		}
 	};
