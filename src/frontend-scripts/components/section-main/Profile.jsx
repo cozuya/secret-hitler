@@ -478,6 +478,11 @@ class ProfileWrapper extends React.Component {
 					<div className="column">{this.Stats()}</div>
 					<div className="column">{this.RecentGames()}</div>
 				</div>
+
+				{// temporary
+				profile.pastAwards.map(award => (
+					<img key={JSON.stringify(award)} src={`/images/badges/${award.id}.png`} title={award.text} />
+				))}
 			</div>
 		);
 	}
