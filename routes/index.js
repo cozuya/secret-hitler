@@ -5,7 +5,6 @@ const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
-const _ = require('lodash');
 const { accounts } = require('./accounts');
 const version = require('../version');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
@@ -281,7 +280,7 @@ module.exports = () => {
 				res.status(404).send('Profile not found');
 			} else {
 				Account.findOne({ username }, (err, account) => {
-					const _profile = _.cloneDeep(profile);
+					const _profile = profile.toObject();
 
 					if (err) {
 						return new Error(err);
@@ -292,9 +291,26 @@ module.exports = () => {
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloSeason || 1600).toFixed(2);
 						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloOverall || 1600).toFixed(2);
-						_profile.lastConnected = !!account.lastConnected
-							? [account.lastConnected.getMonth() + 1, account.lastConnected.getDate(), account.lastConnected.getFullYear()].join('-')
-							: '';
+						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('MMM Do YYYY') : '';
+						_profile.pastAwards = account.pastAwards || [];
+						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
+						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.maxElo || 1600).toFixed(2);
+						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
+							? undefined
+							: account.pastElo.toObject().length
+							? account.pastElo.toObject()
+							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
+						_profile.previousMaxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.previousMaxElo || 1600).toFixed(2);
+						_profile.experiencePoints = Object.keys(account.experiencePoints.toObject()).length
+							? account.experiencePoints.toObject()
+							: {
+									default: 0,
+									ranked: 0,
+									silent: 0,
+									emote: 0,
+									custom: 0,
+									private: 0
+							  };
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (

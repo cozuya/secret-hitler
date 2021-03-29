@@ -141,6 +141,10 @@ const Account = new Schema({
 	lossesSeason13: Number,
 	rainbowWinsSeason13: Number,
 	rainbowLossesSeason13: Number,
+	winsSeason14: Number,
+	lossesSeason14: Number,
+	rainbowWinsSeason14: Number,
+	rainbowLossesSeason14: Number,
 	previousDayElo: Number,
 	created: Date,
 	isOnFire: Boolean,
@@ -163,11 +167,22 @@ const Account = new Schema({
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
-	pastAwards: Array, // [String]
+	pastAwards: Array, // {id: String, text: String}
 	eloPercentile: {
 		seasonal: Number,
 		overall: Number
 	},
+	maxElo: { type: Number, default: 1600 },
+	previousMaxElo: Number,
+	experiencePoints: {
+		default: { type: Number, default: 0 },
+		ranked: { type: Number, default: 0 },
+		silent: { type: Number, default: 0 },
+		emote: { type: Number, default: 0 },
+		custom: { type: Number, default: 0 },
+		private: { type: Number, default: 0 }
+	},
+	pastElo: [{ date: Date, value: Number }],
 	isTournamentMod: Boolean
 });
 
