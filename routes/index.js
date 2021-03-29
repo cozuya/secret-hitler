@@ -292,7 +292,7 @@ module.exports = () => {
 						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloSeason || 1600).toFixed(2);
 						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.eloOverall || 1600).toFixed(2);
 						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('MMM Do YYYY') : '';
-						_profile.pastAwards = account.pastAwards || [];
+						_profile.badges = account.badges || [];
 						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
 						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.maxElo || 1600).toFixed(2);
 						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
