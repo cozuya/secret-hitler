@@ -11,6 +11,23 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.8.0 released 04-02-2021</p>
+				</div>
+				<h2>Big News:</h2>
+				<h3>
+					<strong style={{ fontSize: '1.2em', color: 'darkmagenta' }}>Elo and profile reset</strong> - to combat various discrepancies with profiles and Elos in
+					the past, as of now, all Elos and profile data (except some persisting statistics) are now reset, with your old numbers memorialized on your profile
+					(with special badges if appropriate - more on these later).
+				</h3>
+				<br />
+				<br />
+				<h3>Other Changes:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner and role cards</strong> - Thanks to jules and Kvon for these!
+					Hopefully we can keep them coming for other seasonal events 😀
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
 					<p>Version 1.7.4 released 2-12-2021</p>
 				</div>
 				<h3>New Features:</h3>
