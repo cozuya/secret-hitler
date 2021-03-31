@@ -11,20 +11,39 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.8.0 released 04-02-2021</p>
+					<p>Welcome to Season 14!</p>
 				</div>
-				<h2>Big News:</h2>
-				<h3>
-					<strong style={{ fontSize: '1.2em', color: 'darkmagenta' }}>Elo and profile reset</strong> - to combat various discrepancies with profiles and Elos in
-					the past, as of now, all Elos and profile data (except some persisting statistics) are now reset, with your old numbers memorialized on your profile
-					(with special badges if appropriate - more on these later).
-				</h3>
-				<br />
-				<br />
-				<h3>Other Changes:</h3>
+
+				<h4>The top 10 players of season 13 are:</h4>
+				<ol>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+				</ol>
+
+				<div className="ui header">
+					<p>Version 1.7.5 released 4-1-2021</p>
+				</div>
+
+				<h3>New Features:</h3>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner and role cards</strong> - Thanks to jules and Kvon for these!
-					Hopefully we can keep them coming for other seasonal events 😀
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner and role cards</strong> - Thanks again to jules and Kvon for
+					these!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Silent games now have silent pings</strong> - no longer can you abuse pings in silent
+					games to signal others
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor changes</strong> - courtesy of various new first-time
+					contributors :)
 				</p>
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">
