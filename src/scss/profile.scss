@@ -1,4 +1,4 @@
-$eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4);
+$eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4) (2100 0.7 1 0.5);
 
 @function lerp($low, $high, $elo) {
 	$scale: nth($high, 1) - nth($low, 1);
@@ -58,7 +58,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		background-repeat: no-repeat;
 	}
 
-	@for $i from 0 through 100 {
+	@for $i from 0 through 120 {
 		.profile-picture.elo#{$i} {
 			box-shadow: 0 0 5px 2px calcEloCol($i * 5+1500) !important;
 		}
