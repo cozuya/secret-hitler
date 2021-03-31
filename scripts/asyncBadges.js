@@ -35,6 +35,7 @@ const run = async () => {
 	birthdayAccounts.forEach(account => {
 		account.badges.push({
 			id: 'birthday1',
+			title: '1 Year Old',
 			text: 'This account is more than 1 year old.'
 		});
 	});
@@ -70,6 +71,7 @@ const run = async () => {
 			account.badges = account.badges.filter(badge => badge.id != `birthday${y - 1}`);
 			account.badges.push({
 				id: `birthday${y}`,
+				title: `${y} Years Old`,
 				text: `This account is more than ${y} years old.`
 			});
 		});

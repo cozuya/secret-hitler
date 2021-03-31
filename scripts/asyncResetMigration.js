@@ -22,8 +22,17 @@ const run = async () => {
 				custom: 0,
 				private: 0
 			};
+			account.badges = [];
 
-			// TODO: Add reset Elo badges
+			if (account.eloOverall >= 1700) {
+				const tier = Math.min(Math.floor((account.eloOverall - 1700) / 100), 4);
+				const roundedVal = Math.floor(account.eloOverall / 100) * 100;
+				account.badges.push({
+					id: `reset${tier}`,
+					title: `Pre-Reset Elo of ${roundedVal}+`,
+					text: `This player had an Elo of ${account.eloOverall.toFixed(0)} at the time of the Elo reset 2021.`
+				});
+			}
 
 			account.eloOverall = 1600;
 

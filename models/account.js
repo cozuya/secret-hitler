@@ -167,7 +167,7 @@ const Account = new Schema({
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
-	badges: Array, // {id: String, text: String}
+	badges: Array, // {id: String, title: String, text: String}
 	eloPercentile: {
 		seasonal: Number,
 		overall: Number
