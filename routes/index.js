@@ -388,9 +388,9 @@ module.exports = () => {
 
 			Account.findOne({ username })
 				.then(account => {
-					if (account.wins + account.losses < 50) {
+					if (account.experiencePoints && account.experiencePoints.default >= 50) {
 						res.json({
-							message: 'You need to have played 50 games to upload a cardback.'
+							message: 'You need to have earned 50 experience points to upload a cardback.'
 						});
 					} else if (
 						new Date(account.gameSettings.customCardbackSaveTime) &&

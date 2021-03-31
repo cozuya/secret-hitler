@@ -349,7 +349,7 @@ class ProfileWrapper extends React.Component {
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
 			const { wins = 0, losses = 0 } = user;
-			if (wins + losses < 50) {
+			if (experiencePoints && experiencePoints.default < 50) {
 				gamesUntilRainbow = 50 - wins - losses;
 			}
 

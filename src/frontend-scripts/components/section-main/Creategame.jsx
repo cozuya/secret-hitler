@@ -16,7 +16,7 @@ export default class Creategame extends React.Component {
 			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
 		if (user) {
-			isRainbow = user.wins + user.losses > 49;
+			isRainbow = user.experiencePoints && user.experiencePoints.default >= 50;
 		}
 
 		this.state = {
@@ -561,7 +561,7 @@ export default class Creategame extends React.Component {
 			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
 		if (user) {
-			isRainbow = user.wins + user.losses > 49;
+			isRainbow = user.experiencePoints && user.experiencePoints.default >= 50;
 		}
 
 		switch (preset) {
@@ -2032,7 +2032,7 @@ export default class Creategame extends React.Component {
 								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 							}
 							if (user) {
-								isRainbow = user.wins + user.losses > 49;
+								isRainbow = user.experiencePoints && user.experiencePoints.default >= 50;
 							}
 							if (isRainbow) {
 								return (

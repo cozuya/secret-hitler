@@ -503,7 +503,7 @@ const updateSeatedUser = (socket, passport, data) => {
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
+		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.experiencePoints && account.experiencePoints.default > 50);
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
@@ -704,9 +704,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
 			playerChats:
-				data.playerChats === 'emotes' && ['casual', 'practice'].includes(data.gameType)
-					? 'emotes'
-					: data.playerChats === 'emotes'
+				(data.playerChats === 'emotes' || data.playerChats === 'disabled') && ['casual', 'practice'].includes(data.gameType)
+					? data.playerChats
+					: data.playerChats === 'emotes' || data.playerChats === 'disabled'
 					? 'enabled'
 					: data.playerChats,
 			isVerifiedOnly: data.isVerifiedOnly,
@@ -716,7 +716,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),
 			disableGamechat: data.disableGamechat,
-			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
+			rainbowgame: user.experiencePoints && account.experiencePoints.default >= 50 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
@@ -3165,8 +3165,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.losses = account.losses >= 50 ? account.losses : 50;
-									account.wins = account.wins >= 1 ? account.wins : 1;
+									if (account.experiencePoints) {
+										account.experiencePoints.default = Math.max(50, account.experiencePoints.default);
+									} else {
+										account.experiencePoints = {
+											default: 50,
+											ranked: 0,
+											silent: 0,
+											emote: 0,
+											custom: 0,
+											private: 0
+										};
+									}
 									account.save();
 									logOutUser(data.userName);
 								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);

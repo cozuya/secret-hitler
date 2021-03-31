@@ -449,7 +449,7 @@ class Players extends React.Component {
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if (
-				(gameInfo.general.rainbowgame && user && user.wins + user.losses <= 49) ||
+				(gameInfo.general.rainbowgame && user && user.experiencePoints && user.experiencePoints.default >= 50) ||
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
