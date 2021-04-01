@@ -208,9 +208,11 @@
 	}
 }
 
-.tracks.blurred,
-.enactedpolicies-container.blurred {
+.tracks.blurred {
 	filter: saturate(60%);
+	opacity: 0.3;
+}
+.enactedpolicies-container.blurred {
 	opacity: 0.3;
 }
 .help-message {
