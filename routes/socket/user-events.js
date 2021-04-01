@@ -1832,6 +1832,54 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			return;
 		}
 
+		const aemRigrole = /^\/forcerigrole ([0-9]{1,2}) (.*)$/i.exec(chat);
+		if (aemRigrole) {
+			if (game && game.private) {
+				const player = aemRigrole[0].split(' ')[1];
+				const role = aemRigrole[0].split(' ')[2];
+				if (/^(hitler|fascist|liberal)$/i.exec(role) && parseInt(player, 10) < publicPlayersState.length + 1 && parseInt(player, 10) > 0) {
+					const changedChat = [
+						{
+							text: 'An AEM member has changed the role of player '
+						}
+					];
+
+					changedChat.push({
+						text: `${publicPlayersState[player - 1].userName} (${player})`,
+						type: 'player'
+					});
+
+					changedChat.push({
+						text: ' to '
+					});
+
+					changedChat.push({
+						text: role,
+						type: role
+					});
+
+					changedChat.push({
+						text: '.'
+					});
+
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: changedChat
+					});
+
+					sendPlayerChatUpdate(game, data);
+					sendInProgressGameUpdate(game, false);
+				} else {
+					socket.emit('sendAlert', 'This is not a valid command.');
+					return;
+				}
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
 		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
 		if (aemForce) {
 			if (player) {

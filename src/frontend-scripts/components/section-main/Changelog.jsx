@@ -34,8 +34,7 @@ class Changelog extends React.Component {
 
 				<h3>New Features:</h3>
 				<p>
-					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner and role cards</strong> - Thanks again to jules and Kvon for
-					these!
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner</strong> - Thanks again to jules for this!
 				</p>
 				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Silent games now have silent pings</strong> - no longer can you abuse pings in silent
