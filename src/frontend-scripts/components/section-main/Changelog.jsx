@@ -16,16 +16,16 @@ class Changelog extends React.Component {
 
 				<h4>The top 10 players of season 13 are:</h4>
 				<ol>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
-					<li> </li>
+					<li>godhemzelve: 2077 </li>
+					<li>Mell0: 2018 </li>
+					<li>carlgauss: 1953 </li>
+					<li>BuIbasaur: 1941 </li>
+					<li>thijsdb: 1931 </li>
+					<li>eclowna: 1904 </li>
+					<li>Flexing: 1902 </li>
+					<li>Morientes: 1873 </li>
+					<li>007Bunny: 1865 </li>
+					<li>MaximTheMeme: 1865 </li>
 				</ol>
 
 				<div className="ui header">
