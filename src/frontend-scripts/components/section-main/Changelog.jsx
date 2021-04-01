@@ -20,12 +20,12 @@ class Changelog extends React.Component {
 					<li>Mell0: 2018 </li>
 					<li>carlgauss: 1953 </li>
 					<li>BuIbasaur: 1941 </li>
-					<li>thijsdb: 1931 </li>
 					<li>eclowna: 1904 </li>
 					<li>Flexing: 1902 </li>
 					<li>Morientes: 1873 </li>
 					<li>007Bunny: 1865 </li>
 					<li>MaximTheMeme: 1865 </li>
+					<li>imbapingu: 1858</li>
 				</ol>
 
 				<div className="ui header">
