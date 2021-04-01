@@ -11,6 +11,41 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Welcome to Season 14!</p>
+				</div>
+
+				<h4>The top 10 players of season 13 are:</h4>
+				<ol>
+					<li>godhemzelve: 2077 </li>
+					<li>Mell0: 2018 </li>
+					<li>carlgauss: 1953 </li>
+					<li>BuIbasaur: 1941 </li>
+					<li>eclowna: 1904 </li>
+					<li>Flexing: 1902 </li>
+					<li>Morientes: 1873 </li>
+					<li>007Bunny: 1865 </li>
+					<li>MaximTheMeme: 1865 </li>
+					<li>imbapingu: 1858</li>
+				</ol>
+
+				<div className="ui header">
+					<p>Version 1.7.5 released 4-1-2021</p>
+				</div>
+
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New Easter themed banner</strong> - Thanks again to jules for this!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Silent games now have silent pings</strong> - no longer can you abuse pings in silent
+					games to signal others
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes and minor changes</strong> - courtesy of various new first-time
+					contributors :)
+				</p>
+				<hr style={{ width: '100%' }} />
+				<div className="ui header">
 					<p>Version 1.7.4 released 2-12-2021</p>
 				</div>
 				<h3>New Features:</h3>
