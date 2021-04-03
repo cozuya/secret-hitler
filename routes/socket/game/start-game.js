@@ -46,7 +46,7 @@ const beginGame = game => {
 	const roles = [
 		{
 			cardName: 'hitler',
-			icon: 4,
+			icon: 5,
 			team: 'fascist'
 		}
 	]
@@ -64,7 +64,7 @@ const beginGame = game => {
 		)
 		.concat(
 			_.shuffle(
-				_.range(12, 15)
+				_.range(15, 18)
 					.map(el => ({
 						cardName: 'fascist',
 						icon: el,
