@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const ModThread = new Schema({
-	uid: String, // game-name style id
+	_id: String, // game-name style id
 	username: String, // username of the player
 	aemMember: String, // aem member speaking to the player
 	startDate: Date, // start date of the convo

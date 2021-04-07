@@ -34,7 +34,6 @@ const { secureGame } = require('./util.js');
 const https = require('https');
 const _ = require('lodash');
 const moment = require('moment');
-const { Webhook } = require('discord-webhook-node');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -4372,7 +4371,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	};
 
 	const initializeData = {
-		uid: generateCombination(3, '', true),
+		_id: generateCombination(3, '', true),
 		username: data.userName,
 		aemMember: data.aemMember,
 		startDate: new Date(),
@@ -4435,19 +4434,25 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 			const modThread = new ModThread(dm);
 			modThread.save();
 
-			const chatLog = [];
-
-			for (const message of dm.messages) {
-				chatLog.push(`${message.userName}${message.userName ? (message.type === 'leave' || message.type === 'join' ? ' ' : ': ') : ''}${message.chat}`);
+			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
+			const discordThreadNotifyBody = JSON.stringify({
+				content: dmCloseMessage
+			});
+			const discordThreadNotifOptions = {
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDMODDMSTHREADURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+				}
+			};
+			try {
+				const threadReq = https.request(discordThreadNotifOptions);
+				threadReq.end(discordThreadNotifyBody);
+			} catch (e) {
+				console.log(e, 'err in notif');
 			}
-
-			const webhook = new Webhook(`https://discord.com/${process.env.DISCORDMODDMSTHREADURL}`);
-			webhook.send(
-				`__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}`
-			);
-			fs.writeFileSync(`${dm.uid}.txt`, chatLog.join('\n'));
-			webhook.sendFile(`${dm.uid}.txt`);
-			fs.unlinkSync(`${dm.uid}.txt`);
 
 			delete modDMs[dmID];
 		}
