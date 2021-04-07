@@ -40,6 +40,9 @@ module.exports.generalChats = {
 	sticky: '',
 	list: []
 };
+module.exports.modDMs = {
+	// player username => full object
+};
 module.exports.accountCreationDisabled = { status: false };
 module.exports.bypassVPNCheck = { status: false };
 module.exports.ipbansNotEnforced = { status: false };

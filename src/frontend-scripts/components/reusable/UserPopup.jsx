@@ -106,16 +106,25 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 		socket.emit('sendUser', userInfo); // To force a new playerlist pull
 	};
 
+	const checkStaffRole = staffRole => staffRole === 'admin' || staffRole === 'editor' || staffRole === 'moderator';
+
 	const gameStarted = gameInfo?.gameState?.isStarted;
 	const isTracksFlipped = gameInfo?.gameState?.isTracksFlipped;
 	const userSeated = userInfo?.isSeated;
 	const blindMode = gameInfo?.general?.blindMode;
 	const privateGame = gameInfo?.general?.private;
 	const isMe = userName === userInfo?.userName;
+	const isAEM = checkStaffRole(userInfo?.staffRole);
+	const areTheyAEM = checkStaffRole(user?.staffRole);
+
+	const openChat = userName => {
+		socket.emit('aemOpenChat', { userName, aemMember: userInfo?.userName });
+	};
 
 	return (
 		<Popup
-			inverted
+			invertedView
+			P
 			trigger={children}
 			pinned
 			on="click"
@@ -183,6 +192,14 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							<List.Icon name="x" />
 							<List.Content>
 								<a onClick={() => toggleBlacklist()}>{gameSettings?.blacklist.includes(userName) ? 'Unblacklist' : 'Blacklist'}</a>
+							</List.Content>
+						</List.Item>
+					)}
+					{!isMe && !areTheyAEM && isAEM && (
+						<List.Item>
+							<List.Icon name="chat" />
+							<List.Content>
+								<a onClick={() => openChat(userName)}>{'Chat'}</a>
 							</List.Content>
 						</List.Item>
 					)}

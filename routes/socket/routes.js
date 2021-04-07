@@ -23,7 +23,12 @@ const {
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
-	handleUpdatedTheme
+	handleUpdatedTheme,
+	handleOpenChat,
+	handleCloseChat,
+	handleUnsubscribeChat,
+	handleAddNewModDMChat,
+	handleAEMMessages
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -52,7 +57,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList } = require('./models');
+const { games, emoteList, modDMs } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -274,6 +279,11 @@ module.exports.socketRoutes = () => {
 			socket.conn.on('upgrade', () => {
 				sendUserList(socket);
 				socket.emit('emoteList', emoteList);
+
+				const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+				if (dmID) {
+					socket.emit('openModDMs', handleAEMMessages(modDMs[dmID], modUserNames, editorUserNames, adminUserNames));
+				}
 			});
 
 			socket.on('receiveRestrictions', () => {
@@ -418,6 +428,30 @@ module.exports.socketRoutes = () => {
 			socket.on('regatherAEMUsernames', () => {
 				if (authenticated && isAEM) {
 					gatherStaffUsernames();
+				}
+			});
+
+			socket.on('aemOpenChat', data => {
+				if (authenticated && isAEM) {
+					handleOpenChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('aemCloseChat', data => {
+				if (authenticated && isAEM) {
+					handleCloseChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('aemUnsubscribeChat', data => {
+				if (authenticated && isAEM) {
+					handleUnsubscribeChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('modDMsAddChat', data => {
+				if (authenticated) {
+					handleAddNewModDMChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			});
 

@@ -2,6 +2,7 @@ const {
 	games,
 	userList,
 	userListEmitter,
+	modDMs,
 	generalChats,
 	accountCreationDisabled,
 	bypassVPNCheck,
@@ -21,6 +22,7 @@ const { selectVoting } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
+const ModThread = require('../../models/modThread');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
@@ -32,6 +34,7 @@ const { secureGame } = require('./util.js');
 const https = require('https');
 const _ = require('lodash');
 const moment = require('moment');
+const { Webhook } = require('discord-webhook-node');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
@@ -4285,5 +4288,222 @@ module.exports.handleFlappyEvent = (data, game) => {
 		game.general.status = `FLAPPY HITLER: ${game.flappyState.liberalScore} - ${game.flappyState.fascistScore} (${game.flappyState.passedPylonCount})`;
 
 		io.sockets.in(game.general.uid).emit('gameUpdate', game);
+	}
+};
+
+const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
+	if (modUserNames.includes(user) || newStaff.modUserNames.includes(user)) {
+		return 'moderator';
+	} else if (editorUserNames.includes(user) || newStaff.editorUserNames.includes(user)) {
+		return 'editor';
+	} else if (adminUserNames && adminUserNames.includes(user)) {
+		return 'admin';
+	}
+	return '';
+};
+
+module.exports.handleAEMMessages = handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
+	const dmClone = Object.assign({}, dm);
+
+	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
+		dmClone.messages = dmClone.aemOnlyMessages;
+	}
+
+	delete dmClone.aemOnlyMessages;
+	delete dmClone.subscribedPlayers;
+
+	return dmClone;
+};
+
+module.exports.sendInProgressModDMUpdate = sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
+	for (const user of dm.subscribedPlayers) {
+		io.sockets.sockets[
+			Object.keys(io.sockets.sockets).find(
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+			)
+		].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
+	}
+};
+
+module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+	if (data.aemMember !== passport.user) return;
+
+	const receiver = userList.find(x => x.userName === data.userName);
+	const currentSubscribedDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
+
+	if (currentSubscribedDM) {
+		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
+		return; // something fucky happened and they got disconnected from the chat
+	}
+
+	if (modDMs[receiver.userName]) {
+		const dm = modDMs[receiver.userName];
+		dm.subscribedPlayers.push(data.aemMember);
+		dm.aemOnlyMessages.push({
+			date: new Date(),
+			chat: 'has joined.',
+			userName: data.aemMember,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'join'
+		});
+
+		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
+		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+
+	const receiverSocketID = Object.keys(io.sockets.sockets).find(
+		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+	);
+	const receiverSocket = io.sockets.sockets[receiverSocketID];
+
+	if (receiver == null || receiverSocketID == null || receiverSocket == null) {
+		return socket.emit('sendAlert', 'That player is not online!');
+	}
+
+	const initMessage = {
+		date: new Date(),
+		chat:
+			"Every moderator can access this chat if they choose to. Please do not out confidential game information if you're currently playing with a moderator. If you prefer talking to a specific moderator one on one, feel free to DM one on Discord.",
+		userName: '',
+		staffRole: 'moderator',
+		isBroadcast: true,
+		type: 'broadcast'
+	};
+
+	const initializeData = {
+		uid: generateCombination(3, '', true),
+		username: data.userName,
+		aemMember: data.aemMember,
+		startDate: new Date(),
+		subscribedPlayers: [data.userName, data.aemMember],
+		messages: [initMessage],
+		aemOnlyMessages: [initMessage]
+	};
+
+	receiverSocket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
+	socket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
+
+	modDMs[receiver.userName] = initializeData;
+
+	const discordThreadNotifyBody = JSON.stringify({
+		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${receiver.userName}`
+	});
+	const discordThreadNotifOptions = {
+		hostname: 'discordapp.com',
+		path: process.env.DISCORDMODDMSTHREADURL,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+		}
+	};
+	try {
+		const threadReq = https.request(discordThreadNotifOptions);
+		threadReq.end(discordThreadNotifyBody);
+	} catch (e) {
+		console.log(e, 'err in broadcast');
+	}
+};
+
+module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	// save, notify, etc
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	if (dmID) {
+		const dm = modDMs[dmID];
+
+		if (
+			passport.user === dm.aemMember ||
+			(getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) &&
+				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator')
+		) {
+			for (const user of dm.subscribedPlayers) {
+				io.sockets.sockets[
+					Object.keys(io.sockets.sockets).find(
+						socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+					)
+				].emit('closeModDMs');
+			}
+
+			dm.endDate = new Date();
+			dm.messages = dm.aemOnlyMessages;
+			delete dm.aemOnlyMessages;
+			delete dm.subscribedPlayers;
+
+			const modThread = new ModThread(dm);
+			modThread.save();
+
+			const chatLog = [];
+
+			for (const message of dm.messages) {
+				chatLog.push(`${message.userName}${message.userName ? (message.type === 'leave' || message.type === 'join' ? ' ' : ': ') : ''}${message.chat}`);
+			}
+
+			const webhook = new Webhook(`https://discord.com/${process.env.DISCORDMODDMSTHREADURL}`);
+			webhook.send(
+				`__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}`
+			);
+			fs.writeFileSync(`${dm.uid}.txt`, chatLog.join('\n'));
+			webhook.sendFile(`${dm.uid}.txt`);
+			fs.unlinkSync(`${dm.uid}.txt`);
+
+			delete modDMs[dmID];
+		}
+	} else {
+		socket.emit('sendAlert', 'Could not find a DM you are in!');
+	}
+};
+
+module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	const dm = modDMs[dmID];
+
+	if (dm) {
+		dm.aemOnlyMessages.push({
+			date: new Date(),
+			chat: 'has left.',
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'leave'
+		});
+
+		const idx = dm.subscribedPlayers.indexOf(passport.user);
+		if (idx !== -1) {
+			dm.subscribedPlayers.splice(idx, 1);
+		}
+
+		socket.emit('closeModDMs');
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+};
+
+module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	const dmUsername = Object.keys(modDMs).find(
+		x => modDMs[x].username === socket.handshake.session.passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user
+	);
+	if (dmUsername) {
+		const dm = modDMs[dmUsername];
+		const syncDate = new Date();
+
+		dm.messages.push({
+			date: syncDate,
+			chat: data.chat,
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'message'
+		});
+		dm.aemOnlyMessages.push({
+			date: syncDate,
+			chat: data.chat,
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'message'
+		});
+
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 };
