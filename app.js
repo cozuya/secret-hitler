@@ -21,7 +21,7 @@ let store;
 if (process.env.NODE_ENV !== 'production') {
 	const MongoDBStore = require('connect-mongodb-session')(session);
 	store = new MongoDBStore({
-		uri: process.env.MONGO_URL,
+		uri: 'mongodb://localhost:27017/secret-hitler-app',
 		collection: 'sessions'
 	});
 } else {
@@ -133,7 +133,7 @@ if (process.env.DISCORDCLIENTID) {
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
