@@ -138,7 +138,7 @@
 		"prettier-check": "prettier \"**/*.{js,scss,json,jsx}\" --check",
 		"format": "prettier \"**/*.{js,scss,json,jsx}\" --write",
 		"dev": "concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
-		"dev-no-db": "node --max_old_space_size=2560 ./node_modules/.bin/concurrently --names \"SERVER,WEBPACK\" -c \"bgCyanBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:start\"",
+		"dev-no-db": "./node_modules/.bin/concurrently --names \"SERVER,WEBPACK\" -c \"bgCyanBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:start\"",
 		"dev-no-db-inspect": "concurrently --names \"SERVER,WEBPACK\" -c \"bgCyanBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:server\" \"yarn:start\"",
 		"dev-no-server": "concurrently --names \"MONGO,WEBPACK\" -c \"bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:db\" \"yarn:start\"",
 		"create-accounts": "node scripts/createAccounts.js",
