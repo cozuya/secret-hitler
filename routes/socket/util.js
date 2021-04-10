@@ -131,6 +131,43 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 
 module.exports.secureGame = secureGame;
 
+const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
+	if (modUserNames.includes(user) || newStaff.modUserNames.includes(user)) {
+		return 'moderator';
+	} else if (editorUserNames.includes(user) || newStaff.editorUserNames.includes(user)) {
+		return 'editor';
+	} else if (adminUserNames && adminUserNames.includes(user)) {
+		return 'admin';
+	}
+	return '';
+};
+module.exports.getStaffRole = getStaffRole;
+
+module.exports.handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
+	const dmClone = Object.assign({}, dm);
+
+	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
+		dmClone.messages = dmClone.aemOnlyMessages;
+	}
+
+	delete dmClone.aemOnlyMessages;
+	delete dmClone.subscribedPlayers;
+
+	return dmClone;
+};
+
+module.exports.sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
+	for (const user of dm.subscribedPlayers) {
+		try {
+			io.sockets.sockets[
+				Object.keys(io.sockets.sockets).find(
+					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+				)
+			].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
+		} catch (e) {}
+	}
+};
+
 const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
 
 // Calculates the bias in elo points

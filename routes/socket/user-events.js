@@ -29,7 +29,7 @@ const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
-const { secureGame } = require('./util.js');
+const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -4287,42 +4287,6 @@ module.exports.handleFlappyEvent = (data, game) => {
 		game.general.status = `FLAPPY HITLER: ${game.flappyState.liberalScore} - ${game.flappyState.fascistScore} (${game.flappyState.passedPylonCount})`;
 
 		io.sockets.in(game.general.uid).emit('gameUpdate', game);
-	}
-};
-
-const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
-	if (modUserNames.includes(user) || newStaff.modUserNames.includes(user)) {
-		return 'moderator';
-	} else if (editorUserNames.includes(user) || newStaff.editorUserNames.includes(user)) {
-		return 'editor';
-	} else if (adminUserNames && adminUserNames.includes(user)) {
-		return 'admin';
-	}
-	return '';
-};
-
-module.exports.handleAEMMessages = handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
-	const dmClone = Object.assign({}, dm);
-
-	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
-		dmClone.messages = dmClone.aemOnlyMessages;
-	}
-
-	delete dmClone.aemOnlyMessages;
-	delete dmClone.subscribedPlayers;
-
-	return dmClone;
-};
-
-module.exports.sendInProgressModDMUpdate = sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
-	for (const user of dm.subscribedPlayers) {
-		try {
-			io.sockets.sockets[
-				Object.keys(io.sockets.sockets).find(
-					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
-				)
-			].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
-		} catch (e) {}
 	}
 };
 
