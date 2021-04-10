@@ -145,7 +145,7 @@ const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
 };
 module.exports.getStaffRole = getStaffRole;
 
-handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
+const handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
 	const dmClone = Object.assign({}, dm);
 
 	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
