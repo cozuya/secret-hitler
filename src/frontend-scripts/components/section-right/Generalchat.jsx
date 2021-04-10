@@ -27,17 +27,19 @@ export default class Generalchat extends React.Component {
 			this.scrollbar.scrollToBottom();
 		}
 
-		this.props.socket.on('openModDMs', data => {
-			this.setState({ modDMs: data, genchat: false });
-		});
+		if (this.props.socket) {
+			this.props.socket.on('openModDMs', data => {
+				this.setState({ modDMs: data, genchat: false });
+			});
 
-		this.props.socket.on('closeModDMs', () => {
-			this.setState({ modDMs: null, genchat: true });
-		});
+			this.props.socket.on('closeModDMs', () => {
+				this.setState({ modDMs: null, genchat: true });
+			});
 
-		this.props.socket.on('inProgressModDMUpdate', dm => {
-			this.setState({ modDMs: dm });
-		});
+			this.props.socket.on('inProgressModDMUpdate', dm => {
+				this.setState({ modDMs: dm });
+			});
+		}
 	}
 
 	componentWillUnmount() {
