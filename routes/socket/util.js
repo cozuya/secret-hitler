@@ -1,3 +1,5 @@
+const { newStaff } = require('./models');
+
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -143,7 +145,7 @@ const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
 };
 module.exports.getStaffRole = getStaffRole;
 
-module.exports.handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
+handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
 	const dmClone = Object.assign({}, dm);
 
 	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
@@ -155,6 +157,7 @@ module.exports.handleAEMMessages = (dm, user, modUserNames, editorUserNames, adm
 
 	return dmClone;
 };
+module.exports.handleAEMMessages = handleAEMMessages;
 
 module.exports.sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
 	for (const user of dm.subscribedPlayers) {
@@ -164,7 +167,9 @@ module.exports.sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, a
 					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
 				)
 			].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
-		} catch (e) {}
+		} catch (e) {
+			console.log('err', e);
+		}
 	}
 };
 
