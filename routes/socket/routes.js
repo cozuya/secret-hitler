@@ -282,6 +282,7 @@ module.exports.socketRoutes = () => {
 
 				const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
 				if (dmID) {
+					socket.emit('preOpenModDMs');
 					socket.emit('openModDMs', handleAEMMessages(modDMs[dmID], modUserNames, editorUserNames, adminUserNames));
 				}
 			});

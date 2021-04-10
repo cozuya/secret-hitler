@@ -4316,11 +4316,13 @@ module.exports.handleAEMMessages = handleAEMMessages = (dm, user, modUserNames, 
 
 module.exports.sendInProgressModDMUpdate = sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
 	for (const user of dm.subscribedPlayers) {
-		io.sockets.sockets[
-			Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
-			)
-		].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
+		try {
+			io.sockets.sockets[
+				Object.keys(io.sockets.sockets).find(
+					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+				)
+			].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
+		} catch (e) {}
 	}
 };
 
@@ -4328,10 +4330,24 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	const passport = socket.handshake.session.passport;
 	if (data.aemMember !== passport.user) return;
 
+	const aemMember = userList.find(x => x.userName === data.aemMember);
+	if (aemMember && aemMember.staffIncognito) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while Incognito.');
+		return;
+	}
+
 	const receiver = userList.find(x => x.userName === data.userName);
 	const currentSubscribedDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
 
+	const gameOfMod = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
+
+	if (gameOfMod) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while in-game.');
+		return;
+	}
+
 	if (currentSubscribedDM) {
+		socket.emit('preOpenModDMs'); // this is necessary in order to allow the socket on the client to prepare for the openModDMs event
 		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
 		return; // something fucky happened and they got disconnected from the chat
 	}
@@ -4347,6 +4363,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 			type: 'join'
 		});
 
+		socket.emit('preOpenModDMs');
 		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
 		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
@@ -4380,7 +4397,9 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		aemOnlyMessages: [initMessage]
 	};
 
+	receiverSocket.emit('preOpenModDMs');
 	receiverSocket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
+	socket.emit('preOpenModDMs');
 	socket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
 
 	modDMs[receiver.userName] = initializeData;
@@ -4419,11 +4438,17 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator')
 		) {
 			for (const user of dm.subscribedPlayers) {
-				io.sockets.sockets[
-					Object.keys(io.sockets.sockets).find(
-						socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
-					)
-				].emit('closeModDMs');
+				try {
+					const sock =
+						io.sockets.sockets[
+							Object.keys(io.sockets.sockets).find(
+								socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+							)
+						];
+
+					sock.emit('closeModDMs');
+					sock.emit('postCloseModDMs');
+				} catch (e) {}
 			}
 
 			dm.endDate = new Date();
@@ -4482,6 +4507,7 @@ module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNa
 		}
 
 		socket.emit('closeModDMs');
+		socket.emit('postCloseModDMs'); // this is necessary to allow the force-mounted right sidebar to be properly disposed in the right order
 		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 };

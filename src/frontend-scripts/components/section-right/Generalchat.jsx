@@ -40,6 +40,12 @@ export default class Generalchat extends React.Component {
 		});
 	}
 
+	componentWillUnmount() {
+		this.props.socket.off('openModDMs');
+		this.props.socket.off('closeModDMs');
+		this.props.socket.off('inProgressModDMUpdate');
+	}
+
 	componentDidUpdate() {
 		if (!this.state.lock) {
 			this.scrollbar.scrollToBottom();
