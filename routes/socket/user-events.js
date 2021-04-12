@@ -1751,7 +1751,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) {
 		return;
 	}
-	
+
 	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
 		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
