@@ -152,6 +152,19 @@ module.exports.makeReport = (data, game, type = 'report') => {
 									.join('.') // to determine if the IPs are a 3-block match
 						) {
 							matches[seat] = `${account.username} {${seat + 1}} (3-block)`;
+						} else if (
+							ip.includes(':') && // Ensure both IPs are IPv6
+							throwerIP.includes(':') &&
+							ip
+								.split(':')
+								.splice(0, 4)
+								.join(':') === // Splice off first four blocks to check if they match
+								throwerIP
+									.split(':')
+									.splice(0, 4)
+									.join(':') // to determine if the IPs are a 4-block match
+						) {
+							matches[seat] = `${account.username} {${seat + 1}} (4-block IPv6)`;
 						}
 					});
 				})
