@@ -82,7 +82,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 					: `\n__**Message**__: ${httpEscapedSituation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`
 			}`,
 			username: '@Mod Ping',
-			allowed_mentions: { parse: [] },
+			allowed_mentions: { parse: ['roles'] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/612042360318328842.png?v=1'
 		});
 
@@ -116,7 +116,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		report = {
 			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${upperRole}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}`,
 			username: 'Auto Report',
-			allowed_mentions: { parse: [] },
+			allowed_mentions: { parse: ['roles'] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		};
 
@@ -179,7 +179,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		report = {
 			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
 			username: 'Mod Chat',
-			allowed_mentions: { parse: [] },
+			allowed_mentions: { parse: ['roles'] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421311148043.png?v=1'
 		};
 		sendReport(game, report, data, type);
