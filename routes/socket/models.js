@@ -33,8 +33,6 @@ module.exports.cloneSettingsFromRedis = async () => {
 	for (const setting of settingsToReplicate) {
 		globalSettingsCache[setting] = JSON.parse(await getGlobalSetting(setting));
 	}
-
-	console.log(globalSettingsCache);
 };
 
 module.exports.getLastGenchatModPingAsync = async () => {
