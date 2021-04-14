@@ -52,7 +52,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList } = require('./models');
+const { games, emoteList, cloneSettingsFromRedis } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -133,6 +133,9 @@ const gamesGarbageCollector = () => {
 			sendGameList();
 		}
 	});
+
+	// also clone in global settings from redis
+	cloneSettingsFromRedis();
 };
 
 const ensureAuthenticated = socket => {

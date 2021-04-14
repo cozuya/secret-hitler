@@ -2348,8 +2348,9 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		}
 
 		// Attempts to cut down on overloading server resources
-		if (game.general.private && game.chats.length >= 30 && (await getPrivateChatTruncate())) {
-			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
+		const privateChatTruncate = await getPrivateChatTruncate(); // positive integer to represent the chats to truncate at or any falsy value to disable
+		if (privateChatTruncate && game.general.private && game.chats.length >= privateChatTruncate) {
+			game.chats = game.chats.slice(game.chats.length - privateChatTruncate, game.chats.length);
 		}
 
 		if (!game.gameState.isCompleted && game.gameState.isStarted) {

@@ -24,6 +24,19 @@ module.exports.globalSettingsClient = globalSettingsClient;
 const getGlobalSetting = promisify(globalSettingsClient.get).bind(globalSettingsClient);
 const setGlobalSetting = promisify(globalSettingsClient.set).bind(globalSettingsClient);
 
+const globalSettingsCache = {}; // READ ONLY variables that are cloned from redis (they will be reset every game GC when the settings are cloned from redis)
+const settingsToReplicate = [
+	'private-chat-truncate' // type: integer
+];
+
+module.exports.cloneSettingsFromRedis = async () => {
+	for (const setting of settingsToReplicate) {
+		globalSettingsCache[setting] = JSON.parse(await getGlobalSetting(setting));
+	}
+
+	console.log(globalSettingsCache);
+};
+
 module.exports.getLastGenchatModPingAsync = async () => {
 	return JSON.parse(await getGlobalSetting('genchat-mod-ping'));
 };
@@ -31,7 +44,7 @@ module.exports.setLastGenchatModPingAsync = async date => {
 	await setGlobalSetting('genchat-mod-ping', JSON.stringify(date));
 };
 module.exports.getPrivateChatTruncate = async () => {
-	return JSON.parse(await getGlobalSetting('private-chat-truncate'));
+	return globalSettingsCache['private-chat-truncate'];
 };
 
 module.exports.emoteList = emotes;
