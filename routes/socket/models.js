@@ -30,6 +30,9 @@ module.exports.getLastGenchatModPingAsync = async () => {
 module.exports.setLastGenchatModPingAsync = async date => {
 	await setGlobalSetting('genchat-mod-ping', JSON.stringify(date));
 };
+module.exports.getPrivateChatTruncate = async () => {
+	return JSON.parse(await getGlobalSetting('private-chat-truncate'));
+};
 
 module.exports.emoteList = emotes;
 

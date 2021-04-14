@@ -14,7 +14,8 @@ const {
 	testIP,
 	emoteList,
 	setLastGenchatModPingAsync,
-	getLastGenchatModPingAsync
+	getLastGenchatModPingAsync,
+	getPrivateChatTruncate
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -728,6 +729,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance9p2f: data.rebalance9p2f,
 			unlisted: data.unlistedGame && !data.privatePassword,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
+			privateAnonymousRemakes: data.privateAnonymousRemakes,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -1279,11 +1281,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	const { remakeData, publicPlayersState } = game;
 	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const realPlayerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
-	if (game && game.general && game.general.private) {
+	if (game && game.general && game.general.private && !game.general.privateAnonymousRemakes) {
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -1292,7 +1295,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					text: 'Player '
 				},
 				{
-					text: `${passport.user} {${playerIndex + 1}} `,
+					text: `${passport.user} {${realPlayerIndex + 1}} `,
 					type: 'player'
 				}
 			]
@@ -1630,7 +1633,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {function} addNewClaim - links to handleAddNewClaim
  * @param {boolean} isTourneyMod - self explain
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
+module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
 	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
@@ -2345,7 +2348,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		// Attempts to cut down on overloading server resources
-		if (game.general.private && game.chats.length >= 30) {
+		if (game.general.private && game.chats.length >= 30 && (await getPrivateChatTruncate())) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
 
