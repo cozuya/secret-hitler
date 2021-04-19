@@ -80,7 +80,7 @@ function buildEnhancedGameSummary(_summary) {
 
 	const casualGame = summary.gameSetting.casualGame;
 	const practiceGame = summary.gameSetting.practiceGame;
-	const unlisted = summary.gameSetting.practiceGame;
+	const unlisted = summary.gameSetting.unlisted;
 
 	// String
 	const winningTeam = (() => {
