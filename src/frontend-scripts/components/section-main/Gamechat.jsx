@@ -559,7 +559,7 @@ class Gamechat extends React.Component {
 		} else {
 			if (
 				((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: true,
@@ -571,7 +571,7 @@ class Gamechat extends React.Component {
 				gameState.isStarted &&
 				!gameState.isCompleted &&
 				gameInfo.general.disableObserver &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: true,
@@ -581,7 +581,7 @@ class Gamechat extends React.Component {
 			if (
 				(!gameState.isStarted || gameState.isCompleted) &&
 				gameInfo.general.disableObserverLobby &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: true,
@@ -591,7 +591,7 @@ class Gamechat extends React.Component {
 
 			if (
 				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
-				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: false,
@@ -1150,7 +1150,7 @@ class Gamechat extends React.Component {
 							this.renderModEndGameButtons()}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1186,7 +1186,7 @@ class Gamechat extends React.Component {
 							)}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1222,7 +1222,7 @@ class Gamechat extends React.Component {
 							)}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1520,7 +1520,7 @@ class Gamechat extends React.Component {
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					{(() => {
 						if (
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
 							userInfo &&

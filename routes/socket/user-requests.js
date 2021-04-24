@@ -99,7 +99,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 						casual: game.general.casualGame,
 						private: game.general.private,
 						custom: game.customGameSettings.enabled,
-						unlisted: game.general.unlisted
+						unlistedGame: game.general.unlistedGame
 					});
 				});
 			}
@@ -317,14 +317,14 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 	if (user) {
 		user.status = {
 			type:
-				override && game && !game.general.unlisted
+				override && game && !game.general.unlistedGame
 					? override
 					: game
 					? game.general.private
 						? 'private'
-						: !game.general.unlisted && game.general.rainbowgame
+						: !game.general.unlistedGame && game.general.rainbowgame
 						? 'rainbow'
-						: !game.general.unlisted
+						: !game.general.unlistedGame
 						? 'playing'
 						: 'none'
 					: 'none',
