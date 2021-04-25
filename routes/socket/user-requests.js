@@ -99,7 +99,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 						casual: game.general.casualGame,
 						private: game.general.private,
 						custom: game.customGameSettings.enabled,
-						unlistedGame: game.general.unlistedGame
+						unlisted: game.general.unlistedGame
 					});
 				});
 			}

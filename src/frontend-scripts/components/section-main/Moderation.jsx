@@ -384,7 +384,7 @@ export default class Moderation extends React.Component {
 		};
 		const { gameList, gameSort } = this.state;
 		const getGameType = game => {
-			if (game.unlistedGame) return 'unlistedGame';
+			if (game.unlisted) return 'unlistedGame';
 			if (game.custom) return 'custom';
 			if (game.casual) return 'casual';
 			if (game.private) return 'private';
