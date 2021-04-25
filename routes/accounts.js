@@ -107,8 +107,8 @@ const checkIP = config => {
 		let ipBanned = false;
 		const checkFragban = ban => {
 			return (
-				(new Date() < ban.bannedDate && doesIPMatchCIDR(ban.ip, signupIP)) ||
-				(new Date() < ban.bannedDate &&
+				((new Date() < ban.bannedDate || ban.permanent) && doesIPMatchCIDR(ban.ip, signupIP)) ||
+				((new Date() < ban.bannedDate || ban.permanent) &&
 				!ban.ip.includes('/') &&
 				ban.ip.includes('.') &&
 				signupIP.includes('.') && // backwards compatability
@@ -291,7 +291,8 @@ const continueSignup = config => {
 						const newPlayerBan = new BannedIP({
 							bannedDate: new Date(),
 							type: 'new',
-							signupIP
+							signupIP,
+							permanent: false
 						});
 
 						passport.authenticate(type)(req, res, () => {
@@ -321,7 +322,8 @@ const continueSignup = config => {
 					const newPlayerBan = new BannedIP({
 						bannedDate: new Date(),
 						type: 'new',
-						ip: signupIP
+						ip: signupIP,
+						permanent: false
 					});
 					newPlayerBan.save();
 					if (!save.gameSettings.isPrivate) {

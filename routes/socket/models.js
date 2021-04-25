@@ -285,7 +285,7 @@ module.exports.createNewBypass = () => {
 
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
-BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime }, permanent: false }, (err, r) => {
 	if (err) throw err;
 });
 const banLength = {
@@ -303,6 +303,14 @@ module.exports.testIP = (IP, callback) => {
 			else {
 				let date;
 				let unbannedTime;
+				for (const ipban of ips) {
+					if (ipban.permanent) {
+						callback(ipban.type, new Date(0));
+						return;
+					}
+				}
+
+				// if we have no permanent ip bans, check by longest
 				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];
 
 				if (ip) {
