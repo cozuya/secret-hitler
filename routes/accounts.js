@@ -63,7 +63,7 @@ const checkIP = config => {
 		creationDisabledSignup.save(() => {
 			res.status(403).json({
 				message:
-					'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on discord.'
+					'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  If you need an exception, please contact our moderators on discord.'
 			});
 		});
 	} else if (torIps.includes(signupIP)) {
@@ -142,7 +142,7 @@ const checkIP = config => {
 				fragSignup.save(() => {
 					res.status(401).json({
 						message:
-							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on Discord.'
+							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  If you need an exception, please contact our moderators on Discord.'
 					});
 				});
 				ipBanned = true;
