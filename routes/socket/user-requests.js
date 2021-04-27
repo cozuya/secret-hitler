@@ -126,6 +126,7 @@ module.exports.sendSignups = socket => {
 	Signups.find({ type: { $in: ['local', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -138,6 +139,7 @@ module.exports.sendAllSignups = socket => {
 	Signups.find({ type: { $nin: ['local', 'private', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -150,6 +152,7 @@ module.exports.sendPrivateSignups = socket => {
 	Signups.find({ type: 'private' })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
