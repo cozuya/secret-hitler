@@ -5,6 +5,7 @@ const BannedIP = require('../../models/bannedIP');
 const redis = require('redis');
 const { promisify } = require('util');
 const version = require('../../version');
+const { doesIPMatchCIDR } = require('./ip-obf');
 
 const fs = require('fs');
 const emotes = {};
@@ -298,9 +299,18 @@ module.exports.testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
 	else if (module.exports.ipbansNotEnforced.status) callback(null);
 	else {
-		BannedIP.find({ ip: IP }, (err, ips) => {
+		BannedIP.find({}, (err, allIPs) => {
 			if (err) callback(err);
 			else {
+				const ips = [];
+
+				for (const potentialMatch of allIPs) {
+					if (potentialMatch.ip == IP || doesIPMatchCIDR(potentialMatch.ip, IP)) {
+						// using == because that's equivalent to mongo's { ip : IP } afaik
+						ips.push(potentialMatch);
+					}
+				}
+
 				let date;
 				let unbannedTime;
 				for (const ipban of ips) {
@@ -319,7 +329,7 @@ module.exports.testIP = (IP, callback) => {
 				}
 
 				if (ip && unbannedTime > date) {
-					if (process.env.NODE_ENV === 'production') {
+					if (process.env.NODE_ENV === 'production' || process.env.IPBANSINDEV) {
 						callback(ip.type, unbannedTime);
 					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);

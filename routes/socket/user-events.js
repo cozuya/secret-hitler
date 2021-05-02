@@ -3062,6 +3062,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 			};
 
+			// tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
+			const handleDefaultIPv6Range = ip => {
+				return ip.indexOf(':') === -1 ? ip : ip + '/64';
+			};
+
 			switch (data.action) {
 				case 'lagMeter':
 					lagTest.push(Date.now() - data.frontEndTime);
@@ -3363,7 +3368,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const ipban = new BannedIP({
 							bannedDate: new Date(),
 							type: 'small',
-							ip: data.ip,
+							ip: handleDefaultIPv6Range(data.ip),
 							permanent: false
 						});
 
@@ -3417,7 +3422,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout = new BannedIP({
 						bannedDate: new Date(),
 						type: 'small',
-						ip: data.ip,
+						ip: handleDefaultIPv6Range(data.ip),
 						permanent: false
 					});
 					timeout.save(() => {
@@ -3457,7 +3462,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip)
 					});
 					timeout3.save(() => {
 						Account.findOne({ username: data.userName })
@@ -3563,7 +3568,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const ipbanl = new BannedIP({
 						bannedDate: new Date(),
 						type: 'big',
-						ip: data.ip,
+						ip: handleDefaultIPv6Range(data.ip),
 						permanent: false
 					});
 

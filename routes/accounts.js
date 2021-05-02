@@ -83,7 +83,7 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
-	} else if (process.env.NODE_ENV !== 'production') {
+	} else if (process.env.NODE_ENV !== 'production' && !process.env.IPBANSINDEV) {
 		config.vpnScore = 0;
 		next(config);
 	} else if (getIPIntelCounter.count >= 1995 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
@@ -176,14 +176,29 @@ const checkIP = config => {
 							ipBanned = true;
 						}
 					}
-					if (!ipBanned) {
+					if (ipBanned) {
+						const ipbannedSignup = new Signups({
+							date: new Date(),
+							userName: username,
+							type: `Failed - IPBanned ${banType}`,
+							ip: obfIP(signupIP),
+							email: config.isOAuth
+								? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+								: Boolean(email),
+							unobfuscatedIP: signupIP,
+							oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
+						});
+						ipbannedSignup.save();
+					} else {
 						if (bypassVPNCheck.status) {
 							config.vpnScore = 0;
 							next(config);
 						} else if (VPNCache[signupIP]) {
 							config.vpnScore = VPNCache[signupIP];
 							next(config);
-						} else {
+						} else if (!process.env.IPBANSINDEV) {
+							// we dont want to send bogus requests to gii if we are in dev
+							// (this is only reachable if we are not in production or we dont have IPBANSINDEV set and if we dont have IPBANSINDEV set we are guaranteed to be in production)
 							fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
 								.then(res => res.json())
 								.then(json => {
@@ -543,6 +558,17 @@ module.exports.accounts = torIpsParam => {
 				username: req.user.username
 			}).then(player => {
 				if (req.ipBanned && req.ipBanned !== '') {
+					const ipbannedLogin = new Signups({
+						date: new Date(),
+						userName: req.user.username,
+						type: `Failed Login - IPBanned ${req.ipBanned}`,
+						ip: obfIP(req.expandedIP),
+						email: '',
+						unobfuscatedIP: req.expandedIP
+					});
+
+					ipbannedLogin.save();
+
 					if ((req.ipBanned === 'small' || req.ipBanned === 'big') && !player.gameSettings.ignoreIPBans) {
 						req.logOut();
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
