@@ -147,7 +147,7 @@ const checkIP = config => {
 				});
 				ipBanned = true;
 			} else {
-				testIP(signupIP, (banType, unbanTime) => {
+				testIP(signupIP, (banType, unbanTime, permanent) => {
 					if (hasBypass && banType == 'new') banType = null;
 					if (banType && !hasBypass) {
 						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
@@ -180,7 +180,7 @@ const checkIP = config => {
 						const ipbannedSignup = new Signups({
 							date: new Date(),
 							userName: username,
-							type: `Failed - IPBanned ${banType}`,
+							type: `Failed - IPBanned ${permanent ? 'permanent ' : ''}${banType}`,
 							ip: obfIP(signupIP),
 							email: config.isOAuth
 								? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
