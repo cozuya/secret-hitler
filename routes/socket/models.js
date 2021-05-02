@@ -315,7 +315,7 @@ module.exports.testIP = (IP, callback) => {
 				let unbannedTime;
 				for (const ipban of ips) {
 					if (ipban.permanent) {
-						callback(ipban.type, new Date(0));
+						callback(ipban.type, new Date(0), true);
 						return;
 					}
 				}
@@ -330,7 +330,7 @@ module.exports.testIP = (IP, callback) => {
 
 				if (ip && unbannedTime > date) {
 					if (process.env.NODE_ENV === 'production' || process.env.IPBANSINDEV) {
-						callback(ip.type, unbannedTime);
+						callback(ip.type, unbannedTime, false);
 					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);
 						callback(null);

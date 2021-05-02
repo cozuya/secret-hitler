@@ -538,12 +538,13 @@ module.exports.accounts = torIpsParam => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(req.expandedIP, (banType, unbanTime) => {
+			testIP(req.expandedIP, (banType, unbanTime, permanent) => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 					else if (banType === 'small' || banType === 'big' || banType === 'tiny') {
 						req.ipBanned = banType;
 						req.ipBanEnd = unbanTime;
+						req.permanentIPBan = permanent;
 						return next();
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
@@ -561,7 +562,7 @@ module.exports.accounts = torIpsParam => {
 					const ipbannedLogin = new Signups({
 						date: new Date(),
 						userName: req.user.username,
-						type: `Failed Login - IPBanned ${req.ipBanned}`,
+						type: `Failed Login - IPBanned ${req.permanentIPBan ? 'permanent ' : ''}${req.ipBanned}`,
 						ip: obfIP(req.expandedIP),
 						email: '',
 						unobfuscatedIP: req.expandedIP
