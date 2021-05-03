@@ -27,7 +27,7 @@ const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
-const { secureGame } = require('./util.js');
+const { secureGame, handleDefaultIPv6Range } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -3060,11 +3060,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					.catch(err => {
 						console.log(err, 'ban user err');
 					});
-			};
-
-			// tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
-			const handleDefaultIPv6Range = ip => {
-				return ip.indexOf(':') === -1 ? ip : ip + '/64';
 			};
 
 			switch (data.action) {

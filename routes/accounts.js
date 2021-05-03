@@ -11,6 +11,7 @@ const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
 const { expandAndSimplify, obfIP, doesIPMatchCIDR } = require('./socket/ip-obf');
 const prodCacheBustToken = require('./prodCacheBustToken');
+const { handleDefaultIPv6Range } = require('./socket/util');
 
 /**
  * @param {object} req - express request object.
@@ -222,6 +223,10 @@ const checkIP = config => {
 									res.status(501).json({ message: 'There was a fatal error in processing your request. Please contact our moderators on Discord' });
 									return;
 								});
+						} else {
+							// we are in dev, just pass through a 0
+							config.vpnScore = 0;
+							next(config);
 						}
 					}
 				});
@@ -306,7 +311,7 @@ const continueSignup = config => {
 						const newPlayerBan = new BannedIP({
 							bannedDate: new Date(),
 							type: 'new',
-							signupIP,
+							ip: handleDefaultIPv6Range(signupIP),
 							permanent: false
 						});
 
@@ -337,7 +342,7 @@ const continueSignup = config => {
 					const newPlayerBan = new BannedIP({
 						bannedDate: new Date(),
 						type: 'new',
-						ip: signupIP,
+						ip: handleDefaultIPv6Range(signupIP),
 						permanent: false
 					});
 					newPlayerBan.save();
