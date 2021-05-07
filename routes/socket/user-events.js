@@ -2279,7 +2279,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						timestamp: new Date(),
 						gameChat: true,
 						chat: [
-							{ text: `${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1})`, type: 'player' },
+							{ text: `${game.general.blindMode ? '' : publicPlayersState[affectedPlayerNumber].userName} {${affectedPlayerNumber + 1}}`, type: 'player' },
 							{ text: ' has been successfully pinged.' }
 						]
 					});
