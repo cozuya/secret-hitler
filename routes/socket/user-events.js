@@ -4300,24 +4300,23 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		return;
 	}
 
-	const receiver = userList.find(x => x.userName === data.userName);
-	const currentSubscribedDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
+	const dmReceiver = userList.find(x => x.userName === data.userName);
+	const modInDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
+	const modInGame = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
 
-	const gameOfMod = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
-
-	if (gameOfMod) {
+	if (modInGame) {
 		socket.emit('sendAlert', 'You cannot start or join a chat while in-game.');
 		return;
 	}
 
-	if (currentSubscribedDM) {
+	if (modInDM) {
 		socket.emit('preOpenModDMs'); // this is necessary in order to allow the socket on the client to prepare for the openModDMs event
-		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], modUserNames, editorUserNames, adminUserNames));
 		return; // something fucky happened and they got disconnected from the chat
 	}
 
-	if (modDMs[receiver.userName]) {
-		const dm = modDMs[receiver.userName];
+	if (modDMs[dmReceiver.userName]) {
+		const dm = modDMs[dmReceiver.userName];
 		dm.subscribedPlayers.push(data.aemMember);
 		dm.aemOnlyMessages.push({
 			date: new Date(),
@@ -4328,16 +4327,16 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		});
 
 		socket.emit('preOpenModDMs');
-		socket.emit('openModDMs', handleAEMMessages(modDMs[receiver], modUserNames, editorUserNames, adminUserNames));
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], modUserNames, editorUserNames, adminUserNames));
 		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 
-	const receiverSocketID = Object.keys(io.sockets.sockets).find(
+	const dmReceiverSocketID = Object.keys(io.sockets.sockets).find(
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
-	const receiverSocket = io.sockets.sockets[receiverSocketID];
+	const dmReceiverSocket = io.sockets.sockets[dmReceiverSocketID];
 
-	if (receiver == null || receiverSocketID == null || receiverSocket == null) {
+	if (dmReceiver == null || dmReceiverSocketID == null || dmReceiverSocket == null) {
 		return socket.emit('sendAlert', 'That player is not online!');
 	}
 
@@ -4351,7 +4350,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		type: 'broadcast'
 	};
 
-	const initializeData = {
+	const dmInitializeData = {
 		_id: generateCombination(3, '', true),
 		username: data.userName,
 		aemMember: data.aemMember,
@@ -4361,15 +4360,15 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		aemOnlyMessages: [initMessage]
 	};
 
-	receiverSocket.emit('preOpenModDMs');
-	receiverSocket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
+	dmReceiverSocket.emit('preOpenModDMs');
+	dmReceiverSocket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.userName, modUserNames, editorUserNames, adminUserNames));
 	socket.emit('preOpenModDMs');
-	socket.emit('openModDMs', handleAEMMessages(initializeData, modUserNames, editorUserNames, adminUserNames));
+	socket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.aemMember, modUserNames, editorUserNames, adminUserNames));
 
-	modDMs[receiver.userName] = initializeData;
+	modDMs[dmReceiver.userName] = dmInitializeData;
 
 	const discordThreadNotifyBody = JSON.stringify({
-		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${receiver.userName}`
+		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
 	});
 	const discordThreadNotifOptions = {
 		hostname: 'discordapp.com',
@@ -4420,8 +4419,8 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 			delete dm.aemOnlyMessages;
 			delete dm.subscribedPlayers;
 
-			const modThread = new ModThread(dm);
-			modThread.save();
+			const savedDM = new ModThread(dm);
+			savedDM.save();
 
 			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
 			const discordThreadNotifyBody = JSON.stringify({
@@ -4477,27 +4476,22 @@ module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNa
 };
 
 module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
-	const dmUsername = Object.keys(modDMs).find(
+	const receivingPlayer = Object.keys(modDMs).find(
 		x => modDMs[x].username === socket.handshake.session.passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user
 	);
-	if (dmUsername) {
-		const dm = modDMs[dmUsername];
-		const syncDate = new Date();
+	if (receivingPlayer) {
+		const dm = modDMs[receivingPlayer];
+		const now = new Date();
+		const newMessage = {
+			date: now,
+			chat: data.chat,
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'message'
+		};
 
-		dm.messages.push({
-			date: syncDate,
-			chat: data.chat,
-			userName: passport.user,
-			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
-			type: 'message'
-		});
-		dm.aemOnlyMessages.push({
-			date: syncDate,
-			chat: data.chat,
-			userName: passport.user,
-			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
-			type: 'message'
-		});
+		dm.messages.push(newMessage);
+		dm.aemOnlyMessages.push(newMessage);
 
 		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}

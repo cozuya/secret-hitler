@@ -27,9 +27,9 @@ const {
 	handleOpenChat,
 	handleCloseChat,
 	handleUnsubscribeChat,
-	handleAddNewModDMChat,
-	handleAEMMessages
+	handleAddNewModDMChat
 } = require('./user-events');
+const { handleAEMMessages } = require('./util');
 const {
 	sendPlayerNotes,
 	sendUserReports,

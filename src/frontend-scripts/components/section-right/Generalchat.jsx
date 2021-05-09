@@ -534,7 +534,7 @@ export default class Generalchat extends React.Component {
 			<section className="generalchat">
 				<section className="generalchat-header">
 					<div className="clearfix">
-						<div className="ui top attached menu">
+						<div className="ui ui-theme top attached menu">
 							<a
 								className={`${this.state.genchat ? 'active' : ''} item`}
 								onClick={() => {
