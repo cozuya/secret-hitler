@@ -280,10 +280,13 @@ module.exports.socketRoutes = () => {
 				sendUserList(socket);
 				socket.emit('emoteList', emoteList);
 
-				const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
-				if (dmID) {
-					socket.emit('preOpenModDMs');
-					socket.emit('openModDMs', handleAEMMessages(modDMs[dmID], modUserNames, editorUserNames, adminUserNames));
+				// sockets should not be unauthenticated but let's make sure anyway
+				if (passport.user) {
+					const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+					if (dmID) {
+						socket.emit('preOpenModDMs');
+						socket.emit('openModDMs', handleAEMMessages(modDMs[dmID], passport.user, modUserNames, editorUserNames, adminUserNames));
+					}
 				}
 			});
 

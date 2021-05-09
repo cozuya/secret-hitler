@@ -4310,12 +4310,14 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	}
 
 	if (modInDM) {
+		// if the mod is already DMing someone, we should send them the DM they were in instead of opening a new one
 		socket.emit('preOpenModDMs'); // this is necessary in order to allow the socket on the client to prepare for the openModDMs event
-		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], modUserNames, editorUserNames, adminUserNames));
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], passport.user, modUserNames, editorUserNames, adminUserNames));
 		return; // something fucky happened and they got disconnected from the chat
 	}
 
 	if (modDMs[dmReceiver.userName]) {
+		// if there is an open DM but the mod is not the one who created it, they should start observing
 		const dm = modDMs[dmReceiver.userName];
 		dm.subscribedPlayers.push(data.aemMember);
 		dm.aemOnlyMessages.push({
@@ -4327,7 +4329,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		});
 
 		socket.emit('preOpenModDMs');
-		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], modUserNames, editorUserNames, adminUserNames));
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], data.aemMember, modUserNames, editorUserNames, adminUserNames));
 		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 
@@ -4351,6 +4353,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	};
 
 	const dmInitializeData = {
+		// create mod DM
 		_id: generateCombination(3, '', true),
 		username: data.userName,
 		aemMember: data.aemMember,
@@ -4368,6 +4371,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	modDMs[dmReceiver.userName] = dmInitializeData;
 
 	const discordThreadNotifyBody = JSON.stringify({
+		// and post it to discord
 		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
 	});
 	const discordThreadNotifOptions = {
@@ -4398,7 +4402,7 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 		if (
 			passport.user === dm.aemMember ||
 			(getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) &&
-				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator')
+				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator') // only the mod who created the DM or any editor can close the DM
 		) {
 			for (const user of dm.subscribedPlayers) {
 				try {
@@ -4424,6 +4428,7 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 
 			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
 			const discordThreadNotifyBody = JSON.stringify({
+				// save and send to discord
 				content: dmCloseMessage
 			});
 			const discordThreadNotifOptions = {
@@ -4457,6 +4462,7 @@ module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNa
 
 	if (dm) {
 		dm.aemOnlyMessages.push({
+			// add leave message (this is only called for mods leaving and not the DM closing)
 			date: new Date(),
 			chat: 'has left.',
 			userName: passport.user,
@@ -4476,10 +4482,9 @@ module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNa
 };
 
 module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
-	const receivingPlayer = Object.keys(modDMs).find(
-		x => modDMs[x].username === socket.handshake.session.passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user
-	);
+	const receivingPlayer = Object.keys(modDMs).find(x => modDMs[x].username === passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user);
 	if (receivingPlayer) {
+		// add a new chat and push it to AEM chat and player chat
 		const dm = modDMs[receivingPlayer];
 		const now = new Date();
 		const newMessage = {
