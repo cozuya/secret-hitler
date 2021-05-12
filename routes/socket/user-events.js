@@ -500,6 +500,15 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+
+	if (!isBlacklistSafe) {
+		socket.emit('gameJoinStatusUpdate', {
+			status: 'blacklisted'
+		});
+		return;
+	}
+
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
@@ -507,7 +516,6 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist || !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
@@ -697,8 +705,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -859,7 +865,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 
 	user.timeLastGameCreated = currentTime;
-
 	Account.findOne({ username: user.userName }).then(account => {
 		newGame.private = {
 			reports: {},
@@ -870,7 +875,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: user.userName,
+			gameCreatorBlacklist: user.blacklist
 		};
 
 		if (newGame.general.private) {
@@ -884,7 +891,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		sendGameList();
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
-		socket.emit('gameUpdate', newGame);
+		const cloneNewGame = Object.assign({}, newGame);
+		delete cloneNewGame.private;
+		socket.emit('gameUpdate', cloneNewGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
 	});
 };
@@ -1501,10 +1510,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					}
 				}
 			});
-			if (creatorRemade && newGame.general.gameCreatorBlacklist != null) {
+			if (creatorRemade && newGame.private.gameCreatorBlacklist != null) {
 				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
-				if (creator) newGame.general.gameCreatorBlacklist = creator.blacklist;
-			} else newGame.general.gameCreatorBlacklist = null;
+				if (creator) newGame.private.gameCreatorBlacklist = creator.blacklist;
+			} else newGame.private.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
 		}, 3000);
 	};

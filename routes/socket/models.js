@@ -189,7 +189,7 @@ module.exports.formattedGameList = () => {
 			? 'isStarted'
 			: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
-		gameCreatorName: games[gameName].general.gameCreatorName,
+		gameCreatorName: games[gameName].private.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,
 		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
 		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
