@@ -45,7 +45,7 @@
 			.chat-user--game,
 			.game-chat,
 			.chat-user--game .chat-timestamp {
-				color: var(--theme-background-3);
+				color: var(--theme-text-3);
 			}
 
 			.chat-user--claim,
@@ -101,6 +101,12 @@
 	.displaychats {
 		position: absolute;
 		right: 140px;
+		z-index: 110;
+	}
+
+	.displayroles {
+		position: absolute;
+		right: 265px;
 		z-index: 110;
 	}
 

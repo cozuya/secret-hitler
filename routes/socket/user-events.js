@@ -864,6 +864,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			remakeVotesPeeked: false,
@@ -1442,6 +1443,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			invIndex: -1,

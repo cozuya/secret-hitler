@@ -35,7 +35,7 @@ const {
 	sendGeneralChats,
 	sendUserList,
 	sendSpecificUserList,
-	sendReplayGameChats,
+	sendReplayGameData,
 	sendSignups,
 	sendAllSignups,
 	sendPrivateSignups,
@@ -641,8 +641,8 @@ module.exports.socketRoutes = () => {
 					updateUserStatus(passport);
 				}
 			});
-			socket.on('getReplayGameChats', uid => {
-				sendReplayGameChats(socket, uid);
+			socket.on('getReplayGameData', uid => {
+				sendReplayGameData(socket, uid);
 			});
 			// election
 

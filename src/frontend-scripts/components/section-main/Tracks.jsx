@@ -119,7 +119,7 @@ class Tracks extends React.Component {
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
-		let experiancedModeTooltip;
+		let experiencedModeTooltip;
 		let privateOnly;
 		let privateOnlyTooltip;
 		let priv;
@@ -205,10 +205,11 @@ class Tracks extends React.Component {
 
 		if (game.experiencedMode) {
 			experiencedMode = <i className="fast forward icon" />;
-			experiancedModeTooltip = 'Speed Mode';
+			experiencedModeTooltip = 'Speed Mode';
 		}
 
-		if (game.rainbowgame) {
+		if (game.rainbowgame || game.isRainbow) {
+			// check both active and saved variables
 			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
 			rainbowgameTooltip = 'Experienced Game';
 		}
@@ -283,7 +284,7 @@ class Tracks extends React.Component {
 				)}
 				{experiencedMode && (
 					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiencedModeTooltip} />
 					</span>
 				)}
 				{privateOnly && (

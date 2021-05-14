@@ -261,16 +261,18 @@ module.exports.sendPlayerNotes = (socket, data) => {
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendReplayGameChats = (socket, uid) => {
-	Game.findOne({ uid }).then((game, err) => {
-		if (err) {
-			console.log(err, 'game err retrieving for replay');
-		}
+module.exports.sendReplayGameData = (socket, uid) => {
+	Game.findOne({ uid })
+		.select({ _id: 0, _v: 0 })
+		.then((game, err) => {
+			if (err) {
+				console.log(err, 'game err retrieving for replay');
+			}
 
-		if (game) {
-			socket.emit('replayGameChats', game.chats);
-		}
-	});
+			if (game) {
+				socket.emit('replayGameData', game);
+			}
+		});
 };
 
 /**

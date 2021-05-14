@@ -2,13 +2,17 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const Game = new Schema({
 	uid: String,
+	name: String,
+	flag: String,
 	date: Date,
+	playerChats: String, // silent vs emote vs regular
 	playerCount: Number,
 	winningPlayers: Array,
 	losingPlayers: Array,
 	winningTeam: String,
 	season: Number,
 	isRainbow: Boolean,
+	eloMinimum: Number,
 	rebalance6p: Boolean,
 	rebalance7p: Boolean,
 	rebalance9p: Boolean,
@@ -21,7 +25,9 @@ const Game = new Schema({
 	customGame: Boolean,
 	unlisted: Boolean,
 	isVerifiedOnly: Boolean,
-	chats: Array
+	chats: Array,
+	timedMode: Number, // timer length
+	blindMode: Boolean
 });
 
 module.exports = mongoose.model('Game', Game);

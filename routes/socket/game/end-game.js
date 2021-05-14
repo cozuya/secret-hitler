@@ -26,8 +26,10 @@ const saveGame = game => {
 	 */
 	const gameToSave = new Game({
 		uid: game.general.uid,
+		name: game.general.name,
 		date: new Date(),
-		chats: game.chats,
+		playerChats: game.general.playerChats,
+		chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
 		isVerifiedOnly: game.general.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
 		winningPlayers: game.private.seatedPlayers
@@ -55,7 +57,9 @@ const saveGame = game => {
 		unlisted: unlistedBool,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
-		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
+		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
+		timedMode: game.general.timedMode,
+		blindMode: game.general.blindMode
 	});
 
 	let enhanced;
