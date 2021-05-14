@@ -421,6 +421,19 @@ module.exports.selectOnePolicy = (passport, game) => {
 											if (game.gameState.timedModeEnabled) {
 												game.gameState.timedModeEnabled = false;
 												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
+												game.private.replayGameChats.push({
+													gameChat: true,
+													timestamp: new Date(),
+													chat: [
+														{
+															text: president.userName,
+															type: 'player'
+														},
+														{
+															text: ' was forced by the timer to randomly select whether to discard the top policy.'
+														}
+													]
+												});
 											}
 										},
 										process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -557,6 +570,8 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		);
 	}
 };
+
+const selectBurnCard = module.exports.selectBurnCard; // site crashes without this line xd
 
 /**
  * @param {object} game - game to act on.

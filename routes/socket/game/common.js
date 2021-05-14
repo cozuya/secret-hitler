@@ -189,6 +189,19 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 					selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
+					game.private.replayGameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: pendingPresidentPlayer.userName,
+								type: 'player'
+							},
+							{
+								text: ' was forced by the timer to select a random chancellor.'
+							}
+						]
+					});
 				}
 			},
 			process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000

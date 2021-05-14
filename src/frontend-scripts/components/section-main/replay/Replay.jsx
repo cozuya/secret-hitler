@@ -240,6 +240,7 @@ class ReplayWrapper extends React.Component {
 			switch (this.props.replay.status) {
 				case 'INITIAL':
 				case 'LOADING':
+					if (this.state.requestedData) this.setState({ requestedData: false }); // ensure our data isn't stale
 					return (
 						<div className="ui active dimmer">
 							<div className="ui huge text loader">Loading</div>
