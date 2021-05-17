@@ -63,16 +63,7 @@ module.exports.selectPolicies = (passport, game, socket) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 3)
 		});
 
 		president.cardFlingerState = [
@@ -265,16 +256,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 1).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 1)
 		});
 
 		const policy = game.private.policies[0];

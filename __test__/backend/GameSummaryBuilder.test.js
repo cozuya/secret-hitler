@@ -36,7 +36,7 @@ describe('GameSummaryBuilder', () => {
 	});
 
 	it('should snap to log', () => {
-		const presidentClaim = { reds: 2, blues: 1 };
+		const presidentClaim = ['fascist', 'liberal', 'fascist'];
 
 		gsb = gsb
 			.nextTurn()

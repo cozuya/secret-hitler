@@ -728,15 +728,6 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 module.exports.selectChancellorVoteOnVeto = selectChancellorVoteOnVeto;
 
-// todo check this argument for jsdoc
-const handToLog = hand =>
-	hand.reduce(
-		(hand, policy) => {
-			return policy === 'fascist' ? Object.assign({}, hand, { reds: hand.reds + 1 }) : Object.assign({}, hand, { blues: hand.blues + 1 });
-		},
-		{ reds: 0, blues: 0 }
-	);
-
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
@@ -1267,7 +1258,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection))
+			chancellorHand: game.private.currentElectionPolicies.filter((p, i) => i !== data.selection)
 		});
 		game.private.currentChancellorOptions = [
 			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
@@ -1493,7 +1484,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		game.private.summary = game.private.summary.updateLog({
-			presidentHand: handToLog(game.private.currentElectionPolicies)
+			presidentHand: game.private.currentElectionPolicies
 		});
 
 		seatedPlayers[presidentIndex].cardFlingerState = [

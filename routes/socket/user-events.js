@@ -929,7 +929,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 3, blues: 0 }
+								presidentClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -938,7 +938,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 2, blues: 1 }
+								presidentClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -947,7 +947,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 1, blues: 2 }
+								presidentClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -956,7 +956,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 0, blues: 3 }
+								presidentClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -991,7 +991,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 2, blues: 0 }
+								chancellorClaim: ['fascist', 'fascist']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1000,7 +1000,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 1, blues: 1 }
+								chancellorClaim: ['fascist', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1009,7 +1009,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 0, blues: 2 }
+								chancellorClaim: ['liberal', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1067,7 +1067,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 3, blues: 0 }
+								policyPeekClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1076,7 +1076,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1085,7 +1085,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['liberal', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1094,7 +1094,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1103,7 +1103,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1112,7 +1112,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1121,7 +1121,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1130,7 +1130,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 0, blues: 3 }
+								policyPeekClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
