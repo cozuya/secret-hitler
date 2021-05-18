@@ -370,7 +370,7 @@ ReplayGamechat.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.object
 };
 
 const GamechatContainer = props => <ReplayGamechat {...props} />;

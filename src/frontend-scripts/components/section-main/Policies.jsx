@@ -3,10 +3,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 class Policies extends React.Component {
-	state = {
-		showDeck: false
-	};
-
 	clickedDraw() {
 		const { gameInfo, userInfo } = this.props;
 
