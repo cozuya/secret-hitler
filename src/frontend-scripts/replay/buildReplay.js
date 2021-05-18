@@ -39,7 +39,8 @@ export default function buildReplay(game) {
 			investigationClaim,
 			policyPeek,
 			policyPeekClaim,
-			specialElection
+			specialElection,
+			deckState
 		} = game.turns.get(turnNum);
 
 		const base = {
@@ -49,7 +50,8 @@ export default function buildReplay(game) {
 			track: beforeTrack,
 			deckSize: beforeDeckSize,
 			players: beforePlayers,
-			electionTracker: beforeElectionTracker
+			electionTracker: beforeElectionTracker,
+			deckState
 		};
 
 		const add = middleware => obj => Object.assign({}, base, middleware, obj);

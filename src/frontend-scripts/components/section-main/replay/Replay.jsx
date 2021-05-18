@@ -147,7 +147,7 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, userInfo, userList, to, gameData, chatsShown, allEmotes, hideHand: hideRolesAndHand }) => {
+const Replay = ({ replay, isSmall, userInfo, userList, to, gameData, chatsShown, allEmotes, hideHand: hideRolesAndHand, deckShown }) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
@@ -175,7 +175,16 @@ const Replay = ({ replay, isSmall, userInfo, userList, to, gameData, chatsShown,
 						{chatsShown && gameInfo.chats.length ? (
 							<ReplayGamechat userInfo={userInfo} userList={userList} gameInfo={gameInfo} allEmotes={allEmotes} />
 						) : (
-							<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
+							<ReplayControls
+								turnsSize={ticks.last().turnNum + 1}
+								turnNum={snapshot.turnNum}
+								phase={phase}
+								description={description}
+								playback={playback}
+								deck={snapshot.deckState}
+								deckShown={deckShown}
+								userInfo={userInfo}
+							/>
 						)}
 					</div>
 				</div>
@@ -186,9 +195,11 @@ const Replay = ({ replay, isSmall, userInfo, userList, to, gameData, chatsShown,
 					onClickedTakeSeat={null}
 					userInfo={userInfo}
 					gameInfo={gameInfo}
+					deckInfo={snapshot.deckState}
 					isReplay
 					socket={socket}
 					hideRoles={hideRolesAndHand && !snapshot.gameOver}
+					deckShown={deckShown}
 				/>
 			</div>
 		</section>
@@ -203,6 +214,7 @@ class ReplayWrapper extends React.Component {
 			chatsShown: false,
 			hiddenInfoShown: true,
 			requestedData: false,
+			deckShown: false,
 			gameData: {}
 		};
 	}
@@ -233,6 +245,12 @@ class ReplayWrapper extends React.Component {
 		const toggleHiddenInfo = () => {
 			this.setState({
 				hiddenInfoShown: !this.state.hiddenInfoShown
+			});
+		};
+
+		const toggleDeck = () => {
+			this.setState({
+				deckShown: !this.state.deckShown
 			});
 		};
 
@@ -270,6 +288,7 @@ class ReplayWrapper extends React.Component {
 							to={this.props.to}
 							allEmotes={this.props.allEmotes}
 							hideHand={!this.state.hiddenInfoShown}
+							deckShown={this.state.deckShown}
 						/>
 					);
 			}
@@ -277,6 +296,9 @@ class ReplayWrapper extends React.Component {
 
 		return (
 			<section id="replay" className="ui segment">
+				<button className="displaydeck ui inverted green button" onClick={toggleDeck}>
+					{this.state.deckShown ? 'Hide deck' : 'Show deck'}
+				</button>
 				<button className="displayroles ui inverted purple button" onClick={toggleHiddenInfo}>
 					{this.state.hiddenInfoShown ? 'Hide roles/hands' : 'Show roles/hands'}
 				</button>

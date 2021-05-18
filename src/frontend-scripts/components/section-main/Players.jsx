@@ -477,6 +477,7 @@ class Players extends React.Component {
 	};
 
 	render() {
+		const { isReplay } = this.props;
 		const handlePasswordInputChange = e => {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
@@ -620,7 +621,14 @@ class Players extends React.Component {
 						</form>
 					</div>
 				</div>
-				<Policies gameInfo={this.props.gameInfo} userInfo={this.props.userInfo} socket={this.props.socket} />
+				<Policies
+					gameInfo={this.props.gameInfo}
+					userInfo={this.props.userInfo}
+					deckInfo={this.props.deckInfo}
+					socket={this.props.socket}
+					isReplay={isReplay}
+					deckShown={this.props.deckShown}
+				/>
 			</section>
 		);
 	}
@@ -638,6 +646,7 @@ Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
+	deckInfo: PropTypes.object,
 	roleState: PropTypes.string,
 	userList: PropTypes.object,
 	socket: PropTypes.object,

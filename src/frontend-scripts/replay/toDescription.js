@@ -3,7 +3,7 @@ import { text, handToText, mapOpt1, capitalize } from '../../../utils';
 export default function(snapshot, game, userInfo, hideHand) {
 	const { isVotePassed, jas, neins } = game.turns.get(snapshot.turnNum);
 	const usernameOf = id => game.usernameOf(id).valueOrElse('');
-	const claimToText = claim => (claim.valueOrElse([]).length > 0 ? claim.valueOrElse(text('player', 'nothing')) : text('player', 'nothing'));
+	const claimToText = claim => (claim.valueOrElse([]).length !== 0 ? claim.valueOrElse(text('player', 'nothing')) : text('player', 'nothing'));
 	const claimHandToText = (claim, userInfo) => claimToText(mapOpt1(claim => handToText(claim, userInfo))(claim));
 	const gameOverText = supplied => supplied.concat([text(game.winningTeam, capitalize(game.winningTeam) + 's'), text('normal', 'win the game.')]);
 
