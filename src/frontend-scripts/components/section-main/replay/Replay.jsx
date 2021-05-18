@@ -14,6 +14,7 @@ import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
 import socket from '../../../socket';
 import PropTypes from 'prop-types';
+import * as Swal from 'sweetalert2';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
@@ -215,6 +216,7 @@ class ReplayWrapper extends React.Component {
 			hiddenInfoShown: true,
 			requestedData: false,
 			deckShown: false,
+			legacyReplay: true,
 			gameData: {}
 		};
 	}
@@ -229,6 +231,29 @@ class ReplayWrapper extends React.Component {
 
 	componentWillUnmount() {
 		socket.off('replayGameData');
+	}
+
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		switch (this.props.replay.status) {
+			case 'INITIAL':
+			case 'LOADING':
+				if (this.state.requestedData) this.setState({ requestedData: false }); // ensure our data isn't stale
+				break;
+			case 'READY':
+				if (!this.state.requestedData) {
+					socket.emit('getReplayGameData', this.props.replay.game.id);
+					this.setState({
+						legacyReplay: !(
+							this.props.replay.ticks &&
+							this.props.replay.ticks.get(0) &&
+							this.props.replay.ticks.get(0).deckState &&
+							this.props.replay.ticks.get(0).deckState.size > 0
+						)
+					});
+					this.setState({ requestedData: true });
+				}
+				break;
+		}
 	}
 
 	render() {
@@ -249,8 +274,12 @@ class ReplayWrapper extends React.Component {
 		};
 
 		const toggleDeck = () => {
+			if (this.state.legacyReplay) {
+				Swal.fire('', 'You cannot load deck information for a legacy replay.', 'error');
+			}
+
 			this.setState({
-				deckShown: !this.state.deckShown
+				deckShown: !this.state.deckShown && !this.state.legacyReplay
 			});
 		};
 
@@ -258,7 +287,6 @@ class ReplayWrapper extends React.Component {
 			switch (this.props.replay.status) {
 				case 'INITIAL':
 				case 'LOADING':
-					if (this.state.requestedData) this.setState({ requestedData: false }); // ensure our data isn't stale
 					return (
 						<div className="ui active dimmer">
 							<div className="ui huge text loader">Loading</div>
@@ -272,11 +300,6 @@ class ReplayWrapper extends React.Component {
 						</h1>
 					);
 				case 'READY':
-					if (!this.state.requestedData) {
-						socket.emit('getReplayGameData', this.props.replay.game.id);
-						this.setState({ requestedData: true });
-					}
-
 					return (
 						<Replay
 							replay={this.props.replay}
@@ -296,9 +319,11 @@ class ReplayWrapper extends React.Component {
 
 		return (
 			<section id="replay" className="ui segment">
-				<button className="displaydeck ui inverted green button" onClick={toggleDeck}>
-					{this.state.deckShown ? 'Hide deck' : 'Show deck'}
-				</button>
+				{!this.state.legacyReplay && (
+					<button className="displaydeck ui inverted green button" onClick={toggleDeck}>
+						{this.state.deckShown ? 'Hide deck' : 'Show deck'}
+					</button>
+				)}
 				<button className="displayroles ui inverted purple button" onClick={toggleHiddenInfo}>
 					{this.state.hiddenInfoShown ? 'Hide roles/hands' : 'Show roles/hands'}
 				</button>
@@ -318,7 +343,7 @@ class ReplayWrapper extends React.Component {
 export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
 
 Replay.propTypes = {
-	allEmotes: PropTypes.array,
+	allEmotes: PropTypes.object,
 	userInfo: PropTypes.object,
 	userList: PropTypes.object
 };
