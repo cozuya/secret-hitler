@@ -43,7 +43,7 @@ export default function buildReplay(game) {
 			deckState
 		} = game.turns.get(turnNum);
 
-		const afterDeckState = deckState.slice(deckState.size - afterDeckSize);
+		const afterDeckState = deckState && deckState.slice(deckState.size - afterDeckSize);
 
 		const base = {
 			turnNum,

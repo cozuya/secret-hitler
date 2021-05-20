@@ -101,8 +101,8 @@ describe('handToPolicies', () => {
 });
 
 describe('policyToHand', () => {
-	expect(policyToHand('liberal')).toEqual({ reds: 0, blues: 1 });
-	expect(policyToHand('fascist')).toEqual({ reds: 1, blues: 0 });
+	expect(policyToHand('liberal')).toEqual('liberal');
+	expect(policyToHand('fascist')).toEqual('fascist');
 });
 
 describe('handToText', () => {
