@@ -27,7 +27,8 @@ const Game = new Schema({
 	isVerifiedOnly: Boolean,
 	chats: Array,
 	timedMode: Number, // timer length
-	blindMode: Boolean
+	blindMode: Boolean,
+	completed: Boolean
 });
 
 module.exports = mongoose.model('Game', Game);

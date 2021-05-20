@@ -12,19 +12,53 @@ const _ = require('lodash');
 const { makeReport } = require('../report.js');
 const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 
-/**
- * @param {object} game - game to act on.
- */
-const saveGame = game => {
-	const summary = game.private.summary.publish();
+const generateGameObject = game => {
 	const casualBool = Boolean(game.general.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
 	const practiceBool = Boolean(game.general.practiceGame);
 	const unlistedBool = Boolean(game.general.unlisted);
 
-	/**
-	 * @param {object} - object describing game model.
-	 */
-	const gameToSave = new Game({
+	if (game.gameState && game.gameState.isCompleted) {
+		return {
+			uid: game.general.uid,
+			name: game.general.name,
+			date: new Date(),
+			playerChats: game.general.playerChats,
+			chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
+			isVerifiedOnly: game.general.isVerifiedOnly,
+			season: CURRENTSEASONNUMBER,
+			winningPlayers: game.private.seatedPlayers
+				.filter(player => player.wonGame)
+				.map(player => ({
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				})),
+			losingPlayers: game.private.seatedPlayers
+				.filter(player => !player.wonGame)
+				.map(player => ({
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				})),
+			winningTeam: game.gameState.isCompleted,
+			playerCount: game.general.playerCount,
+			rebalance6p: game.general.rebalance6p,
+			rebalance7p: game.general.rebalance7p,
+			rebalance9p2f: game.general.rebalance9p2f,
+			casualGame: casualBool,
+			practiceGame: practiceBool,
+			customGame: game.customGameSettings.enabled,
+			unlisted: unlistedBool,
+			isRainbow: game.general.rainbowgame,
+			isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
+			isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
+			timedMode: game.general.timedMode,
+			blindMode: game.general.blindMode,
+			completed: true
+		};
+	}
+
+	return {
 		uid: game.general.uid,
 		name: game.general.name,
 		date: new Date(),
@@ -32,21 +66,11 @@ const saveGame = game => {
 		chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
 		isVerifiedOnly: game.general.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
-		winningPlayers: game.private.seatedPlayers
-			.filter(player => player.wonGame)
-			.map(player => ({
-				userName: player.userName,
-				team: player.role.team,
-				role: player.role.cardName
-			})),
-		losingPlayers: game.private.seatedPlayers
-			.filter(player => !player.wonGame)
-			.map(player => ({
-				userName: player.userName,
-				team: player.role.team,
-				role: player.role.cardName
-			})),
-		winningTeam: game.gameState.isCompleted,
+		losingPlayers: game.publicPlayersState.map(player => ({
+			userName: player.userName,
+			team: player.role && player.role.team,
+			role: player.role && player.role.cardName
+		})),
 		playerCount: game.general.playerCount,
 		rebalance6p: game.general.rebalance6p,
 		rebalance7p: game.general.rebalance7p,
@@ -59,8 +83,21 @@ const saveGame = game => {
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
 		timedMode: game.general.timedMode,
-		blindMode: game.general.blindMode
-	});
+		blindMode: game.general.blindMode,
+		completed: false
+	};
+};
+
+/**
+ * @param {object} game - game to act on.
+ */
+const saveGame = game => {
+	const summary = game.gameState.isCompleted && game.private.summary && game.private.summary.publish();
+
+	/**
+	 * @param {object} - object describing game model.
+	 */
+	const gameToSave = new Game(generateGameObject(game));
 
 	let enhanced;
 
@@ -82,6 +119,42 @@ const saveGame = game => {
 	debug('Saving game: %O', summary);
 	gameToSave.save();
 };
+
+// Save a game and then potentially perform another action (usually deleting the game)
+const saveOrUpdateGame = (gameID, callback) => {
+	const gameInMemory = games[gameID];
+
+	Game.findOne({ uid: gameID }).then(game => {
+		if (game) {
+			const newObject = generateGameObject(gameInMemory); // in theory this should only be chats (as the only time a game is saved and *not* deleted is on game end) but for forwards compatibility all keys are checked
+
+			for (const key in newObject) {
+				if (newObject.hasOwnProperty(key) && game[key] !== newObject[key]) {
+					// check in order to prevent unnecessarily marking fields as modified in mongoose
+					game[key] = newObject[key];
+				}
+			}
+
+			game.save();
+		} else {
+			saveGame(gameInMemory);
+		}
+
+		if (callback) callback();
+	});
+};
+
+const saveAndDeleteGame = gameID => {
+	saveOrUpdateGame(gameID, () => {
+		delete games[gameID];
+		sendGameList();
+	});
+};
+
+module.exports.saveOrUpdateGame = saveOrUpdateGame;
+module.exports.saveAndDeleteGame = saveAndDeleteGame;
+module.exports.generateGameObject = generateGameObject;
+module.exports.saveGame = saveGame;
 
 /**
  * @param {object} game - game to act on.

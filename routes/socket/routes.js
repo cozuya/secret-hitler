@@ -52,8 +52,8 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
+const { saveAndDeleteGame } = require('./game/end-game');
 const { games, emoteList } = require('./models');
-const Game = require('../../models/game');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -63,19 +63,6 @@ const moment = require('moment');
 let modUserNames = [],
 	editorUserNames = [],
 	adminUserNames = [];
-
-const saveGameAndThenDelete = gameID => {
-	// the ONLY thing that should change is the chats
-	const gameInMemory = games[gameID];
-	Game.findOne({ uid: gameID }).then(game => {
-		game.chats = gameInMemory.chats.concat(gameInMemory.private.unSeatedGameChats).concat(gameInMemory.private.replayGameChats);
-		game.save();
-		delete games[gameID];
-		sendGameList();
-	});
-};
-
-module.exports.saveGameAndThenDelete = saveGameAndThenDelete;
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date();
@@ -143,7 +130,8 @@ const gamesGarbageCollector = () => {
 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].emit('toLobby');
 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].leave(gameName);
 			}
-			saveGameAndThenDelete(gameName); // todo: move delete and sendGameList into function
+
+			saveAndDeleteGame(gameName);
 		}
 	});
 };

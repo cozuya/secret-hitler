@@ -4,6 +4,8 @@ import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import playSound from '../reusable/playSound.js';
+import moment from 'moment';
+import * as Swal from 'sweetalert2';
 
 class Tracks extends React.Component {
 	constructor() {
@@ -602,12 +604,19 @@ class Tracks extends React.Component {
 			}
 		};
 
+		const showDate = () => {
+			if (gameInfo && gameInfo.general && gameInfo.general.date) {
+				// field only exists in replays
+				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}.`);
+			}
+		};
+
 		return (
 			<section className="tracks-container">
 				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
-					<div className="game-name">
+					<div className="game-name" onClick={showDate}>
 						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
 						<span>{gameInfo.general.name}</span>
 					</div>
