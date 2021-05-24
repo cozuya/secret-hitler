@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, getBadWord } from '../../constants';
+import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import * as Swal from 'sweetalert2';
 
@@ -826,12 +826,22 @@ class Gamechat extends React.Component {
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === '4captain' &&
-								!isBlind && <span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />}
+								chat.specialTournamentStatus.slice(1) === 'captain' &&
+								!isBlind && (
+									<span
+										title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+										className="crown-captain-icon"
+									/>
+								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === '4' &&
-								!isBlind && <span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />}
+								chat.specialTournamentStatus.slice(1) === 'tourney' &&
+								!isBlind && (
+									<span
+										title={`This player was part of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+										className="crown-icon"
+									/>
+								)}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
