@@ -643,15 +643,13 @@ class Playerlist extends React.Component {
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
 							<span className="admin-name">(A)</span> and are always at the top of the list.
 							<br />
-							<span className="cbell">Ed</span>
-							<span className="max">it</span>
-							<span className="moira">or</span>
-							<span className="thejuststopo">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special
+							<span className="anji">Ed</span>
+							<span className="bruno">it</span>
+							<span className="moira">ors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special
 							colors to stand out, as well as a <span className="admin">(E)</span>.<br />
-							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="cbell">Ed</span>
-							<span className="max">it</span>
-							<span className="moira">or</span>
-							<span className="thejuststopo">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
+							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Ed</span>
+							<span className="bruno">it</span>
+							<span className="moira">ors</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
 							<span className="moderatorcolor">(M)</span>.<br />
 							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
 							<br />
