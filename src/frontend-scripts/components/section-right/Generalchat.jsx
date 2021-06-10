@@ -359,13 +359,19 @@ export default class Generalchat extends React.Component {
 							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === '4captain' && (
-								<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
+							chat.specialTournamentStatus.slice(1) === 'captain' && (
+								<span
+									title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+									className="crown-captain-icon"
+								/>
 							)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === '4' && (
-								<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
+							chat.specialTournamentStatus.slice(1) === 'tourney' && (
+								<span
+									title={`This player was part of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+									className="crown-icon"
+								/>
 							)}
 						<span
 							className={

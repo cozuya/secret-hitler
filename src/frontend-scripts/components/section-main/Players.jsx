@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
-import { PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
@@ -221,14 +221,20 @@ class Players extends React.Component {
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4captain' && (
-							<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
+						player.specialTournamentStatus.slice(1) === 'captain' && (
+							<span
+								title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-captain-icon"
+							/>
 						)}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4' && (
-							<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
+						player.specialTournamentStatus.slice(1) === 'tourney' && (
+							<span
+								title={`This player was part of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-icon"
+							/>
 						)}
 					{str}
 				</span>
