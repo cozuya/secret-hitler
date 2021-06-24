@@ -3188,7 +3188,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
 							account.verified = true;
-							account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+							account.verification.email = account.username + '@verified.secrethitler.io';
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
