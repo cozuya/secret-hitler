@@ -73,15 +73,16 @@ module.exports.makeReport = (data, game, type = 'report') => {
 	}
 
 	if (type === 'ping') {
-		const httpEscapedSituation = situation.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
+		const httpEscapedSituation = situation.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
 
 		report = JSON.stringify({
-			content: `${process.env.DISCORDMODPING}\n__**Player**__: ${player} ${
+			content: `<@&${process.env.DISCORDMODID}>\n__**Player**__: ${player} ${
 				homepage
 					? `(from homepage)\n__**Message**__: ${httpEscapedSituation}\n`
 					: `\n__**Message**__: ${httpEscapedSituation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`
 			}`,
 			username: '@Mod Ping',
+			allowed_mentions: { roles: [process.env.DISCORDMODID] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/612042360318328842.png?v=1'
 		});
 
@@ -113,8 +114,9 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		const otherPlayers = [];
 
 		report = {
-			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${upperRole}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}`,
+			content: `<@&${process.env.DISCORDMODID}>${isDelayed}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${upperRole}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}`,
 			username: 'Auto Report',
+			allowed_mentions: { roles: [process.env.DISCORDMODID] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		};
 
@@ -188,8 +190,9 @@ module.exports.makeReport = (data, game, type = 'report') => {
 	if (type === 'modchat' || type === 'modchatdelayed') {
 		const isDelayed = type === 'modchatdelayed' ? ' - **AEM DELAYED**' : '';
 		report = {
-			content: `${process.env.DISCORDMODPING}${isDelayed}\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			content: `<@&${process.env.DISCORDMODID}>${isDelayed}\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
 			username: 'Mod Chat',
+			allowed_mentions: { roles: [process.env.DISCORDMODID] },
 			avatar_url: 'https://cdn.discordapp.com/emojis/230161421311148043.png?v=1'
 		};
 		sendReport(game, report, data, type);

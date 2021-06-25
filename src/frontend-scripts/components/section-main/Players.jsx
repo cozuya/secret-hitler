@@ -40,10 +40,17 @@ class Players extends React.Component {
 				});
 			}
 		}
+
+		socket.on('gameJoinStatusUpdate', data => {
+			if (data.status === 'blacklisted') {
+				$(this.blacklistModal).modal('show');
+			}
+		});
 	}
 
 	componentWillUnmount() {
 		this.props.socket.off('notesUpdate');
+		this.props.socket.off('gameJoinStatusUpdate');
 	}
 
 	handlePlayerReport = userName => {
@@ -458,8 +465,6 @@ class Players extends React.Component {
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
-			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
-				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
