@@ -19,7 +19,7 @@ const Game = new Schema({
 	casualGame: Boolean,
 	practiceGame: Boolean,
 	customGame: Boolean,
-	unlisted: Boolean,
+	unlistedGame: Boolean,
 	isVerifiedOnly: Boolean,
 	chats: Array
 });

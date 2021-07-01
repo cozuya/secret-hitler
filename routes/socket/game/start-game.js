@@ -46,7 +46,7 @@ const beginGame = game => {
 	const roles = [
 		{
 			cardName: 'hitler',
-			icon: 5,
+			icon: 6,
 			team: 'fascist'
 		}
 	]
@@ -64,7 +64,7 @@ const beginGame = game => {
 		)
 		.concat(
 			_.shuffle(
-				_.range(15, 18)
+				_.range(18, 21)
 					.map(el => ({
 						cardName: 'fascist',
 						icon: el,
@@ -196,7 +196,7 @@ const beginGame = game => {
 			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9,
 			casualGame: Boolean(game.general.casualGame),
 			practiceGame: Boolean(game.general.practiceGame),
-			unlisted: Boolean(game.general.unlisted)
+			unlistedGame: Boolean(game.general.unlistedGame)
 		},
 		game.customGameSettings,
 		game.private.seatedPlayers.map(p => ({

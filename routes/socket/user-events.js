@@ -2,6 +2,7 @@ const {
 	games,
 	userList,
 	userListEmitter,
+	modDMs,
 	generalChats,
 	accountCreationDisabled,
 	bypassVPNCheck,
@@ -14,20 +15,22 @@ const {
 	testIP,
 	emoteList,
 	setLastGenchatModPingAsync,
-	getLastGenchatModPingAsync
+	getLastGenchatModPingAsync,
+	getPrivateChatTruncate
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
+const ModThread = require('../../models/modThread');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
-const { secureGame, handleDefaultIPv6Range } = require('./util.js');
+const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate, handleDefaultIPv6Range } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -500,6 +503,15 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+
+	if (!isBlacklistSafe) {
+		socket.emit('gameJoinStatusUpdate', {
+			status: 'blacklisted'
+		});
+		return;
+	}
+
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
@@ -507,7 +519,6 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist || !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
@@ -697,8 +708,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -726,8 +735,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			unlisted: data.unlistedGame && !data.privatePassword,
+			unlistedGame: data.unlistedGame && !data.privatePassword,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
+			privateAnonymousRemakes: data.privateAnonymousRemakes,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -859,7 +869,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 
 	user.timeLastGameCreated = currentTime;
-
 	Account.findOne({ username: user.userName }).then(account => {
 		newGame.private = {
 			reports: {},
@@ -870,7 +879,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: user.userName,
+			gameCreatorBlacklist: user.blacklist
 		};
 
 		if (newGame.general.private) {
@@ -884,7 +895,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		sendGameList();
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
-		socket.emit('gameUpdate', newGame);
+		const cloneNewGame = Object.assign({}, newGame);
+		delete cloneNewGame.private;
+		socket.emit('gameUpdate', cloneNewGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
 	});
 };
@@ -1279,11 +1292,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	const { remakeData, publicPlayersState } = game;
 	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const realPlayerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
-	if (game && game.general && game.general.private) {
+	if (game && game.general && game.general.private && !game.general.privateAnonymousRemakes) {
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -1292,7 +1306,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					text: 'Player '
 				},
 				{
-					text: `${passport.user} {${playerIndex + 1}} `,
+					text: `${passport.user} {${realPlayerIndex + 1}} `,
 					type: 'player'
 				}
 			]
@@ -1501,10 +1515,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					}
 				}
 			});
-			if (creatorRemade && newGame.general.gameCreatorBlacklist != null) {
+			if (creatorRemade && newGame.private.gameCreatorBlacklist != null) {
 				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
-				if (creator) newGame.general.gameCreatorBlacklist = creator.blacklist;
-			} else newGame.general.gameCreatorBlacklist = null;
+				if (creator) newGame.private.gameCreatorBlacklist = creator.blacklist;
+			} else newGame.private.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
 		}, 3000);
 	};
@@ -1630,7 +1644,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {function} addNewClaim - links to handleAddNewClaim
  * @param {boolean} isTourneyMod - self explain
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
+module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
 	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
@@ -1652,7 +1666,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
 	// if (!AEM && game.general.disableChat) return;
-	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
+	if (!((AEM || (isTourneyMod && game.general.unlistedGame)) && playerIndex === -1)) {
 		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
 			return;
 		}
@@ -1752,7 +1766,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		return;
 	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
+	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
@@ -2189,20 +2203,41 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	if (pingMods && player) {
 		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-			game.lastModPing = Date.now();
-			sendInProgressGameUpdate(game, false);
-			makeReport(
-				{
-					player: passport.user,
-					situation: `"${pingMods[2]}".`,
-					election: game.general.electionCount,
-					title: game.general.name,
-					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
-				},
-				game,
-				'ping'
-			);
+			Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
+				const staffInGame = accounts
+					.filter(
+						account =>
+							account.staffRole === 'altmod' ||
+							account.staffRole === 'moderator' ||
+							account.staffRole === 'editor' ||
+							account.staffRole === 'admin' ||
+							account.staffRole === 'trialmod'
+					)
+					.map(account => account.username);
+				if (staffInGame.length !== 0) {
+					socket.emit(
+						'sendAlert',
+						`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+					);
+					game.lastModPing = Date.now(); // prevent overquerying
+				} else {
+					// send mod ping
+					game.lastModPing = Date.now();
+					sendInProgressGameUpdate(game, false);
+					makeReport(
+						{
+							player: passport.user,
+							situation: `"${pingMods[2]}".`,
+							election: game.general.electionCount,
+							title: game.general.name,
+							uid: game.general.uid,
+							gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+						},
+						game,
+						'ping'
+					);
+				}
+			});
 		} else {
 			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
 		}
@@ -2279,7 +2314,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						timestamp: new Date(),
 						gameChat: true,
 						chat: [
-							{ text: `${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1})`, type: 'player' },
+							{ text: `${game.general.blindMode ? '' : publicPlayersState[affectedPlayerNumber].userName} {${affectedPlayerNumber + 1}}`, type: 'player' },
 							{ text: ' has been successfully pinged.' }
 						]
 					});
@@ -2345,8 +2380,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		// Attempts to cut down on overloading server resources
-		if (game.general.private && game.chats.length >= 30) {
-			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
+		const privateChatTruncate = await getPrivateChatTruncate(); // positive integer to represent the chats to truncate at or any falsy value to disable
+		if (privateChatTruncate && game.general.private && game.chats.length >= privateChatTruncate) {
+			game.chats = game.chats.slice(game.chats.length - privateChatTruncate, game.chats.length);
 		}
 
 		if (!game.gameState.isCompleted && game.gameState.isStarted) {
@@ -3188,7 +3224,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
 							account.verified = true;
-							account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+							account.verification.email = account.username + '@verified.secrethitler.io';
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
@@ -4295,5 +4331,217 @@ module.exports.handleFlappyEvent = (data, game) => {
 		game.general.status = `FLAPPY HITLER: ${game.flappyState.liberalScore} - ${game.flappyState.fascistScore} (${game.flappyState.passedPylonCount})`;
 
 		io.sockets.in(game.general.uid).emit('gameUpdate', game);
+	}
+};
+
+module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+	if (data.aemMember !== passport.user) return;
+
+	const aemMember = userList.find(x => x.userName === data.aemMember);
+	if (aemMember && aemMember.staffIncognito) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while Incognito.');
+		return;
+	}
+
+	const dmReceiver = userList.find(x => x.userName === data.userName);
+	const modInDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
+	const modInGame = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
+
+	if (modInGame) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while in-game.');
+		return;
+	}
+
+	if (modInDM) {
+		// if the mod is already DMing someone, we should send them the DM they were in instead of opening a new one
+		socket.emit('preOpenModDMs'); // this is necessary in order to allow the socket on the client to prepare for the openModDMs event
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], passport.user, modUserNames, editorUserNames, adminUserNames));
+		return; // something fucky happened and they got disconnected from the chat
+	}
+
+	if (modDMs[dmReceiver.userName]) {
+		// if there is an open DM but the mod is not the one who created it, they should start observing
+		const dm = modDMs[dmReceiver.userName];
+		dm.subscribedPlayers.push(data.aemMember);
+		dm.aemOnlyMessages.push({
+			date: new Date(),
+			chat: 'has joined.',
+			userName: data.aemMember,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'join'
+		});
+
+		socket.emit('preOpenModDMs');
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], data.aemMember, modUserNames, editorUserNames, adminUserNames));
+		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+
+	const dmReceiverSocketID = Object.keys(io.sockets.sockets).find(
+		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+	);
+	const dmReceiverSocket = io.sockets.sockets[dmReceiverSocketID];
+
+	if (dmReceiver == null || dmReceiverSocketID == null || dmReceiverSocket == null) {
+		return socket.emit('sendAlert', 'That player is not online!');
+	}
+
+	const initMessage = {
+		date: new Date(),
+		chat:
+			"Every moderator can access this chat if they choose to. Please do not out confidential game information if you're currently playing with a moderator. If you prefer talking to a specific moderator one on one, feel free to DM one on Discord.",
+		userName: '',
+		staffRole: 'moderator',
+		isBroadcast: true,
+		type: 'broadcast'
+	};
+
+	const dmInitializeData = {
+		// create mod DM
+		_id: generateCombination(3, '', true),
+		username: data.userName,
+		aemMember: data.aemMember,
+		startDate: new Date(),
+		subscribedPlayers: [data.userName, data.aemMember],
+		messages: [initMessage],
+		aemOnlyMessages: [initMessage]
+	};
+
+	dmReceiverSocket.emit('preOpenModDMs');
+	dmReceiverSocket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.userName, modUserNames, editorUserNames, adminUserNames));
+	socket.emit('preOpenModDMs');
+	socket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.aemMember, modUserNames, editorUserNames, adminUserNames));
+
+	modDMs[dmReceiver.userName] = dmInitializeData;
+
+	const discordThreadNotifyBody = JSON.stringify({
+		// and post it to discord
+		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
+	});
+	const discordThreadNotifOptions = {
+		hostname: 'discordapp.com',
+		path: process.env.DISCORDMODDMSTHREADURL,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+		}
+	};
+	try {
+		const threadReq = https.request(discordThreadNotifOptions);
+		threadReq.end(discordThreadNotifyBody);
+	} catch (e) {
+		console.log(e, 'err in broadcast');
+	}
+};
+
+module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	// save, notify, etc
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	if (dmID) {
+		const dm = modDMs[dmID];
+
+		if (
+			passport.user === dm.aemMember ||
+			(getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) &&
+				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator') // only the mod who created the DM or any editor can close the DM
+		) {
+			for (const user of dm.subscribedPlayers) {
+				try {
+					const sock =
+						io.sockets.sockets[
+							Object.keys(io.sockets.sockets).find(
+								socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+							)
+						];
+
+					sock.emit('closeModDMs');
+					sock.emit('postCloseModDMs');
+				} catch (e) {}
+			}
+
+			dm.endDate = new Date();
+			dm.messages = dm.aemOnlyMessages;
+			delete dm.aemOnlyMessages;
+			delete dm.subscribedPlayers;
+
+			const savedDM = new ModThread(dm);
+			savedDM.save();
+
+			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
+			const discordThreadNotifyBody = JSON.stringify({
+				// save and send to discord
+				content: dmCloseMessage
+			});
+			const discordThreadNotifOptions = {
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDMODDMSTHREADURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+				}
+			};
+			try {
+				const threadReq = https.request(discordThreadNotifOptions);
+				threadReq.end(discordThreadNotifyBody);
+			} catch (e) {
+				console.log(e, 'err in notif');
+			}
+
+			delete modDMs[dmID];
+		}
+	} else {
+		socket.emit('sendAlert', 'Could not find a DM you are in!');
+	}
+};
+
+module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	const dm = modDMs[dmID];
+
+	if (dm) {
+		dm.aemOnlyMessages.push({
+			// add leave message (this is only called for mods leaving and not the DM closing)
+			date: new Date(),
+			chat: 'has left.',
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'leave'
+		});
+
+		const idx = dm.subscribedPlayers.indexOf(passport.user);
+		if (idx !== -1) {
+			dm.subscribedPlayers.splice(idx, 1);
+		}
+
+		socket.emit('closeModDMs');
+		socket.emit('postCloseModDMs'); // this is necessary to allow the force-mounted right sidebar to be properly disposed in the right order
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+};
+
+module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	const receivingPlayer = Object.keys(modDMs).find(x => modDMs[x].username === passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user);
+	if (receivingPlayer) {
+		// add a new chat and push it to AEM chat and player chat
+		const dm = modDMs[receivingPlayer];
+		const now = new Date();
+		const newMessage = {
+			date: now,
+			chat: data.chat,
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'message'
+		};
+
+		dm.messages.push(newMessage);
+		dm.aemOnlyMessages.push(newMessage);
+
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 };

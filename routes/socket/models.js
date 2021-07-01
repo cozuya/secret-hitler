@@ -25,11 +25,25 @@ module.exports.globalSettingsClient = globalSettingsClient;
 const getGlobalSetting = promisify(globalSettingsClient.get).bind(globalSettingsClient);
 const setGlobalSetting = promisify(globalSettingsClient.set).bind(globalSettingsClient);
 
+const globalSettingsCache = {}; // READ ONLY variables that are cloned from redis (they will be reset every game GC when the settings are cloned from redis)
+const settingsToReplicate = [
+	'private-chat-truncate' // type: integer
+];
+
+module.exports.cloneSettingsFromRedis = async () => {
+	for (const setting of settingsToReplicate) {
+		globalSettingsCache[setting] = JSON.parse(await getGlobalSetting(setting));
+	}
+};
+
 module.exports.getLastGenchatModPingAsync = async () => {
 	return JSON.parse(await getGlobalSetting('genchat-mod-ping'));
 };
 module.exports.setLastGenchatModPingAsync = async date => {
 	await setGlobalSetting('genchat-mod-ping', JSON.stringify(date));
+};
+module.exports.getPrivateChatTruncate = async () => {
+	return globalSettingsCache['private-chat-truncate'];
 };
 
 module.exports.emoteList = emotes;
@@ -40,6 +54,9 @@ module.exports.userList = [];
 module.exports.generalChats = {
 	sticky: '',
 	list: []
+};
+module.exports.modDMs = {
+	// player username => full object
 };
 module.exports.accountCreationDisabled = { status: false };
 module.exports.bypassVPNCheck = { status: false };
@@ -190,7 +207,7 @@ module.exports.formattedGameList = () => {
 			? 'isStarted'
 			: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
-		gameCreatorName: games[gameName].general.gameCreatorName,
+		gameCreatorName: games[gameName].private.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,
 		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
 		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
@@ -227,7 +244,7 @@ module.exports.formattedGameList = () => {
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
 		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlisted || undefined
+		isUnlisted: games[gameName].general.unlistedGame || undefined
 	}));
 };
 
