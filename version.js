@@ -1,5 +1,5 @@
 module.exports = {
-	number: '1.7.5',
+	number: '1.8.0',
 	color: 'onedotohone-14',
-	date: '04-01-2021'
+	date: '07-01-2021'
 };

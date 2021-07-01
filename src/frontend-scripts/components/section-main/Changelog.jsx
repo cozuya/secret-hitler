@@ -11,6 +11,47 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Welcome to Season 15!</p>
+				</div>
+
+				<h4>The top 10 players of season 14 are:</h4>
+				<ol>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+					<li> </li>
+				</ol>
+				<div className="ui header">
+					<p>Version 1.8 released 7-1-2021</p>
+				</div>
+
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Lots of replay improvements</strong> - view game settings, deck order, card draw order,
+					and more! Thanks to iounpaladin for this!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New summer themed fascist cards</strong> - Thanks to Kvon for these!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>2 new emotes</strong> - Thanks to iounpaladin for these!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>LOTS of moderation improvements</strong> - Thanks to iounpaladin for these!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various bug fixes</strong>
+				</p>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<p>Welcome to Season 14!</p>
 				</div>
 
