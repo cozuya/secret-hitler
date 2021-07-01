@@ -23,8 +23,13 @@ const {
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
-	handleUpdatedTheme
+	handleUpdatedTheme,
+	handleOpenChat,
+	handleCloseChat,
+	handleUnsubscribeChat,
+	handleAddNewModDMChat
 } = require('./user-events');
+const { handleAEMMessages } = require('./util');
 const {
 	sendPlayerNotes,
 	sendUserReports,
@@ -52,7 +57,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList, cloneSettingsFromRedis } = require('./models');
+const { games, emoteList, cloneSettingsFromRedis, modDMs } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -277,6 +282,15 @@ module.exports.socketRoutes = () => {
 			socket.conn.on('upgrade', () => {
 				sendUserList(socket);
 				socket.emit('emoteList', emoteList);
+
+				// sockets should not be unauthenticated but let's make sure anyway
+				if (passport.user) {
+					const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+					if (dmID) {
+						socket.emit('preOpenModDMs');
+						socket.emit('openModDMs', handleAEMMessages(modDMs[dmID], passport.user, modUserNames, editorUserNames, adminUserNames));
+					}
+				}
 			});
 
 			socket.on('receiveRestrictions', () => {
@@ -421,6 +435,30 @@ module.exports.socketRoutes = () => {
 			socket.on('regatherAEMUsernames', () => {
 				if (authenticated && isAEM) {
 					gatherStaffUsernames();
+				}
+			});
+
+			socket.on('aemOpenChat', data => {
+				if (authenticated && isAEM) {
+					handleOpenChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('aemCloseChat', data => {
+				if (authenticated && isAEM) {
+					handleCloseChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('aemUnsubscribeChat', data => {
+				if (authenticated && isAEM) {
+					handleUnsubscribeChat(socket, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+
+			socket.on('modDMsAddChat', data => {
+				if (authenticated) {
+					handleAddNewModDMChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			});
 

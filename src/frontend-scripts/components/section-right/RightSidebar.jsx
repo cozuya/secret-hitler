@@ -11,7 +11,7 @@ const RightSidebar = props => {
 
 	return (
 		<section className={classes} id={'playerlist'}>
-			<Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />
+			{!props.forceMounted && <Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />}
 			<Generalchat
 				gameInfo={props.gameInfo}
 				socket={props.socket}
@@ -31,7 +31,8 @@ RightSidebar.propTypes = {
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
 	midSection: PropTypes.string,
-	allEmotes: PropTypes.object
+	allEmotes: PropTypes.object,
+	forceMounted: PropTypes.bool
 };
 
 export default RightSidebar;
