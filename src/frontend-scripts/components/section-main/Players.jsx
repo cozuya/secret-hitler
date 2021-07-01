@@ -186,13 +186,14 @@ class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const { gameInfo, userInfo, userList } = this.props;
+		const { gameInfo, userInfo, userList, hideRoles } = this.props;
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
-			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const userName =
+				isBlind && gameInfo.general.replacementNames ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
@@ -306,9 +307,9 @@ class Players extends React.Component {
 						className={(() => {
 							let classes = 'player-number';
 
-							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus && !hideRoles) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
-							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus && !hideRoles) {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
 
@@ -368,6 +369,7 @@ class Players extends React.Component {
 							let classes = 'card card-back';
 
 							if (
+								!hideRoles &&
 								playersState &&
 								playersState.length &&
 								Object.keys(playersState[i]).length &&
@@ -379,7 +381,7 @@ class Players extends React.Component {
 								} else {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
-							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+							} else if (!hideRoles && publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
 								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
 								} else {
@@ -486,6 +488,7 @@ class Players extends React.Component {
 	};
 
 	render() {
+		const { isReplay } = this.props;
 		const handlePasswordInputChange = e => {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
@@ -629,7 +632,14 @@ class Players extends React.Component {
 						</form>
 					</div>
 				</div>
-				<Policies gameInfo={this.props.gameInfo} userInfo={this.props.userInfo} socket={this.props.socket} />
+				<Policies
+					gameInfo={this.props.gameInfo}
+					userInfo={this.props.userInfo}
+					deckInfo={this.props.deckInfo}
+					socket={this.props.socket}
+					isReplay={isReplay}
+					deckShown={this.props.deckShown}
+				/>
 			</section>
 		);
 	}
@@ -647,6 +657,7 @@ Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
+	deckInfo: PropTypes.object,
 	roleState: PropTypes.string,
 	userList: PropTypes.object,
 	socket: PropTypes.object,
@@ -655,7 +666,8 @@ Players.propTypes = {
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
 	onClickedTakeSeat: PropTypes.func,
-	togglePlayerNotes: PropTypes.func
+	togglePlayerNotes: PropTypes.func,
+	hideRoles: PropTypes.bool
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Players);

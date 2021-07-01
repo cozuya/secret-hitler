@@ -260,18 +260,70 @@ const enactPolicy = (game, team, socket) => {
 								switch (powerToEnact[1]) {
 									case 'The president must examine the top 3 policies.':
 										selectPolicies({ user: president.userName }, game, socket);
+										game.private.replayGameChats.push({
+											gameChat: true,
+											timestamp: new Date(),
+											chat: [
+												{
+													text: president.userName,
+													type: 'player'
+												},
+												{
+													text: ' was forced by the timer to peek.'
+												}
+											]
+										});
 										break;
 									case 'The president must select a player for execution.':
 										if (president.role.cardName === 'fascist') {
 											list = list.filter(player => player.role.cardName !== 'hitler');
 										}
 										selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
+										game.private.replayGameChats.push({
+											gameChat: true,
+											timestamp: new Date(),
+											chat: [
+												{
+													text: president.userName,
+													type: 'player'
+												},
+												{
+													text: ' was forced by the timer to select a random player to execute.'
+												}
+											]
+										});
 										break;
 									case 'The president must investigate the party membership of another player.':
 										selectPartyMembershipInvestigate({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
+										game.private.replayGameChats.push({
+											gameChat: true,
+											timestamp: new Date(),
+											chat: [
+												{
+													text: president.userName,
+													type: 'player'
+												},
+												{
+													text: ' was forced by the timer to select a random player to investigate.'
+												}
+											]
+										});
 										break;
 									case 'The president must select a player for a special election.':
 										selectSpecialElection({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
+										game.private.replayGameChats.push({
+											gameChat: true,
+											timestamp: new Date(),
+											chat: [
+												{
+													text: president.userName,
+													type: 'player'
+												},
+												{
+													text: ' was forced by the timer to select a random player to special elect.'
+												}
+											]
+										});
 										break;
 								}
 							}
@@ -631,6 +683,19 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
 											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
+											game.private.replayGameChats.push({
+												gameChat: true,
+												timestamp: new Date(),
+												chat: [
+													{
+														text: president.userName,
+														type: 'player'
+													},
+													{
+														text: ' was forced by the timer to select a random veto vote.'
+													}
+												]
+											});
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -662,15 +727,6 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 };
 
 module.exports.selectChancellorVoteOnVeto = selectChancellorVoteOnVeto;
-
-// todo check this argument for jsdoc
-const handToLog = hand =>
-	hand.reduce(
-		(hand, policy) => {
-			return policy === 'fascist' ? Object.assign({}, hand, { reds: hand.reds + 1 }) : Object.assign({}, hand, { blues: hand.blues + 1 });
-		},
-		{ reds: 0, blues: 0 }
-	);
 
 /**
  * @param {object} passport - socket authentication.
@@ -873,6 +929,19 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 											game.gameState.timedModeEnabled = false;
 
 											selectChancellorVoteOnVeto({ user: chancellor.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
+											game.private.replayGameChats.push({
+												gameChat: true,
+												timestamp: new Date(),
+												chat: [
+													{
+														text: chancellor.userName,
+														type: 'player'
+													},
+													{
+														text: ' was forced by the timer to select a random veto vote.'
+													}
+												]
+											});
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -1189,7 +1258,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection))
+			chancellorHand: game.private.currentElectionPolicies.filter((p, i) => i !== data.selection)
 		});
 		game.private.currentChancellorOptions = [
 			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
@@ -1255,6 +1324,19 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 
 								selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 }, true, socket);
+								game.private.replayGameChats.push({
+									gameChat: true,
+									timestamp: new Date(),
+									chat: [
+										{
+											text: chancellor.userName,
+											type: 'player'
+										},
+										{
+											text: ' was forced by the timer to select a random policy to enact.'
+										}
+									]
+								});
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -1402,7 +1484,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		game.private.summary = game.private.summary.updateLog({
-			presidentHand: handToLog(game.private.currentElectionPolicies)
+			presidentHand: game.private.currentElectionPolicies
 		});
 
 		seatedPlayers[presidentIndex].cardFlingerState = [
@@ -1469,6 +1551,19 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 							if (game.gameState.timedModeEnabled) {
 								game.gameState.timedModeEnabled = false;
 								selectPresidentPolicy({ user: seatedPlayers[presidentIndex].userName }, game, { selection: Math.floor(Math.random() * 3) }, true, socket);
+								game.private.replayGameChats.push({
+									gameChat: true,
+									timestamp: new Date(),
+									chat: [
+										{
+											text: seatedPlayers[presidentIndex].userName,
+											type: 'player'
+										},
+										{
+											text: ' was forced by the timer to select a random policy to discard.'
+										}
+									]
+								});
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -1530,6 +1625,19 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 							game.gameState.timedModeEnabled = false;
 
 							selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
+							game.private.replayGameChats.push({
+								gameChat: true,
+								timestamp: new Date(),
+								chat: [
+									{
+										text: game.private.seatedPlayers[game.gameState.presidentIndex].userName,
+										type: 'player'
+									},
+									{
+										text: ' was forced by the timer to select a random chancellor.'
+									}
+								]
+							});
 						}
 					},
 					process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000

@@ -126,6 +126,7 @@ module.exports.sendSignups = socket => {
 	Signups.find({ type: { $in: ['local', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -138,6 +139,7 @@ module.exports.sendAllSignups = socket => {
 	Signups.find({ type: { $nin: ['local', 'private', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -150,6 +152,7 @@ module.exports.sendPrivateSignups = socket => {
 	Signups.find({ type: 'private' })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -261,16 +264,18 @@ module.exports.sendPlayerNotes = (socket, data) => {
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendReplayGameChats = (socket, uid) => {
-	Game.findOne({ uid }).then((game, err) => {
-		if (err) {
-			console.log(err, 'game err retrieving for replay');
-		}
+module.exports.sendReplayGameData = (socket, uid) => {
+	Game.findOne({ uid })
+		.select({ _id: 0, _v: 0 })
+		.then((game, err) => {
+			if (err) {
+				console.log(err, 'game err retrieving for replay');
+			}
 
-		if (game) {
-			socket.emit('replayGameChats', game.chats);
-		}
-	});
+			if (game) {
+				socket.emit('replayGameData', game);
+			}
+		});
 };
 
 /**

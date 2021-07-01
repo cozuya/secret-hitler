@@ -45,7 +45,7 @@
 			.chat-user--game,
 			.game-chat,
 			.chat-user--game .chat-timestamp {
-				color: var(--theme-background-3);
+				color: var(--theme-text-3);
 			}
 
 			.chat-user--claim,
@@ -101,6 +101,18 @@
 	.displaychats {
 		position: absolute;
 		right: 140px;
+		z-index: 110;
+	}
+
+	.displayroles {
+		position: absolute;
+		right: 265px;
+		z-index: 110;
+	}
+
+	.displaydeck {
+		position: absolute;
+		right: 433px;
 		z-index: 110;
 	}
 
@@ -495,4 +507,36 @@
 			}
 		}
 	}
+}
+
+@for $i from 1 through 17 {
+	@keyframes splayAnim#{$i} {
+		0% {
+			transform: rotate(0deg); // -90deg
+		}
+		100% {
+			transform: rotate(($i - 1) * 10deg /* - 90deg */);
+		}
+	}
+
+	#splay#{$i} {
+		transform-origin: bottom left;
+		animation: 1s ease 0s 1 splayAnim#{$i} forwards;
+	}
+
+	//@if $i % 3 == 0 {
+	//	#splay#{$i}:before {
+	//		content: "";
+	//		display: block;
+	//		position: absolute;
+	//		top: 0;
+	//		bottom: 0;
+	//		left: 0;
+	//		right: 0;
+	//		background: rgb(123, 8, 255);
+	//		z-index: -1;
+	//		width: 10px;
+	//		height: 10px;
+	//	}
+	//}
 }
