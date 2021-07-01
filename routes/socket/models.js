@@ -240,7 +240,7 @@ module.exports.formattedGameList = () => {
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
 		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlisted || undefined
+		isUnlisted: games[gameName].general.unlistedGame || undefined
 	}));
 };
 

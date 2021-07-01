@@ -56,7 +56,7 @@ class Players extends React.Component {
 	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
-		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
+		if ((!gameInfo.general.unlistedGame && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();

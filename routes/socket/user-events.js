@@ -733,7 +733,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			unlisted: data.unlistedGame && !data.privatePassword,
+			unlistedGame: data.unlistedGame && !data.privatePassword,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
 			privateAnonymousRemakes: data.privateAnonymousRemakes,
 			privateOnly: user.isPrivate,
@@ -1664,7 +1664,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
 	// if (!AEM && game.general.disableChat) return;
-	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
+	if (!((AEM || (isTourneyMod && game.general.unlistedGame)) && playerIndex === -1)) {
 		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
 			return;
 		}
@@ -1764,7 +1764,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		return;
 	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
+	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
