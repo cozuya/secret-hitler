@@ -280,3 +280,8 @@ module.exports.destroySession = username => {
 			});
 	}
 };
+
+// tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
+module.exports.handleDefaultIPv6Range = ip => {
+	return ip.indexOf(':') === -1 ? ip : ip + '/64';
+};

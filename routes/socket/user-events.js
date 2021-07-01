@@ -30,7 +30,7 @@ const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
-const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate } = require('./util.js');
+const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate, handleDefaultIPv6Range } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -3170,7 +3170,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'clearTimeoutIP':
-					BannedIP.remove({ ip: data.ip }, (err, res) => {
+					BannedIP.remove({ ip: data.ip, type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
 					break;
@@ -3185,7 +3185,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							}
 
-							BannedIP.remove({ ip: data.ip }, (err, res) => {
+							BannedIP.remove({ ip: data.ip, type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
 								if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 							});
 						})
@@ -3395,39 +3395,41 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'ipban':
-					const ipban = new BannedIP({
-						bannedDate: new Date(),
-						type: 'small',
-						ip: data.ip
-					});
-
-					ipban.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (isSuperMod) {
-										banAccount(user.username);
-									} else {
-										logOutUser(user.username);
-									}
-								});
-							}
+					if (isSuperMod) {
+						const ipban = new BannedIP({
+							bannedDate: new Date(),
+							type: 'small',
+							ip: handleDefaultIPv6Range(data.ip),
+							permanent: false
 						});
-					});
-					break;
 
+						ipban.save(() => {
+							Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+								if (users && users.length > 0) {
+									users.forEach(user => {
+										banAccount(user.username);
+									});
+								}
+							});
+						});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform IP bans.');
+						return;
+					}
+					break;
 				case 'fragbanSmall':
 					if (isSuperMod) {
 						const fragbans = new BannedIP({
 							bannedDate: new Date(Date.now() + 64800000),
 							type: 'fragbanSmall',
-							ip: data.userName
+							ip: data.userName,
+							permanent: false
 						});
 						modaction.ip = modaction.userActedOn;
 						modaction.userActedOn = 'RAW IP FRAGMENT';
 						fragbans.save();
 					} else {
-						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+						socket.emit('sendAlert', 'Only editors and admins can perform fragment IP bans.');
 						return;
 					}
 					break;
@@ -3436,7 +3438,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const fragbanl = new BannedIP({
 							bannedDate: new Date(Date.now() + 604800000),
 							type: 'fragbanLarge',
-							ip: data.userName
+							ip: data.userName,
+							permanent: false
 						});
 						modaction.ip = modaction.userActedOn;
 						modaction.userActedOn = 'RAW IP FRAGMENT';
@@ -3450,7 +3453,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout = new BannedIP({
 						bannedDate: new Date(),
 						type: 'small',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip),
+						permanent: false
 					});
 					timeout.save(() => {
 						Account.findOne({ username: data.userName })
@@ -3489,7 +3493,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip)
 					});
 					timeout3.save(() => {
 						Account.findOne({ username: data.userName })
@@ -3595,7 +3599,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const ipbanl = new BannedIP({
 						bannedDate: new Date(),
 						type: 'big',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip),
+						permanent: false
 					});
 
 					if (isSuperMod) {
