@@ -15,7 +15,8 @@ const {
 	testIP,
 	emoteList,
 	setLastGenchatModPingAsync,
-	getLastGenchatModPingAsync
+	getLastGenchatModPingAsync,
+	getPrivateChatTruncate
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -502,6 +503,15 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+
+	if (!isBlacklistSafe) {
+		socket.emit('gameJoinStatusUpdate', {
+			status: 'blacklisted'
+		});
+		return;
+	}
+
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
@@ -509,7 +519,6 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist || !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
@@ -699,8 +708,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -728,8 +735,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			unlisted: data.unlistedGame && !data.privatePassword,
+			unlistedGame: data.unlistedGame && !data.privatePassword,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
+			privateAnonymousRemakes: data.privateAnonymousRemakes,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -861,7 +869,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 
 	user.timeLastGameCreated = currentTime;
-
 	Account.findOne({ username: user.userName }).then(account => {
 		newGame.private = {
 			reports: {},
@@ -872,7 +879,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: user.userName,
+			gameCreatorBlacklist: user.blacklist
 		};
 
 		if (newGame.general.private) {
@@ -886,7 +895,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		sendGameList();
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
-		socket.emit('gameUpdate', newGame);
+		const cloneNewGame = Object.assign({}, newGame);
+		delete cloneNewGame.private;
+		socket.emit('gameUpdate', cloneNewGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
 	});
 };
@@ -1281,11 +1292,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	const { remakeData, publicPlayersState } = game;
 	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const realPlayerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
-	if (game && game.general && game.general.private) {
+	if (game && game.general && game.general.private && !game.general.privateAnonymousRemakes) {
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -1294,7 +1306,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					text: 'Player '
 				},
 				{
-					text: `${passport.user} {${playerIndex + 1}} `,
+					text: `${passport.user} {${realPlayerIndex + 1}} `,
 					type: 'player'
 				}
 			]
@@ -1503,10 +1515,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					}
 				}
 			});
-			if (creatorRemade && newGame.general.gameCreatorBlacklist != null) {
+			if (creatorRemade && newGame.private.gameCreatorBlacklist != null) {
 				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
-				if (creator) newGame.general.gameCreatorBlacklist = creator.blacklist;
-			} else newGame.general.gameCreatorBlacklist = null;
+				if (creator) newGame.private.gameCreatorBlacklist = creator.blacklist;
+			} else newGame.private.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
 		}, 3000);
 	};
@@ -1632,7 +1644,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {function} addNewClaim - links to handleAddNewClaim
  * @param {boolean} isTourneyMod - self explain
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
+module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
 	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
@@ -1654,7 +1666,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
 	// if (!AEM && game.general.disableChat) return;
-	if (!((AEM || (isTourneyMod && game.general.unlisted)) && playerIndex === -1)) {
+	if (!((AEM || (isTourneyMod && game.general.unlistedGame)) && playerIndex === -1)) {
 		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
 			return;
 		}
@@ -1750,12 +1762,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
-		if (player) {
-			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
-				return;
-			}
-		} else {
+	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) {
+		return;
+	}
+
+	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
+		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
@@ -2191,20 +2203,41 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	if (pingMods && player) {
 		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-			game.lastModPing = Date.now();
-			sendInProgressGameUpdate(game, false);
-			makeReport(
-				{
-					player: passport.user,
-					situation: `"${pingMods[2]}".`,
-					election: game.general.electionCount,
-					title: game.general.name,
-					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
-				},
-				game,
-				'ping'
-			);
+			Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
+				const staffInGame = accounts
+					.filter(
+						account =>
+							account.staffRole === 'altmod' ||
+							account.staffRole === 'moderator' ||
+							account.staffRole === 'editor' ||
+							account.staffRole === 'admin' ||
+							account.staffRole === 'trialmod'
+					)
+					.map(account => account.username);
+				if (staffInGame.length !== 0) {
+					socket.emit(
+						'sendAlert',
+						`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+					);
+					game.lastModPing = Date.now(); // prevent overquerying
+				} else {
+					// send mod ping
+					game.lastModPing = Date.now();
+					sendInProgressGameUpdate(game, false);
+					makeReport(
+						{
+							player: passport.user,
+							situation: `"${pingMods[2]}".`,
+							election: game.general.electionCount,
+							title: game.general.name,
+							uid: game.general.uid,
+							gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+						},
+						game,
+						'ping'
+					);
+				}
+			});
 		} else {
 			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
 		}
@@ -2281,7 +2314,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						timestamp: new Date(),
 						gameChat: true,
 						chat: [
-							{ text: `${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1})`, type: 'player' },
+							{ text: `${game.general.blindMode ? '' : publicPlayersState[affectedPlayerNumber].userName} {${affectedPlayerNumber + 1}}`, type: 'player' },
 							{ text: ' has been successfully pinged.' }
 						]
 					});
@@ -2347,8 +2380,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		// Attempts to cut down on overloading server resources
-		if (game.general.private && game.chats.length >= 30) {
-			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
+		const privateChatTruncate = await getPrivateChatTruncate(); // positive integer to represent the chats to truncate at or any falsy value to disable
+		if (privateChatTruncate && game.general.private && game.chats.length >= privateChatTruncate) {
+			game.chats = game.chats.slice(game.chats.length - privateChatTruncate, game.chats.length);
 		}
 
 		if (!game.gameState.isCompleted && game.gameState.isStarted) {
@@ -3190,7 +3224,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
 							account.verified = true;
-							account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+							account.verification.email = account.username + '@verified.secrethitler.io';
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
@@ -4015,49 +4049,53 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 		return;
 	}
 
+	let reason = data.reason;
+
+	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(reason)) {
+		callback({ success: false, error: 'Invalid report reason.' });
+		return;
+	}
+
+	switch (reason) {
+		case 'afk/leaving game':
+			reason = 'AFK/Leaving Game';
+			break;
+		case 'abusive chat':
+			reason = 'Abusive Chat';
+			break;
+		case 'cheating':
+			reason = 'Cheating';
+			break;
+		case 'gamethrowing':
+			reason = 'Gamethrowing';
+			break;
+		case 'stalling':
+			reason = 'Stalling';
+			break;
+		case 'botting':
+			reason = 'Botting';
+			break;
+		case 'other':
+			reason = 'Other';
+			break;
+	}
+
+	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
+	const game = games[data.uid];
+	if (!game && data.uid) return;
+
+	const gameType = data.uid ? (game.general.isTourny ? 'tournament' : game.general.casualGame ? 'casual' : 'standard') : 'homepage';
+
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
 		reportingPlayer: passport.user,
 		reportedPlayer: data.reportedPlayer,
-		reason: data.reason,
-		gameType: data.gameType,
+		reason: reason,
+		gameType,
 		comment: data.comment,
 		isActive: true
 	});
-
-	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(playerReport.reason)) {
-		callback({ success: false, error: 'Invalid report reason.' });
-		return;
-	}
-
-	switch (playerReport.reason) {
-		case 'afk/leaving game':
-			playerReport.reason = 'AFK/Leaving Game';
-			break;
-		case 'abusive chat':
-			playerReport.reason = 'Abusive Chat';
-			break;
-		case 'cheating':
-			playerReport.reason = 'Cheating';
-			break;
-		case 'gamethrowing':
-			playerReport.reason = 'Gamethrowing';
-			break;
-		case 'stalling':
-			playerReport.reason = 'Stalling';
-			break;
-		case 'botting':
-			playerReport.reason = 'Botting';
-			break;
-		case 'other':
-			playerReport.reason = 'Other';
-			break;
-	}
-
-	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
-	const game = games[data.uid];
-	if (!game && data.uid) return;
 
 	const blindModeAnonymizedPlayer =
 		data.uid && game.general.blindMode ? (game.gameState.isStarted ? `${data.reportedPlayer.split(' ')[0]} Anonymous` : 'Anonymous') : data.reportedPlayer;
@@ -4065,7 +4103,8 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 	const body = JSON.stringify({
 		content: `${
 			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}> (${playerReport.gameType})` : 'Report from homepage'
-		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
+		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`,
+		allowed_mentions: { parse: [] }
 	});
 
 	const options = {

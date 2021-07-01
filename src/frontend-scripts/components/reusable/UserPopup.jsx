@@ -40,7 +40,6 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer, userList }) => {
 			{
 				uid,
 				userName: userInfo.userName || 'from replay',
-				gameType: inGame ? (gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard') : 'homepage',
 				reportedPlayer: `${inStartedGame && index + 1 ? `{${index + 1}}` : ''} ${reportedPlayer}`,
 				reason: reason,
 				comment: comment

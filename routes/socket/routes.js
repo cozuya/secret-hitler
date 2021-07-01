@@ -57,7 +57,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList, modDMs } = require('./models');
+const { games, emoteList, cloneSettingsFromRedis, modDMs } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -138,6 +138,9 @@ const gamesGarbageCollector = () => {
 			sendGameList();
 		}
 	});
+
+	// also clone in global settings from redis
+	cloneSettingsFromRedis();
 };
 
 const ensureAuthenticated = socket => {
@@ -613,7 +616,7 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('subscribeModChat', uid => {
 				const game = findGame({ uid });
-				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
 						Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
@@ -635,7 +638,7 @@ module.exports.socketRoutes = () => {
 				if (!data) return;
 				const uid = data.uid;
 				const game = findGame({ uid });
-				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
 					} else {
@@ -647,7 +650,7 @@ module.exports.socketRoutes = () => {
 				if (!data) return;
 				const uid = data.uid;
 				const game = findGame({ uid });
-				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekRemakes(socket, passport, game, data.modName);
 					} else {
@@ -658,7 +661,7 @@ module.exports.socketRoutes = () => {
 			socket.on('modFreezeGame', data => {
 				const uid = data.uid;
 				const game = findGame({ uid });
-				if (authenticated && (isAEM || (isTourneyMod && game.general.unlisted))) {
+				if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
 					if (game && game.private && game.private.seatedPlayers) {
 						handleGameFreeze(socket, passport, game, data.modName);
 					} else {

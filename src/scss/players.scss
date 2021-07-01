@@ -205,8 +205,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			transition-property: transform, top;
 			transform-style: preserve-3d;
 			position: relative;
-			-webkit-backface-visibility: hidden; // thanks osx safari
-			backface-visibility: hidden;
 			.card {
 				background-size: cover;
 				background-repeat: no-repeat;
@@ -282,6 +280,24 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.fascist14 {
 				background-image: url('../../public/images/cards/fascist14.png');
 			}
+			.card.fascist15 {
+				background-image: url('../../public/images/cards/fascist15.png');
+			}
+			.card.fascist16 {
+				background-image: url('../../public/images/cards/fascist16.png');
+			}
+			.card.fascist17 {
+				background-image: url('../../public/images/cards/fascist17.png');
+			}
+			.card.fascist18 {
+				background-image: url('../../public/images/cards/fascist18.png');
+			}
+			.card.fascist19 {
+				background-image: url('../../public/images/cards/fascist19.png');
+			}
+			.card.fascist20 {
+				background-image: url('../../public/images/cards/fascist20.png');
+			}
 			.card.hitler0 {
 				background-image: url('../../public/images/cards/hitler0.png');
 			}
@@ -296,6 +312,12 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			}
 			.card.hitler4 {
 				background-image: url('../../public/images/cards/hitler4.png');
+			}
+			.card.hitler5 {
+				background-image: url('../../public/images/cards/hitler5.png');
+			}
+			.card.hitler6 {
+				background-image: url('../../public/images/cards/hitler6.png');
 			}
 			.card.ballot {
 				background-image: url('../../public/images/cards/ballot.png');
@@ -316,9 +338,19 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				background-image: url('../../public/images/cards/membership-fascist.png');
 			}
 			.card-back {
-				-webkit-backface-visibility: hidden; // thanks osx safari
 				backface-visibility: hidden;
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility: hidden;
+				-ms-backface-visibility: hidden;
+				-o-backface-visibility: hidden;
 				transform: rotateY(180deg);
+			}
+			.card-front {
+				backface-visibility: hidden;
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility: hidden;
+				-ms-backface-visibility: hidden;
+				-o-backface-visibility: hidden;
 			}
 			.blacklist {
 				top: -100px !important;

@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
-import { PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
@@ -40,16 +40,23 @@ class Players extends React.Component {
 				});
 			}
 		}
+
+		socket.on('gameJoinStatusUpdate', data => {
+			if (data.status === 'blacklisted') {
+				$(this.blacklistModal).modal('show');
+			}
+		});
 	}
 
 	componentWillUnmount() {
 		this.props.socket.off('notesUpdate');
+		this.props.socket.off('gameJoinStatusUpdate');
 	}
 
 	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
-		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
+		if ((!gameInfo.general.unlistedGame && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -221,14 +228,20 @@ class Players extends React.Component {
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4captain' && (
-							<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
+						player.specialTournamentStatus.slice(1) === 'captain' && (
+							<span
+								title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-captain-icon"
+							/>
 						)}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4' && (
-							<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
+						player.specialTournamentStatus.slice(1) === 'tourney' && (
+							<span
+								title={`This player was part of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-icon"
+							/>
 						)}
 					{str}
 				</span>
@@ -424,7 +437,6 @@ class Players extends React.Component {
 			this.props.socket.emit('playerReport', {
 				uid: gameInfo.general.uid,
 				userName: this.props.userInfo.userName || 'from replay',
-				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
 				reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
 				reason: $('input[name="reason"]').attr('value'),
 				comment: this.state.reportTextValue
@@ -453,8 +465,6 @@ class Players extends React.Component {
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
-			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
-				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
