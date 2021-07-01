@@ -40,7 +40,7 @@ const {
 	sendGeneralChats,
 	sendUserList,
 	sendSpecificUserList,
-	sendReplayGameChats,
+	sendReplayGameData,
 	sendSignups,
 	sendAllSignups,
 	sendPrivateSignups,
@@ -57,6 +57,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
+const { saveAndDeleteGame } = require('./game/end-game');
 const { games, emoteList, cloneSettingsFromRedis, modDMs } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
@@ -134,8 +135,8 @@ const gamesGarbageCollector = () => {
 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].emit('toLobby');
 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) io.sockets.sockets[affectedSocketId].leave(gameName);
 			}
-			delete games[gameName];
-			sendGameList();
+
+			saveAndDeleteGame(gameName);
 		}
 	});
 
@@ -682,8 +683,8 @@ module.exports.socketRoutes = () => {
 					updateUserStatus(passport);
 				}
 			});
-			socket.on('getReplayGameChats', uid => {
-				sendReplayGameChats(socket, uid);
+			socket.on('getReplayGameData', uid => {
+				sendReplayGameData(socket, uid);
 			});
 			// election
 

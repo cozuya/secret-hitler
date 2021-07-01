@@ -29,7 +29,7 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
-const { completeGame } = require('./game/end-game');
+const { completeGame, saveAndDeleteGame } = require('./game/end-game');
 const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate, handleDefaultIPv6Range } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
@@ -270,7 +270,7 @@ const handleSocketDisconnect = socket => {
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
 					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 				) {
-					delete games[gameName];
+					saveAndDeleteGame(gameName);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -306,7 +306,7 @@ const handleSocketDisconnect = socket => {
 					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						delete games[game.general.uid];
+						saveAndDeleteGame(game.general.uid);
 					}
 				}
 			});
@@ -397,7 +397,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			delete games[game.general.uid];
+			saveAndDeleteGame(game.general.uid);
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -430,7 +430,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		delete games[game.general.uid];
+		saveAndDeleteGame(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -873,6 +873,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			remakeVotesPeeked: false,
@@ -941,7 +942,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 3, blues: 0 }
+								presidentClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -950,7 +951,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 2, blues: 1 }
+								presidentClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -959,7 +960,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 1, blues: 2 }
+								presidentClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -968,7 +969,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 0, blues: 3 }
+								presidentClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1003,7 +1004,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 2, blues: 0 }
+								chancellorClaim: ['fascist', 'fascist']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1012,7 +1013,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 1, blues: 1 }
+								chancellorClaim: ['fascist', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1021,7 +1022,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 0, blues: 2 }
+								chancellorClaim: ['liberal', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1079,7 +1080,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 3, blues: 0 }
+								policyPeekClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1088,7 +1089,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1097,7 +1098,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['liberal', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1106,7 +1107,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1115,7 +1116,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1124,7 +1125,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1133,7 +1134,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1142,7 +1143,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 0, blues: 3 }
+								policyPeekClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1456,6 +1457,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			invIndex: -1,
@@ -1490,7 +1492,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				delete games[game.general.uid];
+				saveAndDeleteGame(game.general.uid);
 			} else {
 				sendInProgressGameUpdate(game);
 			}
@@ -3215,7 +3217,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
-							delete games[gameToEnd.general.uid];
+							saveAndDeleteGame(gameToEnd.general.uid);
 							sendGameList();
 						}, 5000);
 					}
@@ -3898,7 +3900,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const game = games[data.userName.slice(7)];
 
 						if (game) {
-							delete games[game.general.uid];
+							saveAndDeleteGame(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}

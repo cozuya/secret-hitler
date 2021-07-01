@@ -187,13 +187,7 @@ class ReplayGamechat extends React.Component {
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
 									if (chatSegment.type) {
-										let classes;
-
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
-										}
+										const classes = this.getClassesFromType(chatSegment.type);
 
 										return (
 											<span key={index} className={classes}>
@@ -204,6 +198,26 @@ class ReplayGamechat extends React.Component {
 
 									return chatSegment.text;
 								})}
+							</span>
+						</div>
+					) : chat.isRemainingPolicies ? (
+						<div className={'item game-chat'} key={i}>
+							{this.handleTimestamps(chat.timestamp)}
+							<span className="game-chat">
+								{chatContents &&
+									chatContents.length &&
+									chatContents.map((chatSegment, index) => {
+										if (chatSegment.type) {
+											return (
+												<span key={index} className={this.getClassesFromType(chatSegment.type)}>
+													{chatSegment.text}
+												</span>
+											);
+										} else if (chatSegment.policies) {
+											return <span key={index}>{this.parseClaim(chatSegment.policies)}</span>;
+										}
+										return chatSegment.text;
+									})}
 							</span>
 						</div>
 					) : chat.isClaim ? (
@@ -342,7 +356,9 @@ class ReplayGamechat extends React.Component {
 						onScroll={this.handleChatScrolled}
 						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
 					>
-						<div className="ui list">{this.processChats()}</div>
+						<div className="ui list" style={{ color: 'var(--theme-text-1)' }}>
+							{this.processChats()}
+						</div>
 					</Scrollbars>
 				</section>
 			</section>
@@ -354,7 +370,7 @@ ReplayGamechat.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.object
 };
 
 const GamechatContainer = props => <ReplayGamechat {...props} />;

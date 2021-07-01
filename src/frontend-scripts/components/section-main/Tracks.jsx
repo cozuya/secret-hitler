@@ -4,6 +4,8 @@ import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import playSound from '../reusable/playSound.js';
+import moment from 'moment';
+import * as Swal from 'sweetalert2';
 
 class Tracks extends React.Component {
 	constructor() {
@@ -119,7 +121,7 @@ class Tracks extends React.Component {
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
-		let experiancedModeTooltip;
+		let experiencedModeTooltip;
 		let privateOnly;
 		let privateOnlyTooltip;
 		let priv;
@@ -205,10 +207,11 @@ class Tracks extends React.Component {
 
 		if (game.experiencedMode) {
 			experiencedMode = <i className="fast forward icon" />;
-			experiancedModeTooltip = 'Speed Mode';
+			experiencedModeTooltip = 'Speed Mode';
 		}
 
-		if (game.rainbowgame) {
+		if (game.rainbowgame || game.isRainbow) {
+			// check both active and saved variables
 			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
 			rainbowgameTooltip = 'Experienced Game';
 		}
@@ -283,7 +286,7 @@ class Tracks extends React.Component {
 				)}
 				{experiencedMode && (
 					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiencedModeTooltip} />
 					</span>
 				)}
 				{privateOnly && (
@@ -601,12 +604,19 @@ class Tracks extends React.Component {
 			}
 		};
 
+		const showDate = () => {
+			if (gameInfo && gameInfo.general && gameInfo.general.date) {
+				// field only exists in replays
+				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}.`);
+			}
+		};
+
 		return (
 			<section className="tracks-container">
 				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
-					<div className="game-name">
+					<div className="game-name" onClick={showDate}>
 						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
 						<span>{gameInfo.general.name}</span>
 					</div>

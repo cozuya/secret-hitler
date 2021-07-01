@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { List } from 'immutable';
+import { fromJS, List } from 'immutable';
 
 export default function buildReplay(game) {
 	// iterates through a game stepwise by phase, generating a list of snapshots along the way
@@ -39,8 +39,11 @@ export default function buildReplay(game) {
 			investigationClaim,
 			policyPeek,
 			policyPeekClaim,
-			specialElection
+			specialElection,
+			deckState
 		} = game.turns.get(turnNum);
+
+		const afterDeckState = deckState && deckState.slice(deckState.size - afterDeckSize);
 
 		const base = {
 			turnNum,
@@ -58,7 +61,8 @@ export default function buildReplay(game) {
 			players: beforePlayers,
 			track: beforeTrack,
 			electionTracker: beforeElectionTracker,
-			deckSize: beforeDeckSize
+			deckSize: beforeDeckSize,
+			deckState
 		});
 
 		const midEnactionAdd = add({
@@ -67,7 +71,8 @@ export default function buildReplay(game) {
 			players: beforePlayers,
 			track: beforeTrack,
 			electionTracker: afterElectionTracker,
-			deckSize: afterDeckSize
+			deckSize: afterDeckSize,
+			deckState: afterDeckState
 		});
 
 		const postEnactionAdd = add({
@@ -76,7 +81,8 @@ export default function buildReplay(game) {
 			players: afterPlayers,
 			track: afterTrack,
 			electionTracker: afterElectionTracker,
-			deckSize: afterDeckSize
+			deckSize: afterDeckSize,
+			deckState: afterDeckState
 		});
 
 		switch (phase) {

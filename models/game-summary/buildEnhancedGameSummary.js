@@ -33,7 +33,8 @@ function buildEnhancedGameSummary(_summary) {
 					.map(log => {
 						const logOptions = Map(
 							options.map(o => {
-								const optValue = log[o] !== undefined ? some(log[o]) : none;
+								const optValue = log[o] !== undefined && log[o].size !== 0 && log[o].length !== 0 ? some(log[o]) : none;
+								// filter out 0-length arrays/lists in addition to undefined values
 								return [o, optValue];
 							})
 						).toObject();
