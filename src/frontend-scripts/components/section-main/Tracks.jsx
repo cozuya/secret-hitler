@@ -145,8 +145,8 @@ class Tracks extends React.Component {
 		let flappyModeTooltip;
 		let flappyOnlyMode;
 		let flappyOnlyModeTooltip;
-		let unlisted;
-		let unlistedTooltip;
+		let unlistedGame;
+		let unlistedGameTooltip;
 		const customgameactiveTooltip = 'Custom Game';
 
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -257,9 +257,9 @@ class Tracks extends React.Component {
 			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
 		}
 
-		if (game.unlisted) {
-			unlisted = <i className="lock icon green" />;
-			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
+		if (game.unlistedGame) {
+			unlistedGame = <i className="lock icon green" />;
+			unlistedGameTooltip = 'Unlisted Game - Not Visible in Game List';
 		}
 
 		return (
@@ -344,9 +344,9 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
 					</span>
 				)}
-				{unlisted && (
+				{unlistedGame && (
 					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={unlisted} content={unlistedTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={unlistedGame} content={unlistedGameTooltip} />
 					</span>
 				)}
 			</div>

@@ -17,13 +17,35 @@ export default class Generalchat extends React.Component {
 		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
 		emoteColonIndex: -1,
-		excludedColonIndices: []
+		excludedColonIndices: [],
+		genchat: true,
+		modDMs: null
 	};
 
 	componentDidMount() {
 		if (this.scrollbar) {
 			this.scrollbar.scrollToBottom();
 		}
+
+		if (this.props.socket) {
+			this.props.socket.on('openModDMs', data => {
+				this.setState({ modDMs: data, genchat: false });
+			});
+
+			this.props.socket.on('closeModDMs', () => {
+				this.setState({ modDMs: null, genchat: true });
+			});
+
+			this.props.socket.on('inProgressModDMUpdate', dm => {
+				this.setState({ modDMs: dm });
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		this.props.socket.off('openModDMs');
+		this.props.socket.off('closeModDMs');
+		this.props.socket.off('inProgressModDMUpdate');
 	}
 
 	componentDidUpdate() {
@@ -122,6 +144,19 @@ export default class Generalchat extends React.Component {
 		const { userInfo } = this.props;
 		const { userName } = userInfo;
 
+		if (!this.state.genchat && this.state.modDMs) {
+			// you can always chat with a mod even if you are new, unless you are an observing mod
+			if (userName === this.state.modDMs.username || userName === this.state.modDMs.aemMember)
+				return {
+					isDisabled: false,
+					placeholder: 'Send a message'
+				};
+			return {
+				isDisabled: true,
+				placeholder: 'You are observing a conversation'
+			};
+		}
+
 		if (!userName) {
 			return {
 				isDisabled: true,
@@ -168,9 +203,15 @@ export default class Generalchat extends React.Component {
 		const { chatValue } = this.state;
 
 		if (chatValue && chatValue.length <= 300) {
-			this.props.socket.emit('addNewGeneralChat', {
-				chat: chatValue
-			});
+			if (this.state.genchat) {
+				this.props.socket.emit('addNewGeneralChat', {
+					chat: chatValue
+				});
+			} else {
+				this.props.socket.emit('modDMsAddChat', {
+					chat: chatValue
+				});
+			}
 
 			this.setState({
 				chatValue: '',
@@ -310,6 +351,34 @@ export default class Generalchat extends React.Component {
 					ref={c => (this.chatInput = c)}
 				/>
 				{!this.generalChatStatus().isDisabled && renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
+				{this.state.modDMs !== null &&
+					(this.state.modDMs.aemMember === this.props.userInfo.userName ||
+						this.props.userInfo.staffRole === 'editor' ||
+						this.props.userInfo.staffRole === 'admin') &&
+					!this.state.genchat && (
+						<div className="chat-button" style={{ display: 'inline' }}>
+							<button
+								onClick={() => {
+									this.props.socket.emit('aemCloseChat', { userName: this.props.userInfo.userName });
+								}}
+								className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}
+							>
+								Close Conversation
+							</button>
+						</div>
+					)}
+				{this.props.userInfo.staffRole && this.state.modDMs !== null && this.state.modDMs.aemMember !== this.props.userInfo.userName && (
+					<div className="chat-button" style={{ display: 'inline' }}>
+						<button
+							onClick={() => {
+								this.props.socket.emit('aemUnsubscribeChat', { userName: this.props.userInfo.userName });
+							}}
+							className={`ui primary button`}
+						>
+							Leave Conversation
+						</button>
+					</div>
+				)}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
@@ -333,9 +402,11 @@ export default class Generalchat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
+		const chatToRender = this.state.genchat ? generalChats : { list: this.state.modDMs?.messages };
+
 		return (
-			generalChats.list &&
-			generalChats.list.map((chat, i) => {
+			chatToRender.list &&
+			chatToRender.list.map((chat, i) => {
 				const { gameSettings } = userInfo;
 				const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
 				const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
@@ -359,13 +430,19 @@ export default class Generalchat extends React.Component {
 							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === '4captain' && (
-								<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
+							chat.specialTournamentStatus.slice(1) === 'captain' && (
+								<span
+									title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+									className="crown-captain-icon"
+								/>
 							)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 							chat.specialTournamentStatus &&
-							chat.specialTournamentStatus === '4' && (
-								<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
+							chat.specialTournamentStatus.slice(1) === 'tourney' && (
+								<span
+									title={`This player was part of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+									className="crown-icon"
+								/>
 							)}
 						<span
 							className={
@@ -403,7 +480,7 @@ export default class Generalchat extends React.Component {
 									userInfo.staffRole !== 'veteran'
 										? chat.hiddenUsername
 										: chat.userName
-								}: `}
+								}${chat.type === 'join' || chat.type === 'leave' ? '' : ':'} `}
 							</a>
 						</span>
 						<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
@@ -463,7 +540,26 @@ export default class Generalchat extends React.Component {
 			<section className="generalchat">
 				<section className="generalchat-header">
 					<div className="clearfix">
-						<h3 className="ui header">Chat</h3>
+						<div className="ui ui-theme top attached menu">
+							<a
+								className={`${this.state.genchat ? 'active' : ''} item`}
+								onClick={() => {
+									this.setState({ genchat: true });
+								}}
+							>
+								Chat
+							</a>
+							{this.state.modDMs != null && (
+								<a
+									className={`${!this.state.genchat ? 'active' : ''} item`}
+									onClick={() => {
+										this.setState({ genchat: false });
+									}}
+								>
+									Mod Messages
+								</a>
+							)}
+						</div>
 						<i
 							title="Click here to lock chat and prevent from scrolling"
 							className={lock ? 'large lock icon' : 'large unlock alternate icon'}

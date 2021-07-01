@@ -46,6 +46,7 @@ export default class Creategame extends React.Component {
 			isEloLimited: false,
 			flappyMode: false,
 			flappyOnlyMode: false,
+			privateAnonymousRemakes: false,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -1035,6 +1036,7 @@ export default class Creategame extends React.Component {
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
 				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
 				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
+				privateAnonymousRemakes: this.state.privateAnonymousRemakes,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
@@ -2133,6 +2135,27 @@ export default class Creategame extends React.Component {
 										});
 									}}
 									checked={this.state.privateonlyGame}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						)}
+						{this.state.gameType === 'private' && (
+							<div className="four wide column privateonlygame">
+								<h4 className="ui header">Make Votes to Remake Anonymous.</h4>
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({
+											privateAnonymousRemakes: checked
+										});
+									}}
+									checked={this.state.privateAnonymousRemakes}
 									onColor="#627cc8"
 									offColor="#444444"
 									uncheckedIcon={false}
