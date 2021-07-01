@@ -2201,20 +2201,41 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 
 	if (pingMods && player) {
 		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-			game.lastModPing = Date.now();
-			sendInProgressGameUpdate(game, false);
-			makeReport(
-				{
-					player: passport.user,
-					situation: `"${pingMods[2]}".`,
-					election: game.general.electionCount,
-					title: game.general.name,
-					uid: game.general.uid,
-					gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
-				},
-				game,
-				'ping'
-			);
+			Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
+				const staffInGame = accounts
+					.filter(
+						account =>
+							account.staffRole === 'altmod' ||
+							account.staffRole === 'moderator' ||
+							account.staffRole === 'editor' ||
+							account.staffRole === 'admin' ||
+							account.staffRole === 'trialmod'
+					)
+					.map(account => account.username);
+				if (staffInGame.length !== 0) {
+					socket.emit(
+						'sendAlert',
+						`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+					);
+					game.lastModPing = Date.now(); // prevent overquerying
+				} else {
+					// send mod ping
+					game.lastModPing = Date.now();
+					sendInProgressGameUpdate(game, false);
+					makeReport(
+						{
+							player: passport.user,
+							situation: `"${pingMods[2]}".`,
+							election: game.general.electionCount,
+							title: game.general.name,
+							uid: game.general.uid,
+							gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+						},
+						game,
+						'ping'
+					);
+				}
+			});
 		} else {
 			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
 		}
