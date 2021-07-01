@@ -645,12 +645,12 @@ class Playerlist extends React.Component {
 							<br />
 							<span className="anji">Ed</span>
 							<span className="bruno">it</span>
-							<span className="moira">ors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special
-							colors to stand out, as well as a <span className="admin">(E)</span>.<br />
+							<span className="moira">ors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
+							stand out, as well as a <span className="admin">(E)</span>.<br />
 							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Ed</span>
 							<span className="bruno">it</span>
-							<span className="moira">ors</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
-							<span className="moderatorcolor">(M)</span>.<br />
+							<span className="moira">ors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
+							<br />
 							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
 							<br />
 							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special color</span> as well! Contribute code to
