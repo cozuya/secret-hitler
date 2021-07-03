@@ -289,6 +289,15 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.fascist17 {
 				background-image: url('../../public/images/cards/fascist17.png');
 			}
+			.card.fascist18 {
+				background-image: url('../../public/images/cards/fascist18.png');
+			}
+			.card.fascist19 {
+				background-image: url('../../public/images/cards/fascist19.png');
+			}
+			.card.fascist20 {
+				background-image: url('../../public/images/cards/fascist20.png');
+			}
 			.card.hitler0 {
 				background-image: url('../../public/images/cards/hitler0.png');
 			}
@@ -306,6 +315,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			}
 			.card.hitler5 {
 				background-image: url('../../public/images/cards/hitler5.png');
+			}
+			.card.hitler6 {
+				background-image: url('../../public/images/cards/hitler6.png');
 			}
 			.card.ballot {
 				background-image: url('../../public/images/cards/ballot.png');
@@ -413,6 +425,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	max-width: 164px;
 	min-width: 36px;
 	height: 115px;
+	margin-right: 125px;
 	margin-left: auto;
 	flex: 1;
 	> div {

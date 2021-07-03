@@ -36,45 +36,82 @@ exports.mapOpt2 = f => {
 /*
  * ALIASES:
  *
- * Hand: { reds: Int, blues: Int }
+ * Hand: Array [ Policy ]
  * Policy: String ('fascist' | 'liberal')
  */
 
 // (handX: Hand, handY: Hand) => Hand
 exports.handDiff = (handX, handY) => {
-	return {
-		reds: handX.reds - handY.reds,
-		blues: handX.blues - handY.blues
-	};
+	if (handX.hasOwnProperty('reds') && handX.hasOwnProperty('blues')) {
+		// check for legacy format of hands
+		if (handY.hasOwnProperty('reds') && handY.hasOwnProperty('blues')) {
+			return {
+				reds: handX.reds - handY.reds,
+				blues: handX.blues - handY.blues
+			};
+		}
+
+		const currentValue = { reds: handX.reds, blues: handX.blues };
+
+		if (handY.hasOwnProperty('size')) {
+			for (const elem of handY) {
+				currentValue[elem === 'fascist' ? 'reds' : 'blues']--;
+			}
+		} else {
+			currentValue[handY === 'fascist' ? 'reds' : 'blues']--;
+		}
+
+		return currentValue;
+	}
+
+	const handXClone = handX.toArray();
+
+	if (!handY.hasOwnProperty('size')) {
+		handY = [handY];
+	}
+
+	for (const elem of handY) {
+		handXClone.splice(handXClone.indexOf(elem), 1);
+	}
+	return handXClone;
 };
 
 // expects hand to contain only a single card
 // (hand: Hand) => Policy
 exports.handToPolicy = hand => {
-	if (hand.reds > 0 && hand.blues > 0) {
-		throw new Error('Expected hand to contain only a single card');
+	if (hand.hasOwnProperty('reds') && hand.hasOwnProperty('blues')) {
+		if (hand.reds > 0 && hand.blues > 0) {
+			throw new Error('Expected hand to contain only a single card');
+		}
+		return hand.reds > 0 ? 'fascist' : 'liberal';
 	}
-	return hand.reds > 0 ? 'fascist' : 'liberal';
+
+	return hand[0];
 };
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
 const handToPolicies = (exports.handToPolicies = hand => {
-	const toPolicies = (count, type) => {
-		return Range(0, count)
-			.map(i => type)
-			.toList();
-	};
+	if (hand.hasOwnProperty('reds') && hand.hasOwnProperty('blues')) {
+		const toPolicies = (count, type) => {
+			return Range(0, count)
+				.map(i => type)
+				.toList();
+		};
 
-	const reds = toPolicies(hand.reds, 'fascist');
-	const blues = toPolicies(hand.blues, 'liberal');
+		const reds = toPolicies(hand.reds, 'fascist');
+		const blues = toPolicies(hand.blues, 'liberal');
 
-	return reds.concat(blues).toList();
+		return reds.concat(blues).toList();
+	}
+
+	return hand;
 });
 
 // (policy: Policy) => Hand
 exports.policyToHand = policy => {
-	return policy === 'fascist' ? { reds: 1, blues: 0 } : { reds: 0, blues: 1 };
+	// return policy === 'fascist' ? { reds: 1, blues: 0 } : { reds: 0, blues: 1 };
+	return policy;
 };
 
 const isComma = (index, list, userInfo) => {
@@ -107,6 +144,10 @@ const text = (exports.text = (type, text, space, comma) => ({ type, text, space,
 
 // (hand: Hand) => String ('R*B*')
 exports.handToText = (hand, userInfo) => {
+	if (handToPolicies(hand).size === 0) {
+		return [];
+	}
+
 	return handToPolicies(hand)
 		.map((policy, index, list) => text(policy, policyToString(policy, userInfo), false, isComma(index, list, userInfo)))
 		.concat(text('normal', ''))

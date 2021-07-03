@@ -81,6 +81,7 @@ export class App extends React.Component {
 				type: null,
 				data: null
 			},
+			forceMountRightSidebar: false,
 			warnings: null,
 			allEmotes: {}
 		};
@@ -147,6 +148,18 @@ export class App extends React.Component {
 					}
 				});
 			}
+		});
+
+		socket.on('preOpenModDMs', () => {
+			this.setState({
+				forceMountRightSidebar: true
+			});
+		});
+
+		socket.on('postCloseModDMs', () => {
+			this.setState({
+				forceMountRightSidebar: false
+			});
 		});
 
 		socket.on('sendWarnings', warningData => {
@@ -735,6 +748,20 @@ export class App extends React.Component {
 										socket={socket}
 										midSection={this.props.midSection}
 										allEmotes={this.state.allEmotes}
+										forceMounted={false}
+									/>
+								);
+							} else if (this.state.forceMountRightSidebar) {
+								return (
+									<RightSidebar
+										gameInfo={this.props.gameInfo}
+										userInfo={this.props.userInfo}
+										userList={this.props.userList}
+										generalChats={this.props.generalChats}
+										socket={socket}
+										midSection={this.props.midSection}
+										allEmotes={this.state.allEmotes}
+										forceMounted={true}
 									/>
 								);
 							}

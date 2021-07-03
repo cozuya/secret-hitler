@@ -5,6 +5,7 @@ const BannedIP = require('../../models/bannedIP');
 const redis = require('redis');
 const { promisify } = require('util');
 const version = require('../../version');
+const { doesIPMatchCIDR } = require('./ip-obf');
 
 const fs = require('fs');
 const emotes = {};
@@ -24,11 +25,25 @@ module.exports.globalSettingsClient = globalSettingsClient;
 const getGlobalSetting = promisify(globalSettingsClient.get).bind(globalSettingsClient);
 const setGlobalSetting = promisify(globalSettingsClient.set).bind(globalSettingsClient);
 
+const globalSettingsCache = {}; // READ ONLY variables that are cloned from redis (they will be reset every game GC when the settings are cloned from redis)
+const settingsToReplicate = [
+	'private-chat-truncate' // type: integer
+];
+
+module.exports.cloneSettingsFromRedis = async () => {
+	for (const setting of settingsToReplicate) {
+		globalSettingsCache[setting] = JSON.parse(await getGlobalSetting(setting));
+	}
+};
+
 module.exports.getLastGenchatModPingAsync = async () => {
 	return JSON.parse(await getGlobalSetting('genchat-mod-ping'));
 };
 module.exports.setLastGenchatModPingAsync = async date => {
 	await setGlobalSetting('genchat-mod-ping', JSON.stringify(date));
+};
+module.exports.getPrivateChatTruncate = async () => {
+	return globalSettingsCache['private-chat-truncate'];
 };
 
 module.exports.emoteList = emotes;
@@ -39,6 +54,9 @@ module.exports.userList = [];
 module.exports.generalChats = {
 	sticky: '',
 	list: []
+};
+module.exports.modDMs = {
+	// player username => full object
 };
 module.exports.accountCreationDisabled = { status: false };
 module.exports.bypassVPNCheck = { status: false };
@@ -226,7 +244,7 @@ module.exports.formattedGameList = () => {
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
 		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlisted || undefined
+		isUnlisted: games[gameName].general.unlistedGame || undefined
 	}));
 };
 
@@ -285,7 +303,7 @@ module.exports.createNewBypass = () => {
 
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
-BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime }, permanent: false }, (err, r) => {
 	if (err) throw err;
 });
 const banLength = {
@@ -298,11 +316,28 @@ module.exports.testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
 	else if (module.exports.ipbansNotEnforced.status) callback(null);
 	else {
-		BannedIP.find({ ip: IP }, (err, ips) => {
+		BannedIP.find({}, (err, allIPs) => {
 			if (err) callback(err);
 			else {
+				const ips = [];
+
+				for (const potentialMatch of allIPs) {
+					if (potentialMatch.ip == IP || doesIPMatchCIDR(potentialMatch.ip, IP)) {
+						// using == because that's equivalent to mongo's { ip : IP } afaik
+						ips.push(potentialMatch);
+					}
+				}
+
 				let date;
 				let unbannedTime;
+				for (const ipban of ips) {
+					if (ipban.permanent) {
+						callback(ipban.type, new Date(0), true);
+						return;
+					}
+				}
+
+				// if we have no permanent ip bans, check by longest
 				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];
 
 				if (ip) {
@@ -311,8 +346,8 @@ module.exports.testIP = (IP, callback) => {
 				}
 
 				if (ip && unbannedTime > date) {
-					if (process.env.NODE_ENV === 'production') {
-						callback(ip.type, unbannedTime);
+					if (process.env.NODE_ENV === 'production' || process.env.IPBANSINDEV) {
+						callback(ip.type, unbannedTime, false);
 					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);
 						callback(null);

@@ -61,7 +61,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 
 	if (!homepage) {
 		// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
-		if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
+		if (!game || game.customGameSettings.enabled || game.general.unlistedGame || game.general.private) return;
 		// No Auto-Reports from Casual games
 		if (game.general.casualGame && (type === 'report' || type === 'reportdelayed')) return;
 	}
