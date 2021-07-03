@@ -192,8 +192,11 @@ class Players extends React.Component {
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
-			const userName =
-				isBlind && gameInfo.general.replacementNames ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const userName = isBlind
+				? gameInfo.gameState.isTracksFlipped && gameInfo.general.replacementNames
+					? gameInfo.general.replacementNames[i]
+					: '?'
+				: player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
@@ -381,10 +384,15 @@ class Players extends React.Component {
 								} else {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
-							} else if (!hideRoles && publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
+							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+								if (publicPlayersState[i].cardStatus.cardBack.icon || (publicPlayersState[i].cardStatus.cardBack.icon === 0 && !hideRoles)) {
+									// we want to only exclude role information -- the `icon` property is a solid tipoff that we have a role card shown
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
-								} else {
+								} else if (
+									!hideRoles ||
+									(publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-fascist' &&
+										publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-liberal')
+								) {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 								}
 							}
