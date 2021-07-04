@@ -186,17 +186,18 @@ class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const { gameInfo, userInfo, userList, hideRoles } = this.props;
+		const { gameInfo, userInfo, userList, hideRoles, isReplay } = this.props;
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
-			const userName = isBlind
-				? gameInfo.gameState.isTracksFlipped && gameInfo.general.replacementNames
-					? gameInfo.general.replacementNames[i]
-					: '?'
-				: player.userName;
+			const userName =
+				isBlind && !isReplay
+					? gameInfo.gameState.isTracksFlipped && gameInfo.general.replacementNames
+						? gameInfo.general.replacementNames[i]
+						: '?'
+					: player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
