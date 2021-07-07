@@ -306,7 +306,7 @@ const handleSocketDisconnect = socket => {
 					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						saveAndDeleteGame(game.general.uid);
+						game.general.allPlayersLeft = new Date();
 					}
 				}
 			});
@@ -397,7 +397,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			saveAndDeleteGame(game.general.uid);
+			game.general.allPlayersLeft = new Date();
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(

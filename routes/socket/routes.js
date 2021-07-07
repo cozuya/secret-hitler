@@ -74,19 +74,21 @@ const gamesGarbageCollector = () => {
 	Object.keys(games).forEach(gameName => {
 		let toDelete = false;
 		const currentGame = games[gameName];
+		if (!currentGame) return;
+
 		const createdTimer =
-			currentGame &&
 			currentGame.general &&
 			currentGame.general.timeCreated &&
 			currentGame.gameState &&
 			!currentGame.gameState.isStarted &&
 			new Date(currentGame.general.timeCreated.getTime() + 600000);
 		const completedTimer =
-			currentGame &&
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
 			currentGame.gameState.timeCompleted &&
 			new Date(currentGame.gameState.timeCompleted + 1000 * 60 * 2);
+		const allPlayersLeftTimer =
+			currentGame.general && currentGame.general.allPlayersLeft && new Date(currentGame.general.allPlayersLeft.getTime() + 1000 * 60 * 2);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -107,14 +109,11 @@ const gamesGarbageCollector = () => {
 		// 	createdTimer
 		// );
 
-		if (games[gameName] && createdTimer && createdTimer < currentTime) {
-			// console.log('Created Timer Expired. Deleting... ');
-			toDelete = true;
-		}
-		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
-			// console.log('Completed Game Timer Expired. Deleting... ');
-			toDelete = true;
-		}
+		toDelete =
+			(createdTimer && createdTimer < currentTime) ||
+			(!games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) ||
+			(allPlayersLeftTimer && allPlayersLeftTimer < currentTime);
+
 		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
 		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
 		// toDelete = true;

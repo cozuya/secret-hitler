@@ -354,6 +354,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 			if (player) {
 				player.leftGame = false;
 				player.connected = true;
+				if (game.general) game.general.allPlayersLeft = null;
 				socket.emit('updateSeatForUser', true);
 				updateUserStatus(passport, game);
 			} else {
