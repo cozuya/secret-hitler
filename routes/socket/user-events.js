@@ -1464,7 +1464,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			privatePassword: game.private.privatePassword,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: game.private.gameCreatorName,
+			gameCreatorBlacklist: game.private.gameCreatorBlacklist
 		};
 
 		game.publicPlayersState.forEach((player, i) => {

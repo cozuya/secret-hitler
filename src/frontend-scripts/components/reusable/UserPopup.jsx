@@ -122,8 +122,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 
 	return (
 		<Popup
-			invertedView
-			P
+			inverted
 			trigger={children}
 			pinned
 			on="click"
