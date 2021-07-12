@@ -303,7 +303,7 @@ module.exports.createNewBypass = () => {
 
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
-BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime }, permanent: false }, (err, r) => {
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime }, permanent: { $ne: true } }, (err, r) => {
 	if (err) throw err;
 });
 const banLength = {

@@ -3174,9 +3174,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'clearTimeoutIP':
-					BannedIP.remove({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
+					BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
+					console.log(handleDefaultIPv6Range(data.ip));
 					break;
 				case 'clearTimeoutAndTimeoutIP':
 					Account.findOne({ username: data.userName })
@@ -3189,7 +3190,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							}
 
-							BannedIP.remove({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
+							BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 								if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 							});
 						})
