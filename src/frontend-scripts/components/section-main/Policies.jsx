@@ -64,11 +64,13 @@ class Policies extends React.Component {
 		const renderDeckInReplay = () => {
 			// num is from 1 to 18, inclusive
 			// so we add 18 * deck size in order to properly inform React that when the deck size changes (we are on a new deck), we should render a new animation
-			return deckShown
-				? _.range(1, deckInfo.size + 1).map(num => (
+			return deckShown ? (
+				<div style={{ position: 'absolute', zIndex: '2' }}>
+					{_.range(1, deckInfo.size + 1).map(num => (
 						<div key={num + 18 * deckInfo.size} id={`splay${num}`} className={`${deckInfo.get(num - 1)}p cardflinger-card`} />
-				  ))
-				: null;
+					))}
+				</div>
+			) : null;
 		};
 
 		return (
@@ -100,7 +102,7 @@ class Policies extends React.Component {
 					})()}
 					{renderUndrawn()}
 				</div>
-				<div style={{ position: 'absolute', zIndex: '2' }}>{renderDeckInReplay()}</div>
+				{renderDeckInReplay()}
 				<div className="discard" title={`${discardedPolicyCount} policy cards discarded`}>
 					{gameInfo.gameState.isTracksFlipped && Number.isInteger(discardedPolicyCount) && <div className="card-count">{discardedPolicyCount}</div>}
 					{renderDiscard()}

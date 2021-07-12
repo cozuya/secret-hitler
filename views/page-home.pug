@@ -34,7 +34,7 @@ block content
 		var audioEl = document.getElementById('header-audio');
 		var headerEl = document.getElementById('header-container')
 
-		headerEl.addEventListener('mouseenter', function() {audioEl.play()})
+		headerEl.addEventListener('mouseenter', function() {window.plausible('Banner Engagement');audioEl.play()})
 		headerEl.addEventListener('mouseleave', function() {audioEl.pause()})
 
 

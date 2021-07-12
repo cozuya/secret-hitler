@@ -69,6 +69,7 @@ const ipToBinaryArray = ip => {
 
 // checks to see if an IP has a valid CIDR suffix
 const validateCIDR = ip => {
+	if (!ip) return false;
 	const ipSections = ip.split('/');
 	if (ipSections.length !== 2) return false;
 	const rawIP = ipSections[0];
