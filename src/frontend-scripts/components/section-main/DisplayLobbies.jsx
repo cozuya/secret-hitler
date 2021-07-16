@@ -89,8 +89,8 @@ const DisplayLobbies = props => {
 		let flappyModeTooltip;
 		let flappyOnlyMode;
 		let flappyOnlyModeTooltip;
-		let unlisted;
-		let unlistedTooltip;
+		let unlistedGame;
+		let unlistedGameTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -200,8 +200,8 @@ const DisplayLobbies = props => {
 		}
 
 		if (game.isUnlisted) {
-			unlisted = <i className="lock icon green" />;
-			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
+			unlistedGame = <i className="lock icon green" />;
+			unlistedGameTooltip = 'Unlisted Game - Not Visible in Game List';
 		}
 
 		if (game.practiceGame) {
@@ -291,9 +291,9 @@ const DisplayLobbies = props => {
 						{flappyOnlyMode}
 					</span>
 				)}
-				{unlisted && (
-					<span data-tooltip={unlistedTooltip} data-inverted="">
-						{unlisted}
+				{unlistedGame && (
+					<span data-tooltip={unlistedGameTooltip} data-inverted="">
+						{unlistedGame}
 					</span>
 				)}
 			</div>

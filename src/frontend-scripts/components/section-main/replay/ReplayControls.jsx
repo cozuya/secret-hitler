@@ -3,7 +3,7 @@ import { Range, List, OrderedMap, Map } from 'immutable';
 import { fromNullable } from 'option';
 import classnames from 'classnames';
 import Slider from 'rc-slider';
-import { capitalize } from '../../../../../utils';
+import { capitalize, text, policyToString } from '../../../../../utils';
 import GameText from '../../reusable/GameText.jsx';
 
 const TurnNav = ({ position, size, toTurn }) => {
@@ -121,12 +121,20 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 	);
 };
 
-const Description = ({ description }) => {
+const Description = ({ description, deck, deckShown, userInfo }) => {
+	const long = userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters && userInfo.gameSettings.claimCharacters === 'full';
+	let descr = description;
+
+	if (deckShown) {
+		descr.push(text('player', ' Current deck: '));
+		descr = descr.concat(deck.map((x, i) => text(x, policyToString(x, userInfo), long && i !== deck.size - 1, long && i !== deck.size - 1)).toArray());
+	}
+
 	return (
 		<div className="description-container">
 			<h1 className="ui header">Description</h1>
 			<p className="content">
-				<GameText text={description} />
+				<GameText text={descr} />
 			</p>
 		</div>
 	);
@@ -135,16 +143,18 @@ const Description = ({ description }) => {
 const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => {
 	const onKeyDown = event => {
 		// ignore typing in textboxes
+		const leftKeyCode = 37;
+		const rightKeyCode = 39;
 		if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 		const char = String.fromCharCode(event.keyCode);
-		if (char === 'H' && hasPrev) {
-			backward();
-		} else if (char === 'J' && hasPrev) {
-			prev();
-		} else if (char === 'K' && hasNext) {
-			next();
-		} else if (char === 'L' && hasNext) {
-			forward();
+		if ((char === 'H' || (event.shiftKey && event.keyCode == leftKeyCode)) && hasPrev) {
+			return backward();
+		} else if ((char === 'J' || event.keyCode === leftKeyCode) && hasPrev) {
+			return prev();
+		} else if ((char === 'L' || (event.shiftKey && event.keyCode == rightKeyCode)) && hasNext) {
+			return forward();
+		} else if ((char === 'K' || event.keyCode === rightKeyCode) && hasNext) {
+			return next();
 		}
 	};
 
@@ -182,7 +192,7 @@ const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, 
 	);
 };
 
-const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) => {
+const ReplayControls = ({ turnsSize, turnNum, phase, description, playback, deck, deckShown, userInfo }) => {
 	const {
 		hasNext,
 		hasPrev,
@@ -204,7 +214,7 @@ const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) =>
 		<section className="replay-controls">
 			<TurnNav position={turnNum} size={turnsSize} toTurn={toTurn} />
 			<PhaseNav phase={phase} hasLegislation={hasLegislation} hasAction={hasAction} toElection={toElection} toLegislation={toLegislation} toAction={toAction} />
-			<Description description={description} />
+			<Description description={description} deck={deck} deckShown={deckShown} userInfo={userInfo} />
 			<Playback
 				hasNext={hasNext}
 				hasPrev={hasPrev}

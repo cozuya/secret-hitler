@@ -81,6 +81,7 @@ export class App extends React.Component {
 				type: null,
 				data: null
 			},
+			forceMountRightSidebar: false,
 			warnings: null,
 			allEmotes: {}
 		};
@@ -147,6 +148,18 @@ export class App extends React.Component {
 					}
 				});
 			}
+		});
+
+		socket.on('preOpenModDMs', () => {
+			this.setState({
+				forceMountRightSidebar: true
+			});
+		});
+
+		socket.on('postCloseModDMs', () => {
+			this.setState({
+				forceMountRightSidebar: false
+			});
 		});
 
 		socket.on('sendWarnings', warningData => {
@@ -275,8 +288,10 @@ export class App extends React.Component {
 			});
 		});
 
-		socket.on('toLobby', () => {
-			window.location.hash = '#/';
+		socket.on('toLobby', uid => {
+			if (window.location.hash === '/table/' + uid)
+				// only eject the player from their current state if they are in the now-deleted game
+				window.location.hash = '#/';
 			Swal.fire('The game you were previously in was deleted automatically.');
 		});
 
@@ -735,6 +750,20 @@ export class App extends React.Component {
 										socket={socket}
 										midSection={this.props.midSection}
 										allEmotes={this.state.allEmotes}
+										forceMounted={false}
+									/>
+								);
+							} else if (this.state.forceMountRightSidebar) {
+								return (
+									<RightSidebar
+										gameInfo={this.props.gameInfo}
+										userInfo={this.props.userInfo}
+										userList={this.props.userList}
+										generalChats={this.props.generalChats}
+										socket={socket}
+										midSection={this.props.midSection}
+										allEmotes={this.state.allEmotes}
+										forceMounted={true}
 									/>
 								);
 							}

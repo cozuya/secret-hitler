@@ -11,6 +11,7 @@ const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
 const { expandAndSimplify, obfIP, doesIPMatchCIDR } = require('./socket/ip-obf');
 const prodCacheBustToken = require('./prodCacheBustToken');
+const { handleDefaultIPv6Range } = require('./socket/util');
 
 /**
  * @param {object} req - express request object.
@@ -63,7 +64,7 @@ const checkIP = config => {
 		creationDisabledSignup.save(() => {
 			res.status(403).json({
 				message:
-					'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on discord.'
+					'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  If you need an exception, please contact our moderators on discord.'
 			});
 		});
 	} else if (torIps.includes(signupIP)) {
@@ -83,7 +84,7 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
-	} else if (process.env.NODE_ENV !== 'production') {
+	} else if (process.env.NODE_ENV !== 'production' && !process.env.IPBANSINDEV) {
 		config.vpnScore = 0;
 		next(config);
 	} else if (getIPIntelCounter.count >= 1995 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
@@ -107,8 +108,9 @@ const checkIP = config => {
 		let ipBanned = false;
 		const checkFragban = ban => {
 			return (
-				(new Date() < ban.bannedDate && doesIPMatchCIDR(ban.ip, signupIP)) ||
-				(!ban.ip.includes('/') &&
+				((new Date() < ban.bannedDate || ban.permanent) && doesIPMatchCIDR(ban.ip, signupIP)) ||
+				((new Date() < ban.bannedDate || ban.permanent) &&
+				!ban.ip.includes('/') &&
 				ban.ip.includes('.') &&
 				signupIP.includes('.') && // backwards compatability
 					(ban.ip ===
@@ -141,12 +143,12 @@ const checkIP = config => {
 				fragSignup.save(() => {
 					res.status(401).json({
 						message:
-							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  Here to only play private games?  Please check out our mirror site found at https://private.secrethitler.io. If you need an exception, please contact our moderators on Discord.'
+							'Creating new accounts is currently disabled.  This is likely due to limitations on our current server hardware.  If you need an exception, please contact our moderators on Discord.'
 					});
 				});
 				ipBanned = true;
 			} else {
-				testIP(signupIP, (banType, unbanTime) => {
+				testIP(signupIP, (banType, unbanTime, permanent) => {
 					if (hasBypass && banType == 'new') banType = null;
 					if (banType && !hasBypass) {
 						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
@@ -175,14 +177,29 @@ const checkIP = config => {
 							ipBanned = true;
 						}
 					}
-					if (!ipBanned) {
+					if (ipBanned) {
+						const ipbannedSignup = new Signups({
+							date: new Date(),
+							userName: username,
+							type: `Failed - IPBanned ${permanent ? 'permanent ' : ''}${banType}`,
+							ip: obfIP(signupIP),
+							email: config.isOAuth
+								? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+								: Boolean(email),
+							unobfuscatedIP: signupIP,
+							oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
+						});
+						ipbannedSignup.save();
+					} else {
 						if (bypassVPNCheck.status) {
 							config.vpnScore = 0;
 							next(config);
 						} else if (VPNCache[signupIP]) {
 							config.vpnScore = VPNCache[signupIP];
 							next(config);
-						} else {
+						} else if (!process.env.IPBANSINDEV) {
+							// we dont want to send bogus requests to gii if we are in dev
+							// (this is only reachable if we are not in production or we dont have IPBANSINDEV set and if we dont have IPBANSINDEV set we are guaranteed to be in production)
 							fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
 								.then(res => res.json())
 								.then(json => {
@@ -206,6 +223,10 @@ const checkIP = config => {
 									res.status(501).json({ message: 'There was a fatal error in processing your request. Please contact our moderators on Discord' });
 									return;
 								});
+						} else {
+							// we are in dev, just pass through a 0
+							config.vpnScore = 0;
+							next(config);
 						}
 					}
 				});
@@ -290,7 +311,8 @@ const continueSignup = config => {
 						const newPlayerBan = new BannedIP({
 							bannedDate: new Date(),
 							type: 'new',
-							signupIP
+							ip: handleDefaultIPv6Range(signupIP),
+							permanent: false
 						});
 
 						passport.authenticate(type)(req, res, () => {
@@ -320,7 +342,8 @@ const continueSignup = config => {
 					const newPlayerBan = new BannedIP({
 						bannedDate: new Date(),
 						type: 'new',
-						ip: signupIP
+						ip: handleDefaultIPv6Range(signupIP),
+						permanent: false
 					});
 					newPlayerBan.save();
 					if (!save.gameSettings.isPrivate) {
@@ -520,12 +543,13 @@ module.exports.accounts = torIpsParam => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(req.expandedIP, (banType, unbanTime) => {
+			testIP(req.expandedIP, (banType, unbanTime, permanent) => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 					else if (banType === 'small' || banType === 'big' || banType === 'tiny') {
 						req.ipBanned = banType;
 						req.ipBanEnd = unbanTime;
+						req.permanentIPBan = permanent;
 						return next();
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
@@ -540,6 +564,17 @@ module.exports.accounts = torIpsParam => {
 				username: req.user.username
 			}).then(player => {
 				if (req.ipBanned && req.ipBanned !== '') {
+					const ipbannedLogin = new Signups({
+						date: new Date(),
+						userName: req.user.username,
+						type: `Failed Login - IPBanned ${req.permanentIPBan ? 'permanent ' : ''}${req.ipBanned}`,
+						ip: obfIP(req.expandedIP),
+						email: '',
+						unobfuscatedIP: req.expandedIP
+					});
+
+					ipbannedLogin.save();
+
 					if ((req.ipBanned === 'small' || req.ipBanned === 'big') && !player.gameSettings.ignoreIPBans) {
 						req.logOut();
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });

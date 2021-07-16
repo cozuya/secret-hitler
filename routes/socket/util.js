@@ -1,3 +1,5 @@
+const { newStaff } = require('./models');
+
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -131,6 +133,46 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 
 module.exports.secureGame = secureGame;
 
+const getStaffRole = (user, modUserNames, editorUserNames, adminUserNames) => {
+	if (modUserNames.includes(user) || newStaff.modUserNames.includes(user)) {
+		return 'moderator';
+	} else if (editorUserNames.includes(user) || newStaff.editorUserNames.includes(user)) {
+		return 'editor';
+	} else if (adminUserNames && adminUserNames.includes(user)) {
+		return 'admin';
+	}
+	return '';
+};
+module.exports.getStaffRole = getStaffRole;
+
+const handleAEMMessages = (dm, user, modUserNames, editorUserNames, adminUserNames) => {
+	const dmClone = Object.assign({}, dm);
+
+	if (getStaffRole(user, modUserNames, editorUserNames, adminUserNames)) {
+		dmClone.messages = dmClone.aemOnlyMessages;
+	}
+
+	delete dmClone.aemOnlyMessages;
+	delete dmClone.subscribedPlayers;
+
+	return dmClone;
+};
+module.exports.handleAEMMessages = handleAEMMessages;
+
+module.exports.sendInProgressModDMUpdate = (dm, modUserNames, editorUserNames, adminUserNames) => {
+	for (const user of dm.subscribedPlayers) {
+		try {
+			io.sockets.sockets[
+				Object.keys(io.sockets.sockets).find(
+					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+				)
+			].emit('inProgressModDMUpdate', handleAEMMessages(dm, user, modUserNames, editorUserNames, adminUserNames));
+		} catch (e) {
+			console.log('err', e);
+		}
+	}
+};
+
 const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
 
 // Calculates the bias in elo points
@@ -237,4 +279,10 @@ module.exports.destroySession = username => {
 				}
 			});
 	}
+};
+
+// tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
+module.exports.handleDefaultIPv6Range = ip => {
+	// check if there is NOT a : or there IS a / (ie. it's not IPv6 or it already has a CIDR range)
+	return ip.indexOf(':') === -1 || ip.indexOf('/') !== -1 ? ip : ip + '/64';
 };

@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
-import { PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
 import * as Swal from 'sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
@@ -40,16 +40,23 @@ class Players extends React.Component {
 				});
 			}
 		}
+
+		socket.on('gameJoinStatusUpdate', data => {
+			if (data.status === 'blacklisted') {
+				$(this.blacklistModal).modal('show');
+			}
+		});
 	}
 
 	componentWillUnmount() {
 		this.props.socket.off('notesUpdate');
+		this.props.socket.off('gameJoinStatusUpdate');
 	}
 
 	handlePlayerReport = userName => {
 		const { gameInfo, userInfo, isReplay } = this.props;
 
-		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
+		if ((!gameInfo.general.unlistedGame && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -179,13 +186,18 @@ class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const { gameInfo, userInfo, userList } = this.props;
+		const { gameInfo, userInfo, userList, hideRoles, isReplay } = this.props;
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
-			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const userName =
+				isBlind && !isReplay
+					? gameInfo.gameState.isTracksFlipped && gameInfo.general.replacementNames
+						? gameInfo.general.replacementNames[i]
+						: '?'
+					: player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
@@ -221,14 +233,20 @@ class Players extends React.Component {
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4captain' && (
-							<span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />
+						player.specialTournamentStatus.slice(1) === 'captain' && (
+							<span
+								title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-captain-icon"
+							/>
 						)}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.specialTournamentStatus &&
-						player.specialTournamentStatus === '4' && (
-							<span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />
+						player.specialTournamentStatus.slice(1) === 'tourney' && (
+							<span
+								title={`This player was part of the winning team of the ${getNumberWithOrdinal(player.specialTournamentStatus[0])} Official Tournament.`}
+								className="crown-icon"
+							/>
 						)}
 					{str}
 				</span>
@@ -293,9 +311,9 @@ class Players extends React.Component {
 						className={(() => {
 							let classes = 'player-number';
 
-							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus && !hideRoles) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
-							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus && !hideRoles) {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
 
@@ -355,6 +373,7 @@ class Players extends React.Component {
 							let classes = 'card card-back';
 
 							if (
+								!hideRoles &&
 								playersState &&
 								playersState.length &&
 								Object.keys(playersState[i]).length &&
@@ -367,9 +386,14 @@ class Players extends React.Component {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
 							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
+								if (publicPlayersState[i].cardStatus.cardBack.icon || (publicPlayersState[i].cardStatus.cardBack.icon === 0 && !hideRoles)) {
+									// we want to only exclude role information -- the `icon` property is a solid tipoff that we have a role card shown
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
-								} else {
+								} else if (
+									!hideRoles ||
+									(publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-fascist' &&
+										publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-liberal')
+								) {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 								}
 							}
@@ -424,7 +448,6 @@ class Players extends React.Component {
 			this.props.socket.emit('playerReport', {
 				uid: gameInfo.general.uid,
 				userName: this.props.userInfo.userName || 'from replay',
-				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
 				reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
 				reason: $('input[name="reason"]').attr('value'),
 				comment: this.state.reportTextValue
@@ -453,8 +476,6 @@ class Players extends React.Component {
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
-			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
-				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
@@ -476,6 +497,7 @@ class Players extends React.Component {
 	};
 
 	render() {
+		const { isReplay } = this.props;
 		const handlePasswordInputChange = e => {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
@@ -619,7 +641,14 @@ class Players extends React.Component {
 						</form>
 					</div>
 				</div>
-				<Policies gameInfo={this.props.gameInfo} userInfo={this.props.userInfo} socket={this.props.socket} />
+				<Policies
+					gameInfo={this.props.gameInfo}
+					userInfo={this.props.userInfo}
+					deckInfo={this.props.deckInfo}
+					socket={this.props.socket}
+					isReplay={isReplay}
+					deckShown={this.props.deckShown}
+				/>
 			</section>
 		);
 	}
@@ -637,6 +666,7 @@ Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
+	deckInfo: PropTypes.object,
 	roleState: PropTypes.string,
 	userList: PropTypes.object,
 	socket: PropTypes.object,
@@ -645,7 +675,8 @@ Players.propTypes = {
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
 	onClickedTakeSeat: PropTypes.func,
-	togglePlayerNotes: PropTypes.func
+	togglePlayerNotes: PropTypes.func,
+	hideRoles: PropTypes.bool
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Players);

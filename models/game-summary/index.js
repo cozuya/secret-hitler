@@ -17,7 +17,7 @@ const gameSummary = new Schema({
 		rerebalance9p: Boolean,
 		casualGame: Boolean,
 		practiceGame: Boolean,
-		unlisted: Boolean
+		unlistedGame: Boolean
 	},
 	players: [
 		{
@@ -43,42 +43,27 @@ const gameSummary = new Schema({
 			votes: Array, // [Boolean]
 
 			// policy enaction
-			presidentHand: {
-				reds: Number,
-				blues: Number
-			},
-			chancellorHand: {
-				reds: Number,
-				blues: Number
-			},
+			presidentHand: Array, // [String] eg. [ "fascist", "liberal", "fascist" ]
+			chancellorHand: Array, // [String]
 			enactedPolicy: String,
 
-			presidentClaim: {
-				reds: Number,
-				blues: Number
-			},
-			chancellorClaim: {
-				reds: Number,
-				blues: Number
-			},
+			presidentClaim: Array, // [String]
+			chancellorClaim: Array, // [String]
 
 			presidentVeto: Boolean,
 			chancellorVeto: Boolean,
 
 			// actions
-			policyPeek: {
-				reds: Number,
-				blues: Number
-			},
-			policyPeekClaim: {
-				reds: Number,
-				blues: Number
-			},
+			policyPeek: Array, // [String]
+			policyPeekClaim: Array, // [String]
 			investigatorId: Number,
 			investigationId: Number,
 			investigationClaim: String,
 			specialElection: Number,
-			execution: Number
+			execution: Number,
+
+			// other metadata
+			deckState: Array // [String], eg. [ "fascist", "liberal", "fascist", "fascist", "liberal" ]
 		}
 	],
 	customGameSettings: {
