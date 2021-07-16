@@ -20,8 +20,6 @@ body:
       label: Is your feature request related to a problem?
       description: A clear and concise description of what the problem is. E.g. I'm always frustrated when [...]
       placeholder: Tell us what functionality you don't like/is problematic!
-    validations:
-      required: true
   - type: dropdown
     id: category
     attributes:
