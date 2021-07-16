@@ -50,6 +50,4 @@ body:
   - type: markdown
     id: extra-details
     attributes:
-      label: Extra Context or Details
-      description: Add any other context about the problem here (Screenshots Preferred)
-      placeholder: <Insert an image!>
+      value: Extra context about the problem - Screenshots Preferred!
