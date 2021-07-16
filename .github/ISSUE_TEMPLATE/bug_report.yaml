@@ -47,7 +47,9 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant site error message, if relevant.
       render: shell
-  - type: markdown
+  - type: textarea
     id: extra-details
     attributes:
-      value: Extra context about the problem - Screenshots Preferred!
+      label: Extra context
+      description: Extra context about the problem - Screenshots Preferred!
+      placeholder: Add some more details or an image!
