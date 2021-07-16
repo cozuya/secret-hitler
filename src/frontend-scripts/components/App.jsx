@@ -288,8 +288,10 @@ export class App extends React.Component {
 			});
 		});
 
-		socket.on('toLobby', () => {
-			window.location.hash = '#/';
+		socket.on('toLobby', uid => {
+			if (window.location.hash === '/table/' + uid)
+				// only eject the player from their current state if they are in the now-deleted game
+				window.location.hash = '#/';
 			Swal.fire('The game you were previously in was deleted automatically.');
 		});
 

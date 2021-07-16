@@ -283,5 +283,6 @@ module.exports.destroySession = username => {
 
 // tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
 module.exports.handleDefaultIPv6Range = ip => {
-	return ip.indexOf(':') === -1 ? ip : ip + '/64';
+	// check if there is NOT a : or there IS a / (ie. it's not IPv6 or it already has a CIDR range)
+	return ip.indexOf(':') === -1 || ip.indexOf('/') !== -1 ? ip : ip + '/64';
 };

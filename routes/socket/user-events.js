@@ -1515,12 +1515,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					) {
 						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
 						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
-						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
+						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.private.gameCreatorName) creatorRemade = true;
 					}
 				}
 			});
 			if (creatorRemade && newGame.private.gameCreatorBlacklist != null) {
-				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
+				const creator = userList.find(user => user.userName === newGame.private.gameCreatorName);
 				if (creator) newGame.private.gameCreatorBlacklist = creator.blacklist;
 			} else newGame.private.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
@@ -2437,7 +2437,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
 		(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 
 	// Only update the whitelist if whitelistsed, has password, or is the creator
-	if (isPrivateSafe || game.general.gameCreatorName === passport.user) {
+	if (isPrivateSafe || game.private.gameCreatorName === passport.user) {
 		game.general.whitelistedPlayers = data.whitelistPlayers;
 		io.in(data.uid).emit('gameUpdate', secureGame(game));
 	}
@@ -3174,9 +3174,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'clearTimeoutIP':
-					BannedIP.remove({ ip: data.ip, type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
+					BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
+					console.log(handleDefaultIPv6Range(data.ip));
 					break;
 				case 'clearTimeoutAndTimeoutIP':
 					Account.findOne({ username: data.userName })
@@ -3189,7 +3190,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							}
 
-							BannedIP.remove({ ip: data.ip, type: { $in: ['tiny', 'small'] }, permanent: false }, (err, res) => {
+							BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 								if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 							});
 						})
@@ -3910,9 +3911,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const game = games[data.userName.slice(13)];
 						if (game) {
 							if (modaction.modNotes.length > 0) {
-								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							} else {
-								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							}
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
