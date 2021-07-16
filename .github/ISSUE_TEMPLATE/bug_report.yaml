@@ -12,7 +12,6 @@ body:
       label: Describe the bug
       description: A clear and concise description of what the bug is, and what you expected to happen
       placeholder: Tell us what happened!
-      value: ""
     validations:
       required: true
   - type: dropdown
@@ -48,10 +47,9 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant site error message, if relevant.
       render: shell
-  - type: textarea
+  - type: markdown
     id: extra-details
     attributes:
       label: Extra Context or Details
       description: Add any other context about the problem here (Screenshots Preferred)
       placeholder: <Insert an image!>
-      value: ""
