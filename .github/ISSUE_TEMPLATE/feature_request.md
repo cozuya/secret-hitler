@@ -14,3 +14,48 @@ A clear and concise description of what you want to happen.
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+name: 🚀 Feature request
+description: Suggest an idea for the site!
+labels: [suggested enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to offering up your suggestion to make the site better!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Describe the feature you'd like
+      description: A clear and concise description of what you want to happen
+      placeholder: Tell us what you'd like to happen!
+    validations:
+      required: true
+  - type: textarea
+    id: feature-problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is. E.g. I'm always frustrated when [...]
+      placeholder: Tell us what functionality you don't like/is problematic!
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What does this feature request relate to?
+      options:
+      - Gameplay
+      - User Interface
+      - Game Modes
+      - Mod Tools
+      - Replays
+      - Something Else; Describe below
+    validations:
+      required: true
+  - type: textarea
+    id: extra-details
+    attributes:
+      label: Extra context
+      description: Extra context about the feature - Screenshots or Mockups Preferred!
+      placeholder: Add some more details or an image!
