@@ -19,7 +19,7 @@ const combineInProgressChats = (game, userName) =>
  * @param {object} game - game to act on.
  * @param {boolean} noChats - remove chats for client to handle.
  */
-module.exports.sendInProgressGameUpdate = (game, noChats) => {
+module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -55,6 +55,10 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 		}
 
+		if (game.private.commandChats && game.private.commandChats[user]) {
+			_game.chats = _game.chats.concat(game.private.commandChats[user]);
+		}
+
 		if (noChats) {
 			delete _game.chats;
 			sock.emit('gameUpdate', secureGame(_game), true);
@@ -80,9 +84,17 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 				// AEM status is ensured when adding to the subscription list
 				_game.chats = chatWithHidden;
 				_game.chats = combineInProgressChats(_game);
+				if (game.private.commandChats && game.private.commandChats[user]) {
+					_game.chats = _game.chats.concat(game.private.commandChats[user]);
+				}
+
 				sock.emit('gameUpdate', secureGame(_game));
 			} else {
 				_game.chats = combineInProgressChats(_game);
+				if (game.private.commandChats && game.private.commandChats[user]) {
+					_game.chats = _game.chats.concat(game.private.commandChats[user]);
+				}
+
 				sock.emit('gameUpdate', secureGame(_game));
 			}
 		});
@@ -238,3 +250,76 @@ module.exports.destroySession = username => {
 			});
 	}
 };
+
+class LineGuess {
+	regs; // number[]
+	hit; // number | null
+
+	constructor(o = { regs: [], hit: null }) {
+		this.regs = o.regs;
+		this.hit = o.hit;
+	}
+
+	// LineGuess => String
+	toString() {
+		return this.regs
+			.map(reg => {
+				const newReg = reg === 10 ? 0 : reg;
+				return reg === this.hit ? `${newReg}h` : `${newReg}`;
+			})
+			.join('');
+	}
+
+	// (LineGuess, LineGuess) => boolean
+	equals(other) {
+		if (this.hit !== other.hit) {
+			return false;
+		}
+
+		if (this.regs.length !== other.regs.length) {
+			return false;
+		}
+
+		for (let i = 0; i < this.regs.length; i++) {
+			if (this.regs[i] !== other.regs[i]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	// String => LineGuess | null
+	static parse(guess) {
+		const guessRegex = /^(\dh?)+$/g;
+		const fasRegex = /(\dh?)/g;
+
+		if (!guessRegex.test(guess)) {
+			return null;
+		}
+
+		const result = new LineGuess();
+		for (const match of guess.match(fasRegex)) {
+			let seat = parseInt(match[0]);
+			seat = seat === 0 ? 10 : seat;
+
+			if (result.regs.includes(seat)) {
+				return null;
+			}
+
+			result.regs.push(seat);
+			if (match.length === 2) {
+				if (result.hit) {
+					return null;
+				}
+
+				result.hit = seat;
+			}
+		}
+
+		result.regs.sort((a, b) => a - b);
+		return result;
+	}
+}
+
+module.exports.LineGuess = LineGuess;

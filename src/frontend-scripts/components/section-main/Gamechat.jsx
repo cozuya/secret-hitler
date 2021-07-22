@@ -557,12 +557,19 @@ class Gamechat extends React.Component {
 				};
 			}
 		} else {
+			if ((user.wins || 0) + (user.losses || 0) < 10) {
+				return {
+					isDisabled: true,
+					placeholder: 'You must finish ten games to use observer chat'
+				};
+			}
+
 			if (
 				((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) &&
 				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {
-					isDisabled: true,
+					isDisabled: false,
 					placeholder: 'Observer chat disabled'
 				};
 			}
@@ -574,17 +581,18 @@ class Gamechat extends React.Component {
 				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {
-					isDisabled: true,
+					isDisabled: false,
 					placeholder: 'Observer chat disabled during game'
 				};
 			}
+
 			if (
 				(!gameState.isStarted || gameState.isCompleted) &&
 				gameInfo.general.disableObserverLobby &&
 				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
 			) {
 				return {
-					isDisabled: true,
+					isDisabled: false,
 					placeholder: 'Observer chat disabled during lobby'
 				};
 			}
@@ -596,13 +604,6 @@ class Gamechat extends React.Component {
 				return {
 					isDisabled: false,
 					placeholder: 'Send a staff message'
-				};
-			}
-
-			if ((user.wins || 0) + (user.losses || 0) < 10) {
-				return {
-					isDisabled: true,
-					placeholder: 'You must finish ten games to use observer chat'
 				};
 			}
 

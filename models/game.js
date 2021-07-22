@@ -21,7 +21,8 @@ const Game = new Schema({
 	customGame: Boolean,
 	unlisted: Boolean,
 	isVerifiedOnly: Boolean,
-	chats: Array
+	chats: Array,
+	guesses: Object
 });
 
 module.exports = mongoose.model('Game', Game);
