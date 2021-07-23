@@ -252,15 +252,27 @@ module.exports.destroySession = username => {
 };
 
 class LineGuess {
-	regs; // number[]
-	hit; // number | null
+	/**
+	 * @type number[]
+	 */
+	regs;
 
+	/**
+	 * @type number|null
+	 */
+	hit;
+
+	/**
+	 * @param {{regs: number[], hit: (number|null)}} o
+	 */
 	constructor(o = { regs: [], hit: null }) {
 		this.regs = o.regs;
 		this.hit = o.hit;
 	}
 
-	// LineGuess => String
+	/**
+	 * @return {string} - A string representation of the guess, can be passed to parse.
+	 */
 	toString() {
 		return this.regs
 			.map(reg => {
@@ -270,7 +282,10 @@ class LineGuess {
 			.join('');
 	}
 
-	// (LineGuess, LineGuess) => boolean
+	/**
+	 * @param {LineGuess} other - the guess to compare this to.
+	 * @return {boolean} - whether the guesses are equal.
+	 */
 	equals(other) {
 		if (this.hit !== other.hit) {
 			return false;
@@ -289,14 +304,14 @@ class LineGuess {
 		return true;
 	}
 
-	// String => LineGuess | null
+	/**
+	 * Parses a string guess into a structured format.
+	 *
+	 * @param {string} guess - the guess string.
+	 * @return {LineGuess|null} - the resulting guess, or null if it is invalid.
+	 */
 	static parse(guess) {
-		const guessRegex = /^(\dh?)+$/g;
-		const fasRegex = /(\dh?)/g;
-
-		if (!guessRegex.test(guess)) {
-			return null;
-		}
+		const fasRegex = /(\dh?)/gi;
 
 		const result = new LineGuess();
 		for (const match of guess.match(fasRegex)) {

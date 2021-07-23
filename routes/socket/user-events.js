@@ -56,7 +56,7 @@ const displayWaitingForPlayers = game => {
 		value => !game.general.excludedPlayerCount.includes(value)
 	);
 
-	for (value of includedPlayerCounts) {
+	for (const value of includedPlayerCounts) {
 		if (value > game.publicPlayersState.length) {
 			const count = value - game.publicPlayersState.length;
 

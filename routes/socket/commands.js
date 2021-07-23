@@ -3,6 +3,7 @@ const { selectChancellor } = require('./game/election-util');
 const { selectVoting } = require('./game/election');
 const { sendInProgressGameUpdate } = require('./util');
 const { LineGuess } = require('./util');
+
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
 		gameChat: true,
@@ -14,6 +15,33 @@ const sendMessage = (game, user, s, date = new Date()) =>
 		]
 	});
 
+/**
+ * @callback Run
+ * @param {Object} socket - socket reference for the user who invoked the command.
+ * @param {Object} passport - socket authentication.
+ * @param {Object} user - user object who invoked the command.
+ * @param {Object} game - game object.
+ * @param {string[]} args - the parsed arguments used to invoke the command.
+ * @param {boolean} [AEM=] - whether the user is AEM.
+ * @param {boolean} [isSeated=] - whether the user is sat in the game.
+ */
+
+/**
+ * @typedef {Object} Command - objects representing information about commands.
+ * @property {string[]} name - the names that can be used to call the command.
+ * @property {string} description - a short description of what the command does.
+ * @property {string[]} examples - examples of how to use the command.
+ * @property {RegExp} argumentsFormat - a regex that determines how the arguments are parsed.
+ * @property {boolean} aemOnly - whether the command can only be used by AEM.
+ * @property {boolean} observerOnly - whether the command can only be used by observers.
+ * @property {boolean} seatedOnly - whether the command can only be used by seated players.
+ * @property {boolean} gameStartedOnly - whether the command can only be used during a started game.
+ * @property {Run} [run=] - the function called to run the command.
+ */
+
+/**
+ * @type {Command[]}
+ */
 module.exports.commands = [
 	{
 		name: ['help'],
@@ -117,10 +145,24 @@ module.exports.commands = [
 	}
 ];
 
+/**
+ * Finds a command in the commands array by name, case-insensitive.
+ *
+ * @param {string} name - the name of the command to find.
+ *
+ * @return {Command|null} - the command with that name or null if it is not found.
+ */
 module.exports.commands.getCommand = function(name) {
 	return this.find(c => c.name.includes(name.toLowerCase())) || null;
 };
 
+/**
+ * Parses a message into a command object.
+ *
+ * @param {string} msg - the message string.
+ *
+ * @return {{ name: string, args: (string[]|null), command: (Command|null) }} - the name of the invoked command, as well as the parsed arguments and command object.
+ */
 module.exports.parseCommand = msg => {
 	const trimPrefix = (s, prefix) => (s.startsWith(prefix) ? s.slice(prefix.length) : s);
 	const cmdRegex = /^\/(\w*)/i;
@@ -129,52 +171,64 @@ module.exports.parseCommand = msg => {
 
 	const cmd = module.exports.commands.getCommand(name[1]);
 	if (!cmd) {
-		return { name: name[1], args: null, commandInfo: null };
+		return { name: name[1], args: null, command: null };
 	}
 
 	msg = trimPrefix(msg, name[0]).trim();
 	const parsedArgs = cmd.argumentsFormat.exec(msg);
 
-	return { name: name[1].toLowerCase(), args: parsedArgs && parsedArgs.slice(1), commandInfo: cmd };
+	return { name: name[1].toLowerCase(), args: parsedArgs && parsedArgs.slice(1), command: cmd };
 };
 
+/**
+ * Runs a command given a user message.
+ *
+ * @param {Object} socket - socket reference for the user who invoked the command.
+ * @param {Object} passport - socket authentication.
+ * @param {Object} user - user object who invoked the command.
+ * @param {Object} game - game object.
+ * @param {string} msg - the message sent by the user.
+ * @param {boolean} AEM - whether the user is AEM.
+ * @param {boolean} isSeated - whether the user is sat in the game.
+ */
 module.exports.runCommand = (socket, passport, user, game, msg, AEM, isSeated) => {
 	if (!game.private.commandChats[user.userName]) {
 		game.private.commandChats[user.userName] = [];
 	}
 
-	const { name, commandInfo, args } = module.exports.parseCommand(msg);
-	if (!commandInfo) {
+	const { name, command, args } = module.exports.parseCommand(msg);
+
+	if (!command) {
 		sendMessage(game, user, `Unknown command /${name}. Use /help for a list of commands.`);
 		return;
 	}
 
-	if (commandInfo.aemOnly && !AEM) {
+	if (command.aemOnly && !AEM) {
 		sendMessage(game, user, 'You do not have permission to use this command.');
 		return;
 	}
 
-	if (commandInfo.observerOnly && isSeated) {
+	if (command.observerOnly && isSeated) {
 		sendMessage(game, user, 'This command cannot be used by seated players.');
 		return;
 	}
 
-	if (commandInfo.seatedOnly && !isSeated) {
+	if (command.seatedOnly && !isSeated) {
 		sendMessage(game, user, 'This command cannot be used by observers.');
 		return;
 	}
 
-	if (commandInfo.gameStartedOnly && (!game.gameState.isStarted || game.gameState.isCompleted)) {
+	if (command.gameStartedOnly && (!game.gameState.isStarted || game.gameState.isCompleted)) {
 		sendMessage(game, user, 'This command can only be used during an in-progress game.');
 		return;
 	}
 
 	if (!args) {
-		sendMessage(game, user, `You're not doing this right. Some examples: ${commandInfo.examples.join(', ')}`);
+		sendMessage(game, user, `You're not doing this right. Some examples: ${command.examples.join(', ')}`);
 		return;
 	}
 
-	commandInfo.run(socket, passport, user, game, args, AEM, isSeated);
+	command.run(socket, passport, user, game, args, AEM, isSeated);
 };
 
 module.exports.commands.getCommand('help').run = (socket, passport, user, game, args, AEM, isSeated) => {
@@ -205,7 +259,7 @@ module.exports.commands.getCommand('help').run = (socket, passport, user, game, 
 	}
 };
 
-module.exports.commands.getCommand('g').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('g').run = (socket, passport, user, game, args) => {
 	if (game.general.casualGame || game.general.unlisted || game.general.private || (game.customGameSettings && game.customGameSettings.enabled)) {
 		sendMessage(game, user, 'Line guessing is only enabled in ranked and practice games.');
 		return;
@@ -244,7 +298,7 @@ module.exports.commands.getCommand('g').run = (socket, passport, user, game, arg
 	game.guesses[user.userName] = guess;
 };
 
-module.exports.commands.getCommand('pingmod').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('pingmod').run = (socket, passport, user, game, args) => {
 	if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
 		game.lastModPing = Date.now();
 		sendMessage(game, user, 'Pinged a moderator successfully');
@@ -267,7 +321,7 @@ module.exports.commands.getCommand('pingmod').run = (socket, passport, user, gam
 	}
 };
 
-module.exports.commands.getCommand('ping').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('ping').run = (socket, passport, user, game, args) => {
 	const player = game.publicPlayersState.find(player => player.userName === passport.user);
 	const seat = parseInt(args[0]);
 
@@ -335,7 +389,7 @@ module.exports.commands.getCommand('ping').run = (socket, passport, user, game, 
 	}
 };
 
-module.exports.commands.getCommand('forcerigdeck').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forcerigdeck').run = (socket, passport, user, game, args) => {
 	const changedChat = [
 		{
 			text: 'An AEM member has changed the deck to '
@@ -365,7 +419,7 @@ module.exports.commands.getCommand('forcerigdeck').run = (socket, passport, user
 	sendInProgressGameUpdate(game, false);
 };
 
-module.exports.commands.getCommand('forcevote').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forcevote').run = (socket, passport, user, game, args) => {
 	if (game.general.isRemade) {
 		socket.emit('sendAlert', 'This game has been remade.');
 		return;
@@ -458,7 +512,7 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 	}
 };
 
-module.exports.commands.getCommand('forceskip').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forceskip').run = (socket, passport, user, game, args) => {
 	const { blindMode, replacementNames } = game.general;
 
 	if (game.general.isRemade) {
@@ -522,7 +576,7 @@ module.exports.commands.getCommand('forceskip').run = (socket, passport, user, g
 	sendInProgressGameUpdate(game, false);
 };
 
-module.exports.commands.getCommand('forcepick').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forcepick').run = (socket, passport, user, game, args) => {
 	const { blindMode, replacementNames } = game.general;
 
 	if (game.general.isRemade) {
@@ -587,7 +641,7 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 	}
 };
 
-module.exports.commands.getCommand('forceping').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forceping').run = (socket, passport, user, game, args) => {
 	const { blindMode, replacementNames } = game.general;
 
 	if (game.general.isRemade) {
@@ -638,7 +692,7 @@ module.exports.commands.getCommand('forceping').run = (socket, passport, user, g
 	sendInProgressGameUpdate(game, false);
 };
 
-module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user, game, args, AEM, isSeated) => {
+module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user, game, args) => {
 	if (game && game.private) {
 		const seat = parseInt(args[0], 10);
 		const role = (r => {
