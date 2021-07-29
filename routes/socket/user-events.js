@@ -4265,7 +4265,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 						logOutUser(user);
 					} else {
 						testIP(account.lastConnectedIP, banType => {
-							if (banType && banType != 'new' && !account.gameSettings.ignoreIPBans) logOutUser(user);
+							if (banType && banType != 'new' && banType != 'fragbanSmall' && banType != 'fragbanLarge' && !account.gameSettings.ignoreIPBans) logOutUser(user);
 							else {
 								sendUserList();
 								callback();
