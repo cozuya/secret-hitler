@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import UserPopup from '../reusable/UserPopup.jsx';
+import { getBlacklistIndex } from '../../../../utils';
 
 $.fn.modal = Modal;
 
@@ -272,11 +273,11 @@ class Playerlist extends React.Component {
 					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }
 						  )
-						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+						: cn({ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
 
@@ -498,11 +499,11 @@ class Playerlist extends React.Component {
 					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }
 						  )
-						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+						: cn({ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
 

@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
-
+import UserPopup from '../reusable/UserPopup.jsx';
+import { getBlacklistIndex } from '../../../../utils';
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
 	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
@@ -233,20 +234,13 @@ class ProfileWrapper extends React.Component {
 		const { profile } = this.props;
 		const name = profile._id;
 		e.preventDefault();
-
 		this.setState(
 			{
 				blacklistClicked: true
 			},
 			() => {
-				if (gameSettings && gameSettings.blacklist.includes(name)) {
-					gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
-				} else if (gameSettings) {
-					if (!gameSettings.blacklist) {
-						gameSettings.blacklist = [name];
-					} else {
-						gameSettings.blacklist.push(name);
-					}
+				if (gameSettings && getBlacklistIndex(name, gameSettings.blacklist) !== -1) {
+					gameSettings.blacklist.splice(getBlacklistIndex(name, gameSettings.blacklist), 1);
 				}
 				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
 				this.props.socket.emit('sendUser', this.props.userInfo); // To force a new playerlist pull
@@ -260,9 +254,11 @@ class ProfileWrapper extends React.Component {
 		const name = profile._id;
 
 		return (
-			<button className="ui primary button blacklist-button" onClick={this.blackListClick}>
-				{gameSettings && gameSettings.blacklist.includes(name) ? 'Unblacklist player' : 'Blacklist player'}
-			</button>
+			<UserPopup userName={name} socket={this.props.socket} position="top center" renderInProfile={true}>
+				<button className="ui primary button blacklist-button">
+					{gameSettings && getBlacklistIndex(name, gameSettings.blacklist) !== -1 ? 'Unblacklist player' : 'Blacklist player'}
+				</button>
+			</UserPopup>
 		);
 	}
 
@@ -296,11 +292,11 @@ class ProfileWrapper extends React.Component {
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
-							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+							{ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 },
 							{ unclickable: !this.props.isUserClickable },
 							{ clickable: this.props.isUserClickable }
 					  )
-					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
+					: cn({ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 }, 'profile-picture');
 			const { wins = 0, losses = 0 } = user;
 			if (wins + losses < 50) {
 				gamesUntilRainbow = 50 - wins - losses;
@@ -373,6 +369,24 @@ class ProfileWrapper extends React.Component {
 
 	render() {
 		const { profile } = this.props;
+		const getTimestamp = ts => {
+			const pad = (n, s = 2) => `${new Array(s).fill(0)}${n}`.slice(-s);
+			const d = new Date(ts);
+			return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+		};
+
+		const blacklistInfo = element => {
+			if (typeof element === 'string') {
+				return <a href={`/game/#/profile/${element}`}>{element}</a>;
+			} else {
+				return (
+					<span>
+						<a href={`/game/#/profile/${element['userName']}`}>{element['userName']}</a>&nbsp;
+						{getTimestamp(element['timestamp'])} {element['reason'] ? `: ${element['reason']}` : ''}
+					</span>
+				);
+			}
+		};
 
 		const children = (() => {
 			switch (profile.status) {
@@ -400,24 +414,28 @@ class ProfileWrapper extends React.Component {
 				>
 					<div className="ui header">Your blacklist</div>
 					{this.props.userInfo.gameSettings &&
-						this.props.userInfo.gameSettings.blacklist.map(playerName => (
-							<div key={playerName} className={`blacklist-${playerName}`}>
-								<i
-									onClick={() => {
-										const { gameSettings } = this.props.userInfo;
+						this.props.userInfo.gameSettings.blacklist.map(playerName => {
+							const userName = playerName?.userName || playerName;
+							return (
+								<div key={userName} className={`blacklist-${userName}`}>
+									<i
+										onClick={() => {
+											const { gameSettings } = this.props.userInfo;
+											gameSettings.blacklist.splice(getBlacklistIndex(userName, gameSettings.blacklist), 1);
 
-										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(playerName), 1);
-										this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-										setTimeout(() => {
-											this.forceUpdate();
-										}, 500);
-									}}
-									className="large close icon"
-									style={{ cursor: 'pointer' }}
-								/>
-								{playerName}
-							</div>
-						))}
+											this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
+											this.props.socket.emit('sendUser', this.props.userInfo); // To force a new playerlist pull
+											setTimeout(() => {
+												this.forceUpdate();
+											}, 500);
+										}}
+										className="large close icon"
+										style={{ cursor: 'pointer' }}
+									/>
+									{blacklistInfo(playerName)}
+								</div>
+							);
+						})}
 				</div>
 			</section>
 		);
