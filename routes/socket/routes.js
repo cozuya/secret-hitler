@@ -80,8 +80,8 @@ const gamesGarbageCollector = () => {
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
 			currentGame.gameState.timeCompleted &&
-			new Date(currentGame.gameState.timeCompleted + 1000 * 5);
-		const abandonedTimer = currentGame.general && currentGame.general.timeAbandoned && new Date(currentGame.general.timeAbandoned.getTime() + 1000 * 5);
+			new Date(currentGame.gameState.timeCompleted + 1000 * 60 * 2);
+		const abandonedTimer = currentGame.general && currentGame.general.timeAbandoned && new Date(currentGame.general.timeAbandoned.getTime() + 1000 * 60 * 2);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
