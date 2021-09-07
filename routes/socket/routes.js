@@ -76,18 +76,12 @@ const gamesGarbageCollector = () => {
 		const currentGame = games[gameName];
 		if (!currentGame) return;
 
-		const createdTimer =
-			currentGame.general &&
-			currentGame.general.timeCreated &&
-			currentGame.gameState &&
-			!currentGame.gameState.isStarted &&
-			new Date(currentGame.general.timeCreated.getTime() + 1000 * 60 * 10);
 		const completedTimer =
 			currentGame.gameState &&
 			currentGame.gameState.isCompleted &&
 			currentGame.gameState.timeCompleted &&
-			new Date(currentGame.gameState.timeCompleted + 1000 * 60 * 2);
-		const abandonedTimer = currentGame.general && currentGame.general.timeAbandoned && new Date(currentGame.general.timeAbandoned.getTime() + 1000 * 60 * 2);
+			new Date(currentGame.gameState.timeCompleted + 1000 * 5);
+		const abandonedTimer = currentGame.general && currentGame.general.timeAbandoned && new Date(currentGame.general.timeAbandoned.getTime() + 1000 * 5);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -103,15 +97,10 @@ const gamesGarbageCollector = () => {
 		// 	// '\nDelay Timer: ',
 		// 	// modDeleteTimer,
 		// 	'\nCompleted Timer: ',
-		// 	completedTimer,
-		// 	'\nCreated Timer: ',
-		// 	createdTimer
+		// 	completedTimer
 		// );
 
-		toDelete =
-			(createdTimer && createdTimer < currentTime) ||
-			(!games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) ||
-			(abandonedTimer && abandonedTimer < currentTime);
+		toDelete = (!games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) || (abandonedTimer && abandonedTimer < currentTime);
 
 		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
 		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
