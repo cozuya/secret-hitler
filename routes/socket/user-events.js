@@ -307,6 +307,12 @@ const handleSocketDisconnect = socket => {
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 						game.general.timeAbandoned = new Date();
+						if (game.general.timedMode && game.private.timerId) {
+							clearTimeout(game.private.timerId);
+							game.private.timerId = null;
+							game.gameState.timedModeEnabled = false;
+						}
+						game.general.timedMode = false;
 					}
 				}
 			});
