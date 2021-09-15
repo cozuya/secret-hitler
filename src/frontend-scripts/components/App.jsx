@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Peer from 'simple-peer';
 import Main from './section-main/Main.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import {
@@ -128,6 +129,33 @@ export class App extends React.Component {
 			//			}
 			// ** end devhelpers **
 			dispatch(updateUser(info));
+
+			const p = new Peer({
+				initiator: Boolean(username === 'Uther'),
+				trickle: false
+			});
+
+			p.on('error', err => {
+				console.log(err, 'err');
+			});
+
+			p.on('signal', data => {
+				socket.emit('s', Object.assign({ username }, { data }));
+			});
+
+			p.on('connect', () => {
+				p.send(username);
+			});
+
+			p.on('data', data => {
+				console.log(data.toString());
+			});
+
+			socket.on('ss', data => {
+				if (data.username !== username) {
+					p.signal(data.data);
+				}
+			});
 		}
 
 		socket.on('touChange', changeList => {

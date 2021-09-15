@@ -317,6 +317,10 @@ module.exports.socketRoutes = () => {
 				}
 			});
 
+			socket.on('s', data => {
+				io.sockets.emit('ss', data);
+			});
+
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
