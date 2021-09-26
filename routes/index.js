@@ -2,6 +2,7 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
+const ModThread = require('../models/modThread');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
@@ -233,8 +234,10 @@ module.exports = () => {
 			return;
 		}
 
-		renderPage(req, res, '403', '403');
-		return;
+		if (process.env.NODE_ENV === 'production') {
+			renderPage(req, res, '403', '403');
+			return;
+		}
 
 		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
 		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
@@ -326,6 +329,50 @@ module.exports = () => {
 				}
 			})
 			.catch(err => debug(err));
+	});
+
+	app.get('/modThread', (req, res) => {
+		const id = req.query.id;
+
+		if (!req.session.passport) {
+			return;
+		}
+
+		const username = req.session.passport.user;
+
+		const mangle = chat =>
+			chat
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#39;');
+
+		Account.findOne({ username }).then(account => {
+			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin') {
+				ModThread.findById(id)
+					.lean()
+					.exec()
+					.then(dm => {
+						if (!dm) {
+							res.status(404).send('Mod thread not found');
+						} else {
+							const chatLog = [];
+
+							for (const message of dm.messages) {
+								chatLog.push(
+									`${message.userName}${message.userName ? (message.type === 'leave' || message.type === 'join' ? ' ' : ': ') : ''}${mangle(message.chat)}`
+								);
+							}
+
+							res.send(chatLog.join('<br>'));
+						}
+					})
+					.catch(err => debug(err));
+			} else {
+				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
+			}
+		});
 	});
 
 	app.get('/online-playercount', (req, res) => {

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, getBadWord } from '../../constants';
+import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import * as Swal from 'sweetalert2';
 
@@ -566,7 +566,7 @@ class Gamechat extends React.Component {
 
 			if (
 				((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: false,
@@ -578,7 +578,7 @@ class Gamechat extends React.Component {
 				gameState.isStarted &&
 				!gameState.isCompleted &&
 				gameInfo.general.disableObserver &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: false,
@@ -589,7 +589,7 @@ class Gamechat extends React.Component {
 			if (
 				(!gameState.isStarted || gameState.isCompleted) &&
 				gameInfo.general.disableObserverLobby &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: false,
@@ -599,7 +599,7 @@ class Gamechat extends React.Component {
 
 			if (
 				(gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.playerChats === 'disabled') &&
-				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted))
+				(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
 					isDisabled: false,
@@ -827,12 +827,22 @@ class Gamechat extends React.Component {
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === '4captain' &&
-								!isBlind && <span title="This player was the captain of the winning team of the 5th Official Tournament." className="crown-captain-icon" />}
+								chat.specialTournamentStatus.slice(1) === 'captain' &&
+								!isBlind && (
+									<span
+										title={`This player a Captain of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+										className="crown-captain-icon"
+									/>
+								)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.specialTournamentStatus &&
-								chat.specialTournamentStatus === '4' &&
-								!isBlind && <span title="This player was part of the winning team of the 5th Official Tournament." className="crown-icon" />}
+								chat.specialTournamentStatus.slice(1) === 'tourney' &&
+								!isBlind && (
+									<span
+										title={`This player was part of the winning team of the ${getNumberWithOrdinal(chat.specialTournamentStatus[0])} Official Tournament.`}
+										className="crown-icon"
+									/>
+								)}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
@@ -1151,7 +1161,7 @@ class Gamechat extends React.Component {
 							this.renderModEndGameButtons()}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1187,7 +1197,7 @@ class Gamechat extends React.Component {
 							)}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1223,7 +1233,7 @@ class Gamechat extends React.Component {
 							)}
 						{userInfo &&
 							!userInfo.isSeated &&
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
@@ -1521,7 +1531,7 @@ class Gamechat extends React.Component {
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					{(() => {
 						if (
-							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlisted)) &&
+							(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame)) &&
 							gameInfo.gameState &&
 							gameInfo.gameState.isStarted &&
 							userInfo &&

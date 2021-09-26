@@ -63,16 +63,7 @@ module.exports.selectPolicies = (passport, game, socket) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 3)
 		});
 
 		president.cardFlingerState = [
@@ -265,16 +256,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 1).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 1)
 		});
 
 		const policy = game.private.policies[0];
@@ -421,6 +403,19 @@ module.exports.selectOnePolicy = (passport, game) => {
 											if (game.gameState.timedModeEnabled) {
 												game.gameState.timedModeEnabled = false;
 												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
+												game.private.replayGameChats.push({
+													gameChat: true,
+													timestamp: new Date(),
+													chat: [
+														{
+															text: president.userName,
+															type: 'player'
+														},
+														{
+															text: ' was forced by the timer to randomly select whether to discard the top policy.'
+														}
+													]
+												});
 											}
 										},
 										process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -557,6 +552,8 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		);
 	}
 };
+
+const selectBurnCard = module.exports.selectBurnCard; // site crashes without this line xd
 
 /**
  * @param {object} game - game to act on.

@@ -135,7 +135,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}
 	})();
 
-	game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex });
+	game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex, deckState: _.clone(game.private.policies) });
 
 	const { seatedPlayers } = game.private; // eslint-disable-line one-var
 	const { presidentIndex, previousElectedGovernment } = game.gameState;
@@ -189,6 +189,19 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 					selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
+					game.private.replayGameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: pendingPresidentPlayer.userName,
+								type: 'player'
+							},
+							{
+								text: ' was forced by the timer to select a random chancellor.'
+							}
+						]
+					});
 				}
 			},
 			process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000

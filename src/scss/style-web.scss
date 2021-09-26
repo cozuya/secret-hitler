@@ -45,13 +45,13 @@ html {
 #header-container {
 	width: 100%;
 	margin: 55px auto 0;
-	background: no-repeat center center url('../images/banner-stpatricks.png'); /* #14204f;  #f2654b; */
+	background: no-repeat center center url('../images/banner-summer.png'); /* #14204f;  #f2654b; */
 	background-size: contain;
 	padding-top: 43%;
 
 	.online-count {
 		padding: 5px;
-		background: #39bd099c; /* #bd09329c /* #39416f /* #6f3939; */
+		background: #0958bd9c; /* #9609bd9c #39bd099c #bd09329c #39416f #6f3939; */
 		position: absolute;
 		top: 10px;
 		right: 20px;
@@ -70,6 +70,10 @@ html {
 	+ .ui.segment {
 		border: none;
 	}
+}
+
+#header-container:hover {
+	background: no-repeat center center url('../images/banner-summer.gif');
 }
 
 @media only screen and (min-width: 1130px) {

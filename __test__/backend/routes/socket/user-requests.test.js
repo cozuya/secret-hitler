@@ -3,7 +3,7 @@ import {
 	sendUserList,
 	sendUserGameSettings,
 	sendPlayerNotes,
-	sendReplayGameChats,
+	sendReplayGameData,
 	sendGameList,
 	sendUserReports,
 	sendGeneralChats,
@@ -24,8 +24,8 @@ describe('user requests', () => {
 	it('has an sendPlayerNotes function', () => {
 		expect(typeof sendPlayerNotes).toBe('function');
 	});
-	it('has an sendReplayGameChats function', () => {
-		expect(typeof sendReplayGameChats).toBe('function');
+	it('has an sendReplayGameData function', () => {
+		expect(typeof sendReplayGameData).toBe('function');
 	});
 	it('has an sendGameList function', () => {
 		expect(typeof sendGameList).toBe('function');

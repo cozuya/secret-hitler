@@ -13,7 +13,9 @@ describe('Generalchat', () => {
 			emoteHelperSelectedIndex: 0,
 			emoteHelperElements: ['ja', 'nein', 'blobsweat', 'wethink', 'limes'],
 			emoteColonIndex: -1,
-			excludedColonIndices: []
+			excludedColonIndices: [],
+			genchat: true,
+			modDMs: null
 		};
 
 		const component = shallow(<Generalchat />);

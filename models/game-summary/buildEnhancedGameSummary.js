@@ -33,7 +33,8 @@ function buildEnhancedGameSummary(_summary) {
 					.map(log => {
 						const logOptions = Map(
 							options.map(o => {
-								const optValue = log[o] !== undefined ? some(log[o]) : none;
+								const optValue = log[o] !== undefined && log[o].size !== 0 && log[o].length !== 0 ? some(log[o]) : none;
+								// filter out 0-length arrays/lists in addition to undefined values
 								return [o, optValue];
 							})
 						).toObject();
@@ -80,7 +81,7 @@ function buildEnhancedGameSummary(_summary) {
 
 	const casualGame = summary.gameSetting.casualGame;
 	const practiceGame = summary.gameSetting.practiceGame;
-	const unlisted = summary.gameSetting.practiceGame;
+	const unlistedGame = summary.gameSetting.unlistedGame;
 
 	// String
 	const winningTeam = (() => {
@@ -172,7 +173,7 @@ function buildEnhancedGameSummary(_summary) {
 		isRebalanced,
 		casualGame,
 		practiceGame,
-		unlisted,
+		unlistedGame,
 		usernameOf,
 		tagOf,
 		indexOf,

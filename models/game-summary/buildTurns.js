@@ -210,6 +210,9 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		return { beforeDeckSize, afterDeckSize };
 	})();
 
+	// deck state
+	const deckState = log.deckState;
+
 	return Object.assign({}, log, {
 		beforeTrack,
 		afterTrack,
@@ -241,6 +244,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVeto,
 		isVetoSuccessful,
 		presidentVeto,
-		chancellorVeto
+		chancellorVeto,
+		deckState
 	});
 };

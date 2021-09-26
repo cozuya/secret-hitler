@@ -2,6 +2,7 @@ const {
 	games,
 	userList,
 	userListEmitter,
+	modDMs,
 	generalChats,
 	accountCreationDisabled,
 	bypassVPNCheck,
@@ -14,18 +15,20 @@ const {
 	testIP,
 	emoteList,
 	setLastGenchatModPingAsync,
-	getLastGenchatModPingAsync
+	getLastGenchatModPingAsync,
+	getPrivateChatTruncate
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
+const ModThread = require('../../models/modThread');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
-const { completeGame } = require('./game/end-game');
-const { secureGame } = require('./util.js');
+const { completeGame, saveAndDeleteGame } = require('./game/end-game');
+const { secureGame, handleAEMMessages, getStaffRole, sendInProgressModDMUpdate, handleDefaultIPv6Range } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -266,7 +269,7 @@ const handleSocketDisconnect = socket => {
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
 					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 				) {
-					delete games[gameName];
+					saveAndDeleteGame(gameName);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -302,7 +305,7 @@ const handleSocketDisconnect = socket => {
 					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						delete games[game.general.uid];
+						game.general.timeAbandoned = new Date();
 					}
 				}
 			});
@@ -393,7 +396,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			delete games[game.general.uid];
+			game.general.timeAbandoned = new Date();
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -426,7 +429,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		delete games[game.general.uid];
+		saveAndDeleteGame(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -499,6 +502,15 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+
+	if (!isBlacklistSafe) {
+		socket.emit('gameJoinStatusUpdate', {
+			status: 'blacklisted'
+		});
+		return;
+	}
+
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
@@ -506,7 +518,6 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist || !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
@@ -696,8 +707,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -725,8 +734,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			unlisted: data.unlistedGame && !data.privatePassword,
+			unlistedGame: data.unlistedGame && !data.privatePassword,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
+			privateAnonymousRemakes: data.privateAnonymousRemakes,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -859,19 +869,21 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 
 	user.timeLastGameCreated = currentTime;
-
 	Account.findOne({ username: user.userName }).then(account => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
 			commandChats: {},
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			remakeVotesPeeked: false,
 			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: user.userName,
+			gameCreatorBlacklist: user.blacklist
 		};
 
 		if (newGame.general.private) {
@@ -885,7 +897,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		sendGameList();
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
-		socket.emit('gameUpdate', newGame);
+		const cloneNewGame = Object.assign({}, newGame);
+		delete cloneNewGame.private;
+		socket.emit('gameUpdate', cloneNewGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
 	});
 };
@@ -929,7 +943,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 3, blues: 0 }
+								presidentClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -938,7 +952,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 2, blues: 1 }
+								presidentClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -947,7 +961,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 1, blues: 2 }
+								presidentClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -956,7 +970,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								presidentClaim: { reds: 0, blues: 3 }
+								presidentClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -991,7 +1005,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 2, blues: 0 }
+								chancellorClaim: ['fascist', 'fascist']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1000,7 +1014,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 1, blues: 1 }
+								chancellorClaim: ['fascist', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1009,7 +1023,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								chancellorClaim: { reds: 0, blues: 2 }
+								chancellorClaim: ['liberal', 'liberal']
 							},
 							{ chancellorId: playerIndex }
 						);
@@ -1067,7 +1081,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 3, blues: 0 }
+								policyPeekClaim: ['fascist', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1076,7 +1090,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1085,7 +1099,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['liberal', 'fascist', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1094,7 +1108,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 2, blues: 1 }
+								policyPeekClaim: ['fascist', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1103,7 +1117,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['fascist', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1112,7 +1126,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'liberal', 'fascist']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1121,7 +1135,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'brb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 1, blues: 2 }
+								policyPeekClaim: ['liberal', 'fascist', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1130,7 +1144,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
-								policyPeekClaim: { reds: 0, blues: 3 }
+								policyPeekClaim: ['liberal', 'liberal', 'liberal']
 							},
 							{ presidentId: playerIndex }
 						);
@@ -1280,11 +1294,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	const { remakeData, publicPlayersState } = game;
 	if (!remakeData) return;
 	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const realPlayerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
-	if (game && game.general && game.general.private) {
+	if (game && game.general && game.general.private && !game.general.privateAnonymousRemakes) {
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -1293,7 +1308,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					text: 'Player '
 				},
 				{
-					text: `${passport.user} {${playerIndex + 1}} `,
+					text: `${passport.user} {${realPlayerIndex + 1}} `,
 					type: 'player'
 				}
 			]
@@ -1444,13 +1459,16 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			reports: {},
 			unSeatedGameChats: [],
 			commandChats: {},
+			replayGameChats: [],
 			lock: {},
 			votesPeeked: false,
 			invIndex: -1,
 			privatePassword: game.private.privatePassword,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
+			hiddenInfoShouldNotify: true,
+			gameCreatorName: game.private.gameCreatorName,
+			gameCreatorBlacklist: game.private.gameCreatorBlacklist
 		};
 
 		game.publicPlayersState.forEach((player, i) => {
@@ -1478,7 +1496,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				delete games[game.general.uid];
+				saveAndDeleteGame(game.general.uid);
 			} else {
 				sendInProgressGameUpdate(game);
 			}
@@ -1499,14 +1517,14 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					) {
 						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
 						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
-						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
+						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.private.gameCreatorName) creatorRemade = true;
 					}
 				}
 			});
-			if (creatorRemade && newGame.general.gameCreatorBlacklist != null) {
-				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
-				if (creator) newGame.general.gameCreatorBlacklist = creator.blacklist;
-			} else newGame.general.gameCreatorBlacklist = null;
+			if (creatorRemade && newGame.private.gameCreatorBlacklist != null) {
+				const creator = userList.find(user => user.userName === newGame.private.gameCreatorName);
+				if (creator) newGame.private.gameCreatorBlacklist = creator.blacklist;
+			} else newGame.private.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
 		}, 3000);
 	};
@@ -1632,7 +1650,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {function} addNewClaim - links to handleAddNewClaim
  * @param {boolean} isTourneyMod - self explain
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
+module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
 	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
@@ -1652,6 +1670,16 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		return;
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+
+	// if (!AEM && game.general.disableChat) return;
+	if (!((AEM || (isTourneyMod && game.general.unlistedGame)) && playerIndex === -1)) {
+		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
+			return;
+		}
+		if ((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby && playerIndex === -1) {
+			return;
+		}
+	}
 
 	data.userName = passport.user;
 
@@ -1740,12 +1768,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
-		if (player) {
-			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
-				return;
-			}
-		} else {
+	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) {
+		return;
+	}
+
+	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
+		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
@@ -1773,11 +1801,458 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		return;
 	}
 
+	if (AEM) {
+		const { blindMode, replacementNames } = game.general;
+
+		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
+		if (aemRigdeck) {
+			if (game && game.private) {
+				const deck = aemRigdeck[0].split(' ')[1];
+				if (/^([RB]{1,27})$/i.exec(deck)) {
+					if (deck.length > 27 || deck.length === 0) {
+						socket.emit('sendAlert', 'This deck is too big (or too small).');
+						return;
+					}
+
+					const changedChat = [
+						{
+							text: 'An AEM member has changed the deck to '
+						}
+					];
+
+					for (card of deck) {
+						card = card.toUpperCase();
+						if (card === 'R' || card === 'B') {
+							changedChat.push({
+								text: card,
+								type: `${card === 'R' ? 'fascist' : 'liberal'}`
+							});
+						}
+					}
+
+					changedChat.push({
+						text: '.'
+					});
+
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: changedChat
+					});
+
+					sendPlayerChatUpdate(game, data);
+					sendInProgressGameUpdate(game, false);
+				} else {
+					socket.emit('sendAlert', 'This is not a valid deck.');
+					return;
+				}
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
+		const aemRigrole = /^\/forcerigrole ([0-9]{1,2}) (.*)$/i.exec(chat);
+		if (aemRigrole) {
+			if (game && game.private) {
+				const player = aemRigrole[0].split(' ')[1];
+				const role = aemRigrole[0].split(' ')[2];
+				if (/^(hitler|fascist|liberal)$/i.exec(role) && parseInt(player, 10) < publicPlayersState.length + 1 && parseInt(player, 10) > 0) {
+					const changedChat = [
+						{
+							text: 'An AEM member has changed the role of player '
+						}
+					];
+
+					changedChat.push({
+						text: `${publicPlayersState[player - 1].userName} (${player})`,
+						type: 'player'
+					});
+
+					changedChat.push({
+						text: ' to '
+					});
+
+					changedChat.push({
+						text: role,
+						type: role
+					});
+
+					changedChat.push({
+						text: '.'
+					});
+
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: changedChat
+					});
+
+					sendPlayerChatUpdate(game, data);
+					sendInProgressGameUpdate(game, false);
+				} else {
+					socket.emit('sendAlert', 'This is not a valid command.');
+					return;
+				}
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
+		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
+		if (aemForce) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
+			const voteString = aemForce[2].toLowerCase();
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
+					return;
+				}
+				let vote = false;
+				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+
+				if (affectedPlayer.voteStatus.hasVoted) {
+					socket.emit(
+						'sendAlert',
+						`${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.\nThey were voting: ${
+							affectedPlayer.voteStatus.didVoteYes ? 'ja' : 'nein'
+						}\nYou have set them to vote: ${vote ? 'ja' : 'nein'}
+						`
+					);
+				}
+
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to vote.'
+						}
+					]
+				});
+
+				const modOnlyChat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: `${passport.user}`,
+							type: 'player'
+						},
+						{
+							text: ' has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to vote '
+						},
+						{
+							text: `${vote ? 'ja' : 'nein'}`,
+							type: 'player'
+						},
+						{
+							text: ', '
+						},
+						{
+							text: `${affectedPlayer.userName}`,
+							type: 'player'
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? ' had originally voted ' : ' had not voted.'}`
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ''}`,
+							type: 'player'
+						}
+					]
+				};
+				game.private.hiddenInfoChat.push(modOnlyChat);
+
+				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
+				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
+		const aemSkip = /^\/forceskip (\d{1,2})$/i.exec(chat);
+		if (aemSkip) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
+				}
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
+				}
+				let chancellor = -1;
+				const currentPlayers = [];
+				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
+					currentPlayers[i] = !(
+						game.private.seatedPlayers[i].isDead ||
+						(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
+						i === game.gameState.previousElectedGovernment[1]
+					);
+				}
+				currentPlayers[affectedPlayerNumber] = false;
+				let counter = affectedPlayerNumber + 1;
+				while (chancellor === -1) {
+					if (counter >= currentPlayers.length) {
+						counter = 0;
+					}
+					if (currentPlayers[counter]) {
+						chancellor = counter;
+					}
+					counter++;
+				}
+
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has force skipped the government with '
+						},
+						{
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' as president.'
+						}
+					]
+				});
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
+				setTimeout(() => {
+					for (const p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+						selectVoting({ user: p.userName }, game, { vote: false }, null, true);
+					}
+				}, 1000);
+				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
+		const aemPick = /^\/forcepick (\d{1,2}) (\d{1,2})$/i.exec(chat);
+		if (aemPick) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
+			const chancellorPick = aemPick[2];
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
+				}
+				if (!affectedChancellor) {
+					socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
+					return;
+				}
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
+				}
+				if (
+					game.publicPlayersState[chancellorPick - 1].isDead ||
+					chancellorPick - 1 === affectedPlayerNumber ||
+					chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+					(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+				) {
+					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+					return;
+				}
+
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to pick '
+						},
+						{
+							text: blindMode ? `${replacementNames[chancellorPick - 1]} {${chancellorPick}} ` : `${affectedChancellor.userName} {${chancellorPick}}`,
+							type: 'player'
+						},
+						{
+							text: ' as chancellor.'
+						}
+					]
+				});
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
+				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
+		const aemPing = /^\/forceping (\d{1,2})$/i.exec(chat);
+		if (aemPing) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
+				}
+
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has pinged '
+						},
+						{
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: '.'
+						}
+					]
+				});
+
+				try {
+					const affectedSocketId = Object.keys(io.sockets.sockets).find(
+						socketId =>
+							io.sockets.sockets[socketId].handshake.session.passport &&
+							io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+					);
+					if (!io.sockets.sockets[affectedSocketId]) {
+						socket.emit('sendAlert', 'Unable to send ping.');
+						return;
+					}
+					io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: A moderator has pinged you.');
+				} catch (e) {
+					console.log(e, 'caught exception in ping chat');
+				}
+				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+				return;
+			}
+			return;
+		}
+	}
+
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
 
 	if (pingMods) {
 		runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM, Boolean(player));
 		sendInProgressGameUpdate(game);
+	}
+
+	if (pingMods && player) {
+		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
+			Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
+				const staffInGame = accounts
+					.filter(
+						account =>
+							account.staffRole === 'altmod' ||
+							account.staffRole === 'moderator' ||
+							account.staffRole === 'editor' ||
+							account.staffRole === 'admin' ||
+							account.staffRole === 'trialmod'
+					)
+					.map(account => account.username);
+				if (staffInGame.length !== 0) {
+					socket.emit(
+						'sendAlert',
+						`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+					);
+					game.lastModPing = Date.now(); // prevent overquerying
+				} else {
+					// send mod ping
+					game.lastModPing = Date.now();
+					sendInProgressGameUpdate(game, false);
+					makeReport(
+						{
+							player: passport.user,
+							situation: `"${pingMods[2]}".`,
+							election: game.general.electionCount,
+							title: game.general.name,
+							uid: game.general.uid,
+							gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+						},
+						game,
+						'ping'
+					);
+				}
+			});
+		} else {
+			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
+		}
+		return;
 	}
 
 	for (const repl of chatReplacements) {
@@ -1829,74 +2304,112 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 		const timeSince = data.timestamp - user.lastMessage.timestamp;
 		if (!AEM && timeSince < leniency * 1000) return; // Prior chat was too recent.
-	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
-		const cantUseChat =
-			(game.gameState.isStarted &&
-				!game.gameState.isCompleted &&
-				((!player && game.general.disableObserver) || (player && game.general.playerChats === 'disabled'))) ||
-			((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby);
-		if (cantUseChat) {
-			if (!game.private.commandChats[user.userName]) {
-				game.private.commandChats[user.userName] = [];
-			}
-			const msg = player ? 'Chat is disabled in this game.' : 'Observer chat is disabled in this game.';
-
-			game.private.commandChats[user.userName].push({
-				gameChat: true,
-				timestamp: Date.now(),
-				chat: [
-					{
-						text: msg
+		if (!(AEM || (isTourneyMod && game.general.unlisted))) {
+			const cantUseChat =
+				(game.gameState.isStarted &&
+					!game.gameState.isCompleted &&
+					((!player && game.general.disableObserver) || (player && game.general.playerChats === 'disabled'))) ||
+				((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby);
+			if (cantUseChat) {
+				if (!game.private.commandChats[user.userName]) {
+					game.private.commandChats[user.userName] = [];
+					if (game.general.playerChats === 'disabled') {
+						game.private.seatedPlayers
+							.find(x => x.userName === player.userName)
+							.gameChats.push({
+								timestamp: new Date(),
+								gameChat: true,
+								chat: [
+									{ text: `${game.general.blindMode ? '' : publicPlayersState[affectedPlayerNumber].userName} {${affectedPlayerNumber + 1}}`, type: 'player' },
+									{ text: ' has been successfully pinged.' }
+								]
+							});
+						game.private.hiddenInfoChat.push({
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [{ text: `${player.userName} has pinged ${game.publicPlayersState[affectedPlayerNumber].userName}.` }]
+						});
+					} else {
+						game.chats.push({
+							gameChat: true,
+							userName: passport.user,
+							timestamp: new Date(),
+							chat: [
+								{
+									text: game.general.blindMode
+										? `A player has pinged player number ${affectedPlayerNumber + 1}.`
+										: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
+								}
+							],
+							previousSeasonAward: user.previousSeasonAward,
+							uid: data.uid,
+							inProgress: game.gameState.isStarted
+						});
 					}
-				]
-			});
-			sendInProgressGameUpdate(game);
-			return;
-		}
-	}
+					const msg = player ? 'Chat is disabled in this game.' : 'Observer chat is disabled in this game.';
 
-	data.staffRole = (() => {
-		if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
-			return 'moderator';
-		} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
-			return 'editor';
-		} else if (adminUserNames.includes(passport.user)) {
-			return 'admin';
-		}
-	})();
-	if (AEM && user.staffIncognito) {
-		data.hiddenUsername = data.userName;
-		data.staffRole = 'moderator';
-		data.userName = 'Incognito';
-	}
-
-	// Attempts to cut down on overloading server resources
-	if (game.general.private && game.chats.length >= 30) {
-		game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
-	}
-
-	if (!game.gameState.isCompleted && game.gameState.isStarted) {
-		if (game.general.playerChats === 'emotes' && !(AEM && playerIndex === -1)) {
-			// emote games
-			if (!emoteList || !data.chat) return;
-			let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
-			const emotes = Object.keys(emoteList);
-
-			// filter valid in-game :emotes: and numbers
-			newChatSplit = newChatSplit.map(block => {
-				if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
-					return block.replace(/[^0-9]/g, '');
+					game.private.commandChats[user.userName].push({
+						gameChat: true,
+						timestamp: Date.now(),
+						chat: [
+							{
+								text: msg
+							}
+						]
+					});
+					sendInProgressGameUpdate(game);
+					return;
 				}
-				if (emotes.includes(block)) {
-					return ` ${block} `;
-				}
-			});
+			}
+		}
 
-			const newChat = newChatSplit.join('');
-			if (!newChat.length) return;
-			data.chat = newChat;
+		data.staffRole = (() => {
+			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
+				return 'moderator';
+			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
+				return 'editor';
+			} else if (adminUserNames.includes(passport.user)) {
+				return 'admin';
+			}
+		})();
+		if (AEM && user.staffIncognito) {
+			data.hiddenUsername = data.userName;
+			data.staffRole = 'moderator';
+			data.userName = 'Incognito';
+		}
+
+		// Attempts to cut down on overloading server resources
+		if (game.general.private && game.chats.length >= 30) {
+			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
+		}
+
+		if (!game.gameState.isCompleted && game.gameState.isStarted) {
+			if (game.general.playerChats === 'emotes' && !(AEM && playerIndex === -1)) {
+				// emote games
+				if (!emoteList || !data.chat) return;
+				let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
+				const emotes = Object.keys(emoteList);
+				// Attempts to cut down on overloading server resources
+				const privateChatTruncate = await getPrivateChatTruncate(); // positive integer to represent the chats to truncate at or any falsy value to disable
+				if (privateChatTruncate && game.general.private && game.chats.length >= privateChatTruncate) {
+					game.chats = game.chats.slice(game.chats.length - privateChatTruncate, game.chats.length);
+				}
+
+				// filter valid in-game :emotes: and numbers
+				newChatSplit = newChatSplit.map(block => {
+					if (block.length <= 2 || !block.startsWith(':') || !block.endsWith(':')) {
+						return block.replace(/[^0-9]/g, '');
+					}
+					if (emotes.includes(block)) {
+						return ` ${block} `;
+					}
+				});
+
+				const newChat = newChatSplit.join('');
+				if (!newChat.length) return;
+				data.chat = newChat;
+			}
 		}
 	}
 
@@ -1925,7 +2438,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
 		(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 
 	// Only update the whitelist if whitelistsed, has password, or is the creator
-	if (isPrivateSafe || game.general.gameCreatorName === passport.user) {
+	if (isPrivateSafe || game.private.gameCreatorName === passport.user) {
 		game.general.whitelistedPlayers = data.whitelistPlayers;
 		io.in(data.uid).emit('gameUpdate', secureGame(game));
 	}
@@ -2656,9 +3169,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'clearTimeoutIP':
-					BannedIP.remove({ ip: data.ip }, (err, res) => {
+					BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
+					console.log(handleDefaultIPv6Range(data.ip));
 					break;
 				case 'clearTimeoutAndTimeoutIP':
 					Account.findOne({ username: data.userName })
@@ -2671,7 +3185,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							}
 
-							BannedIP.remove({ ip: data.ip }, (err, res) => {
+							BannedIP.deleteMany({ ip: handleDefaultIPv6Range(data.ip), type: { $in: ['tiny', 'small'] }, permanent: { $ne: true } }, (err, res) => {
 								if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 							});
 						})
@@ -2701,7 +3215,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
-							delete games[gameToEnd.general.uid];
+							saveAndDeleteGame(gameToEnd.general.uid);
 							sendGameList();
 						}, 5000);
 					}
@@ -2710,7 +3224,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
 							account.verified = true;
-							account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+							account.verification.email = account.username + '@verified.secrethitler.io';
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
@@ -2881,39 +3395,41 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'ipban':
-					const ipban = new BannedIP({
-						bannedDate: new Date(),
-						type: 'small',
-						ip: data.ip
-					});
-
-					ipban.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (isSuperMod) {
-										banAccount(user.username);
-									} else {
-										logOutUser(user.username);
-									}
-								});
-							}
+					if (isSuperMod) {
+						const ipban = new BannedIP({
+							bannedDate: new Date(),
+							type: 'small',
+							ip: handleDefaultIPv6Range(data.ip),
+							permanent: false
 						});
-					});
-					break;
 
+						ipban.save(() => {
+							Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+								if (users && users.length > 0) {
+									users.forEach(user => {
+										banAccount(user.username);
+									});
+								}
+							});
+						});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform IP bans.');
+						return;
+					}
+					break;
 				case 'fragbanSmall':
 					if (isSuperMod) {
 						const fragbans = new BannedIP({
 							bannedDate: new Date(Date.now() + 64800000),
 							type: 'fragbanSmall',
-							ip: data.userName
+							ip: data.userName,
+							permanent: false
 						});
 						modaction.ip = modaction.userActedOn;
 						modaction.userActedOn = 'RAW IP FRAGMENT';
 						fragbans.save();
 					} else {
-						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+						socket.emit('sendAlert', 'Only editors and admins can perform fragment IP bans.');
 						return;
 					}
 					break;
@@ -2922,7 +3438,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const fragbanl = new BannedIP({
 							bannedDate: new Date(Date.now() + 604800000),
 							type: 'fragbanLarge',
-							ip: data.userName
+							ip: data.userName,
+							permanent: false
 						});
 						modaction.ip = modaction.userActedOn;
 						modaction.userActedOn = 'RAW IP FRAGMENT';
@@ -2936,7 +3453,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout = new BannedIP({
 						bannedDate: new Date(),
 						type: 'small',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip),
+						permanent: false
 					});
 					timeout.save(() => {
 						Account.findOne({ username: data.userName })
@@ -2975,7 +3493,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const timeout3 = new BannedIP({
 						bannedDate: new Date(),
 						type: 'tiny',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip)
 					});
 					timeout3.save(() => {
 						Account.findOne({ username: data.userName })
@@ -3081,7 +3599,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const ipbanl = new BannedIP({
 						bannedDate: new Date(),
 						type: 'big',
-						ip: data.ip
+						ip: handleDefaultIPv6Range(data.ip),
+						permanent: false
 					});
 
 					if (isSuperMod) {
@@ -3379,7 +3898,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const game = games[data.userName.slice(7)];
 
 						if (game) {
-							delete games[game.general.uid];
+							saveAndDeleteGame(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
@@ -3387,9 +3906,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const game = games[data.userName.slice(13)];
 						if (game) {
 							if (modaction.modNotes.length > 0) {
-								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							} else {
-								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							}
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
@@ -3535,49 +4054,53 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 		return;
 	}
 
+	let reason = data.reason;
+
+	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(reason)) {
+		callback({ success: false, error: 'Invalid report reason.' });
+		return;
+	}
+
+	switch (reason) {
+		case 'afk/leaving game':
+			reason = 'AFK/Leaving Game';
+			break;
+		case 'abusive chat':
+			reason = 'Abusive Chat';
+			break;
+		case 'cheating':
+			reason = 'Cheating';
+			break;
+		case 'gamethrowing':
+			reason = 'Gamethrowing';
+			break;
+		case 'stalling':
+			reason = 'Stalling';
+			break;
+		case 'botting':
+			reason = 'Botting';
+			break;
+		case 'other':
+			reason = 'Other';
+			break;
+	}
+
+	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
+	const game = games[data.uid];
+	if (!game && data.uid) return;
+
+	const gameType = data.uid ? (game.general.isTourny ? 'tournament' : game.general.casualGame ? 'casual' : 'standard') : 'homepage';
+
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
 		reportingPlayer: passport.user,
 		reportedPlayer: data.reportedPlayer,
-		reason: data.reason,
-		gameType: data.gameType,
+		reason: reason,
+		gameType,
 		comment: data.comment,
 		isActive: true
 	});
-
-	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(playerReport.reason)) {
-		callback({ success: false, error: 'Invalid report reason.' });
-		return;
-	}
-
-	switch (playerReport.reason) {
-		case 'afk/leaving game':
-			playerReport.reason = 'AFK/Leaving Game';
-			break;
-		case 'abusive chat':
-			playerReport.reason = 'Abusive Chat';
-			break;
-		case 'cheating':
-			playerReport.reason = 'Cheating';
-			break;
-		case 'gamethrowing':
-			playerReport.reason = 'Gamethrowing';
-			break;
-		case 'stalling':
-			playerReport.reason = 'Stalling';
-			break;
-		case 'botting':
-			playerReport.reason = 'Botting';
-			break;
-		case 'other':
-			playerReport.reason = 'Other';
-			break;
-	}
-
-	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
-	const game = games[data.uid];
-	if (!game && data.uid) return;
 
 	const blindModeAnonymizedPlayer =
 		data.uid && game.general.blindMode ? (game.gameState.isStarted ? `${data.reportedPlayer.split(' ')[0]} Anonymous` : 'Anonymous') : data.reportedPlayer;
@@ -3585,7 +4108,8 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 	const body = JSON.stringify({
 		content: `${
 			data.uid ? `Game UID: <https://secrethitler.io/game/#/table/${data.uid}> (${playerReport.gameType})` : 'Report from homepage'
-		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
+		}\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`,
+		allowed_mentions: { parse: [] }
 	});
 
 	const options = {
@@ -3807,5 +4331,217 @@ module.exports.handleFlappyEvent = (data, game) => {
 		game.general.status = `FLAPPY HITLER: ${game.flappyState.liberalScore} - ${game.flappyState.fascistScore} (${game.flappyState.passedPylonCount})`;
 
 		io.sockets.in(game.general.uid).emit('gameUpdate', game);
+	}
+};
+
+module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+	if (data.aemMember !== passport.user) return;
+
+	const aemMember = userList.find(x => x.userName === data.aemMember);
+	if (aemMember && aemMember.staffIncognito) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while Incognito.');
+		return;
+	}
+
+	const dmReceiver = userList.find(x => x.userName === data.userName);
+	const modInDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
+	const modInGame = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
+
+	if (modInGame) {
+		socket.emit('sendAlert', 'You cannot start or join a chat while in-game.');
+		return;
+	}
+
+	if (modInDM) {
+		// if the mod is already DMing someone, we should send them the DM they were in instead of opening a new one
+		socket.emit('preOpenModDMs'); // this is necessary in order to allow the socket on the client to prepare for the openModDMs event
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], passport.user, modUserNames, editorUserNames, adminUserNames));
+		return; // something fucky happened and they got disconnected from the chat
+	}
+
+	if (modDMs[dmReceiver.userName]) {
+		// if there is an open DM but the mod is not the one who created it, they should start observing
+		const dm = modDMs[dmReceiver.userName];
+		dm.subscribedPlayers.push(data.aemMember);
+		dm.aemOnlyMessages.push({
+			date: new Date(),
+			chat: 'has joined.',
+			userName: data.aemMember,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'join'
+		});
+
+		socket.emit('preOpenModDMs');
+		socket.emit('openModDMs', handleAEMMessages(modDMs[dmReceiver], data.aemMember, modUserNames, editorUserNames, adminUserNames));
+		return sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+
+	const dmReceiverSocketID = Object.keys(io.sockets.sockets).find(
+		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+	);
+	const dmReceiverSocket = io.sockets.sockets[dmReceiverSocketID];
+
+	if (dmReceiver == null || dmReceiverSocketID == null || dmReceiverSocket == null) {
+		return socket.emit('sendAlert', 'That player is not online!');
+	}
+
+	const initMessage = {
+		date: new Date(),
+		chat:
+			"Every moderator can access this chat if they choose to. Please do not out confidential game information if you're currently playing with a moderator. If you prefer talking to a specific moderator one on one, feel free to DM one on Discord.",
+		userName: '',
+		staffRole: 'moderator',
+		isBroadcast: true,
+		type: 'broadcast'
+	};
+
+	const dmInitializeData = {
+		// create mod DM
+		_id: generateCombination(3, '', true),
+		username: data.userName,
+		aemMember: data.aemMember,
+		startDate: new Date(),
+		subscribedPlayers: [data.userName, data.aemMember],
+		messages: [initMessage],
+		aemOnlyMessages: [initMessage]
+	};
+
+	dmReceiverSocket.emit('preOpenModDMs');
+	dmReceiverSocket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.userName, modUserNames, editorUserNames, adminUserNames));
+	socket.emit('preOpenModDMs');
+	socket.emit('openModDMs', handleAEMMessages(dmInitializeData, data.aemMember, modUserNames, editorUserNames, adminUserNames));
+
+	modDMs[dmReceiver.userName] = dmInitializeData;
+
+	const discordThreadNotifyBody = JSON.stringify({
+		// and post it to discord
+		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
+	});
+	const discordThreadNotifOptions = {
+		hostname: 'discordapp.com',
+		path: process.env.DISCORDMODDMSTHREADURL,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+		}
+	};
+	try {
+		const threadReq = https.request(discordThreadNotifOptions);
+		threadReq.end(discordThreadNotifyBody);
+	} catch (e) {
+		console.log(e, 'err in broadcast');
+	}
+};
+
+module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	// save, notify, etc
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	if (dmID) {
+		const dm = modDMs[dmID];
+
+		if (
+			passport.user === dm.aemMember ||
+			(getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) &&
+				getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames) !== 'moderator') // only the mod who created the DM or any editor can close the DM
+		) {
+			for (const user of dm.subscribedPlayers) {
+				try {
+					const sock =
+						io.sockets.sockets[
+							Object.keys(io.sockets.sockets).find(
+								socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
+							)
+						];
+
+					sock.emit('closeModDMs');
+					sock.emit('postCloseModDMs');
+				} catch (e) {}
+			}
+
+			dm.endDate = new Date();
+			dm.messages = dm.aemOnlyMessages;
+			delete dm.aemOnlyMessages;
+			delete dm.subscribedPlayers;
+
+			const savedDM = new ModThread(dm);
+			savedDM.save();
+
+			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
+			const discordThreadNotifyBody = JSON.stringify({
+				// save and send to discord
+				content: dmCloseMessage
+			});
+			const discordThreadNotifOptions = {
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDMODDMSTHREADURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(discordThreadNotifyBody)
+				}
+			};
+			try {
+				const threadReq = https.request(discordThreadNotifOptions);
+				threadReq.end(discordThreadNotifyBody);
+			} catch (e) {
+				console.log(e, 'err in notif');
+			}
+
+			delete modDMs[dmID];
+		}
+	} else {
+		socket.emit('sendAlert', 'Could not find a DM you are in!');
+	}
+};
+
+module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const passport = socket.handshake.session.passport;
+
+	const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+	const dm = modDMs[dmID];
+
+	if (dm) {
+		dm.aemOnlyMessages.push({
+			// add leave message (this is only called for mods leaving and not the DM closing)
+			date: new Date(),
+			chat: 'has left.',
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'leave'
+		});
+
+		const idx = dm.subscribedPlayers.indexOf(passport.user);
+		if (idx !== -1) {
+			dm.subscribedPlayers.splice(idx, 1);
+		}
+
+		socket.emit('closeModDMs');
+		socket.emit('postCloseModDMs'); // this is necessary to allow the force-mounted right sidebar to be properly disposed in the right order
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
+	}
+};
+
+module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	const receivingPlayer = Object.keys(modDMs).find(x => modDMs[x].username === passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user);
+	if (receivingPlayer) {
+		// add a new chat and push it to AEM chat and player chat
+		const dm = modDMs[receivingPlayer];
+		const now = new Date();
+		const newMessage = {
+			date: now,
+			chat: data.chat,
+			userName: passport.user,
+			staffRole: getStaffRole(passport.user, modUserNames, editorUserNames, adminUserNames),
+			type: 'message'
+		};
+
+		dm.messages.push(newMessage);
+		dm.aemOnlyMessages.push(newMessage);
+
+		sendInProgressModDMUpdate(dm, modUserNames, editorUserNames, adminUserNames);
 	}
 };

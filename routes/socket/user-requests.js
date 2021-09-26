@@ -99,7 +99,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 						casual: game.general.casualGame,
 						private: game.general.private,
 						custom: game.customGameSettings.enabled,
-						unlisted: game.general.unlisted
+						unlisted: game.general.unlistedGame
 					});
 				});
 			}
@@ -126,6 +126,7 @@ module.exports.sendSignups = socket => {
 	Signups.find({ type: { $in: ['local', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -138,6 +139,7 @@ module.exports.sendAllSignups = socket => {
 	Signups.find({ type: { $nin: ['local', 'private', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -150,6 +152,7 @@ module.exports.sendPrivateSignups = socket => {
 	Signups.find({ type: 'private' })
 		.sort({ $natural: -1 })
 		.limit(500)
+		.select({ unobfuscatedIP: 0 })
 		.then(signups => {
 			socket.emit('signupsInfo', signups);
 		})
@@ -261,16 +264,18 @@ module.exports.sendPlayerNotes = (socket, data) => {
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendReplayGameChats = (socket, uid) => {
-	Game.findOne({ uid }).then((game, err) => {
-		if (err) {
-			console.log(err, 'game err retrieving for replay');
-		}
+module.exports.sendReplayGameData = (socket, uid) => {
+	Game.findOne({ uid })
+		.select({ _id: 0, _v: 0 })
+		.then((game, err) => {
+			if (err) {
+				console.log(err, 'game err retrieving for replay');
+			}
 
-		if (game) {
-			socket.emit('replayGameChats', game.chats);
-		}
-	});
+			if (game) {
+				socket.emit('replayGameData', game);
+			}
+		});
 };
 
 /**
@@ -317,14 +322,14 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 	if (user) {
 		user.status = {
 			type:
-				override && game && !game.general.unlisted
+				override && game && !game.general.unlistedGame
 					? override
 					: game
 					? game.general.private
 						? 'private'
-						: !game.general.unlisted && game.general.rainbowgame
+						: !game.general.unlistedGame && game.general.rainbowgame
 						? 'rainbow'
-						: !game.general.unlisted
+						: !game.general.unlistedGame
 						? 'playing'
 						: 'none'
 					: 'none',
@@ -349,6 +354,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 			if (player) {
 				player.leftGame = false;
 				player.connected = true;
+				if (game.general) game.general.timeAbandoned = null;
 				socket.emit('updateSeatForUser', true);
 				updateUserStatus(passport, game);
 			} else {

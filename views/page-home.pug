@@ -1,5 +1,7 @@
 extends layout
 block content
+	audio#header-audio(src="../sounds/banner-summer.mp3" loop)
+	img(src='../images/banner-summer.gif', style="width: 0; height: 0;")
 	if username
 		a(href="/game/") Game Lobby
 			#header-container.ui.segment
@@ -25,6 +27,14 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported in the #[a(href="https://discord.gg/secrethitlerio") discord development channel], or by opening a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
-					h3 Happy New Year and Welcome to Season 13!
-					h3 Version 1.7.4 released 2-12-2021
+					h3 Welcome to Season 15!
+					h3 Version 1.8 released 07-01-2021
 					p #[a(href="/observe/#/changelog") Check out the changes!]
+	script.
+		var audioEl = document.getElementById('header-audio');
+		var headerEl = document.getElementById('header-container')
+
+		headerEl.addEventListener('mouseenter', function() {window.plausible('Banner Engagement');audioEl.play()})
+		headerEl.addEventListener('mouseleave', function() {audioEl.pause()})
+
+

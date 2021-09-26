@@ -154,7 +154,7 @@ export default class Game extends React.Component {
 						return classes;
 					})()}
 				>
-					<Players onClickedTakeSeat={onClickedTakeSeat} userList={userList} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+					<Players onClickedTakeSeat={onClickedTakeSeat} userList={userList} userInfo={userInfo} gameInfo={gameInfo} socket={socket} hideRoles={false} />
 				</div>
 			</section>
 		);

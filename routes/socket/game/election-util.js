@@ -226,6 +226,19 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 								const { selectVoting } = require('./election');
 								unvotedPlayerNames.forEach(userName => {
 									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) }, socket);
+									game.private.replayGameChats.push({
+										gameChat: true,
+										timestamp: new Date(),
+										chat: [
+											{
+												text: userName,
+												type: 'player'
+											},
+											{
+												text: ' was forced by the timer to select a random vote.'
+											}
+										]
+									});
 								});
 							}
 						},
