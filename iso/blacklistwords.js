@@ -1,5 +1,4 @@
 module.exports = [
-	'igger',
 	'igga',
 	'ibba',
 	'iggr',
@@ -16,7 +15,6 @@ module.exports = [
 	'k1ke',
 	'kik3',
 	'k1k3',
-	'autist',
 	'tard',
 	't4rd',
 	'fag',
@@ -26,6 +24,7 @@ module.exports = [
 	'niglet',
 	'etard',
 	'nigg',
+	'nigger',
 	'negro',
 	'KKK',
 	'rape',

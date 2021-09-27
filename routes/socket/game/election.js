@@ -483,6 +483,7 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 								game.publicPlayersState[chancellorIndex].previousGovernmentStatus = 'wasChancellor';
 							}
 							if (game.trackState.electionTrackerCount >= 3) {
+								game.gameState.previousElectedGovernment = [];
 								if (!game.gameState.undrawnPolicyCount) {
 									shufflePolicies(game);
 								}

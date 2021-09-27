@@ -1,6 +1,5 @@
 extends layout
 block content
-	audio#header-audio(src="../sounds/banner-summer.mp3" loop)
 	img(src='../images/banner-summer.gif', style="width: 0; height: 0;")
 	if username
 		a(href="/game/") Game Lobby
@@ -30,11 +29,5 @@ block content
 					h3 Welcome to Season 15!
 					h3 Version 1.8 released 07-01-2021
 					p #[a(href="/observe/#/changelog") Check out the changes!]
-	script.
-		var audioEl = document.getElementById('header-audio');
-		var headerEl = document.getElementById('header-container')
-
-		headerEl.addEventListener('mouseenter', function() {window.plausible('Banner Engagement');audioEl.play()})
-		headerEl.addEventListener('mouseleave', function() {audioEl.pause()})
 
 
