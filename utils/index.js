@@ -174,10 +174,22 @@ const getBlacklistIndex = (userName, blacklist) => {
 		return -1;
 	}
 	for (let i = 0; i < blacklist.length; i++) {
-		if ((typeof blacklist[i] == 'string' && blacklist[i] === userName) || blacklist[i]['userName'] === userName) {
+		if (blacklist[i]['userName'] === userName) {
 			return i;
 		}
 	}
 	return -1;
 };
+const userInBlacklist = (userName, blacklist) => {
+	if (typeof blacklist === 'undefined') {
+		return false;
+	}
+	for (let i = 0; i < blacklist.length; i++) {
+		if (blacklist[i]['userName'] === userName) {
+			return true;
+		}
+	}
+	return false;
+};
+exports.userInBlacklist = userInBlacklist;
 exports.getBlacklistIndex = getBlacklistIndex;
