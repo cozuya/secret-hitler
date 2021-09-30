@@ -7,7 +7,7 @@ import $ from 'jquery';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
 import UserPopup from '../reusable/UserPopup.jsx';
-import { getBlacklistIndex } from '../../../../utils';
+import { getBlacklistIndex, userInBlacklist } from '../../../../utils';
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
 	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
@@ -239,7 +239,7 @@ class ProfileWrapper extends React.Component {
 				blacklistClicked: true
 			},
 			() => {
-				if (gameSettings && getBlacklistIndex(name, gameSettings.blacklist) !== -1) {
+				if (gameSettings && userInBlacklist(name, gameSettings.blacklist)) {
 					gameSettings.blacklist.splice(getBlacklistIndex(name, gameSettings.blacklist), 1);
 				}
 				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
@@ -256,7 +256,7 @@ class ProfileWrapper extends React.Component {
 		return (
 			<UserPopup userName={name} socket={this.props.socket} position="top center" renderInProfile={true}>
 				<button className="ui primary button blacklist-button">
-					{gameSettings && getBlacklistIndex(name, gameSettings.blacklist) !== -1 ? 'Unblacklist player' : 'Blacklist player'}
+					{gameSettings && userInBlacklist(name, gameSettings.blacklist) ? 'Unblacklist player' : 'Blacklist player'}
 				</button>
 			</UserPopup>
 		);
@@ -292,11 +292,11 @@ class ProfileWrapper extends React.Component {
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
-							{ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 },
+							{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 							{ unclickable: !this.props.isUserClickable },
 							{ clickable: this.props.isUserClickable }
 					  )
-					: cn({ blacklisted: gameSettings && getBlacklistIndex(user.userName, gameSettings.blacklist) !== -1 }, 'profile-picture');
+					: cn({ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) }, 'profile-picture');
 			const { wins = 0, losses = 0 } = user;
 			if (wins + losses < 50) {
 				gamesUntilRainbow = 50 - wins - losses;

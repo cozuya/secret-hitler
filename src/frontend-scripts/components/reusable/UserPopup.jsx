@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; // eslint-disable-line
 import { connect } from 'react-redux';
 import { Popup, List, Grid, Button, Form } from 'semantic-ui-react';
-import { getBlacklistIndex } from '../../../../utils';
+import { getBlacklistIndex, userInBlacklist } from '../../../../utils';
 
 const mapStateToProps = state => state;
 
@@ -117,8 +117,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 		const blackListInfo = { userName: userName, timestamp: Date.now(), reason: reason };
 		let visibleStatus = false;
 		if (gameSettings.blacklist !== undefined && blackListIndex !== -1) {
-			const foundIndex = blackListIndex;
-			gameSettings.blacklist.splice(foundIndex, 1);
+			gameSettings.blacklist.splice(blackListIndex, 1);
 			visibleStatus = true;
 		} else if (!gameSettings.blacklist) {
 			gameSettings.blacklist = [blackListInfo];
@@ -146,7 +145,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 	const isMe = userName === userInfo?.userName;
 	const isAEM = checkStaffRole(userInfo?.staffRole);
 	const areTheyAEM = checkStaffRole(user?.staffRole);
-	const isPlayerBlacklisted = getBlacklistIndex(userName, gameSettings?.blacklist) !== -1;
+	const isPlayerBlacklisted = userInBlacklist(userName, gameSettings?.blacklist);
 	const openChat = userName => {
 		socket.emit('aemOpenChat', { userName, aemMember: userInfo?.userName });
 	};

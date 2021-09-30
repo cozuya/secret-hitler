@@ -38,6 +38,7 @@ const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
+import { userInBlacklist } from '../../utils';
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
@@ -503,7 +504,7 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
-	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !userInBlacklist(passport.user, game.private.gameCreatorBlacklist); // we can check blacklist before hitting mongo
 
 	if (!isBlacklistSafe) {
 		socket.emit('gameJoinStatusUpdate', {
