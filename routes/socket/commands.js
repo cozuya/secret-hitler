@@ -1,7 +1,7 @@
 const { makeReport } = require('./report');
 const { selectChancellor } = require('./game/election-util');
 const { selectVoting } = require('./game/election');
-const { sendInProgressGameUpdate } = require('./util');
+const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
 
 const sendMessage = (game, user, s, date = new Date()) =>
@@ -192,43 +192,51 @@ module.exports.parseCommand = msg => {
  * @param {boolean} isSeated - whether the user is sat in the game.
  */
 module.exports.runCommand = (socket, passport, user, game, msg, AEM, isSeated) => {
-	if (!game.private.commandChats[user.userName]) {
-		game.private.commandChats[user.userName] = [];
+	try {
+		if (!game.private.commandChats[user.userName]) {
+			game.private.commandChats[user.userName] = [];
+		}
+
+		const { name, command, args } = module.exports.parseCommand(msg);
+
+		if (!command) {
+			sendMessage(game, user, `Unknown command /${name}. Use /help for a list of commands.`);
+			return;
+		}
+
+		if (command.aemOnly && !AEM) {
+			sendMessage(game, user, 'You do not have permission to use this command.');
+			return;
+		}
+
+		if (command.observerOnly && isSeated) {
+			sendMessage(game, user, 'This command cannot be used by seated players.');
+			return;
+		}
+
+		if (command.seatedOnly && !isSeated) {
+			sendMessage(game, user, 'This command cannot be used by observers.');
+			return;
+		}
+
+		if (command.gameStartedOnly && (!game.gameState.isStarted || game.gameState.isCompleted)) {
+			sendMessage(game, user, 'This command can only be used during an in-progress game.');
+			return;
+		}
+
+		if (!args) {
+			sendMessage(game, user, `You're not doing this right. Some examples: ${command.examples.join(', ')}`);
+			return;
+		}
+
+		command.run(socket, passport, user, game, args, AEM, isSeated);
+	} finally {
+		if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game, false);
+		} else {
+			sendCommandChatsUpdate(game);
+		}
 	}
-
-	const { name, command, args } = module.exports.parseCommand(msg);
-
-	if (!command) {
-		sendMessage(game, user, `Unknown command /${name}. Use /help for a list of commands.`);
-		return;
-	}
-
-	if (command.aemOnly && !AEM) {
-		sendMessage(game, user, 'You do not have permission to use this command.');
-		return;
-	}
-
-	if (command.observerOnly && isSeated) {
-		sendMessage(game, user, 'This command cannot be used by seated players.');
-		return;
-	}
-
-	if (command.seatedOnly && !isSeated) {
-		sendMessage(game, user, 'This command cannot be used by observers.');
-		return;
-	}
-
-	if (command.gameStartedOnly && (!game.gameState.isStarted || game.gameState.isCompleted)) {
-		sendMessage(game, user, 'This command can only be used during an in-progress game.');
-		return;
-	}
-
-	if (!args) {
-		sendMessage(game, user, `You're not doing this right. Some examples: ${command.examples.join(', ')}`);
-		return;
-	}
-
-	command.run(socket, passport, user, game, args, AEM, isSeated);
 };
 
 module.exports.commands.getCommand('help').run = (socket, passport, user, game, args, AEM, isSeated) => {
@@ -302,8 +310,6 @@ module.exports.commands.getCommand('pingmod').run = (socket, passport, user, gam
 	if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
 		game.lastModPing = Date.now();
 		sendMessage(game, user, 'Pinged a moderator successfully');
-
-		sendInProgressGameUpdate(game, false);
 		makeReport(
 			{
 				player: passport.user,
@@ -415,8 +421,6 @@ module.exports.commands.getCommand('forcerigdeck').run = (socket, passport, user
 		timestamp: new Date(),
 		chat: changedChat
 	});
-
-	sendInProgressGameUpdate(game, false);
 };
 
 module.exports.commands.getCommand('forcevote').run = (socket, passport, user, game, args) => {
@@ -508,7 +512,6 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 		game.private.hiddenInfoChat.push(modOnlyChat);
 
 		selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
-		sendInProgressGameUpdate(game, false);
 	}
 };
 
@@ -573,7 +576,6 @@ module.exports.commands.getCommand('forceskip').run = (socket, passport, user, g
 			selectVoting({ user: p.userName }, game, { vote: false }, null, true);
 		}
 	}, 1000);
-	sendInProgressGameUpdate(game, false);
 };
 
 module.exports.commands.getCommand('forcepick').run = (socket, passport, user, game, args) => {
@@ -637,7 +639,6 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 			]
 		});
 		selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
-		sendInProgressGameUpdate(game, false);
 	}
 };
 
@@ -689,7 +690,6 @@ module.exports.commands.getCommand('forceping').run = (socket, passport, user, g
 	} catch (e) {
 		console.log(e, 'caught exception in ping chat');
 	}
-	sendInProgressGameUpdate(game, false);
 };
 
 module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user, game, args) => {
@@ -739,7 +739,5 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 			timestamp: new Date(),
 			chat: changedChat
 		});
-
-		sendInProgressGameUpdate(game, false);
 	}
 };
