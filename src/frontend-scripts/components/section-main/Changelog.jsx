@@ -11,6 +11,26 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Welcome to Season 16!</p>
+				</div>
+
+				<h4>The top 10 players of season 15 are:</h4>
+				<ol>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<p>Welcome to Season 15!</p>
 				</div>
 
