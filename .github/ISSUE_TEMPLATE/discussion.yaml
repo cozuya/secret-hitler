@@ -1,0 +1,14 @@
+name: 💬 Discussion
+description: If you just want to start a discussion or create a living document
+labels: [discussion]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to start a discussion!
+  - type: textarea
+    id: discussion-body
+    attributes:
+      label: Feel free to add anything you want here
+    validations:
+      required: true

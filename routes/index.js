@@ -349,7 +349,7 @@ module.exports = () => {
 				.replace(/'/g, '&#39;');
 
 		Account.findOne({ username }).then(account => {
-			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin') {
+			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin' || account.staffRole === 'trialmod') {
 				ModThread.findById(id)
 					.lean()
 					.exec()
