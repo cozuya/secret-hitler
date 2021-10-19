@@ -633,10 +633,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 			});
 		}
 
-		if (perfectGuesses && perfectGuesses.length) {
-			game.chats.push(guessesToChat('Perfect guesses - ', perfectGuesses));
-		}
-
 		for (let i = numFas; i >= 1; i--) {
 			const prefix =
 				i === numFas ? 'All fascists correct - ' : i === 3 ? 'Three fascists correct - ' : i === 2 ? 'Two fascists correct - ' : 'One fascist correct - ';
