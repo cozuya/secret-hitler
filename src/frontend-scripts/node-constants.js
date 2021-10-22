@@ -82,8 +82,8 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		let grade;
 		if (elo < 1500) {
 			grade = 0;
-		} else if (elo > 2000) {
-			grade = 500 / 5;
+		} else if (elo > 2100) {
+			grade = 600 / 5;
 		} else {
 			grade = (elo - 1500) / 5;
 		}
