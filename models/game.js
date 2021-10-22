@@ -26,7 +26,10 @@ const Game = new Schema({
 	unlistedGame: Boolean,
 	isVerifiedOnly: Boolean,
 	chats: Array,
-	guesses: Object,
+	guesses: {
+		type: Map,
+		of: String
+	},
 	timedMode: Number, // timer length
 	blindMode: Boolean,
 	completed: Boolean

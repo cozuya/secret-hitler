@@ -17,6 +17,10 @@ const combineInProgressChats = (game, userName) =>
 		? game.private.seatedPlayers.find(player => player.userName === userName).gameChats.concat(game.chats)
 		: game.private.unSeatedGameChats.concat(game.chats);
 
+const combineCommandChats = (game, user, commandChats) => (commandChats[user] ? game.chats.concat(commandChats[user]) : game.chats);
+
+module.exports.combineCommandChats = combineCommandChats;
+
 /**
  * @param {object} game - game to act on.
  * @param {boolean} noChats - remove chats for client to handle.
@@ -57,9 +61,7 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 			_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 		}
 
-		if (game.private.commandChats && game.private.commandChats[user]) {
-			_game.chats = _game.chats.concat(game.private.commandChats[user]);
-		}
+		_game.chats = combineCommandChats(_game, user, game.private.commandChats);
 
 		if (noChats) {
 			delete _game.chats;
@@ -79,23 +81,17 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 			const _game = Object.assign({}, game);
 			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
+			if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				_game.chats = chatWithHidden;
+			}
+
 			if (noChats) {
 				delete _game.chats;
 				sock.emit('gameUpdate', secureGame(_game), true);
-			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
-				// AEM status is ensured when adding to the subscription list
-				_game.chats = chatWithHidden;
-				_game.chats = combineInProgressChats(_game);
-				if (game.private.commandChats && game.private.commandChats[user]) {
-					_game.chats = _game.chats.concat(game.private.commandChats[user]);
-				}
-
-				sock.emit('gameUpdate', secureGame(_game));
 			} else {
 				_game.chats = combineInProgressChats(_game);
-				if (game.private.commandChats && game.private.commandChats[user]) {
-					_game.chats = _game.chats.concat(game.private.commandChats[user]);
-				}
+				_game.chats = combineCommandChats(_game, user, game.private.commandChats);
 
 				sock.emit('gameUpdate', secureGame(_game));
 			}
@@ -139,6 +135,23 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 	roomSockets.forEach(sock => {
 		if (sock) {
 			sock.emit('playerChatUpdate', chat);
+		}
+	});
+};
+
+module.exports.sendCommandChatsUpdate = game => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	roomSockets.forEach(sock => {
+		if (sock) {
+			const _game = Object.assign({}, game);
+			const user = sock.handshake.session.passport.user;
+			_game.chats = combineCommandChats(_game, user, game.private.commandChats);
+			sock.emit('gameUpdate', _game);
 		}
 	});
 };
@@ -356,7 +369,12 @@ class LineGuess {
 		const fasRegex = /(\dh?)/gi;
 
 		const result = new LineGuess();
-		for (const match of guess.match(fasRegex)) {
+		const m = guess.match(fasRegex);
+		if (!m) {
+			return null;
+		}
+
+		for (const match of m) {
 			let seat = parseInt(match[0]);
 			seat = seat === 0 ? 10 : seat;
 

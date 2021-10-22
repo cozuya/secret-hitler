@@ -58,7 +58,7 @@ const generateGameObject = game => {
 		};
 	}
 
-	const objMap = (obj, f) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
+	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
 	/**
 	 * @param {object} - object describing game model.
 	 */
@@ -67,7 +67,7 @@ const generateGameObject = game => {
 		uid: game.general.uid,
 		name: game.general.name,
 		date: new Date(),
-		guesses: game.guesses ? objMap(game.guesses, (_, g) => g.toString()) : {},
+		guesses: objMap(game.guesses, (_, g) => g.toString()),
 		playerChats: game.general.playerChats,
 		chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
 		isVerifiedOnly: game.general.isVerifiedOnly,
@@ -631,10 +631,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 				]
 			});
-		}
-
-		if (perfectGuesses && perfectGuesses.length) {
-			game.chats.push(guessesToChat('Perfect guesses - ', perfectGuesses));
 		}
 
 		for (let i = numFas; i >= 1; i--) {

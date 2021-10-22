@@ -4,7 +4,7 @@ const Stream = require('stream');
 const Account = require('../models/account');
 const fs = require('fs');
 const { userList, userListEmitter, games } = require('./socket/models');
-const { secureGame } = require('./socket/util');
+const { sendCommandChatsUpdate } = require('./socket/util');
 const { sendGameList } = require('./socket/user-requests');
 
 module.exports.ProcessImage = (username, raw, callback) => {
@@ -41,7 +41,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 						const foundUser = game.publicPlayersState.find(user => user.userName === username);
 						if (foundUser) {
 							foundUser.customCardback = '';
-							io.sockets.in(uid).emit('gameUpdate', secureGame(game));
+							sendCommandChatsUpdate(game);
 							sendGameList();
 						}
 					});
