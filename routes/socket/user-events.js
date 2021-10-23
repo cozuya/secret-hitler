@@ -3860,7 +3860,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 		return;
 	}
 
-	const dmReceiver = userList.find(x => x.userName === data.userName);
+	const dmReceiver = userList.find(x => x.userName === data.userName) || {};
 	const modInDM = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(data.aemMember) !== -1);
 	const modInGame = Object.keys(games).find(x => games[x].gameState.isTracksFlipped && games[x].publicPlayersState.find(y => y.userName === data.aemMember));
 
@@ -3898,7 +3898,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	);
 	const dmReceiverSocket = io.sockets.sockets[dmReceiverSocketID];
 
-	if (dmReceiver == null || dmReceiverSocketID == null || dmReceiverSocket == null) {
+	if (!Object.keys(dmReceiver).length || dmReceiverSocketID == null || dmReceiverSocket == null) {
 		return socket.emit('sendAlert', 'That player is not online!');
 	}
 
