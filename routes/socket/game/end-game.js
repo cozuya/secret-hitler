@@ -626,7 +626,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				timestamp: now,
 				chat: [
 					{
-						text: 'Line Guessing Results',
+						text: 'Line Guesses',
 						type: 'player'
 					}
 				]
