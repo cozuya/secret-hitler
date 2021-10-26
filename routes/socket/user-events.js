@@ -3905,7 +3905,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	const initMessage = {
 		date: new Date(),
 		chat:
-			"Every moderator can access this chat if they choose to. Please do not out confidential game information if you're currently playing with a moderator. If you prefer talking to a specific moderator one on one, feel free to DM one on Discord.",
+			"Every moderator can access this chat if they choose to. Please do not out confidential game information if you're currently playing with a moderator. If you prefer talking to a specific moderator one on one, feel free to DM one on Discord. ToU applies to this chat.",
 		userName: '',
 		staffRole: 'moderator',
 		isBroadcast: true,
