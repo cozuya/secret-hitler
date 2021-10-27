@@ -268,7 +268,7 @@ module.exports.commands.getCommand('help').run = (socket, passport, user, game, 
 };
 
 module.exports.commands.getCommand('g').run = (socket, passport, user, game, args) => {
-	if (game.general.casualGame || game.general.unlisted || game.general.private || (game.customGameSettings && game.customGameSettings.enabled)) {
+	if (game.general.private || (game.customGameSettings && game.customGameSettings.enabled)) {
 		sendMessage(game, user, 'Line guessing is only enabled in ranked and practice games.');
 		return;
 	}
