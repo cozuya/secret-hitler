@@ -1425,6 +1425,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.timeCreated = Date.now();
 		newGame.general.lastModPing = 0;
 		newGame.general.chatReplTime = Array(chatReplacements.length + 1).fill(0);
+
 		newGame.publicPlayersState = game.publicPlayersState
 			.filter(player =>
 				game.remakeData
@@ -1450,6 +1451,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.remakeData = [];
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
+		newGame.guesses = {};
 		newGame.trackState = {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,
@@ -1671,16 +1673,6 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		return;
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
-
-	// if (!AEM && game.general.disableChat) return;
-	if (!((AEM || (isTourneyMod && game.general.unlistedGame)) && playerIndex === -1)) {
-		if (game.gameState.isStarted && !game.gameState.isCompleted && game.general.disableObserver && playerIndex === -1) {
-			return;
-		}
-		if ((!game.gameState.isStarted || game.gameState.isCompleted) && game.general.disableObserverLobby && playerIndex === -1) {
-			return;
-		}
-	}
 
 	data.userName = passport.user;
 

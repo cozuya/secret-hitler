@@ -3,6 +3,7 @@ const { selectChancellor } = require('./game/election-util');
 const { selectVoting } = require('./game/election');
 const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
+const Account = require('../../models/account');
 
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
@@ -268,7 +269,7 @@ module.exports.commands.getCommand('help').run = (socket, passport, user, game, 
 };
 
 module.exports.commands.getCommand('g').run = (socket, passport, user, game, args) => {
-	if (game.general.casualGame || game.general.unlisted || game.general.private || (game.customGameSettings && game.customGameSettings.enabled)) {
+	if (game.general.private || (game.customGameSettings && game.customGameSettings.enabled)) {
 		sendMessage(game, user, 'Line guessing is only enabled in ranked and practice games.');
 		return;
 	}
@@ -308,20 +309,41 @@ module.exports.commands.getCommand('g').run = (socket, passport, user, game, arg
 
 module.exports.commands.getCommand('pingmod').run = (socket, passport, user, game, args) => {
 	if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-		game.lastModPing = Date.now();
-		sendMessage(game, user, 'Pinged a moderator successfully');
-		makeReport(
-			{
-				player: passport.user,
-				situation: `"${args[0]}".`,
-				election: game.general.electionCount,
-				title: game.general.name,
-				uid: game.general.uid,
-				gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
-			},
-			game,
-			'ping'
-		);
+		Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
+			const staffInGame = accounts
+				.filter(
+					account =>
+						account.staffRole === 'altmod' ||
+						account.staffRole === 'moderator' ||
+						account.staffRole === 'editor' ||
+						account.staffRole === 'admin' ||
+						account.staffRole === 'trialmod'
+				)
+				.map(account => account.username);
+			if (staffInGame.length !== 0) {
+				sendMessage(
+					game,
+					user,
+					`An account used by a moderator or a trial moderator is in this game. Please use the report function in this game and make sure to not out crucial information or just DM another moderator.`
+				);
+				game.lastModPing = Date.now(); // prevent overquerying
+			} else {
+				game.lastModPing = Date.now();
+				sendMessage(game, user, 'Pinged a moderator successfully');
+				makeReport(
+					{
+						player: passport.user,
+						situation: `"${args[0]}".`,
+						election: game.general.electionCount,
+						title: game.general.name,
+						uid: game.general.uid,
+						gameType: game.general.casualGame ? 'Casual' : game.general.practiceGame ? 'Practice' : 'Ranked'
+					},
+					game,
+					'ping'
+				);
+			}
+		});
 	} else {
 		sendMessage(game, user, `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
 	}
