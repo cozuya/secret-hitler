@@ -1185,14 +1185,14 @@ export default class Creategame extends React.Component {
 	};
 
 	renderEloSlider() {
-		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
+		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000', 2050: '', 2100: '2100' };
 		const { userInfo, userList } = this.props;
 		if (userInfo.gameSettings && userInfo.gameSettings.disableElo) return null;
 		let player = null;
 		if (userList.list) player = userList.list.find(p => p.userName === userInfo.userName);
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
-		const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
-		const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
+		const playerElo = (player && player.eloSeason && Math.min(2100, player.eloSeason)) || 1600;
+		const playerEloNonseason = (player && player.eloOverall && Math.min(2100, player.eloOverall)) || 1600;
 		const max = Math.min(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
@@ -1685,8 +1685,8 @@ export default class Creategame extends React.Component {
 			if (!player) errs.push('Not logged in, please refresh.');
 			if (player && player.staffIncognito) errs.push(`You're incognito`);
 			else if (this.state.isEloLimited) {
-				const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
-				const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
+				const playerElo = (player && player.eloSeason && Math.min(2100, player.eloSeason)) || 1600;
+				const playerEloNonseason = (player && player.eloOverall && Math.min(2100, player.eloOverall)) || 1600;
 				const max = Math.min(playerElo, playerEloNonseason);
 				if (this.state.eloSliderValue[0] < 1600 || this.state.eloSliderValue[0] > max) {
 					errs.push(`ELO slider value is invalid, your maximum is ${max}.`);
