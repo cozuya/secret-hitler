@@ -509,7 +509,7 @@
 	}
 }
 
-@for $i from 1 through 17 {
+@for $i from 1 through 27 {
 	@keyframes splayAnim#{$i} {
 		0% {
 			transform: rotate(0deg); // -90deg
