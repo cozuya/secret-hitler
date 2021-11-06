@@ -58,10 +58,16 @@ const generateGameObject = game => {
 		};
 	}
 
+	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
+	/**
+	 * @param {object} - object describing game model.
+	 */
+
 	return {
 		uid: game.general.uid,
 		name: game.general.name,
 		date: new Date(),
+		guesses: objMap(game.guesses, (_, g) => g.toString()),
 		playerChats: game.general.playerChats,
 		chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
 		isVerifiedOnly: game.general.isVerifiedOnly,
@@ -567,5 +573,79 @@ module.exports.completeGame = (game, winningTeamName) => {
 			game.general.status = 'The tournament has ended.';
 			sendInProgressGameUpdate(game);
 		}
+	}
+
+	// Line guesses not supported in casual and custom games
+	if (!game.general.private && !game.general.casualGame && !(game.customGameSettings && game.customGameSettings.enabled) && !game.general.unlisted) {
+		const { guesses } = game;
+
+		const hittySeat = game.private.seatedPlayers.findIndex(p => p.role.cardName === 'hitler') + 1;
+		const fasSeats = game.private.seatedPlayers
+			.map((p, i) => [p, i])
+			.filter(([p, _]) => p.role.team === 'fascist')
+			.map(([_, i]) => i + 1);
+
+		const numFas = fasSeats.length;
+
+		const hittyGuesses = Object.entries(guesses).filter(([_, g]) => g.hit === hittySeat);
+		const countRegs = g => g.regs.reduce((accum, r) => fasSeats.includes(r) + accum, 0);
+		const fasGuesses = Object.entries(guesses).map(([user, g]) => [user, countRegs(g)]);
+
+		const groupedGuesses = {};
+		for (const [user, num] of fasGuesses) {
+			if (groupedGuesses[num] === undefined) {
+				groupedGuesses[num] = [];
+			}
+			groupedGuesses[num].push([user, game.guesses[user]]);
+		}
+
+		const perfectGuesses = groupedGuesses[numFas] && groupedGuesses[numFas].filter(([_, g]) => g.hit === hittySeat);
+
+		let guessOrder = 2;
+		const now = Date.now();
+		const guessesToChat = (prefix, guesses) => ({
+			gameChat: true,
+			timestamp: now + guessOrder++,
+			chat: [
+				{
+					text: prefix + guesses.map(([user, guess]) => `${user} (${guess.toString()})`).join(', ')
+				}
+			]
+		});
+
+		if (
+			(perfectGuesses && perfectGuesses.length) ||
+			(hittyGuesses && hittyGuesses.length) ||
+			groupedGuesses[1] ||
+			groupedGuesses[2] ||
+			groupedGuesses[3] ||
+			groupedGuesses[4]
+		) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: now,
+				chat: [
+					{
+						text: 'Line Guesses',
+						type: 'player'
+					}
+				]
+			});
+		}
+
+		for (let i = numFas; i >= 1; i--) {
+			const prefix =
+				i === numFas ? 'All fascists correct - ' : i === 3 ? 'Three fascists correct - ' : i === 2 ? 'Two fascists correct - ' : 'One fascist correct - ';
+
+			if (groupedGuesses[i]) {
+				game.chats.push(guessesToChat(prefix, groupedGuesses[i]));
+			}
+		}
+
+		if (hittyGuesses && hittyGuesses.length) {
+			game.chats.push(guessesToChat('Hitler correct - ', hittyGuesses));
+		}
+
+		sendInProgressGameUpdate(game);
 	}
 };

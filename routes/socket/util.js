@@ -17,11 +17,15 @@ const combineInProgressChats = (game, userName) =>
 		? game.private.seatedPlayers.find(player => player.userName === userName).gameChats.concat(game.chats)
 		: game.private.unSeatedGameChats.concat(game.chats);
 
+const combineCommandChats = (game, user, commandChats) => (commandChats[user] ? game.chats.concat(commandChats[user]) : game.chats);
+
+module.exports.combineCommandChats = combineCommandChats;
+
 /**
  * @param {object} game - game to act on.
  * @param {boolean} noChats - remove chats for client to handle.
  */
-module.exports.sendInProgressGameUpdate = (game, noChats) => {
+module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -57,6 +61,8 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 		}
 
+		_game.chats = combineCommandChats(_game, user, game.private.commandChats);
+
 		if (noChats) {
 			delete _game.chats;
 			sock.emit('gameUpdate', secureGame(_game), true);
@@ -75,16 +81,18 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			const _game = Object.assign({}, game);
 			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
+			if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				_game.chats = chatWithHidden;
+			}
+
 			if (noChats) {
 				delete _game.chats;
 				sock.emit('gameUpdate', secureGame(_game), true);
-			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
-				// AEM status is ensured when adding to the subscription list
-				_game.chats = chatWithHidden;
-				_game.chats = combineInProgressChats(_game);
-				sock.emit('gameUpdate', secureGame(_game));
 			} else {
 				_game.chats = combineInProgressChats(_game);
+				_game.chats = combineCommandChats(_game, user, game.private.commandChats);
+
 				sock.emit('gameUpdate', secureGame(_game));
 			}
 		});
@@ -127,6 +135,23 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 	roomSockets.forEach(sock => {
 		if (sock) {
 			sock.emit('playerChatUpdate', chat);
+		}
+	});
+};
+
+module.exports.sendCommandChatsUpdate = game => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	roomSockets.forEach(sock => {
+		if (sock) {
+			const _game = Object.assign({}, game);
+			const user = sock.handshake.session.passport.user;
+			_game.chats = combineCommandChats(_game, user, game.private.commandChats);
+			sock.emit('gameUpdate', _game);
 		}
 	});
 };
@@ -280,6 +305,99 @@ module.exports.destroySession = username => {
 			});
 	}
 };
+
+class LineGuess {
+	/**
+	 * @type number[]
+	 */
+	regs;
+
+	/**
+	 * @type number|null
+	 */
+	hit;
+
+	/**
+	 * @param {{regs: number[], hit: (number|null)}} o
+	 */
+	constructor(o = { regs: [], hit: null }) {
+		this.regs = o.regs;
+		this.hit = o.hit;
+	}
+
+	/**
+	 * @return {string} - A string representation of the guess, can be passed to parse.
+	 */
+	toString() {
+		return this.regs
+			.map(reg => {
+				const newReg = reg === 10 ? 0 : reg;
+				return reg === this.hit ? `${newReg}h` : `${newReg}`;
+			})
+			.join('');
+	}
+
+	/**
+	 * @param {LineGuess} other - the guess to compare this to.
+	 * @return {boolean} - whether the guesses are equal.
+	 */
+	equals(other) {
+		if (this.hit !== other.hit) {
+			return false;
+		}
+
+		if (this.regs.length !== other.regs.length) {
+			return false;
+		}
+
+		for (let i = 0; i < this.regs.length; i++) {
+			if (this.regs[i] !== other.regs[i]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Parses a string guess into a structured format.
+	 *
+	 * @param {string} guess - the guess string.
+	 * @return {LineGuess|null} - the resulting guess, or null if it is invalid.
+	 */
+	static parse(guess) {
+		const fasRegex = /(\dh?)/gi;
+
+		const result = new LineGuess();
+		const m = guess.match(fasRegex);
+		if (!m) {
+			return null;
+		}
+
+		for (const match of m) {
+			let seat = parseInt(match[0]);
+			seat = seat === 0 ? 10 : seat;
+
+			if (result.regs.includes(seat)) {
+				return null;
+			}
+
+			result.regs.push(seat);
+			if (match.length === 2) {
+				if (result.hit) {
+					return null;
+				}
+
+				result.hit = seat;
+			}
+		}
+
+		result.regs.sort((a, b) => a - b);
+		return result;
+	}
+}
+
+module.exports.LineGuess = LineGuess;
 
 // tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
 module.exports.handleDefaultIPv6Range = ip => {

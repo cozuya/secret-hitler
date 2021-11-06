@@ -10,6 +10,25 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+
+				<div className="ui header">
+					<h3>Version 1.8.2 released 11-5-2021</h3>
+					<p>Some fixes to line guessing, other small changes</p>
+				</div>
+
+				<div className="ui header">
+					<h3>Version 1.8.1 released 10-22-2021</h3>
+				</div>
+
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Line guessing</strong> - observe a game in progress and use the /g command to guess lines
+					- at the end of the game, guesses are revealed! Fun. Feature thanks to themeeman.
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>New indigo coloring for top players (2100+ elo)</strong>
+				</p>
+
 				<div className="ui header">
 					<p>Welcome to Season 16!</p>
 				</div>

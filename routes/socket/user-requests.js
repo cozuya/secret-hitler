@@ -58,13 +58,19 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 		.sort({ $natural: -1 })
 		.limit(500 * count)
 		.then(actions => {
-			const list = users.map(user => ({
-				status: userList.find(userListUser => user.username === userListUser.userName).status,
-				isRainbow: user.wins + user.losses > 49,
-				userName: user.username,
-				ip: user.lastConnectedIP || user.signupIP,
-				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
-			}));
+			const list = users.map(user => {
+				const usr = userList.find(userListUser => user.username === userListUser.userName);
+
+				return usr
+					? {
+							status: usr.status,
+							isRainbow: user.wins + user.losses > 49,
+							userName: user.username,
+							ip: user.lastConnectedIP || user.signupIP,
+							email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
+					  }
+					: {};
+			});
 			list.forEach(user => {
 				if (user.ip && user.ip != '') {
 					try {

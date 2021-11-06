@@ -20,12 +20,12 @@ body:
       label: Category
       description: What does this issue relate to?
       options:
-      - Gameplay
-      - User Interface
-      - Game Modes
-      - Mod Tools
-      - Replays
-      - Something Else; Describe below
+        - Gameplay
+        - User Interface
+        - Game Modes
+        - Mod Tools
+        - Replays
+        - Something Else; Describe below
     validations:
       required: true
   - type: dropdown
