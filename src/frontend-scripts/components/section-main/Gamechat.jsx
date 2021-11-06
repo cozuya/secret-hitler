@@ -569,7 +569,7 @@ class Gamechat extends React.Component {
 				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
-					isDisabled: false,
+					isDisabled: true,
 					placeholder: 'Observer chat disabled'
 				};
 			}
