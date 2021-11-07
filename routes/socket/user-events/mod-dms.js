@@ -125,7 +125,7 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 							Object.keys(io.sockets.sockets).find(
 								socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === user
 							)
-							];
+						];
 
 					sock.emit('closeModDMs');
 					sock.emit('postCloseModDMs');
