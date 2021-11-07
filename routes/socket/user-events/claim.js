@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('./util.js');
+const { sendInProgressGameUpdate } = require('../util.js');
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.

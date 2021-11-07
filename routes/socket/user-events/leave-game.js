@@ -228,7 +228,7 @@ const handleSocketDisconnect = socket => {
 						};
 						chat.chat.push({
 							text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
-							1}/${minimumRemakeVoteCount})`
+								1}/${minimumRemakeVoteCount})`
 						});
 						game.chats.push(chat);
 						game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
@@ -331,7 +331,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			};
 			chat.chat.push({
 				text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
-				1}/${minimumRemakeVoteCount})`
+					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
 			game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
@@ -388,3 +388,5 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;
+
+module.exports.checkStartConditions = checkStartConditions;
