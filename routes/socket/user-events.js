@@ -17,7 +17,7 @@ const {
 	getLastGenchatModPingAsync,
 	getPrivateChatTruncate
 } = require('./models');
-const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports } = require('./user-requests');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
