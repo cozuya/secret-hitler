@@ -1022,6 +1022,9 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		if (!AEM && timeSince < leniency * 1000) return; // Prior chat was too recent.
 	}
 
+	// Prevents spamming commands
+	user.lastMessage = { timestamp: Date.now() };
+
 	if (chat[0] === '/') {
 		runCommand(socket, passport, user, game, chat, AEM, Boolean(player));
 		return;
@@ -1031,6 +1034,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 
 	if (pingMods) {
 		runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM, Boolean(player));
+		return;
 	}
 
 	for (const repl of chatReplacements) {
