@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.8.1",
+	"version": "1.8.2",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -14,7 +14,7 @@
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
 	"engines": {
-		"node": "^12.0.0"
+		"node": "^16.13.0"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.4.4",
@@ -120,7 +120,7 @@
 		"jest-cli": "^24.1.0",
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
-		"node-sass": "^4.14.0",
+		"node-sass": "^6.0.1",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^1.19.1",
 		"pretty-quick": "^2.0.1",
