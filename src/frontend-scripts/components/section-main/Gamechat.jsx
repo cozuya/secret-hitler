@@ -564,12 +564,20 @@ class Gamechat extends React.Component {
 				};
 			}
 
+			if (gameInfo.general.private && !isStaff) {
+				return {
+					isDisabled: true,
+					placeholder: 'Observer chat disabled'
+				};
+			}
+
 			if (
-				((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) &&
+				gameInfo.general.disableObserver &&
+				gameInfo.general.disableObserverLobby &&
 				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
 			) {
 				return {
-					isDisabled: true,
+					isDisabled: false,
 					placeholder: 'Observer chat disabled'
 				};
 			}
