@@ -1855,7 +1855,6 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		return;
 	}
 
-	console.log(isTourneyMod);
 	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		const cantUseChat =
 			(game.gameState.isStarted &&
