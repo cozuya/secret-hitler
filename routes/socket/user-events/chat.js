@@ -292,14 +292,14 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	user.lastMessage = { timestamp: Date.now() };
 
 	if (chat[0] === '/') {
-		runCommand(socket, passport, user, game, chat, AEM, Boolean(player));
+		runCommand(socket, passport, user, game, chat, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 		return;
 	}
 
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
 
 	if (pingMods) {
-		runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM, Boolean(player));
+		runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 		return;
 	}
 
@@ -341,11 +341,11 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (pinged && player && game.gameState.isStarted) {
-		runCommand(socket, passport, user, game, `/ping ${pinged[1]}`, AEM, Boolean(player));
+		runCommand(socket, passport, user, game, `/ping ${pinged[1]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 		return;
 	}
 
-	if (!(AEM || (isTourneyMod && game.general.unlisted))) {
+	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		const cantUseChat =
 			(game.gameState.isStarted &&
 				!game.gameState.isCompleted &&
