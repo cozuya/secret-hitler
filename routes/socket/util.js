@@ -395,6 +395,15 @@ class LineGuess {
 		result.regs.sort((a, b) => a - b);
 		return result;
 	}
+
+	/**
+	 * @param {LineGuess} other - the guess to find the difference of this to.
+	 * @return {[number, boolean]} - the number of fas the same and whether hit is the same.
+	 */
+	difference(other) {
+		const fasSame = this.regs.reduce((accum, f) => accum + other.regs.includes(f), 0);
+		return [fasSame, this.hit === other.hit];
+	}
 }
 
 module.exports.LineGuess = LineGuess;
