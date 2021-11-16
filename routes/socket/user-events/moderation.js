@@ -364,6 +364,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							account = acc;
 							acc.delete();
 							Profile.findOne({ _id: data.userName }).then(prof => {
+								if (!prof) return;
 								profile = prof;
 								prof.delete();
 							});
