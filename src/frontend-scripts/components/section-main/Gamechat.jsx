@@ -564,13 +564,21 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (
-				((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) &&
-				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
-			) {
+			if (gameInfo.general.private && !isStaff) {
 				return {
 					isDisabled: true,
 					placeholder: 'Observer chat disabled'
+				};
+			}
+
+			if (
+				gameInfo.general.disableObserver &&
+				gameInfo.general.disableObserverLobby &&
+				!(isStaff || (userInfo.isTournamentMod && gameInfo.general.unlistedGame))
+			) {
+				return {
+					isDisabled: false,
+					placeholder: 'Observer chat disabled - chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 
@@ -582,7 +590,7 @@ class Gamechat extends React.Component {
 			) {
 				return {
 					isDisabled: false,
-					placeholder: 'Observer chat disabled during game'
+					placeholder: 'Observer chat disabled during game - chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 
@@ -593,7 +601,7 @@ class Gamechat extends React.Component {
 			) {
 				return {
 					isDisabled: false,
-					placeholder: 'Observer chat disabled during lobby'
+					placeholder: 'Observer chat disabled during lobby - chat commands only (e.g. ping, claim, @mod)'
 				};
 			}
 
