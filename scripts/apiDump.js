@@ -1,7 +1,4 @@
-/**
- * Paladin of Ioun's game dump script for their api
- * DM Paladin of Ioun#5905 for more info
- */
+// By: Paladin of Ioun
 
 const child_process = require('child_process');
 const fs = require('fs');
@@ -28,9 +25,9 @@ if (!fs.existsSync(SUMMARY_DIR)) {
 fs.accessSync(SUMMARY_DIR, fs.constants.W_OK);
 let count = 0;
 
-GameSummary.find()
+GameSummary.find(JSON.parse(process.argv[4]) || {})
 	.sort({ $natural: -1 })
-	.skip(parseInt(process.argv[5], 10))
+	.skip(parseInt(process.argv[3], 10))
 	.limit(parseInt(process.argv[2], 10) || 25000)
 	.lean()
 	.cursor()
@@ -48,7 +45,7 @@ GameSummary.find()
 					usernameToSeat[summary.players[i].username] = i;
 				}
 
-				console.log(usernameToSeat);
+				// console.log(usernameToSeat);
 
 				for (let i = 0; i < game.winningPlayers.length; i++) {
 					game.winningPlayers[i].seat = usernameToSeat[game.winningPlayers[i].userName];
@@ -64,7 +61,7 @@ GameSummary.find()
 				delete game.uid;
 
 				summary['gameOverview'] = game;
-				console.log(JSON.stringify(summary));
+				// console.log(JSON.stringify(summary));
 				delete summary._id;
 				delete summary.__v;
 				for (i = 0; i < summary.players.length; i++) {
