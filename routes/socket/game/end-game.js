@@ -27,6 +27,7 @@ const generateGameObject = game => {
 			guesses: objMap(game.guesses, (_, g) => g.toString()),
 			playerChats: game.general.playerChats,
 			chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
+			hiddenInfoChat: game.private.hiddenInfoChat,
 			isVerifiedOnly: game.general.isVerifiedOnly,
 			season: CURRENTSEASONNUMBER,
 			winningPlayers: game.private.seatedPlayers
@@ -51,7 +52,7 @@ const generateGameObject = game => {
 			casualGame: casualBool,
 			practiceGame: practiceBool,
 			customGame: game.customGameSettings.enabled,
-			unlisted: unlistedBool,
+			unlistedGame: unlistedBool,
 			isRainbow: game.general.rainbowgame,
 			isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 			isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
