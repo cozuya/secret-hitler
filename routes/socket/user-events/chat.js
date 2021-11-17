@@ -150,18 +150,15 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (chat.length > 300 || !chat.length || /^(\*|[*~_]{2,4})$/i.exec(data.chat)) {
-		return;
-	}
+	if (chat.length > 300 || !chat.length || /^(\*|[*~_]{2,4})$/i.exec(data.chat)) return;
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
 
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user || !user.userName) {
-		return;
-	}
+	if (!user || !user.userName) return;
+
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
 	data.userName = passport.user;
@@ -251,10 +248,6 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 		}
 	}
 
-	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) {
-		return;
-	}
-
 	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		if (!player) {
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
@@ -291,17 +284,13 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	// Prevents spamming commands
 	user.lastMessage = { timestamp: Date.now() };
 
-	if (chat[0] === '/') {
-		runCommand(socket, passport, user, game, chat, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
-		return;
-	}
+	if (chat[0] === '/') return runCommand(socket, passport, user, game, chat, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
 
-	if (pingMods) {
-		runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
-		return;
-	}
+	if (pingMods) return runCommand(socket, passport, user, game, `/pingmod ${pingMods[2]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
+
+	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) return;
 
 	for (const repl of chatReplacements) {
 		const replace = repl.regex.exec(chat);
@@ -340,10 +329,8 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
-	if (pinged && player && game.gameState.isStarted) {
-		runCommand(socket, passport, user, game, `/ping ${pinged[1]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
-		return;
-	}
+	if (pinged && player && game.gameState.isStarted)
+		return runCommand(socket, passport, user, game, `/ping ${pinged[1]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 
 	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
 		const cantUseChat =
