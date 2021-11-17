@@ -11,19 +11,23 @@ const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
 const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
+const { LineGuess } = require('../util');
 
 const generateGameObject = game => {
 	const casualBool = Boolean(game.general.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
 	const practiceBool = Boolean(game.general.practiceGame);
 	const unlistedBool = Boolean(game.general.unlistedGame);
+	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
 
 	if (game.gameState && game.gameState.isCompleted) {
 		return {
 			uid: game.general.uid,
 			name: game.general.name,
 			date: new Date(),
+			guesses: objMap(game.guesses, (_, g) => g.toString()),
 			playerChats: game.general.playerChats,
 			chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
+			hiddenInfoChat: game.private.hiddenInfoChat,
 			isVerifiedOnly: game.general.isVerifiedOnly,
 			season: CURRENTSEASONNUMBER,
 			winningPlayers: game.private.seatedPlayers
@@ -48,7 +52,7 @@ const generateGameObject = game => {
 			casualGame: casualBool,
 			practiceGame: practiceBool,
 			customGame: game.customGameSettings.enabled,
-			unlisted: unlistedBool,
+			unlistedGame: unlistedBool,
 			isRainbow: game.general.rainbowgame,
 			isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 			isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
@@ -58,7 +62,6 @@ const generateGameObject = game => {
 		};
 	}
 
-	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
 	/**
 	 * @param {object} - object describing game model.
 	 */
@@ -576,7 +579,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 	}
 
 	// Line guesses not supported in casual and custom games
-	if (!game.general.private && !game.general.casualGame && !(game.customGameSettings && game.customGameSettings.enabled) && !game.general.unlisted) {
+	if (!game.general.private && !(game.customGameSettings && game.customGameSettings.enabled)) {
 		const { guesses } = game;
 
 		const hittySeat = game.private.seatedPlayers.findIndex(p => p.role.cardName === 'hitler') + 1;
@@ -586,20 +589,24 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.map(([_, i]) => i + 1);
 
 		const numFas = fasSeats.length;
+		const lines = new LineGuess({ regs: fasSeats, hit: hittySeat });
 
-		const hittyGuesses = Object.entries(guesses).filter(([_, g]) => g.hit === hittySeat);
-		const countRegs = g => g.regs.reduce((accum, r) => fasSeats.includes(r) + accum, 0);
-		const fasGuesses = Object.entries(guesses).map(([user, g]) => [user, countRegs(g)]);
+		const groupedGuesses = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+		const perfectGuesses = [];
+		const hittyGuesses = [];
 
-		const groupedGuesses = {};
-		for (const [user, num] of fasGuesses) {
-			if (groupedGuesses[num] === undefined) {
-				groupedGuesses[num] = [];
+		for (const [user, guess] of Object.entries(guesses)) {
+			const [fasCorrect, hitCorrect] = guess.difference(lines);
+			if (fasCorrect === numFas && hitCorrect) {
+				perfectGuesses.push([user, guess]);
+			} else {
+				groupedGuesses[fasCorrect].push([user, guess]);
+
+				if (hitCorrect) {
+					hittyGuesses.push([user, guess]);
+				}
 			}
-			groupedGuesses[num].push([user, game.guesses[user]]);
 		}
-
-		const perfectGuesses = groupedGuesses[numFas] && groupedGuesses[numFas].filter(([_, g]) => g.hit === hittySeat);
 
 		let guessOrder = 2;
 		const now = Date.now();
@@ -614,12 +621,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 		});
 
 		if (
-			(perfectGuesses && perfectGuesses.length) ||
-			(hittyGuesses && hittyGuesses.length) ||
-			groupedGuesses[1] ||
-			groupedGuesses[2] ||
-			groupedGuesses[3] ||
-			groupedGuesses[4]
+			groupedGuesses[0].length ||
+			groupedGuesses[1].length ||
+			groupedGuesses[2].length ||
+			groupedGuesses[3].length ||
+			groupedGuesses[4].length ||
+			perfectGuesses.length ||
+			hittyGuesses.length
 		) {
 			game.chats.push({
 				gameChat: true,
@@ -633,16 +641,28 @@ module.exports.completeGame = (game, winningTeamName) => {
 			});
 		}
 
-		for (let i = numFas; i >= 1; i--) {
-			const prefix =
-				i === numFas ? 'All fascists correct - ' : i === 3 ? 'Three fascists correct - ' : i === 2 ? 'Two fascists correct - ' : 'One fascist correct - ';
+		if (perfectGuesses.length) {
+			game.chats.push(guessesToChat('All fascists AND hitler correct - ', perfectGuesses));
+		}
 
-			if (groupedGuesses[i]) {
+		for (let i = numFas; i >= 0; i--) {
+			const prefix =
+				i === numFas
+					? 'All fascists correct - '
+					: i === 3
+					? 'Three fascists correct - '
+					: i === 2
+					? 'Two fascists correct - '
+					: i === 1
+					? 'One fascist correct - '
+					: 'No fascists correct :( -';
+
+			if (groupedGuesses[i].length) {
 				game.chats.push(guessesToChat(prefix, groupedGuesses[i]));
 			}
 		}
 
-		if (hittyGuesses && hittyGuesses.length) {
+		if (hittyGuesses.length) {
 			game.chats.push(guessesToChat('Hitler correct - ', hittyGuesses));
 		}
 

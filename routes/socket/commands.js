@@ -463,12 +463,12 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 		}
 		const vote = ['ya', 'ja', 'jah', 'yes', 'true'].includes(voteString);
 
-		if (affectedPlayer.voteStatus.hasVoted) {
+		if (affectedPlayer.voteStatus?.hasVoted) {
 			sendMessage(
 				game,
 				user,
 				`${affectedPlayer.userName} {${affectedPlayerIndex + 1}} has already voted.\nThey were voting: ${
-					affectedPlayer.voteStatus.didVoteYes ? 'ja' : 'nein'
+					affectedPlayer.voteStatus?.didVoteYes ? 'ja' : 'nein'
 				}\nYou have set them to vote: ${vote ? 'ja' : 'nein'}
 				`
 			);
@@ -523,10 +523,10 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 					type: 'player'
 				},
 				{
-					text: `${affectedPlayer.voteStatus.hasVoted ? ' had originally voted ' : ' had not voted.'}`
+					text: `${affectedPlayer.voteStatus?.hasVoted ? ' had originally voted ' : ' had not voted.'}`
 				},
 				{
-					text: `${affectedPlayer.voteStatus.hasVoted ? (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ''}`,
+					text: `${affectedPlayer.voteStatus?.hasVoted ? (affectedPlayer.voteStatus?.didVoteYes ? ' ja' : ' nein') : ''}`,
 					type: 'player'
 				}
 			]
