@@ -9,6 +9,8 @@ const secureGame = game => {
 
 	delete _game.private;
 	delete _game.remakeData;
+	delete _game.guesses;
+	delete _game.unsentReports;
 	return _game;
 };
 
