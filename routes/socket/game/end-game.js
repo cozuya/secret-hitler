@@ -307,7 +307,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
 					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
-						const activeChange = player.gameSettings.disableSeasonal ? playerChange.change : playerChange.changeSeason;
+						const activeChange = player.gameSettings.disableSeasonal ? playerChange?.change : playerChange?.changeSeason;
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
