@@ -332,30 +332,27 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	if (pinged && player && game.gameState.isStarted)
 		return runCommand(socket, passport, user, game, `/ping ${pinged[1]}`, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 
-	if (!(AEM || (isTourneyMod && game.general.unlistedGame))) {
-		const cantUseChat =
-			(game.gameState.isStarted &&
-				!game.gameState.isCompleted &&
-				((!player && game.general.disableObserver) || (player && game.general.playerChats === 'disabled'))) ||
-			((!game.gameState.isStarted || game.gameState.isCompleted) && !player && game.general.disableObserverLobby);
-		if (cantUseChat) {
-			if (!game.private.commandChats[user.userName]) {
-				game.private.commandChats[user.userName] = [];
-			}
-			const msg = player ? 'Chat is disabled in this game.' : 'Observer chat is disabled in this game.';
-
-			game.private.commandChats[user.userName].push({
-				gameChat: true,
-				timestamp: Date.now(),
-				chat: [
-					{
-						text: msg
-					}
-				]
-			});
-			sendInProgressGameUpdate(game);
-			return;
+	const cantUseChat =
+		(game.gameState.isStarted && !game.gameState.isCompleted && player && game.general.playerChats === 'disabled') ||
+		(!(AEM || (isTourneyMod && game.general.unlistedGame)) &&
+			((game.gameState.isStarted && !game.gameState.isCompleted && !player && game.general.disableObserver) || (!player && game.general.disableObserverLobby)));
+	if (cantUseChat) {
+		if (!game.private.commandChats[user.userName]) {
+			game.private.commandChats[user.userName] = [];
 		}
+		const msg = player ? 'Chat is disabled in this game.' : 'Observer chat is disabled in this game.';
+
+		game.private.commandChats[user.userName].push({
+			gameChat: true,
+			timestamp: Date.now(),
+			chat: [
+				{
+					text: msg
+				}
+			]
+		});
+		sendInProgressGameUpdate(game);
+		return;
 	}
 
 	data.staffRole = (() => {
