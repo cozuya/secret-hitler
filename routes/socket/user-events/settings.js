@@ -51,7 +51,10 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'previousSeasonAward',
 					'specialTournamentStatus',
 					'ignoreIPBans',
-					'tournyWins'
+					'tournyWins',
+					'__proto__',
+					'prototype',
+					'constructor'
 				];
 
 				if (
