@@ -153,7 +153,7 @@ module.exports.sendCommandChatsUpdate = game => {
 			const _game = Object.assign({}, game);
 			const user = sock.handshake.session.passport.user;
 			_game.chats = combineCommandChats(_game, user, game.private.commandChats);
-			sock.emit('gameUpdate', _game);
+			sock.emit('gameUpdate', secureGame(_game));
 		}
 	});
 };
