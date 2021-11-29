@@ -115,6 +115,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 	const isMe = userName === userInfo?.userName;
 	const isAEM = checkStaffRole(userInfo?.staffRole);
 	const areTheyAEM = checkStaffRole(user?.staffRole);
+	const notVisible = !isAEM && !userSeated && (privateGame || user.isPrivate);
 
 	const openChat = userName => {
 		socket.emit('aemOpenChat', { userName, aemMember: userInfo?.userName });
@@ -132,10 +133,10 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 			position={position}
 			className="user-popup"
 		>
-			<Popup.Header>{blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
+			<Popup.Header>{notVisible ? '?' : blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
 			<Popup.Content>
 				<List>
-					{!blindMode && user && !user.staffDisableVisibleElo && (
+					{!notVisible && !blindMode && user && !user.staffDisableVisibleElo && (
 						<List.Item>
 							<List.Content>
 								<Grid columns={2} divided inverted>
@@ -153,7 +154,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							</List.Content>
 						</List.Item>
 					)}
-					{userSeated && gameStarted && !isMe && (
+					{!notVisible && userSeated && gameStarted && !isMe && (
 						<List.Item>
 							<Button
 								fluid
@@ -169,14 +170,14 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							</Button>
 						</List.Item>
 					)}
-					{!blindMode && (
+					{!notVisible && !blindMode && (
 						<List.Item>
 							<Button fluid size="small" onClick={() => (window.location.hash = `#/profile/${userName}`)}>
 								View Profile
 							</Button>
 						</List.Item>
 					)}
-					{!privateGame && (!isMe || (!gameStarted && blindMode)) && (
+					{!notVisible && !privateGame && (!isMe || (!gameStarted && blindMode)) && (
 						<List.Item>
 							<List.Icon name="gavel" />
 							<List.Content>
@@ -184,8 +185,8 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							</List.Content>
 						</List.Item>
 					)}
-					{reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} userList={userList} />}
-					{!blindMode && !isMe && !(userSeated && gameStarted) && (
+					{!notVisible && reportVisible && <Report socket={socket} userInfo={userInfo} gameInfo={gameInfo} reportedPlayer={userName} userList={userList} />}
+					{!notVisible && !blindMode && !isMe && !(userSeated && gameStarted) && (
 						<List.Item>
 							<List.Icon name="x" />
 							<List.Content>
