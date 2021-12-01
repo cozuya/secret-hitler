@@ -458,9 +458,6 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 						]
 					};
 
-					game.gameState.pendingChancellorIndex = null;
-					game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
-
 					if (!game.general.disableGamechat) {
 						game.private.seatedPlayers.forEach(player => {
 							player.gameChats.push(chat);
@@ -496,6 +493,9 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 							} else {
 								startElection(game);
 							}
+
+							game.gameState.pendingChancellorIndex = null;
+							game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
 						},
 						process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
 					);
