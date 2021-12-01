@@ -381,7 +381,9 @@ module.exports.commands.getCommand('ping').run = (socket, passport, user, game, 
 						gameChat: true,
 						chat: [
 							{
-								text: `${game.publicPlayersState[affectedPlayerIndex].userName} (${affectedPlayerIndex + 1})`,
+								text: game.general.blindMode
+									? `{${affectedPlayerIndex + 1}}`
+									: `${game.publicPlayersState[affectedPlayerIndex].userName} (${affectedPlayerIndex + 1})`,
 								type: 'player'
 							},
 							{ text: ' has been successfully pinged.' }
