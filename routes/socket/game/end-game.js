@@ -14,9 +14,9 @@ const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-cons
 const { LineGuess } = require('../util');
 
 const generateGameObject = game => {
-	const casualBool = Boolean(game.general.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
-	const practiceBool = Boolean(game.general.practiceGame);
-	const unlistedBool = Boolean(game.general.unlistedGame);
+	const casualBool = Boolean(game?.general?.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
+	const practiceBool = Boolean(game?.general?.practiceGame);
+	const unlistedBool = Boolean(game?.general?.unlistedGame);
 	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
 
 	if (game.gameState && game.gameState.isCompleted) {
