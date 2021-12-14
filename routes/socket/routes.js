@@ -64,6 +64,7 @@ const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 const https = require('https');
 const moment = require('moment');
+const { selectPlayerToAssassinate } = require('./game/assassination');
 
 let modUserNames = [],
 	editorUserNames = [],
@@ -752,6 +753,13 @@ module.exports.socketRoutes = () => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data, socket);
+				}
+			});
+			socket.on('selectedPlayerToAssassinate', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPlayerToAssassinate(passport, game, data, socket);
 				}
 			});
 		});

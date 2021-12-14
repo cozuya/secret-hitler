@@ -1037,7 +1037,8 @@ export default class Creategame extends React.Component {
 				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
 				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				privateAnonymousRemakes: this.state.privateAnonymousRemakes,
-				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
+				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined,
+				avalonSH: this.state.avalonSH
 			};
 
 			if (this.state.isTourny) {
@@ -2166,6 +2167,44 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						)}
+					</div>
+					<div className="row">
+						<div className="four wide column">
+							<h4 className="ui header">Avalon SH</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({
+										avalonSH: checked
+									});
+								}}
+								checked={this.state.avalonSH}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+							<h4 className="ui header">With Percival</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({
+										avalonSH: checked
+									});
+								}}
+								checked={this.state.avalonSH}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
 					</div>
 					<div className="row">
 						<div className="sixteen wide column">

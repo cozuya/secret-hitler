@@ -297,7 +297,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				seatedPlayers = [
 					...seatedPlayers.filter(e => e.role.cardName === 'hitler').sort(byUsername),
 					...seatedPlayers.filter(e => e.role.cardName === 'fascist').sort(byUsername),
-					...seatedPlayers.filter(e => e.role.cardName === 'liberal').sort(byUsername)
+					...seatedPlayers.filter(e => e.role.team === 'liberal').sort(byUsername)
 				];
 
 				results.forEach(player => {

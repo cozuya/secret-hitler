@@ -235,6 +235,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.liberal5 {
 				background-image: url('../../public/images/cards/liberal5.png');
 			}
+			.card.merlin0 {
+				background-image: url('../../public/images/cards/liberal0.png');
+			}
 			.card.fascist0 {
 				background-image: url('../../public/images/cards/fascist0.png');
 			}
@@ -379,6 +382,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.player-name.liberal,
 		.player-number.liberal {
 			color: #608cb3;
+		}
+		.player-name.merlin,
+		.player-number.merlin {
+			color: $merlin;
 		}
 		.player-name.fascist,
 		.player-number.fascist {

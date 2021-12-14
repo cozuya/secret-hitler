@@ -151,7 +151,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
-			eloMinimum: data.eloSliderValue
+			eloMinimum: data.eloSliderValue,
+			avalonSH: data.avalonSH
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],

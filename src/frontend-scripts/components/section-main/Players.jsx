@@ -127,6 +127,15 @@ class Players extends React.Component {
 				});
 			}
 		}
+
+		if (phase === 'merlinAssassination' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('selectedPlayerToAssassinate', {
+					playerIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
 	};
 
 	renderPreviousGovtToken(i) {

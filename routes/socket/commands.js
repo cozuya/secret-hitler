@@ -453,6 +453,10 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 		return;
 	}
 
+	if (game.gameState.phase !== 'voting') {
+		return sendMessage(game, user, 'This command can only be used during voting.');
+	}
+
 	const { blindMode, replacementNames } = game.general;
 
 	const affectedPlayerIndex = parseInt(args[0]) - 1;
@@ -547,6 +551,10 @@ module.exports.commands.getCommand('forceskip').run = (socket, passport, user, g
 		return;
 	}
 
+	if (game.gameState.phase !== 'selectingChancellor' && game.gameState.phase !== 'voting') {
+		return sendMessage(game, user, 'This command can only be used during elections.');
+	}
+
 	const affectedPlayerIndex = args[0] !== undefined ? parseInt(args[0]) - 1 : game.gameState.presidentIndex;
 	const affectedPlayer = game.private.seatedPlayers[affectedPlayerIndex];
 	if (!affectedPlayer) {
@@ -609,6 +617,11 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 		socket.emit('sendAlert', 'This game has been remade.');
 		return;
 	}
+
+	if (game.gameState.phase !== 'selectingChancellor') {
+		return sendMessage(game, user, 'This command can only be used during the president selecting chancellor phase.');
+	}
+
 	const affectedPlayerNumber = args[0] !== undefined ? parseInt(args[0]) - 1 : game.gameState.presidentIndex;
 	const chancellorPick = parseInt(args[1]);
 

@@ -55,7 +55,7 @@ const beginGame = game => {
 				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
 				_.range(0, 8)
 					.map(el => ({
-						cardName: 'liberal',
+						cardName: game.general.avalonSH && el === 0 ? 'merlin' : 'liberal',
 						icon: el % 6,
 						team: 'liberal'
 					}))
@@ -103,7 +103,7 @@ const beginGame = game => {
 						text: 'The game begins and you receive the '
 					},
 					{
-						text: player.role.cardName === 'hitler' ? 'hitler' : player.role.cardName,
+						text: player.role.cardName,
 						type: player.role.cardName
 					},
 					{
@@ -236,7 +236,7 @@ const beginGame = game => {
 				if (cardName === 'fascist') {
 					player.playersState[i].nameStatus = 'fascist';
 
-					if (customGameSettings.fascistCount == 2) {
+					if (customGameSettings.fascistCount === 2) {
 						const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 						const otherFascistIndex = seatedPlayers.indexOf(otherFascist);
 
@@ -271,7 +271,7 @@ const beginGame = game => {
 						}
 						player.playersState[otherFascistIndex].nameStatus = 'fascist';
 						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
-					} else if (customGameSettings.fascistCount == 3) {
+					} else if (customGameSettings.fascistCount === 3) {
 						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 						if (!game.general.disableGamechat) {
@@ -478,6 +478,144 @@ const beginGame = game => {
 							});
 						}
 					}
+				} else if (game.general.avalonSH && cardName === 'merlin') {
+					const fascists = seatedPlayers.filter(play => play.role.team === 'fascist');
+
+					if (fascists.length === 2) {
+						player.gameChats.push({
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'You see that the '
+								},
+								{
+									text: 'fascists',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game are '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[0]) + 1}}`
+										: `${fascists[0].userName} {${seatedPlayers.indexOf(fascists[0]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ' and '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[1]) + 1}}`
+										: `${fascists[1].userName} {${seatedPlayers.indexOf(fascists[1]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: '.'
+								}
+							]
+						});
+					} else if (fascists.length === 3) {
+						player.gameChats.push({
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'You see that the '
+								},
+								{
+									text: 'fascists',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game are '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[0]) + 1}}`
+										: `${fascists[0].userName} {${seatedPlayers.indexOf(fascists[0]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ', '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[1]) + 1}}`
+										: `${fascists[1].userName} {${seatedPlayers.indexOf(fascists[1]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ' and '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[2]) + 1}}`
+										: `${fascists[2].userName} {${seatedPlayers.indexOf(fascists[2]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: '.'
+								}
+							]
+						});
+					} else if (fascists.length === 4) {
+						player.gameChats.push({
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'You see that the '
+								},
+								{
+									text: 'fascists',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game are '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[0]) + 1}}`
+										: `${fascists[0].userName} {${seatedPlayers.indexOf(fascists[0]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ', '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[1]) + 1}}`
+										: `${fascists[1].userName} {${seatedPlayers.indexOf(fascists[1]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ', '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[2]) + 1}}`
+										: `${fascists[2].userName} {${seatedPlayers.indexOf(fascists[2]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: ' and '
+								},
+								{
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(fascists[3]) + 1}}`
+										: `${fascists[3].userName} {${seatedPlayers.indexOf(fascists[3]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: '.'
+								}
+							]
+						});
+					}
+					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'merlin';
+					fascists.forEach(p => (player.playersState[seatedPlayers.indexOf(p)].nameStatus = 'fascist'));
 				} else if (!game.general.disableGamechat) {
 					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
 				}

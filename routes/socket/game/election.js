@@ -14,9 +14,10 @@ const {
 	showPlayerLoyalty,
 	policyPeekAndDrop
 } = require('./policy-powers');
-const { completeGame } = require('./end-game');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
+const { assassinateMerlin } = require('./assassination');
+const { completeGame } = require('./end-game');
 
 const powerMapping = {
 	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
@@ -201,7 +202,9 @@ const enactPolicy = (game, team, socket) => {
 				game.private.unSeatedGameChats.push(chat);
 			}
 
-			if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+			if (game.general.avalonSH && game.trackState.liberalPolicyCount === 5) {
+				assassinateMerlin(game);
+			} else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.cardFront = 'secretrole';
 					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
