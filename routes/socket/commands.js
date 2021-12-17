@@ -107,8 +107,8 @@ module.exports.commands = [
 	{
 		name: ['forceskip', 'fs'],
 		description: 'Forcibly skips a government',
-		examples: ['/forceskip 3', '/forceskip'],
-		argumentsFormat: /^(\d{1,2})?$/,
+		examples: ['/forceskip 3'],
+		argumentsFormat: /^(\d{1,2})$/,
 		aemOnly: true,
 		observerOnly: true,
 		seatedOnly: false,
@@ -117,8 +117,8 @@ module.exports.commands = [
 	{
 		name: ['forcepick'],
 		description: 'Forcibly picks a chancellor',
-		examples: ['/forcepick 3 5', '/forcepick 10'],
-		argumentsFormat: /^(?:(\d{1,2})\s)?\s*(\d{1,2})$/,
+		examples: ['/forcepick 3 5'],
+		argumentsFormat: /^(\d{1,2})\s+(\d{1,2})$/,
 		aemOnly: true,
 		observerOnly: true,
 		seatedOnly: false,
