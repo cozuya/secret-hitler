@@ -152,19 +152,27 @@ class Tracks extends React.Component {
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
 			customgameactive = <i className="setting icon" />;
 		} else {
-			game.rebalance6p && game.rebalance7p && game.rebalance9p
+			const hasPlayerCount = count => game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
+
+			const hasR6 = game.rebalance6p && hasPlayerCount(6);
+			const hasR7 = game.rebalance7p && hasPlayerCount(7);
+			const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
+
+			hasR6 && hasR7 && hasR9
 				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
-				: game.rebalance6p && game.rebalance7p
+				: hasR6 && hasR7
 				? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
-				: game.rebalance6p && game.rebalance9p
+				: hasR6 && hasR9
 				? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
-				: game.rebalance7p && game.rebalance9p
+				: hasR7 && hasR9
 				? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
-				: game.rebalance6p
+				: hasR6
 				? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
-				: game.rebalance7p
+				: hasR7
 				? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-				: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
+				: hasR9
+				? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'))
+				: null;
 		}
 
 		if (game.playerChats === 'disabled') {
