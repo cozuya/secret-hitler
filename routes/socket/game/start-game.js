@@ -21,24 +21,24 @@ const beginGame = game => {
 		customGameSettings.vetoZone = 5;
 		customGameSettings.trackState = { lib: 0, fas: 0 };
 		customGameSettings.deckState = { lib: 6, fas: 11 };
-		if (game.general.type == 0) {
+		if (game.general.type === 0) {
 			// 5-6 players
 			customGameSettings.fascistCount = 1;
 			customGameSettings.hitKnowsFas = true;
 			customGameSettings.powers = [null, null, 'deckpeek', 'bullet', 'bullet'];
-			if (game.general.rebalance6p && game.publicPlayersState.length == 6) customGameSettings.trackState.fas = 1;
-		} else if (game.general.type == 1) {
+			if (game.general.rebalance6p && game.publicPlayersState.length === 6) customGameSettings.trackState.fas = 1;
+		} else if (game.general.type === 1) {
 			// 7-8 players
 			customGameSettings.fascistCount = 2;
 			customGameSettings.hitKnowsFas = false;
 			customGameSettings.powers = [null, 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.general.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 10;
+			if (game.general.rebalance7p && game.publicPlayersState.length === 7) customGameSettings.deckState.fas = 10;
 		} else {
 			// 9-10 players
 			customGameSettings.fascistCount = 3;
 			customGameSettings.hitKnowsFas = false;
 			customGameSettings.powers = ['investigate', 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.general.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 10;
+			if (game.general.rebalance9p2f && game.publicPlayersState.length === 9) customGameSettings.deckState.fas = 10;
 		}
 	}
 	shufflePolicies(game, true);
@@ -54,22 +54,48 @@ const beginGame = game => {
 			_.shuffle(
 				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
 				_.range(0, 8)
-					.map(el => ({
-						cardName: game.general.avalonSH && el === 0 ? 'merlin' : 'liberal',
-						icon: el % 6,
-						team: 'liberal'
-					}))
+					.map(el => {
+						if (game.general.avalonSH && game.general.withPercival)
+							return {
+								cardName: el === 1 ? 'percival' : el === 0 ? 'merlin' : 'liberal',
+								icon: el <= 1 ? undefined : (el - 2) % 6,
+								team: 'liberal'
+							};
+
+						if (game.general.avalonSH)
+							return {
+								cardName: el === 0 ? 'merlin' : 'liberal',
+								icon: el === 0 ? undefined : (el - 1) % 6,
+								team: 'liberal'
+							};
+
+						return {
+							cardName: 'liberal',
+							icon: el % 6,
+							team: 'liberal'
+						};
+					})
 					.slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
 			)
 		)
 		.concat(
 			_.shuffle(
 				_.range(18, 21)
-					.map(el => ({
-						cardName: 'fascist',
-						icon: el,
-						team: 'fascist'
-					}))
+					.map(el => {
+						if (game.general.avalonSH && game.general.withPercival) {
+							return {
+								cardName: el % 3 === 0 ? 'morgana' : 'fascist',
+								icon: el,
+								team: 'fascist'
+							};
+						}
+
+						return {
+							cardName: 'fascist',
+							icon: el,
+							team: 'fascist'
+						};
+					})
 					.slice(0, customGameSettings.fascistCount)
 			)
 		);
@@ -233,11 +259,13 @@ const beginGame = game => {
 				const { seatedPlayers } = game.private;
 				const { cardName } = player.role;
 
-				if (cardName === 'fascist') {
-					player.playersState[i].nameStatus = 'fascist';
+				player.playersState[seatedPlayers.indexOf(player)].nameStatus = cardName;
 
+				if (cardName === 'fascist' || cardName === 'morgana') {
 					if (customGameSettings.fascistCount === 2) {
-						const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
+						const otherFascist = seatedPlayers.find(
+							play => play.role.team === 'fascist' && play.role.cardName !== 'hitler' && play.userName !== player.userName
+						);
 						const otherFascistIndex = seatedPlayers.indexOf(otherFascist);
 
 						if (!otherFascist) {
@@ -272,7 +300,9 @@ const beginGame = game => {
 						player.playersState[otherFascistIndex].nameStatus = 'fascist';
 						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 					} else if (customGameSettings.fascistCount === 3) {
-						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
+						const otherFascists = seatedPlayers.filter(
+							play => play.role.team === 'fascist' && play.role.cardName !== 'hitler' && play.userName !== player.userName
+						);
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({
@@ -367,11 +397,9 @@ const beginGame = game => {
 					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].notificationStatus = 'hitler';
 					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].nameStatus = 'hitler';
 				} else if (cardName === 'hitler') {
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'hitler';
-
 					if (customGameSettings.hitKnowsFas) {
-						if (customGameSettings.fascistCount == 1) {
-							const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
+						if (customGameSettings.fascistCount === 1) {
+							const otherFascist = seatedPlayers.find(player => player.role.team === 'fascist' && player.role.cardName !== 'hitler');
 
 							if (!game.general.disableGamechat) {
 								player.gameChats.push({
@@ -403,7 +431,7 @@ const beginGame = game => {
 							player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
 							player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
 						} else {
-							const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
+							const otherFascists = seatedPlayers.filter(play => play.role.team === 'fascist' && play.userName !== player.userName);
 
 							if (!game.general.disableGamechat) {
 								player.gameChats.push({
@@ -427,11 +455,11 @@ const beginGame = game => {
 											type: 'player'
 										},
 										{
-											text: customGameSettings.fascistCount == 3 ? ', ' : ''
+											text: customGameSettings.fascistCount === 3 ? ', ' : ''
 										},
 										{
 											text:
-												customGameSettings.fascistCount == 3
+												customGameSettings.fascistCount === 3
 													? game.general.blindMode
 														? `{${seatedPlayers.indexOf(otherFascists[2]) + 1}}`
 														: `${otherFascists[2].userName} {${seatedPlayers.indexOf(otherFascists[2]) + 1}}`
@@ -439,7 +467,7 @@ const beginGame = game => {
 											type: 'player'
 										},
 										{
-											text: customGameSettings.fascistCount == 3 ? ', and' : ' and '
+											text: customGameSettings.fascistCount === 3 ? ', and' : ' and '
 										},
 										{
 											text: game.general.blindMode
@@ -465,10 +493,10 @@ const beginGame = game => {
 								gameChat: true,
 								chat: [
 									{
-										text: `There ${customGameSettings.fascistCount == 1 ? 'is' : 'are'} `
+										text: `There ${customGameSettings.fascistCount === 1 ? 'is' : 'are'} `
 									},
 									{
-										text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
+										text: customGameSettings.fascistCount === 1 ? '1 fascist' : customGameSettings.fascistCount === 2 ? '2 fascists' : '3 fascists',
 										type: 'fascist'
 									},
 									{
@@ -614,10 +642,39 @@ const beginGame = game => {
 							]
 						});
 					}
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'merlin';
 					fascists.forEach(p => (player.playersState[seatedPlayers.indexOf(p)].nameStatus = 'fascist'));
-				} else if (!game.general.disableGamechat) {
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
+				} else if (game.general.avalonSH && game.general.withPercival && cardName === 'percival') {
+					const candidates = seatedPlayers.filter(player => player.role.cardName === 'merlin' || player.role.cardName === 'morgana');
+
+					player.gameChats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{
+								text: 'You see that the merlin candidates are '
+							},
+							{
+								text: game.general.blindMode
+									? `{${seatedPlayers.indexOf(candidates[0]) + 1}}`
+									: `${candidates[0].userName} {${seatedPlayers.indexOf(candidates[0]) + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' and '
+							},
+							{
+								text: game.general.blindMode
+									? `{${seatedPlayers.indexOf(candidates[1]) + 1}}`
+									: `${candidates[1].userName} {${seatedPlayers.indexOf(candidates[1]) + 1}}`,
+								type: 'player'
+							},
+							{
+								text: '.'
+							}
+						]
+					});
+					player.playersState[seatedPlayers.indexOf(candidates[0])].nameStatus = 'merlin_candidate';
+					player.playersState[seatedPlayers.indexOf(candidates[1])].nameStatus = 'merlin_candidate';
 				}
 
 				player.playersState[i].cardStatus.isFlipped = true;

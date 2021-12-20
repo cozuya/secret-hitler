@@ -235,8 +235,11 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.liberal5 {
 				background-image: url('../../public/images/cards/liberal5.png');
 			}
-			.card.merlin0 {
-				background-image: url('../../public/images/cards/liberal0.png');
+			.card.merlin {
+				background-image: url('../../public/images/cards/merlin.png');
+			}
+			.card.percival {
+				background-image: url('../../public/images/cards/percival.png');
 			}
 			.card.fascist0 {
 				background-image: url('../../public/images/cards/fascist0.png');
@@ -387,6 +390,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.player-number.merlin {
 			color: $merlin;
 		}
+		.player-name.percival,
+		.player-number.percival {
+			color: $percival;
+		}
 		.player-name.fascist,
 		.player-number.fascist {
 			color: #c36563;
@@ -394,6 +401,14 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.player-name.hitler,
 		.player-number.hitler {
 			color: #be0804;
+		}
+		.player-name.morgana,
+		.player-number.morgana {
+			color: $morgana;
+		}
+		.player-name.merlin_candidate,
+		.player-number.merlin_candidate {
+			color: #7e7e7e;
 		}
 	}
 	.player-container.isDead {

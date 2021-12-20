@@ -13,83 +13,170 @@ module.exports.assassinateMerlin = game => {
 		game.publicPlayersState[hitlerIndex].cardStatus.cardFront = 'secretrole';
 		sendInProgressGameUpdate(game);
 
-		setTimeout(
-			() => {
-				game.publicPlayersState[hitlerIndex].cardStatus.cardBack = hitler.role;
-				game.publicPlayersState[hitlerIndex].cardStatus.isFlipped = true;
-				game.publicPlayersState[hitlerIndex].isLoader = true;
+		setTimeout(() => {
+			game.publicPlayersState[hitlerIndex].cardStatus.cardBack = hitler.role;
+			game.publicPlayersState[hitlerIndex].cardStatus.isFlipped = true;
+			game.publicPlayersState[hitlerIndex].isLoader = true;
 
-				game.publicPlayersState.forEach(p => {
-					p.isDead = false;
+			game.publicPlayersState.forEach(p => (p.isDead = false));
+
+			if (!game.general.disableGamechat) {
+				hitler.gameChats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [{ text: 'You must choose someone to assassinate.' }]
 				});
 
-				if (!game.general.disableGamechat) {
-					hitler.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [{ text: 'You must choose someone to assassinate.' }]
-					});
+				const chat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'Hitler must now choose a player to assassinate.'
+						}
+					]
+				};
 
-					game.private.unSeatedGameChats.push({
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: 'Hitler must now choose a player to assassinate.'
-							}
-						]
-					});
-				}
+				seatedPlayers.forEach((player, i) => {
+					if (i !== hitlerIndex) {
+						player.gameChats.push(chat);
+					}
+				});
 
-				hitler.playersState
-					.filter((player, index) => seatedPlayers[index].role.cardName === 'fascist')
-					.forEach(player => {
-						player.nameStatus = 'fascist';
-					});
+				game.private.unSeatedGameChats.push(chat);
+			}
 
-				hitler.playersState
-					.filter((player, index) => seatedPlayers[index].role.team === 'liberal')
-					.forEach(player => {
-						player.notificationStatus = 'notification';
-					});
+			hitler.playersState
+				.filter((player, index) => seatedPlayers[index].role.cardName === 'fascist')
+				.forEach(player => {
+					player.nameStatus = 'fascist';
+				});
 
-				game.gameState.clickActionInfo = [
-					hitler.userName,
-					seatedPlayers.filter((player, index) => seatedPlayers[index].role.team === 'liberal').map(player => seatedPlayers.indexOf(player))
-				];
-				game.gameState.phase = 'merlinAssassination';
-				sendInProgressGameUpdate(game);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : 4000
-		);
+			hitler.playersState
+				.filter((player, index) => seatedPlayers[index].role.team === 'liberal')
+				.forEach(player => {
+					player.notificationStatus = 'notification';
+				});
+
+			game.gameState.clickActionInfo = [
+				hitler.userName,
+				seatedPlayers.filter((player, index) => seatedPlayers[index].role.team === 'liberal').map(player => seatedPlayers.indexOf(player))
+			];
+			game.gameState.phase = 'assassination';
+			sendInProgressGameUpdate(game);
+		}, 2000);
 	}
 };
 
 module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
 	const { seatedPlayers } = game.private;
 	const target = seatedPlayers[data.playerIndex];
+	const publicTarget = game.publicPlayersState[data.playerIndex];
+	const merlinIndex = seatedPlayers.findIndex(p => p.role.cardName === 'merlin');
+	const merlin = seatedPlayers[merlinIndex];
 	const winningTeam = target.role.cardName === 'merlin' ? 'fascist' : 'liberal';
 	const hitlerIndex = seatedPlayers.findIndex(p => p.role.cardName === 'hitler');
 
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
+	if (game.publicPlayersState[hitlerIndex].userName !== passport.user) {
+		return;
+	}
+
+	// Make sure the target is valid
+	if (target.role.team !== 'liberal') {
+		return;
+	}
+
+	if (!game.general.avalonSH || game.gameState.phase !== 'assassination') {
+		return;
+	}
+
 	game.publicPlayersState[hitlerIndex].isLoader = false;
-	game.publicPlayersState.forEach((player, i) => {
-		player.cardStatus.cardFront = 'secretrole';
-		player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-		player.cardStatus.cardDisplayed = true;
-		player.cardStatus.isFlipped = false;
+	game.gameState.clickActionInfo[1] = [];
+
+	seatedPlayers[hitlerIndex].playersState.forEach(player => {
+		player.notificationStatus = '';
 	});
 
-	sendInProgressGameUpdate(game);
+	publicTarget.cardStatus.cardFront = 'secretrole';
+	publicTarget.cardStatus.cardBack = target.role;
+	publicTarget.cardStatus.cardDisplayed = true;
+	publicTarget.cardStatus.isFlipped = false;
 
-	game.gameState.audioCue = winningTeam + 'sWin';
-	setTimeout(
-		() => {
-			game.publicPlayersState.forEach((player, i) => {
-				player.cardStatus.isFlipped = true;
-			});
-			game.gameState.audioCue = '';
-			completeGame(game, winningTeam);
-		},
-		process.env.NODE_ENV === 'development' ? 100 : 2000
-	);
+	sendInProgressGameUpdate(game, true);
+
+	setTimeout(() => {
+		publicTarget.cardStatus.isFlipped = true;
+		game.gameState.audioCue = winningTeam + 'sWin';
+
+		const winningChat = {
+			gameChat: true,
+			timestamp: new Date(),
+			chat:
+				winningTeam === 'fascist'
+					? [
+							{ text: 'Hitler selects to assassinate ' },
+							{
+								text: `${target.userName} {${data.playerIndex + 1}}`,
+								type: 'player'
+							},
+							{ text: ', and they were Merlin.' }
+					  ]
+					: [
+							{ text: 'Hitler selects to assassinate ' },
+							{
+								text: `${target.userName} {${data.playerIndex + 1}}`,
+								type: 'player'
+							},
+							{ text: ', but ' },
+							{
+								text: `${merlin.userName} {${merlinIndex + 1}}`,
+								type: 'player'
+							},
+							{ text: ' was Merlin.' }
+					  ]
+		};
+		seatedPlayers.forEach(player => {
+			player.gameChats.push(winningChat);
+		});
+
+		game.private.unSeatedGameChats.push(winningChat);
+
+		sendInProgressGameUpdate(game);
+	}, 1000);
+
+	setTimeout(() => {
+		game.publicPlayersState.forEach((player, i) => {
+			if (i !== data.playerIndex && i !== hitlerIndex) {
+				player.cardStatus.cardFront = 'secretrole';
+				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+				player.cardStatus.cardDisplayed = true;
+				player.cardStatus.isFlipped = false;
+			}
+		});
+
+		sendInProgressGameUpdate(game, true);
+	}, 2000);
+
+	setTimeout(() => {
+		game.publicPlayersState.forEach((player, i) => {
+			player.cardStatus.isFlipped = true;
+		});
+		game.gameState.audioCue = '';
+
+		completeGame(game, winningTeam);
+	}, 3000);
 };

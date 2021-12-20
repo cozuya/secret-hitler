@@ -4,6 +4,7 @@ const { selectVoting } = require('./game/election');
 const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
 const Account = require('../../models/account');
+const { assassinateMerlin } = require('./game/assassination');
 
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
@@ -139,6 +140,16 @@ module.exports.commands = [
 		description: 'Changes a players role, definitely not fake.',
 		examples: ['/forcerigrole 1 fascist', '/forcerigrole 9 liberal'],
 		argumentsFormat: /^(\d{1,2})\s+(hitler|fascist|liberal|h|f|l|hit|fas|lib)$/i,
+		aemOnly: true,
+		observerOnly: true,
+		seatedOnly: false,
+		gameStartedOnly: true
+	},
+	{
+		name: ['ass'],
+		description: '',
+		examples: [''],
+		argumentsFormat: /^.*$/i,
 		aemOnly: true,
 		observerOnly: true,
 		seatedOnly: false,
@@ -777,4 +788,12 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 			chat: changedChat
 		});
 	}
+};
+
+module.exports.commands.getCommand('ass').run = (socket, passport, user, game, args) => {
+	if (!game.general.avalonSH || game.gameState.phase === 'assassination') {
+		return;
+	}
+
+	assassinateMerlin(game);
 };

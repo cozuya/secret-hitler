@@ -18,6 +18,7 @@ const buildTurns = (turns, logs, players, gameSetting) => {
 	if (logs.isEmpty()) return turns;
 
 	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
+	console.log(nextTurn);
 
 	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
 };

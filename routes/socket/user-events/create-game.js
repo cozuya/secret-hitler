@@ -152,7 +152,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			electionCount: 0,
 			isRemade: false,
 			eloMinimum: data.eloSliderValue,
-			avalonSH: data.avalonSH
+			avalonSH: data.avalonSH,
+			withPercival: data.withPercival,
+			noTopdecking: data.noTopdecking
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],
@@ -162,7 +164,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,
 			electionTrackerCount: 0,
-			enactedPolicies: []
+			enactedPolicies: [],
+			consecutiveTopdecks: 0
 		},
 		guesses: {}
 	};

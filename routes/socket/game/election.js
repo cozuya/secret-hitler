@@ -278,7 +278,7 @@ const enactPolicy = (game, team, socket) => {
 										});
 										break;
 									case 'The president must select a player for execution.':
-										if (president.role.cardName === 'fascist') {
+										if (president.role.team === 'fascist' && president.role.cardName !== 'hitler') {
 											list = list.filter(player => player.role.cardName !== 'hitler');
 										}
 										selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
@@ -1387,6 +1387,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
 		const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+		game.trackState.consecutiveTopdecks = 0;
 
 		game.private._chancellorPlayerName = game.private.seatedPlayers[chancellorIndex].userName;
 
@@ -1582,6 +1583,14 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		game.trackState.electionTrackerCount++;
 
 		if (game.trackState.electionTrackerCount >= 3) {
+			console.log(game.general.noTopdecking, game.trackState.consecutiveTopdecks);
+			if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks === 1)) {
+				completeGame(game, 'fascist');
+				return;
+			} else if (game.general.noTopdecking === 2) {
+				game.trackState.consecutiveTopdecks++;
+			}
+
 			const chat = {
 				timestamp: new Date(),
 				gameChat: true,

@@ -1038,7 +1038,9 @@ export default class Creategame extends React.Component {
 				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				privateAnonymousRemakes: this.state.privateAnonymousRemakes,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined,
-				avalonSH: this.state.avalonSH
+				avalonSH: this.state.avalonSH,
+				withPercival: this.state.avalonSH && this.state.withPercival,
+				noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0
 			};
 
 			if (this.state.isTourny) {
@@ -1589,7 +1591,7 @@ export default class Creategame extends React.Component {
 							<Range
 								min={5}
 								max={8}
-								defaultValue={[6]}
+								defaultValue={[5]}
 								onChange={this.sliderDeckLib}
 								value={[this.state.customGameSettings.deckState.lib]}
 								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
@@ -2187,22 +2189,39 @@ export default class Creategame extends React.Component {
 								width={48}
 								handleDiameter={21}
 							/>
-							<h4 className="ui header">With Percival</h4>
-							<Switch
-								className="create-game-switch"
-								onChange={checked => {
+							{this.state.avalonSH && <h4 className="ui header">With Percival</h4>}
+							{this.state.avalonSH && (
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({
+											withPercival: checked
+										});
+									}}
+									checked={this.state.avalonSH && this.state.withPercival}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							)}
+						</div>
+						<div>
+							<h4 className="ui header">No Topdecking</h4>
+							<Range
+								min={0}
+								max={2}
+								defaultValue={[0]}
+								onChange={x => {
 									this.setState({
-										avalonSH: checked
+										noTopdecking: x
 									});
 								}}
-								checked={this.state.avalonSH}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
+								value={[this.state.noTopdecking]}
+								marks={{ 0: 'TDing', 1: 'No TDing', 2: 'No Double TDing' }}
 							/>
 						</div>
 					</div>
