@@ -97,30 +97,36 @@ const DisplayLobbies = props => {
 			casualGameTooltip = 'Casual game - results do not count for wins or losses';
 		}
 
+		const hasPlayerCount = count => game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
+
+		const hasR6 = game.rebalance6p && hasPlayerCount(6);
+		const hasR7 = game.rebalance7p && hasPlayerCount(7);
+		const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
+
 		if (game.isCustomGame) {
 			customgameactive = <i className="setting icon" />;
 			customgameactiveTooltip = 'Custom Game';
-		} else if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
+		} else if (hasR6 || hasR7 || hasR9) {
 			// ugly but lazy
-			if (game.rebalance6p && game.rebalance7p && game.rebalance9p) {
+			if (hasR6 && hasR7 && hasR9) {
 				rebalance = <div> R679 </div>;
 				rebalanceTooltip = 'Rebalanced 6, 7, and 9p games';
-			} else if (game.rebalance7p && game.rebalance9p) {
+			} else if (hasR7 && hasR9) {
 				rebalance = <div> R79 </div>;
 				rebalanceTooltip = 'Rebalanced 7 and 9p games';
-			} else if (game.rebalance6p && game.rebalance7p) {
+			} else if (hasR6 && hasR7) {
 				rebalance = <div> R67 </div>;
 				rebalanceTooltip = 'Rebalanced 6 and 7p games';
-			} else if (game.rebalance6p && game.rebalance9p) {
+			} else if (hasR6 && hasR9) {
 				rebalance = <div> R69 </div>;
 				rebalanceTooltip = 'Rebalanced 6 and 9p games';
-			} else if (game.rebalance6p) {
+			} else if (hasR6) {
 				rebalance = <div> R6 </div>;
 				rebalanceTooltip = 'Rebalanced 6p games';
-			} else if (game.rebalance7p) {
+			} else if (hasR7) {
 				rebalance = <div> R7 </div>;
 				rebalanceTooltip = 'Rebalanced 7p games';
-			} else if (game.rebalance9p) {
+			} else if (hasR9) {
 				rebalance = <div> R9 </div>;
 				rebalanceTooltip = 'Rebalanced 9p games';
 			}
