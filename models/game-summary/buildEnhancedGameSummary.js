@@ -64,7 +64,7 @@ function buildEnhancedGameSummary(_summary) {
 			return Object.assign({}, p, {
 				id: i,
 				loyalty: roleToLoyalty.get(p.role),
-				icon: p.icon || 0
+				icon: p.icon
 			});
 		});
 	})();

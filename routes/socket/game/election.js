@@ -1583,9 +1583,34 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		game.trackState.electionTrackerCount++;
 
 		if (game.trackState.electionTrackerCount >= 3) {
-			console.log(game.general.noTopdecking, game.trackState.consecutiveTopdecks);
-			if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks === 1)) {
-				completeGame(game, 'fascist');
+			if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)) {
+				game.chats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'The hammer was rejected.'
+						}
+					]
+				});
+				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.cardFront = 'secretrole';
+					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+					player.cardStatus.cardDisplayed = true;
+					player.cardStatus.isFlipped = false;
+				});
+				game.gameState.audioCue = 'fascistsWin';
+				sendInProgressGameUpdate(game, true);
+
+				setTimeout(() => {
+					game.publicPlayersState.forEach((player, i) => {
+						player.cardStatus.isFlipped = true;
+					});
+					game.gameState.audioCue = '';
+
+					completeGame(game, 'fascist');
+				}, 2000);
+
 				return;
 			} else if (game.general.noTopdecking === 2) {
 				game.trackState.consecutiveTopdecks++;

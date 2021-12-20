@@ -40,7 +40,7 @@ export default function toGameInfo(snapshot) {
 				if (snapshot.gameOver) {
 					return f(true, true, '', {
 						cardName: p.role,
-						icon: p.icon || 0
+						icon: p.icon
 					});
 				}
 
