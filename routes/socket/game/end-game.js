@@ -17,47 +17,47 @@ const generateGameObject = game => {
 	const casualBool = Boolean(game?.general?.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
 	const practiceBool = Boolean(game?.general?.practiceGame);
 	const unlistedBool = Boolean(game?.general?.unlistedGame);
-	const objMap = (obj, f) => new Map(Object.entries(obj).map(([k, v]) => [k, f(k, v)]));
+	const objMap = (obj, f) => new Map(Object.entries(obj)?.map(([k, v]) => [k, f(k, v)]));
 
-	if (game.gameState && game.gameState.isCompleted) {
+	if (game?.gameState && game?.gameState?.isCompleted) {
 		return {
-			uid: game.general.uid,
-			name: game.general.name,
+			uid: game?.general?.uid,
+			name: game?.general?.name,
 			date: new Date(),
-			guesses: objMap(game.guesses, (_, g) => g.toString()),
-			playerChats: game.general.playerChats,
-			chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
-			hiddenInfoChat: game.private.hiddenInfoChat,
-			isVerifiedOnly: game.general.isVerifiedOnly,
+			guesses: objMap(game?.guesses, (_, g) => g?.toString()),
+			playerChats: game?.general?.playerChats,
+			chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
+			hiddenInfoChat: game?.private?.hiddenInfoChat,
+			isVerifiedOnly: game?.general?.isVerifiedOnly,
 			season: CURRENTSEASONNUMBER,
-			winningPlayers: game.private.seatedPlayers
-				.filter(player => player.wonGame)
-				.map(player => ({
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
+			winningPlayers: game?.private?.seatedPlayers
+				?.filter(player => player?.wonGame)
+				?.map(player => ({
+					userName: player?.userName,
+					team: player?.role?.team,
+					role: player?.role?.cardName
 				})),
-			losingPlayers: game.private.seatedPlayers
-				.filter(player => !player.wonGame)
-				.map(player => ({
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
+			losingPlayers: game?.private?.seatedPlayers
+				?.filter(player => !player?.wonGame)
+				?.map(player => ({
+					userName: player?.userName,
+					team: player?.role?.team,
+					role: player?.role?.cardName
 				})),
-			winningTeam: game.gameState.isCompleted,
-			playerCount: game.general.playerCount,
-			rebalance6p: game.general.rebalance6p,
-			rebalance7p: game.general.rebalance7p,
-			rebalance9p2f: game.general.rebalance9p2f,
+			winningTeam: game?.gameState?.isCompleted,
+			playerCount: game?.general?.playerCount,
+			rebalance6p: game?.general?.rebalance6p,
+			rebalance7p: game?.general?.rebalance7p,
+			rebalance9p2f: game?.general?.rebalance9p2f,
 			casualGame: casualBool,
 			practiceGame: practiceBool,
-			customGame: game.customGameSettings.enabled,
+			customGame: game?.customGameSettings?.enabled,
 			unlistedGame: unlistedBool,
-			isRainbow: game.general.rainbowgame,
-			isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
-			isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
-			timedMode: game.general.timedMode,
-			blindMode: game.general.blindMode,
+			isRainbow: game?.general?.rainbowgame,
+			isTournyFirstRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 1,
+			isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
+			timedMode: game?.general?.timedMode,
+			blindMode: game?.general?.blindMode,
 			completed: true
 		};
 	}
@@ -67,32 +67,32 @@ const generateGameObject = game => {
 	 */
 
 	return {
-		uid: game.general.uid,
-		name: game.general.name,
+		uid: game?.general?.uid,
+		name: game?.general?.name,
 		date: new Date(),
-		guesses: objMap(game.guesses, (_, g) => g.toString()),
-		playerChats: game.general.playerChats,
-		chats: game.chats.concat(game.private.unSeatedGameChats).concat(game.private.replayGameChats),
-		isVerifiedOnly: game.general.isVerifiedOnly,
+		guesses: objMap(game?.guesses, (_, g) => g?.toString()),
+		playerChats: game?.general?.playerChats,
+		chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
+		isVerifiedOnly: game?.general?.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
-		losingPlayers: game.publicPlayersState.map(player => ({
-			userName: player.userName,
-			team: player.role && player.role.team,
-			role: player.role && player.role.cardName
+		losingPlayers: game?.publicPlayersState?.map(player => ({
+			userName: player?.userName,
+			team: player?.role && player?.role?.team,
+			role: player?.role && player?.role?.cardName
 		})),
-		playerCount: game.general.playerCount,
-		rebalance6p: game.general.rebalance6p,
-		rebalance7p: game.general.rebalance7p,
-		rebalance9p2f: game.general.rebalance9p2f,
+		playerCount: game?.general?.playerCount,
+		rebalance6p: game?.general?.rebalance6p,
+		rebalance7p: game?.general?.rebalance7p,
+		rebalance9p2f: game?.general?.rebalance9p2f,
 		casualGame: casualBool,
 		practiceGame: practiceBool,
-		customGame: game.customGameSettings.enabled,
+		customGame: game?.customGameSettings?.enabled,
 		unlistedGame: unlistedBool,
-		isRainbow: game.general.rainbowgame,
-		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
-		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
-		timedMode: game.general.timedMode,
-		blindMode: game.general.blindMode,
+		isRainbow: game?.general?.rainbowgame,
+		isTournyFirstRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 1,
+		isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
+		timedMode: game?.general?.timedMode,
+		blindMode: game?.general?.blindMode,
 		completed: false
 	};
 };
