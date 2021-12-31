@@ -49,6 +49,12 @@ const SidebarGame = ({ game, socket }) => {
 		return str;
 	};
 
+	const hasPlayerCount = count => game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
+
+	const hasR6 = game.rebalance6p && hasPlayerCount(6);
+	const hasR7 = game.rebalance7p && hasPlayerCount(7);
+	const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
+
 	return (
 		<div
 			data-uid={game.uid}
@@ -64,24 +70,13 @@ const SidebarGame = ({ game, socket }) => {
 							P
 						</div>
 					)}
-					{(game.rebalance6p || game.rebalance7p || game.rebalance9p) && (
+
+					{(hasR6 || hasR7 || hasR9) && (
 						<div
 							className="rebalance-game"
 							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy."
 						>
-							{game.rebalance6p && game.rebalance7p && game.rebalance9p
-								? 'R679'
-								: game.rebalance6p && game.rebalance7p
-								? 'R67'
-								: game.rebalance6p && game.rebalance9p
-								? 'R69'
-								: game.rebalance7p && game.rebalance9p
-								? 'R79'
-								: game.rebalance6p
-								? 'R6'
-								: game.rebalance7p
-								? 'R7'
-								: 'R9'}
+							{hasR6 && hasR7 && hasR9 ? 'R679' : hasR6 && hasR7 ? 'R67' : hasR6 && hasR9 ? 'R69' : hasR7 && hasR9 ? 'R79' : hasR6 ? 'R6' : hasR7 ? 'R7' : 'R9'}
 						</div>
 					)}
 					<div

@@ -238,7 +238,7 @@ module.exports.formattedGameList = () => {
 		electionCount: games[gameName].general.electionCount,
 		rebalance6p: games[gameName].general.rebalance6p || undefined,
 		rebalance7p: games[gameName].general.rebalance7p || undefined,
-		rebalance9p: games[gameName].general.rerebalance9p || undefined,
+		rebalance9p2f: games[gameName].general.rebalance9p2f || undefined,
 		privateOnly: games[gameName].general.privateOnly || undefined,
 		private: games[gameName].general.private || undefined,
 		uid: games[gameName].general.uid,
