@@ -190,6 +190,8 @@ class Players extends React.Component {
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
+		const isStaff = userInfo.staffRole && userInfo.staffRole !== 'veteran' && userInfo.staffRole !== 'altmod';
+
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
 			const userName =
@@ -252,8 +254,14 @@ class Players extends React.Component {
 				</span>
 			);
 
-			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
-				return prependCrowns('Anonymous');
+			if (!isStaff && !userInfo.isSeated) {
+				if (player.isPrivate) {
+					return prependCrowns('Anonymous');
+				}
+
+				if (gameInfo.general.private) {
+					return prependCrowns('?');
+				}
 			}
 
 			if (gameState.isTracksFlipped) {
@@ -272,6 +280,7 @@ class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
+					(!gameInfo.general.private || isStaff || userInfo.isSeated) &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
