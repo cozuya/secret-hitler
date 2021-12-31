@@ -1806,7 +1806,20 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 	if (seatedPlayers.length !== seatedPlayers.filter(play => play && play.voteStatus && play.voteStatus.hasVoted).length && player && player.voteStatus) {
 		player.voteStatus.hasVoted = !player.voteStatus.hasVoted ? true : player.voteStatus.didVoteYes ? !data.vote : data.vote;
 		player.voteStatus.didVoteYes = player.voteStatus.hasVoted ? data.vote : false;
-		game.publicPlayersState[playerIndex].isLoader = !player.voteStatus.hasVoted;
+
+		if (player.voteStatus.hasVoted) {
+			game.publicPlayersState[playerIndex].isLoader = false;
+		} else {
+			if (game.private.voteSpamData[playerIndex].unvoteTimer !== -1) {
+				clearInterval(game.private.voteSpamData[playerIndex].unvoteTimer);
+			}
+
+			game.private.voteSpamData[playerIndex].unvoteTimer = setInterval(() => {
+				const playerRecheck = seatedPlayers.find(player => player.userName === passport.user);
+				game.publicPlayersState[playerIndex].isLoader = !playerRecheck.voteStatus.hasVoted;
+				sendInProgressGameUpdate(game, true);
+			}, 2000);
+		}
 
 		if (force) {
 			player.voteStatus.hasVoted = true;
