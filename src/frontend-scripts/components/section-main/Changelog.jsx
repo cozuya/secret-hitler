@@ -12,6 +12,25 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
+					<p>Welcome to 2022 🥂 and to Season 17!</p>
+				</div>
+				<h4>The top 10 players of season 16 are:</h4>
+				<ol>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<h3>Version 1.8.2 released 11-5-2021</h3>
 					<p>Some fixes to line guessing, other small changes</p>
 				</div>
