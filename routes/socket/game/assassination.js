@@ -104,6 +104,11 @@ module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
 		return;
 	}
 
+	game.private.summary = game.private.summary.updateLog({
+		assassination: data.playerIndex
+	});
+	console.log(game.private.summary.logs);
+
 	game.publicPlayersState[hitlerIndex].isLoader = false;
 	game.gameState.clickActionInfo[1] = [];
 
@@ -128,15 +133,28 @@ module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
 			chat:
 				winningTeam === 'fascist'
 					? [
-							{ text: 'Hitler selects to assassinate ' },
+							{
+								text: 'Hitler',
+								type: 'hitler'
+							},
+							{ text: ' selects to assassinate ' },
 							{
 								text: `${target.userName} {${data.playerIndex + 1}}`,
 								type: 'player'
 							},
-							{ text: ', and they were Merlin.' }
+							{ text: ', and they were ' },
+							{
+								text: 'merlin',
+								type: 'merlin'
+							},
+							{ text: '.' }
 					  ]
 					: [
-							{ text: 'Hitler selects to assassinate ' },
+							{
+								text: 'Hitler',
+								type: 'hitler'
+							},
+							{ text: ' selects to assassinate ' },
 							{
 								text: `${target.userName} {${data.playerIndex + 1}}`,
 								type: 'player'
@@ -146,7 +164,12 @@ module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
 								text: `${merlin.userName} {${merlinIndex + 1}}`,
 								type: 'player'
 							},
-							{ text: ' was Merlin.' }
+							{ text: ' was ' },
+							{
+								text: 'merlin',
+								type: 'merlin'
+							},
+							{ text: '.' }
 					  ]
 		};
 		seatedPlayers.forEach(player => {

@@ -55,7 +55,7 @@ const beginGame = game => {
 				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
 				_.range(0, 8)
 					.map(el => {
-						if (game.general.avalonSH && game.general.withPercival)
+						if (game.general.avalonSH?.withPercival)
 							return {
 								cardName: el === 1 ? 'percival' : el === 0 ? 'merlin' : 'liberal',
 								icon: el <= 1 ? undefined : (el - 2) % 6,
@@ -82,7 +82,7 @@ const beginGame = game => {
 			_.shuffle(
 				_.range(18, 21)
 					.map(el => {
-						if (game.general.avalonSH && game.general.withPercival) {
+						if (game.general.avalonSH?.withPercival) {
 							return {
 								cardName: el % 3 === 0 ? 'morgana' : 'fascist',
 								icon: el,
@@ -120,9 +120,47 @@ const beginGame = game => {
 			play.cardStatus = i === index ? { cardBack: player.role } : {};
 		});
 
+		if (game.general.avalonSH?.withPercival) {
+			player.gameChats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{ text: 'This game has ' },
+					{
+						text: 'merlin',
+						type: 'merlin'
+					},
+					{ text: ', ' },
+					{
+						text: 'percival',
+						type: 'percival'
+					},
+					{ text: ' and ' },
+					{
+						text: 'morgana',
+						type: 'morgana'
+					},
+					{ text: '.' }
+				]
+			});
+		} else if (game.general.avalonSH) {
+			player.gameChats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{ text: 'This game has ' },
+					{
+						text: 'merlin',
+						type: 'merlin'
+					},
+					{ text: '.' }
+				]
+			});
+		}
+
 		if (!game.general.disableGamechat) {
 			player.gameChats.push({
-				timestamp: new Date(),
+				timestamp: Date.now() + 1,
 				gameChat: true,
 				chat: [
 					{
@@ -222,7 +260,9 @@ const beginGame = game => {
 			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9,
 			casualGame: Boolean(game.general.casualGame),
 			practiceGame: Boolean(game.general.practiceGame),
-			unlistedGame: Boolean(game.general.unlistedGame)
+			unlistedGame: Boolean(game.general.unlistedGame),
+			avalonSH: game.general.avalonSH,
+			noTopdecking: game.general.noTopdecking
 		},
 		game.customGameSettings,
 		game.private.seatedPlayers.map(p => ({
@@ -233,6 +273,8 @@ const beginGame = game => {
 		libElo,
 		fasElo
 	);
+
+	console.log(game.private.summary);
 
 	game.private.unSeatedGameChats = [
 		{
@@ -258,7 +300,6 @@ const beginGame = game => {
 			game.private.seatedPlayers.forEach((player, i) => {
 				const { seatedPlayers } = game.private;
 				const { cardName } = player.role;
-
 				player.playersState[seatedPlayers.indexOf(player)].nameStatus = cardName;
 
 				if (cardName === 'fascist' || cardName === 'morgana') {
@@ -643,7 +684,7 @@ const beginGame = game => {
 						});
 					}
 					fascists.forEach(p => (player.playersState[seatedPlayers.indexOf(p)].nameStatus = 'fascist'));
-				} else if (game.general.avalonSH && game.general.withPercival && cardName === 'percival') {
+				} else if (game.general.avalonSH?.withPercival && cardName === 'percival') {
 					const candidates = seatedPlayers.filter(player => player.role.cardName === 'merlin' || player.role.cardName === 'morgana');
 
 					player.gameChats.push({
@@ -651,7 +692,21 @@ const beginGame = game => {
 						gameChat: true,
 						chat: [
 							{
-								text: 'You see that the merlin candidates are '
+								text: 'You see that '
+							},
+							{
+								text: 'merlin',
+								type: 'merlin'
+							},
+							{
+								text: ' and '
+							},
+							{
+								text: 'morgana',
+								type: 'morgana'
+							},
+							{
+								text: ' are '
 							},
 							{
 								text: game.general.blindMode
@@ -669,7 +724,7 @@ const beginGame = game => {
 								type: 'player'
 							},
 							{
-								text: '.'
+								text: ', but you do not know which is which.'
 							}
 						]
 					});

@@ -10,7 +10,8 @@ module.exports = (
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false,
-		rerebalance9p: false
+		rerebalance9p: false,
+		avalonSH: null
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -18,7 +19,6 @@ const buildTurns = (turns, logs, players, gameSetting) => {
 	if (logs.isEmpty()) return turns;
 
 	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
-	console.log(nextTurn);
 
 	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
 };
@@ -55,6 +55,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
+		assassination: none,
 		afterDeckSize: initialDeckSize(gameSetting),
 		afterTrack: initialTrack(gameSetting),
 		afterElectionTracker: 0,
@@ -99,6 +100,9 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 	// Boolean
 	const isExecution = log.execution.isSome();
+
+	// Boolean
+	const isAssassination = log.assassination.isSome();
 
 	// Boolean
 	const isInvestigation = log.investigationId.isSome();
@@ -172,6 +176,15 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		return log.execution.map(e => e === hitlerIndex).valueOrElse(false);
 	})();
 
+	// Boolean
+	const isMerlinShot =
+		gameSetting.avalonSH &&
+		(() => {
+			const merlinIndex = players.findIndex(p => p.role === 'merlin');
+
+			return log.assassination.map(e => e === merlinIndex).valueOrElse(false);
+		})();
+
 	// Option[String]
 	const { presidentDiscard, chancellorDiscard } = (() => {
 		const handDiffOpt = mapOpt2(handDiff);
@@ -236,8 +249,10 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isElectionTrackerMaxed,
 		isInvestigation,
 		isExecution,
+		isAssassination,
 		isHitlerKilled,
 		isHitlerElected,
+		isMerlinShot,
 		presidentDiscard,
 		chancellorDiscard,
 		isSpecialElection,
