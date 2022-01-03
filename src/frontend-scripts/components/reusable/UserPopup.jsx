@@ -115,7 +115,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 	const isMe = userName === userInfo?.userName;
 	const isAEM = checkStaffRole(userInfo?.staffRole);
 	const areTheyAEM = checkStaffRole(user?.staffRole);
-	const notVisible = !isAEM && !userSeated && (privateGame || user.isPrivate);
+	const notVisible = !isAEM && !userSeated && (privateGame || (user && user.isPrivate));
 
 	const openChat = userName => {
 		socket.emit('aemOpenChat', { userName, aemMember: userInfo?.userName });
