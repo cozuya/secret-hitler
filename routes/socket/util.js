@@ -4,7 +4,7 @@ const { Webhook } = require('discord-webhook-node');
 const tempy = require('tempy');
 
 /**
- * Debugging function to check game for self-recursion
+ * Debugging function to send a game to Discord after it's been identified to be cyclic
  */
 
 const debugSendGame = (game, message = '') => {
