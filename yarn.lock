@@ -5721,9 +5721,9 @@ gettemporaryfilepath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/gettemporaryfilepath/-/gettemporaryfilepath-1.0.0.tgz#2354791f0f5cdbbc881ab8bd79d478c166a12305"
 
-"gfycat-style-urls@git://github.com/cozuya/gfycat-style-urls.git":
+"gfycat-style-urls@https://github.com/cozuya/gfycat-style-urls":
   version "1.0.6"
-  resolved "git://github.com/cozuya/gfycat-style-urls.git#ebe393b70f369f460036e1a5ddf223e36d7514ec"
+  resolved "https://github.com/cozuya/gfycat-style-urls#ebe393b70f369f460036e1a5ddf223e36d7514ec"
 
 git-up@^4.0.0:
   version "4.0.1"
