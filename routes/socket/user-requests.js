@@ -64,7 +64,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 				return usr
 					? {
 							status: usr.status,
-							isRainbow: user.wins + user.losses > 49,
+							isRainbow: user.isRainbowOverall,
 							userName: user.username,
 							ip: user.lastConnectedIP || user.signupIP,
 							email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
@@ -215,6 +215,8 @@ module.exports.sendUserGameSettings = socket => {
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
+					isRainbowOverall: account.isRainbowOverall,
+					isRainbowSeason: account.isRainbowSeason,
 					isPrivate: account.gameSettings.isPrivate,
 					tournyWins: account.gameSettings.tournyWins,
 					blacklist: account.gameSettings.blacklist,

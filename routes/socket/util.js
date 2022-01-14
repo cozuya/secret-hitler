@@ -265,6 +265,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason + bias) / 400));
 	// Now we will use our 'supprisedness' p to correct the player rankings
 	const ratingUpdates = {};
+	const date = new Date(); // ensure we use the same date for each player
 	accounts.forEach(account => {
 		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
 		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
@@ -273,7 +274,23 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		const change = p * factor;
 		const changeSeason = pSeason * factor;
 		account.eloOverall = eloOverall + change;
+		account.maxElo = Math.max(account.maxElo, account.eloOverall);
+		account.pastElo.push({
+			date,
+			value: account.eloOverall
+		});
+		account.xpOverall += change > 0 ? change / 2 : 1;
 		account.eloSeason = eloSeason + changeSeason;
+		account.xpSeason += changeSeason > 0 ? changeSeason / 2 : 1;
+
+		if (account.xpOverall >= 50.0) {
+			account.isRainbowOverall = true;
+		}
+
+		if (account.xpSeason >= 50.0) {
+			account.isRainbowSeason = true;
+		}
+
 		account.save();
 		ratingUpdates[account.username] = { change, changeSeason };
 	});

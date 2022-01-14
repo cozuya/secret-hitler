@@ -5,7 +5,6 @@ const GameSummary = require('../models/game-summary');
 const ModThread = require('../models/modThread');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
-const _ = require('lodash');
 const { accounts } = require('./accounts');
 const version = require('../version');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
@@ -14,6 +13,8 @@ const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
 const { DEFAULTTHEMECOLORS } = require('../src/frontend-scripts/node-constants');
+const { checkBadgesAccount } = require('./socket/badges');
+const moment = require('moment');
 
 /**
  * @param {object} req - express request object.
@@ -163,6 +164,7 @@ module.exports = () => {
 					console.log(err);
 					return;
 				}
+				checkBadgesAccount(account);
 				const { blacklist } = account.gameSettings;
 
 				const backgroundColor = account.backgroundColor || DEFAULTTHEMECOLORS.baseBackgroundColor;
@@ -282,7 +284,7 @@ module.exports = () => {
 				res.status(404).send('Profile not found');
 			} else {
 				Account.findOne({ username }, (err, account) => {
-					const _profile = _.cloneDeep(profile);
+					const _profile = profile.toObject();
 
 					if (err) {
 						return new Error(err);
@@ -290,6 +292,20 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
+						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('Do/MM/YYYY') : '';
+						_profile.badges = account.badges || [];
+						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
+						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.maxElo || 1600).toFixed(2);
+						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
+							? undefined
+							: account.pastElo.toObject().length
+							? account.pastElo.toObject()
+							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
+						_profile.xpOverall = account.xpOverall;
+						_profile.xpSeason = account.xpSeason;
+						_profile.isRainbowOverall = account.isRainbowOverall;
+						_profile.isRainbowSeason = account.isRainbowSeason;
+						_profile.staffRole = account.staffRole;
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (
@@ -299,6 +315,7 @@ module.exports = () => {
 							) {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+									_profile.lastConnected = moment(account.lastConnected).format('HH:MM:SS Do/MM/YYYY');
 								} catch (e) {
 									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);

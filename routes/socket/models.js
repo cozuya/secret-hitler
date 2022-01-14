@@ -157,6 +157,8 @@ module.exports.formattedUserList = isAEM => {
 			customCardbackUid: user.customCardbackUid,
 			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
 			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+			isRainbowOverall: user.isRainbowOverall,
+			isRainbowSeason: user.isRainbowSeason,
 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
 			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
 			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),

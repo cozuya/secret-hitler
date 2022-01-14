@@ -77,6 +77,7 @@ const Account = new Schema({
 	},
 	signupIP: String,
 	lastConnectedIP: String,
+	lastConnected: Date,
 	ipHistory: Array,
 	verified: Boolean,
 	isBanned: Boolean,
@@ -174,6 +175,17 @@ const Account = new Schema({
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
+	eloPercentile: {
+		seasonal: Number,
+		overall: Number
+	},
+	isRainbowSeason: Boolean,
+	isRainbowOverall: Boolean,
+	xpOverall: { type: Number, default: 0 },
+	xpSeason: { type: Number, default: 0 },
+	badges: [{ id: String, text: String, title: String, dateAwarded: Date }],
+	maxElo: { type: Number, default: 1600 },
+	pastElo: [{ date: Date, value: Number }],
 	isTournamentMod: Boolean
 });
 

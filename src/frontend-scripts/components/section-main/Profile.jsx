@@ -273,27 +273,27 @@ class ProfileWrapper extends React.Component {
 	Profile() {
 		const { gameSettings, profile, userInfo, userList } = this.props;
 		const user = userList.list ? userList.list.find(u => u.userName == profile._id) : null;
-		const w =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'wins'
-					: 'rainbowWins'
-				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
-		const l =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'losses'
-					: 'rainbowLosses'
-				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+		// const w =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'wins'
+		// 			: 'rainbowWins'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'winsSeason'
+		// 		: 'rainbowWinsSeason';
+		// const l =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'losses'
+		// 			: 'rainbowLosses'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'lossesSeason'
+		// 		: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
 		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
+				(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },

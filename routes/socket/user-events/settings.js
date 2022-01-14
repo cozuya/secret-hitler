@@ -79,6 +79,8 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						losses: account.losses,
 						rainbowWins: account.rainbowWins,
 						rainbowLosses: account.rainbowLosses,
+						isRainbowOverall: account.isRainbowOverall,
+						isRainbowSeason: account.isRainbowSeason,
 						isPrivate: account.gameSettings.isPrivate,
 						tournyWins: account.gameSettings.tournyWins,
 						blacklist: account.gameSettings.blacklist,
