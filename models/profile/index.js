@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const matchData = { events: { type: Number, default: 0 }, successes: { type: Number, default: 0 } };
-
 const profileSchema = new Schema({
 	_id: String, // username
 	username: String,
@@ -13,69 +11,28 @@ const profileSchema = new Schema({
 	lastConnectedIP: String,
 	stats: {
 		matches: {
-			legacyMatches: {
-				// pre-reset games
-				liberal: matchData,
-				fascist: matchData
+			allMatches: {
+				events: { type: Number, default: 0 },
+				successes: { type: Number, default: 0 }
 			},
-			greyMatches: {
-				// ranked grey games
-				liberal: matchData,
-				fascist: matchData,
-				5: matchData,
-				6: matchData,
-				7: matchData,
-				8: matchData,
-				9: matchData,
-				10: matchData
+			liberal: {
+				events: { type: Number, default: 0 },
+				successes: { type: Number, default: 0 }
 			},
-			rainbowMatches: {
-				// ranked rainbow games
-				liberal: matchData,
-				fascist: matchData,
-				5: matchData,
-				6: matchData,
-				7: matchData,
-				8: matchData,
-				9: matchData,
-				10: matchData
-			},
-			practiceMatches: {
-				// practice games
-				liberal: matchData,
-				fascist: matchData
-			},
-			silentMatches: {
-				// silent games
-				liberal: matchData,
-				fascist: matchData
-			},
-			emoteMatches: {
-				// emote-only games
-				liberal: matchData,
-				fascist: matchData
-			},
-			casualMatches: {
-				// casual games
-				liberal: matchData,
-				fascist: matchData
-			},
-			customMatches: {
-				// custom (any settings) games
-				liberal: matchData,
-				fascist: matchData
-			},
-			privateMatches: {
-				// private games
-				liberal: matchData,
-				fascist: matchData
+			fascist: {
+				events: { type: Number, default: 0 },
+				successes: { type: Number, default: 0 }
 			}
 		},
 		actions: {
-			voteAccuracy: matchData,
-			shotAccuracy: matchData,
-			legacyVoteAccuracy: matchData,
-			legacyShotAccuracy: matchData
+			voteAccuracy: {
+				events: { type: Number, default: 0 },
+				successes: { type: Number, default: 0 }
+			},
+			shotAccuracy: {
+				events: { type: Number, default: 0 },
+				successes: { type: Number, default: 0 }
+			}
 		}
 	},
 	recentGames: {
@@ -85,8 +42,8 @@ const profileSchema = new Schema({
 				loyalty: String,
 				playerSize: Number,
 				isWinner: Boolean,
-				date: Date,
-				gameType: String
+				isRebalanced: Boolean,
+				date: Date
 			}
 		],
 		default: []
