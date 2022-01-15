@@ -171,6 +171,10 @@ module.exports.checkBadgesAccount = (user, save = false) => {
 		awardBadgePrequeried(user, 'editor', 'Thank you for your service to the site!', 'You are an Editor!');
 	}
 
+	if (user.staffRole === 'admin') {
+		awardBadgePrequeried(user, 'admin', 'Thank you for your service to the site!', 'You are an Admin!');
+	}
+
 	if (save) user.save();
 };
 

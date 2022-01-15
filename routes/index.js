@@ -202,6 +202,7 @@ module.exports = () => {
 				}
 
 				account.lastConnectedIP = ip;
+				account.lastConnected = new Date();
 				if (
 					(account.ipHistory && account.ipHistory.length === 0) ||
 					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
@@ -292,7 +293,7 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
-						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('Do/MM/YYYY') : '';
+						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('DD/MM/YYYY') : '';
 						_profile.badges = account.badges || [];
 						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
 						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.maxElo || 1600).toFixed(2);
@@ -301,8 +302,10 @@ module.exports = () => {
 							: account.pastElo.toObject().length
 							? account.pastElo.toObject()
 							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
-						_profile.xpOverall = account.xpOverall;
-						_profile.xpSeason = account.xpSeason;
+						_profile.xpOverall = (account.xpOverall || 0).toFixed(2);
+						_profile.eloOverall = (account.eloOverall || 1600).toFixed(2);
+						_profile.xpSeason = (account.xpSeason || 0).toFixed(2);
+						_profile.eloSeason = (account.eloSeason || 1600).toFixed(2);
 						_profile.isRainbowOverall = account.isRainbowOverall;
 						_profile.isRainbowSeason = account.isRainbowSeason;
 						_profile.staffRole = account.staffRole;
@@ -315,13 +318,20 @@ module.exports = () => {
 							) {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-									_profile.lastConnected = moment(account.lastConnected).format('HH:MM:SS Do/MM/YYYY');
 								} catch (e) {
 									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);
 								}
+								try {
+									_profile.signupIP = '-' + obfIP(_profile.signupIP);
+								} catch (e) {
+									_profile.signupIP = "Couldn't find IP";
+									console.log(e);
+								}
+								_profile.lastConnected = moment(account.lastConnected).format('h:mm DD/MM/YYYY');
 							} else {
 								_profile.lastConnectedIP = undefined;
+								_profile.signupIP = undefined;
 							}
 
 							res.json(_profile);
