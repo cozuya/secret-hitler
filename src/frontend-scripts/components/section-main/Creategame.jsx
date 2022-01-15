@@ -834,7 +834,7 @@ export default class Creategame extends React.Component {
 						powers: ['investigate', 'reverseinv', 'investigate', 'reverseinv', 'investigate'], // last "power" is always a fas victory
 						hitlerZone: 3, // 1-5
 						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
+						fascistCount: 2, // 1-3, does not include hit
 						hitKnowsFas: false,
 						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
