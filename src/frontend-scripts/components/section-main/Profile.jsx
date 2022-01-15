@@ -8,6 +8,7 @@ import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
 import Swal from 'sweetalert2';
 import { Dropdown } from 'semantic-ui-react';
+import moment from 'moment';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -120,18 +121,33 @@ class ProfileWrapper extends React.Component {
 					placeholder={'Sort by:'}
 					onChange={(a, { name, value }) => {
 						changeSort(value);
-						console.log(a, name, value);
 					}}
 					options={[
 						{ key: 0, text: 'Badge', value: 'badge' },
 						{ key: 1, text: 'Date earned', value: 'date' }
 					]}
-				></Dropdown>
+					style={{ right: '0', left: 'auto', position: 'absolute' }}
+				/>
+				<br />
 				<br />
 				{badges
 					.sort((a, b) => (this.state.badgeSort === 'badge' ? compare(a.id, b.id) : compare(new Date(a.dateAwarded), new Date(b.dateAwarded))))
 					.map(x => (
-						<img src={`../images/badges/${x.id}.png`} alt={x.title} key={x.id} width={100} onClick={() => Swal.fire(x.title, x.text)} />
+						<img
+							style={{ padding: '2px' }}
+							src={`../images/badges/${x.id}.png`}
+							alt={x.title}
+							key={x.id}
+							width={50}
+							onClick={() =>
+								Swal.fire({
+									title: x.title,
+									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('DD/MM/YYYY HH:mm')}.`,
+									imageUrl: `../images/badges/${x.id}.png`,
+									imageWidth: 100
+								})
+							}
+						/>
 					))}
 			</div>
 		);
@@ -149,8 +165,8 @@ class ProfileWrapper extends React.Component {
 					return this.Matches();
 				case 'ACTIONS':
 					return this.Actions();
-				case 'BADGES':
-					return this.Badges();
+				// case 'BADGES':
+				// 	return this.Badges();
 			}
 		})();
 		const toActive = stat => (activeStat === stat ? 'active' : '');
@@ -173,17 +189,15 @@ class ProfileWrapper extends React.Component {
 					<a className={`${toActive('ACTIONS')} item`} onClick={updateActiveStats.bind(null, 'ACTIONS')}>
 						Actions
 					</a>
-					<a className={`${toActive('BADGES')} item`} onClick={updateActiveStats.bind(null, 'BADGES')}>
-						Badges
-					</a>
+					{/* <a className={`${toActive('BADGES')} item`} onClick={updateActiveStats.bind(null, 'BADGES')}> */}
+					{/* 	Badges */}
+					{/* </a> */}
 				</div>
 				<div className="ui bottom attached segment">{table}</div>
-				{this.props.profile.lastConnectedIP && (
-					<div>
-						<h2 className="ui header">AEM Info</h2>
-						<Table headers={['Last Connected IP', 'Signup IP']} rows={[[this.props.profile.lastConnectedIP, this.props.profile.signupIP]]} />
-					</div>
-				)}
+				<div className="column-name">
+					<h2 className="ui header">Badges</h2>
+				</div>
+				{this.Badges()}
 			</div>
 		);
 	}
@@ -206,6 +220,12 @@ class ProfileWrapper extends React.Component {
 			<div>
 				<h2 className="ui header recent-games-table">Recent Games</h2>
 				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
+				{this.props.profile.lastConnectedIP && (
+					<div>
+						<h2 className="ui header">AEM Info</h2>
+						<Table headers={['Last Connected IP', 'Signup IP']} rows={[[this.props.profile.lastConnectedIP, this.props.profile.signupIP]]} />
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -359,7 +379,6 @@ class ProfileWrapper extends React.Component {
 		// 		? 'lossesSeason'
 		// 		: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
-		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
 				(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) || Boolean(user.staffRole) || user.isContributor
@@ -370,10 +389,6 @@ class ProfileWrapper extends React.Component {
 							{ clickable: this.props.isUserClickable }
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
-			const { wins = 0, losses = 0 } = user;
-			if (wins + losses < 50) {
-				gamesUntilRainbow = 50 - wins - losses;
-			}
 		}
 
 		return (
@@ -394,17 +409,14 @@ class ProfileWrapper extends React.Component {
 								<em>Created: </em>
 							</strong>
 						</span>
-						<span>{this.formatDateString(profile.created)}</span>
-						{!isNaN(gamesUntilRainbow) && (
-							<div>
-								<span>
-									<strong>
-										<em>Games Until Rainbow: </em>
-									</strong>
-								</span>
-								<span>{gamesUntilRainbow}</span>
-							</div>
-						)}
+						<span>{profile.created}</span>
+						<br />
+						<span>
+							<strong>
+								<em>Last online: </em>
+							</strong>
+						</span>
+						<span>{profile.lastConnected}</span>
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist

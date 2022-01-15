@@ -291,6 +291,7 @@ module.exports = () => {
 						return new Error(err);
 					}
 					if (account) {
+						_profile.created = moment(account.created).format('DD/MM/YYYY');
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
 						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('DD/MM/YYYY') : '';
@@ -328,7 +329,8 @@ module.exports = () => {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);
 								}
-								_profile.lastConnected = moment(account.lastConnected).format('h:mm DD/MM/YYYY');
+								_profile.lastConnected = moment(account.lastConnected).format('DD/MM/YYYY h:mm');
+								_profile.created = moment(account.created).format('DD/MM/YYYY h:mm');
 							} else {
 								_profile.lastConnectedIP = undefined;
 								_profile.signupIP = undefined;
