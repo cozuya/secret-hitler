@@ -3,6 +3,7 @@ const Account = require('../models/account'); // eslint-disable-line no-unused-v
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
 const ModThread = require('../models/modThread');
+const BlanketBanIP = require('../models/blanketBanIP');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
@@ -369,6 +370,26 @@ module.exports = () => {
 						}
 					})
 					.catch(err => debug(err));
+			} else {
+				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
+			}
+		});
+	});
+
+	app.get('/bbCSV', (req, res) => {
+		const username = req.session.passport.user;
+		Account.findOne({ username }).then(account => {
+			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin') {
+				BlanketBanIP.find()
+					.then(accs => {
+						var csvContent = '';
+						accs.forEach(acc => {
+							const newline = [obfIP(acc.ip),acc.bb,acc.account].join(",") + "\r\n"
+							csvContent += newline;
+						});
+						res.set('Content-Type', 'text/csv');
+						res.send(csvContent);
+					})
 			} else {
 				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
 			}
