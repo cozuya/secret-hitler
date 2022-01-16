@@ -24,6 +24,7 @@ const ModAction = require('../../models/modAction');
 const ModThread = require('../../models/modThread');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
+const BlanketBanIP = require('../../models/blanketBanIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
@@ -2902,6 +2903,39 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 					io.sockets.emit('generalChats', generalChats);
 					break;
+				case 'addbb':
+					Account.findOne({ username: data.userName })
+						.then(acc => {
+							if (acc) {
+								const addbb = new BlanketBanIP({
+									bb: data.comment,
+									account: data.userName,
+									ip: data.ip
+								});
+								addbb.save();
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'add bb err');
+						});
+					break;
+				case 'removebb':
+					Account.findOne({ username: data.userName })
+						.then(acc => {
+							if (acc) {
+								BlanketBanIP.deleteMany({account: data.userName}, (err, res) => {
+									if (err) socket.emit('sendAlert', `IP remove failed:\n${err}`);
+								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'remove bb err');
+						});
+					break;
 				case 'ipban':
 					if (isSuperMod) {
 						const ipban = new BannedIP({
@@ -3475,6 +3509,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				getIP: 'Get IP',
 				ban: 'Ban',
 				setSticky: 'Set Sticky',
+				addbb: 'Add Blanket Ban IP',
+				removebb: 'Remove Blanket Ban IP',
+				showbb: 'Download BB Spreadsheet',
 				ipbanlarge: '1 Week IP Ban',
 				ipban: '18 Hour IP Ban',
 				enableAccountCreation: 'Enable Account Creation',
