@@ -2925,7 +2925,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName })
 						.then(acc => {
 							if (acc) {
-								BlanketBanIP.deleteMany({account: data.userName}, (err, res) => {
+								BlanketBanIP.deleteMany({ account: data.userName }, (err, res) => {
 									if (err) socket.emit('sendAlert', `IP remove failed:\n${err}`);
 								});
 							} else {
