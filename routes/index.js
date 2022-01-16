@@ -380,16 +380,15 @@ module.exports = () => {
 		const username = req.session.passport.user;
 		Account.findOne({ username }).then(account => {
 			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin') {
-				BlanketBanIP.find()
-					.then(accs => {
-						var csvContent = '';
-						accs.forEach(acc => {
-							const newline = [obfIP(acc.ip),acc.bb,acc.account].join(",") + "\r\n";
-							csvContent += newline;
-						});
-						res.set('Content-Type', 'text/csv');
-						res.send(csvContent);
-					})
+				BlanketBanIP.find().then(accs => {
+					var csvContent = '';
+					accs.forEach(acc => {
+						const newline = [obfIP(acc.ip), acc.bb, acc.account].join(',') + '\r\n';
+						csvContent += newline;
+					});
+					res.set('Content-Type', 'text/csv');
+					res.send(csvContent);
+				});
 			} else {
 				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
 			}
