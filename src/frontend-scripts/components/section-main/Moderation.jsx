@@ -826,7 +826,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ width: '100%', background: 'lightgrey' }}
 					className={'ui button'}
-					onClick={() => { window.open("/bbCSV", "_blank"); }}
+					onClick={() => {
+						window.open('/bbCSV', '_blank');
+					}}
 				>
 					Download Blanket Ban Spreadsheet
 				</button>
