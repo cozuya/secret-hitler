@@ -804,6 +804,32 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<br />
+				<div className="ui horizontal divider">Blanket Ban Database</div>
+				<button
+					style={{ background: 'lightcoral' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					onClick={() => {
+						takeModAction('addbb');
+					}}
+				>
+					Add Blanket Ban IP
+				</button>
+				<button
+					style={{ background: 'greenyellow' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					onClick={() => {
+						takeModAction('removebb');
+					}}
+				>
+					Remove Blanket Ban IP
+				</button>
+				<button
+					style={{ width: '100%', background: 'lightgrey' }}
+					className={'ui button'}
+					onClick={() => { window.open("/bbCSV", "_blank"); }}
+				>
+					Download Blanket Ban Spreadsheet
+				</button>
 				<div className="ui horizontal divider" style={{ color: 'red' }}>
 					🔰 Editors/Admins Only 📛
 				</div>
@@ -1166,6 +1192,9 @@ export default class Moderation extends React.Component {
 			getIP: 'Get IP',
 			ban: 'Ban',
 			setSticky: 'Set Sticky',
+			addbb: 'Add Blanket Ban IP',
+			removebb: 'Remove Blanket Ban IP',
+			showbb: 'Download BB Spreadsheet',
 			ipbanlarge: '1 Week IP Ban',
 			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
