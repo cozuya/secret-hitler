@@ -384,7 +384,7 @@ module.exports = () => {
 					.then(accs => {
 						var csvContent = '';
 						accs.forEach(acc => {
-							const newline = [obfIP(acc.ip),acc.bb,acc.account].join(",") + "\r\n"
+							const newline = [obfIP(acc.ip),acc.bb,acc.account].join(",") + "\r\n";
 							csvContent += newline;
 						});
 						res.set('Content-Type', 'text/csv');
