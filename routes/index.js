@@ -151,7 +151,7 @@ module.exports = () => {
 			Profile.findOne({ _id: username })
 				.then(profile => {
 					if (profile) {
-						profile.lastConnectedIP = ip;
+						profile.lastConnectedIP = ip; // why?
 						profile.save();
 					}
 				})
@@ -291,6 +291,8 @@ module.exports = () => {
 						return new Error(err);
 					}
 					if (account) {
+						const numDigits = 0;
+
 						_profile.created = moment(account.created).format('DD/MM/YYYY');
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
@@ -303,10 +305,10 @@ module.exports = () => {
 							: account.pastElo.toObject().length
 							? account.pastElo.toObject()
 							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
-						_profile.xpOverall = (account.xpOverall || 0).toFixed(2);
-						_profile.eloOverall = (account.eloOverall || 1600).toFixed(2);
-						_profile.xpSeason = (account.xpSeason || 0).toFixed(2);
-						_profile.eloSeason = (account.eloSeason || 1600).toFixed(2);
+						_profile.xpOverall = (account.xpOverall || 0).toFixed(numDigits);
+						_profile.eloOverall = (account.eloOverall || 1600).toFixed(numDigits);
+						_profile.xpSeason = (account.xpSeason || 0).toFixed(numDigits);
+						_profile.eloSeason = (account.eloSeason || 1600).toFixed(numDigits);
 						_profile.isRainbowOverall = account.isRainbowOverall;
 						_profile.isRainbowSeason = account.isRainbowSeason;
 						_profile.staffRole = account.staffRole;
@@ -324,7 +326,7 @@ module.exports = () => {
 									console.log(e);
 								}
 								try {
-									_profile.signupIP = '-' + obfIP(_profile.signupIP);
+									_profile.signupIP = '-' + obfIP(acc.signupIP);
 								} catch (e) {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);

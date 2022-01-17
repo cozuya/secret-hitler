@@ -182,12 +182,6 @@ class Settings extends React.Component {
 		});
 	};
 
-	profileSearchSubmit = e => {
-		e.preventDefault();
-
-		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
-	};
-
 	renderFonts() {
 		const changeFontSubmit = fontName => {
 			this.setState({
@@ -663,10 +657,6 @@ class Settings extends React.Component {
 			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
-		const handleSearchProfileChange = e => {
-			this.setState({ profileSearchValue: e.currentTarget.value });
-		};
-
 		const gameSettings = this.props.gameSettings || window.gameSettings;
 
 		const ownProfileSubmit = event => {
@@ -692,18 +682,6 @@ class Settings extends React.Component {
 						<button className="ui primary button" onClick={ownProfileSubmit}>
 							View your profile
 						</button>
-						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
-							<div className="ui action input">
-								<input
-									placeholder="Search profiles.."
-									value={this.state.profileSearchValue}
-									onChange={handleSearchProfileChange}
-									maxLength="20"
-									spellCheck="false"
-								/>
-							</div>
-							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
-						</form>
 					</div>
 				</div>
 				<div className="ui grid">

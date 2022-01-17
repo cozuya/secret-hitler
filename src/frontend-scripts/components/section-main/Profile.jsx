@@ -24,7 +24,8 @@ class ProfileWrapper extends React.Component {
 			blacklistClicked: false,
 			blacklistShown: false,
 			openTime: Date.now(),
-			badgeSort: 'badge'
+			badgeSort: 'badge',
+			profileSearchValue: ''
 		};
 	}
 
@@ -223,7 +224,8 @@ class ProfileWrapper extends React.Component {
 				{this.props.profile.lastConnectedIP && (
 					<div>
 						<h2 className="ui header">AEM Info</h2>
-						<Table headers={['Last Connected IP', 'Signup IP']} rows={[[this.props.profile.lastConnectedIP, this.props.profile.signupIP]]} />
+						{/* <Table headers={['Last Connected IP', 'Signup IP']} rows={[[this.props.profile.lastConnectedIP, this.props.profile.signupIP]]} /> */}
+						<Table headers={['Last Connected IP / Signup IP']} rows={[[this.props.profile.lastConnectedIP], [this.props.profile.signupIP]]} />
 					</div>
 				)}
 			</div>
@@ -359,6 +361,12 @@ class ProfileWrapper extends React.Component {
 		$(this.blacklistModal).modal('show');
 	};
 
+	profileSearchSubmit = e => {
+		e.preventDefault();
+
+		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
+	};
+
 	Profile() {
 		const { gameSettings, profile, userInfo, userList } = this.props;
 		const user = userList.list ? userList.list.find(u => u.userName == profile._id) : null;
@@ -391,6 +399,66 @@ class ProfileWrapper extends React.Component {
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
 		}
 
+		const userAdminRole =
+			this.props.profile.staffRole === 'admin' || this.props.profile.staffRole === 'editor' || this.props.profile.staffRole === 'moderator'
+				? this.props.profile.staffRole
+				: null;
+
+		const staffRolePrefixes = { admin: '(A) 📛', editor: '(E) 🔰', moderator: '(M) 🌀' };
+
+		let prefix = '';
+		if (userAdminRole) {
+			prefix = staffRolePrefixes[userAdminRole];
+		}
+
+		const disableIfUnclickable = f => {
+			if (this.props.isUserClickable) {
+				return f;
+			}
+
+			return () => null;
+		};
+
+		const renderStatus = () => {
+			const status = user ? user.status : null;
+
+			if (!status || status.type === 'none') {
+				return null;
+			} else {
+				const iconClasses = cn(
+					'status',
+					{ unclickable: !this.props.isUserClickable },
+					{ clickable: this.props.isUserClickable },
+					{ search: status.type === 'observing' },
+					{ fav: status.type === 'playing' },
+					{ rainbow: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ private: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: this.routeToGame,
+					observing: this.routeToGame,
+					rainbow: this.routeToGame,
+					replay: this.props.fetchReplay,
+					private: this.routeToGame
+				};
+
+				return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
+			}
+		};
+
+		const handleSearchProfileChange = e => {
+			this.setState({ profileSearchValue: e.currentTarget.value });
+		};
+
 		return (
 			<div>
 				{profile.customCardback && (
@@ -402,8 +470,12 @@ class ProfileWrapper extends React.Component {
 					/>
 				)}
 				<div className="ui grid">
-					<h1 className="ui header ten wide column">{profile._id}</h1>
-					<div className="ui right aligned five wide column">
+					<h1 className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`} style={{ paddingLeft: 0 }}>
+						{renderStatus()}
+						{prefix}
+						{profile._id}
+					</h1>
+					<div className="ui right aligned six wide column">
 						<span>
 							<strong>
 								<em>Created: </em>
@@ -422,6 +494,18 @@ class ProfileWrapper extends React.Component {
 								Your blacklist
 							</a>
 						)}
+						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
+							<div className="ui action input">
+								<input
+									placeholder="Search profiles.."
+									value={this.state.profileSearchValue}
+									onChange={handleSearchProfileChange}
+									maxLength="20"
+									spellCheck="false"
+								/>
+							</div>
+							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
+						</form>
 					</div>
 				</div>
 				{this.renderBio()}
