@@ -375,13 +375,13 @@ module.exports = () => {
 		});
 	});
 
-	app.get('/online-playercount', (req, res) => {
-		const { userList } = require('./socket/models');
-
-		res.json({
-			count: userList.length
-		});
-	});
+	// app.get('/online-playercount', (req, res) => {
+	// 	const { userList } = require('./socket/models');
+	//
+	// 	res.json({
+	// 		count: userList.length
+	// 	});
+	// });
 
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
 		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {

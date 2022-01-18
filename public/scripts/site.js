@@ -3,17 +3,17 @@
 $(document).ready(function() {
 	// yay ES5
 
-	if (window.location.pathname === '/') {
-		$.ajax({
-			url: '/online-playercount',
-			contentType: 'application/json; charset=UTF-8',
-			statusCode: {
-				200: function(d) {
-					$('#player-count').text(d.count);
-				}
-			}
-		});
-	}
+	// if (window.location.pathname === '/') {
+	// 	$.ajax({
+	// 		url: '/online-playercount',
+	// 		contentType: 'application/json; charset=UTF-8',
+	// 		statusCode: {
+	// 			200: function(d) {
+	// 				$('#player-count').text(d.count);
+	// 			}
+	// 		}
+	// 	});
+	// }
 
 	$('body').on('click', '#menupopout', function(event) {
 		event.preventDefault();
