@@ -109,31 +109,74 @@ function profileDelta(username, game) {
 	};
 }
 
+function profileDeltaWithMatchType(username, game) {
+	const matchType =
+		game.general.playerChats === 'emotes'
+			? 'emoteMatches'
+			: game.customGameSettings && game.customGameSettings.enabled
+			? 'customMatches'
+			: game.general.casualGame
+			? 'casualMatches'
+			: game.general.playerChats === 'disabled'
+			? 'silentMatches'
+			: game.general.practiceGame
+			? 'practiceMatches'
+			: game.general.private || game.general.unlistedGame
+			? ''
+			: game.general.rainbowgame
+			? 'rainbowMatches'
+			: 'greyMatches';
+	let playerCountToLog = 0;
+
+	if (matchType === 'greyMatches' || matchType === 'rainbowMatches') {
+		playerCountToLog = game.general.playerCount;
+	}
+
+	return {
+		delta: profileDelta(username, game),
+		matchType,
+		playerCountToLog
+	};
+}
+
 // username: String, game: enhancedGameSummary, options: { version: String, cache: Boolean }
 function updateProfile(username, game, options = {}) {
 	const { version, cache } = options;
-	const delta = profileDelta(username, game);
+	const { delta, matchType, playerCountToLog } = profileDeltaWithMatchType(username, game);
+
+	let $inc;
+
+	if (!matchType) {
+		$inc = {};
+	} else {
+		$inc = {
+			// [`stats.matches.${matchType}.events`]: delta.stats.matches.allMatches.events,
+			// [`stats.matches.${matchType}.successes`]: delta.stats.matches.allMatches.successes,
+
+			[`stats.matches.${matchType}.liberal.events`]: delta.stats.matches.liberal.events,
+			[`stats.matches.${matchType}.liberal.successes`]: delta.stats.matches.liberal.successes,
+
+			[`stats.matches.${matchType}.fascist.events`]: delta.stats.matches.fascist.events,
+			[`stats.matches.${matchType}.fascist.successes`]: delta.stats.matches.fascist.successes,
+
+			'stats.actions.voteAccuracy.events': delta.stats.actions.voteAccuracy.events,
+			'stats.actions.voteAccuracy.successes': delta.stats.actions.voteAccuracy.successes,
+
+			'stats.actions.shotAccuracy.events': delta.stats.actions.shotAccuracy.events,
+			'stats.actions.shotAccuracy.successes': delta.stats.actions.shotAccuracy.successes
+		};
+
+		if (playerCountToLog !== 0) {
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.events`] = delta.stats.matches.allMatches.events;
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.successes`] = delta.stats.matches.allMatches.successes;
+		}
+	}
 
 	return (
 		Profile.findByIdAndUpdate(
 			username,
 			{
-				$inc: {
-					'stats.matches.allMatches.events': delta.stats.matches.allMatches.events,
-					'stats.matches.allMatches.successes': delta.stats.matches.allMatches.successes,
-
-					'stats.matches.liberal.events': delta.stats.matches.liberal.events,
-					'stats.matches.liberal.successes': delta.stats.matches.liberal.successes,
-
-					'stats.matches.fascist.events': delta.stats.matches.fascist.events,
-					'stats.matches.fascist.successes': delta.stats.matches.fascist.successes,
-
-					'stats.actions.voteAccuracy.events': delta.stats.actions.voteAccuracy.events,
-					'stats.actions.voteAccuracy.successes': delta.stats.actions.voteAccuracy.successes,
-
-					'stats.actions.shotAccuracy.events': delta.stats.actions.shotAccuracy.events,
-					'stats.actions.shotAccuracy.successes': delta.stats.actions.shotAccuracy.successes
-				},
+				$inc,
 				$push: {
 					recentGames: {
 						$each: [delta.recentGames],
