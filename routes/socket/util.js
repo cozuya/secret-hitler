@@ -1,4 +1,46 @@
 const { newStaff } = require('./models');
+const util = require('util');
+const { Webhook } = require('discord-webhook-node');
+const tempy = require('tempy');
+
+/**
+ * Debugging function to send a game to Discord after it's been identified to be cyclic
+ */
+
+const debugSendGame = (game, message = '') => {
+	const _game = Object.assign({}, game);
+	delete _game.unsentReports;
+	const webhook = new Webhook(process.env.DISCORDPRIVATEDEVELOPERS);
+	const gameStr = util.inspect(_game, { showHidden: true, depth: null, colors: false });
+
+	tempy.write.task(
+		gameStr,
+		filename => {
+			if (message) webhook.send(message);
+			webhook.sendFile(filename);
+		},
+		{ extension: '.txt' }
+	);
+};
+module.exports.debugSendGame = debugSendGame;
+
+const identified = [];
+/**
+ * Check if a game is cyclic (JSON stringify fails on a cyclic object)
+ * @param {*} game game object
+ * @param {string} phase identifier of when this was detected
+ */
+const testGameObject = game => {
+	if (identified.indexOf(game.general.uid) !== -1) return;
+	try {
+		// eslint-disable-next-line no-unused-vars
+		const str = JSON.stringify(game);
+	} catch (e) {
+		debugSendGame(game, `Cyclic game object detected, stack trace: \n${e.stack}`);
+		identified.push(game.general.uid);
+	}
+};
+module.exports.testGameObject = testGameObject;
 
 /**
  * @param {object} game - game to act on.
@@ -97,6 +139,8 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 
 				sock.emit('gameUpdate', secureGame(_game));
 			}
+
+			testGameObject(_game);
 		});
 	}
 };

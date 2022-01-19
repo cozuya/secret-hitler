@@ -1815,6 +1815,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			}
 
 			game.private.voteSpamData[playerIndex].unvoteTimer = setInterval(() => {
+				if (!game.general.status.startsWith('Vote')) return; // DISGUSTING hack to ensure we are still in the voting phase
 				const playerRecheck = seatedPlayers.find(player => player.userName === passport.user);
 				game.publicPlayersState[playerIndex].isLoader = !playerRecheck.voteStatus.hasVoted;
 				sendInProgressGameUpdate(game, true);
