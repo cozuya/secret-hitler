@@ -539,7 +539,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						require('./start-game.js')(finalGame); // circular dep.
 						sendGameList();
 					}
-				}, 1000);
+				}, 1000)[Symbol.toPrimitive]();
 			} else {
 				game.general.tournyInfo.showOtherTournyTable = true;
 				game.chats.push({

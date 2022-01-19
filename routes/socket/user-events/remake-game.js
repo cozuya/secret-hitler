@@ -352,7 +352,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					}
 				}
 				sendInProgressGameUpdate(game);
-			}, 1000);
+			}, 1000)[Symbol.toPrimitive]();
 		}
 	} else if (!data.remakeStatus && Date.now() > player.remakeTime + 2000) {
 		player.isRemaking = false;

@@ -205,7 +205,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 				}
 			},
 			process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-		);
+		)[Symbol.toPrimitive]();
 	}
 
 	game.gameState.clickActionInfo =

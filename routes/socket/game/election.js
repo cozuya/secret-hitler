@@ -329,7 +329,7 @@ const enactPolicy = (game, team, socket) => {
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-					);
+					)[Symbol.toPrimitive]();
 					sendInProgressGameUpdate(game);
 				}
 			} else {
@@ -700,7 +700,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-								);
+								)[Symbol.toPrimitive]();
 							}
 						},
 						process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000
@@ -946,7 +946,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-								);
+								)[Symbol.toPrimitive]();
 							}
 
 							sendInProgressGameUpdate(game);
@@ -1341,7 +1341,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-					);
+					)[Symbol.toPrimitive]();
 				}
 
 				sendInProgressGameUpdate(game);
@@ -1568,7 +1568,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-					);
+					)[Symbol.toPrimitive]();
 				}
 				sendInProgressGameUpdate(game);
 			},
@@ -1642,7 +1642,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 						}
 					},
 					process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-				);
+				)[Symbol.toPrimitive]();
 			}
 
 			setTimeout(
@@ -1819,7 +1819,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				const playerRecheck = seatedPlayers.find(player => player.userName === passport.user);
 				game.publicPlayersState[playerIndex].isLoader = !playerRecheck.voteStatus.hasVoted;
 				sendInProgressGameUpdate(game, true);
-			}, 2000);
+			}, 2000)[Symbol.toPrimitive]();
 		}
 
 		if (force) {

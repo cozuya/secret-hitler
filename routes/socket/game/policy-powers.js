@@ -419,7 +419,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 											}
 										},
 										process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-									);
+									)[Symbol.toPrimitive]();
 								}
 
 								sendInProgressGameUpdate(game);

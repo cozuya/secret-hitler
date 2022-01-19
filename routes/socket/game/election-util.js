@@ -243,7 +243,7 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-					);
+					)[Symbol.toPrimitive]();
 				}
 				sendInProgressGameUpdate(game);
 			},

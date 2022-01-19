@@ -137,7 +137,7 @@ const startCountdown = game => {
 			sendCommandChatsUpdate(game);
 		}
 		startGamePause--;
-	}, 1000);
+	}, 1000)[Symbol.toPrimitive]();
 };
 
 /**
