@@ -559,7 +559,7 @@ module.exports = game => {
 			sendInProgressGameUpdate(game, true);
 			startGamePause--;
 		}
-	}, 1000);
+	}, 1000)[Symbol.toPrimitive]();
 
 	game.private.hiddenInfoChat = [];
 	game.private.hiddenInfoSubscriptions = [];

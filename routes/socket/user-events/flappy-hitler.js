@@ -37,7 +37,7 @@ module.exports.handleFlappyEvent = (data, game) => {
 			};
 
 			updateFlappyRoom(newData);
-		}, 1500 * game.flappyState.pylonDensity);
+		}, 1500 * game.flappyState.pylonDensity)[Symbol.toPrimitive]();
 	}
 
 	if (data.type === 'collision') {
