@@ -77,7 +77,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			return;
 		}
 
-		const newGame = _.cloneDeep(game);
+		const _game = Object.assign({}, game);
+		delete _game.private;
+		const newGame = _.cloneDeep(_game);
 		const remakePlayerNames = remakeData.filter(player => player.isRemaking).map(player => player.userName);
 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
 			socketId =>
