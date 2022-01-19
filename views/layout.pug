@@ -47,7 +47,10 @@ html(lang="en")
         a.active.item Home
       else
         a.item(href="/") Home
-      a.item(href="/observe/") Game Lobby
+      if username
+        a.item(href="/game/") Game Lobby
+      else
+        a.item(href="/observe/") Game Lobby
       if changelog
         a.active.item Changelog
       else
@@ -148,16 +151,17 @@ html(lang="en")
             a.item(href="/about") About
 
 
-          div.item.right#user-block(style="display: none;")
-            a.right#logout(href="#", style="margin-right: 20px;") Logout
-            a.right#username-account-btn(href="/account", style="color: #85d42a")
-              = username + '\'s account'
-
-          .right.menu#login-block(style="display: none;")
-            .ui.buttons
-              button.ui.button#signin Log In
-              .or
-              button.ui.button#signup Sign Up
+          if username
+            div.item.right
+              a.right#logout(href="#", style="margin-right: 20px;") Logout
+              a.right(href="/account", style="color: #85d42a")
+                = username + '\'s account'
+          else
+            .right.menu
+              .ui.buttons
+                button.ui.button#signin Log In
+                .or
+                button.ui.button#signup Sign Up
 
     section.add-email-modal.ui.modal.small.segment.column
       h2.header Add an email address to your account and request a verification email

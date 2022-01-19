@@ -15,21 +15,6 @@ $(document).ready(function() {
 		});
 	}
 
-	$.ajax({
-		url: '/current-user',
-		contentType: 'application/json; charset=UTF-8',
-		statusCode: {
-			200: function(d) {
-				if (d.username) {
-					$('#user-block').css('display', 'block');
-					$('#username-account-btn').text(d.username + "'s account");
-				} else {
-					$('#login-block').css('display', 'block');
-				}
-			}
-		}
-	});
-
 	$('body').on('click', '#menupopout', function(event) {
 		event.preventDefault();
 
