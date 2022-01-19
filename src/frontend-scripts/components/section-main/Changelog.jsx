@@ -20,12 +20,12 @@ class Changelog extends React.Component {
 					<li>Gamesolver: 1978</li>
 					<li>ClownGamer: 1952</li>
 					<li>casdude: 1922</li>
+					<li>Elevate: 1872</li>
 					<li>DocD: 1853</li>
 					<li>noooothitler: 1850</li>
 					<li>olly97: 1838</li>
 					<li>lucaanders: 1811</li>
 					<li>hecetox249: 1806</li>
-					<li>akaIi: 1803</li>
 				</ol>
 
 				<hr style={{ width: '100%' }} />
