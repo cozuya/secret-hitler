@@ -41,9 +41,7 @@ module.exports = () => {
 
 		renderObj[varName] = true;
 
-		if (req.user) {
-			renderObj.username = req.user.username;
-		}
+		res.set('Cache-Control', 'max-age=86400');
 
 		if (process.env.NODE_ENV === 'production') {
 			renderObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
@@ -73,6 +71,18 @@ module.exports = () => {
 
 	app.post('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
+	});
+
+	app.get('/current-user', (req, res) => {
+		res.set('Cache-Control', 'max-age=0');
+		if (req.user)
+			res.json({
+				username: req.user.username
+			});
+		else
+			res.json({
+				username: ''
+			});
 	});
 
 	app.get('/rules', (req, res) => {
@@ -210,6 +220,7 @@ module.exports = () => {
 					});
 				}
 				account.save(() => {
+					res.set('Cache-Control', 'max-age=0');
 					res.render('game', gameObj);
 				});
 			});
@@ -270,6 +281,7 @@ module.exports = () => {
 			gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 		}
 
+		res.set('Cache-Control', 'max-age=0');
 		res.render('game', gameObj);
 	});
 
@@ -378,6 +390,7 @@ module.exports = () => {
 	app.get('/online-playercount', (req, res) => {
 		const { userList } = require('./socket/models');
 
+		res.set('Cache-Control', 'max-age=60');
 		res.json({
 			count: userList.length
 		});

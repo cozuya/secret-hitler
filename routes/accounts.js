@@ -36,9 +36,7 @@ const renderPage = (req, res, pageName, varName) => {
 
 	renderObj[varName] = true;
 
-	if (req.user) {
-		renderObj.username = req.user.username;
-	}
+	res.set('Cache-Control', 'max-age=86400');
 
 	if (process.env.NODE_ENV === 'production') {
 		renderObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
@@ -385,6 +383,7 @@ module.exports.accounts = torIpsParam => {
 	torIps = torIpsParam;
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
+		res.set('Cache-Control', 'max-age=0');
 		res.render('page-account', {
 			isLocal: req.user.isLocal,
 			username: req.user.username,
