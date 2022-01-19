@@ -10,7 +10,7 @@ const tempy = require('tempy');
 const debugSendGame = (game, message = '') => {
 	const _game = Object.assign({}, game);
 	delete _game.unsentReports;
-	const webhook = new Webhook(process.env.DISCORDPRIVATEDEVELOEPRS);
+	const webhook = new Webhook(process.env.DISCORDPRIVATEDEVELOPERS);
 	const gameStr = util.inspect(_game, { showHidden: true, depth: null, colors: false });
 
 	tempy.write.task(
@@ -36,7 +36,7 @@ const testGameObject = game => {
 		// eslint-disable-next-line no-unused-vars
 		const str = JSON.stringify(game);
 	} catch (e) {
-		debugSendGame(game, `<@447068325856542721> cyclic game object detected, stack trace: \n${e.stack}`);
+		debugSendGame(game, `Cyclic game object detected, stack trace: \n${e.stack}`);
 		identified.push(game.general.uid);
 	}
 };
