@@ -340,7 +340,7 @@ class Playerlist extends React.Component {
 
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName} position="bottom center">
-											<span className={userClasses}>
+											<span className={userClasses} translate="no">
 												{prefix}
 												{` ${user.userName}`}
 											</span>
@@ -349,7 +349,7 @@ class Playerlist extends React.Component {
 								} else {
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses} ref={popperRef}>
+											<span className={userClasses} ref={popperRef} translate="no">
 												{user.userName}
 											</span>
 										</UserPopup>
@@ -586,7 +586,7 @@ class Playerlist extends React.Component {
 
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses}>
+											<span className={userClasses} translate="no">
 												{prefix}
 												{` ${user.userName}`}
 											</span>
@@ -595,7 +595,7 @@ class Playerlist extends React.Component {
 								} else {
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName}>
-											<span className={userClasses} ref={popperRef}>
+											<span className={userClasses} ref={popperRef} translate="no">
 												{user.isPrivate ? 'P - ' : ''}
 												{user.userName}
 											</span>
