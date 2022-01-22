@@ -340,7 +340,7 @@ class Playerlist extends React.Component {
 
 									return (
 										<UserPopup socket={this.props.socket} userName={user.userName} position="bottom center">
-											<span className={userClasses}>
+											<span className={userClasses} translate="no">
 												{prefix}
 												{` ${user.userName}`}
 											</span>
