@@ -83,12 +83,12 @@ class ProfileWrapper extends React.Component {
 		const { matches } = this.props.profile.stats;
 
 		return (
-			<div>
-				<Table
-					uiTable="top attached four column"
-					headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
-					rows={
-						[
+			<div style={{ marginLeft: '10px' }}>
+				<CollapsibleSegment title={'Ranked Matches'}>
+					<Table
+						uiTable="top attached four column"
+						headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+						rows={[
 							this.successRowMatches(
 								'All Ranked Matches',
 								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events,
@@ -109,46 +109,58 @@ class ProfileWrapper extends React.Component {
 								matches.greyMatches.liberal.successes,
 								matches.greyMatches.fascist.events,
 								matches.greyMatches.fascist.successes
-							),
-							this.successRowMatches(
-								'Practice Matches',
-								matches.practiceMatches.liberal.events,
-								matches.practiceMatches.liberal.successes,
-								matches.practiceMatches.fascist.events,
-								matches.practiceMatches.fascist.successes
-							),
-							this.successRowMatches(
-								'Silent Matches',
-								matches.silentMatches.liberal.events,
-								matches.silentMatches.liberal.successes,
-								matches.silentMatches.fascist.events,
-								matches.silentMatches.fascist.successes
-							),
-							this.successRowMatches(
-								'Casual Matches',
-								matches.casualMatches.liberal.events,
-								matches.casualMatches.liberal.successes,
-								matches.casualMatches.fascist.events,
-								matches.casualMatches.fascist.successes
-							),
-							this.successRowMatches(
-								'Custom Matches',
-								matches.customMatches.liberal.events,
-								matches.customMatches.liberal.successes,
-								matches.customMatches.fascist.events,
-								matches.customMatches.fascist.successes
-							),
-							this.successRowMatches(
-								'Emote Matches',
-								matches.emoteMatches.liberal.events,
-								matches.emoteMatches.liberal.successes,
-								matches.emoteMatches.fascist.events,
-								matches.emoteMatches.fascist.successes
 							)
-						]
-						// player counts
-					}
-				/>
+						]}
+					/>
+				</CollapsibleSegment>
+				{Object.entries({
+					practiceMatches: 'Practice Matches',
+					silentMatches: 'Silent Matches',
+					casualMatches: 'Casual Matches',
+					customMatches: 'Custom Matches',
+					emoteMatches: 'Emote Matches'
+				}).map(([k, v]) => (
+					<CollapsibleSegment title={v} key={k}>
+						<Table
+							uiTable="top attached four column"
+							headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+							rows={[
+								this.successRowMatches(v, matches[k].liberal.events, matches[k].liberal.successes, matches[k].fascist.events, matches[k].fascist.successes)
+							]}
+						/>
+					</CollapsibleSegment>
+				))}
+				{['5', '6', '7', '8', '9', '10'].map(n => (
+					<CollapsibleSegment title={`${n} Player Games`} key={n}>
+						<Table
+							uiTable="top attached four column"
+							headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+							rows={[
+								this.successRowMatches(
+									`Ranked ${n}p`,
+									matches.greyMatches[n].liberal.events + matches.rainbowMatches[n].liberal.events,
+									matches.greyMatches[n].liberal.successes + matches.rainbowMatches[n].liberal.successes,
+									matches.greyMatches[n].fascist.events + matches.rainbowMatches[n].fascist.events,
+									matches.greyMatches[n].fascist.successes + matches.rainbowMatches[n].fascist.successes
+								),
+								this.successRowMatches(
+									`Rainbow ${n}p`,
+									matches.rainbowMatches[n].liberal.events,
+									matches.rainbowMatches[n].liberal.successes,
+									matches.rainbowMatches[n].fascist.events,
+									matches.rainbowMatches[n].fascist.successes
+								),
+								this.successRowMatches(
+									`Non-Rainbow ${n}p`,
+									matches.greyMatches[n].liberal.events,
+									matches.greyMatches[n].liberal.successes,
+									matches.greyMatches[n].fascist.events,
+									matches.greyMatches[n].fascist.successes
+								)
+							]}
+						/>
+					</CollapsibleSegment>
+				))}
 			</div>
 		);
 	}
