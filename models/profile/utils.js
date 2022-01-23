@@ -167,8 +167,10 @@ function updateProfile(username, game, options = {}) {
 		};
 
 		if (playerCountToLog !== 0) {
-			$inc[`stats.matches.${matchType}.${playerCountToLog}.events`] = delta.stats.matches.allMatches.events;
-			$inc[`stats.matches.${matchType}.${playerCountToLog}.successes`] = delta.stats.matches.allMatches.successes;
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.liberal.events`] = delta.stats.matches.liberal.events;
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.liberal.successes`] = delta.stats.matches.liberal.successes;
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.fascist.events`] = delta.stats.matches.fascist.events;
+			$inc[`stats.matches.${matchType}.${playerCountToLog}.fascist.successes`] = delta.stats.matches.fascist.successes;
 		}
 	}
 

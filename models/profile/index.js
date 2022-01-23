@@ -6,6 +6,11 @@ const matchData = {
 	successes: { type: Number, default: 0 }
 };
 
+const roleMatchData = {
+	liberal: matchData,
+	fascist: matchData
+};
+
 const profileSchema = new Schema({
 	_id: String, // username
 	username: String,
@@ -16,58 +21,34 @@ const profileSchema = new Schema({
 	lastConnectedIP: String,
 	stats: {
 		matches: {
-			legacyMatches: {
-				// pre-reset games
-				liberal: matchData,
-				fascist: matchData
-			},
+			legacyMatches: roleMatchData, // pre-reset games
 			greyMatches: {
 				// ranked grey games
 				liberal: matchData,
 				fascist: matchData,
-				5: matchData,
-				6: matchData,
-				7: matchData,
-				8: matchData,
-				9: matchData,
-				10: matchData
+				5: roleMatchData,
+				6: roleMatchData,
+				7: roleMatchData,
+				8: roleMatchData,
+				9: roleMatchData,
+				10: roleMatchData
 			},
 			rainbowMatches: {
 				// ranked rainbow games
 				liberal: matchData,
 				fascist: matchData,
-				5: matchData,
-				6: matchData,
-				7: matchData,
-				8: matchData,
-				9: matchData,
-				10: matchData
+				5: roleMatchData,
+				6: roleMatchData,
+				7: roleMatchData,
+				8: roleMatchData,
+				9: roleMatchData,
+				10: roleMatchData
 			},
-			practiceMatches: {
-				// practice games
-				liberal: matchData,
-				fascist: matchData
-			},
-			silentMatches: {
-				// silent games
-				liberal: matchData,
-				fascist: matchData
-			},
-			emoteMatches: {
-				// emote-only games
-				liberal: matchData,
-				fascist: matchData
-			},
-			casualMatches: {
-				// casual games
-				liberal: matchData,
-				fascist: matchData
-			},
-			customMatches: {
-				// custom (any settings) games
-				liberal: matchData,
-				fascist: matchData
-			}
+			practiceMatches: roleMatchData, // practice games
+			silentMatches: roleMatchData, // silent games
+			emoteMatches: roleMatchData, // emote-only games
+			casualMatches: roleMatchData, // casual games
+			customMatches: roleMatchData // custom (any settings) games
 		},
 		actions: {
 			voteAccuracy: matchData,

@@ -9,6 +9,7 @@ import { PLAYERCOLORS } from '../../constants';
 import Swal from 'sweetalert2';
 import { Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
+import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -54,6 +55,10 @@ class ProfileWrapper extends React.Component {
 		return [name, trials, this.successRate(trials, outcomes)];
 	}
 
+	successRowMatches(name, libGames, libWins, fasGames, fasWins) {
+		return [name, libGames + fasGames, this.successRate(libGames, libWins), this.successRate(fasGames, fasWins)];
+	}
+
 	Elo() {
 		return (
 			<Table
@@ -80,17 +85,69 @@ class ProfileWrapper extends React.Component {
 		return (
 			<div>
 				<Table
-					uiTable="top attached three column"
-					headers={['All Matches', 'Matches', 'Winrate']}
-					rows={[this.successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)]}
-				/>
-				<Table
-					uiTable="bottom attached three column"
-					headers={['Loyalty', 'Matches', 'Winrate']}
-					rows={[
-						this.successRow('Liberal', matches.liberal.events, matches.liberal.successes),
-						this.successRow('Fascist', matches.fascist.events, matches.fascist.successes)
-					]}
+					uiTable="top attached four column"
+					headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+					rows={
+						[
+							this.successRowMatches(
+								'All Ranked Matches',
+								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Rainbow Matches',
+								matches.rainbowMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Non-Rainbow Matches',
+								matches.greyMatches.liberal.events,
+								matches.greyMatches.liberal.successes,
+								matches.greyMatches.fascist.events,
+								matches.greyMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Practice Matches',
+								matches.practiceMatches.liberal.events,
+								matches.practiceMatches.liberal.successes,
+								matches.practiceMatches.fascist.events,
+								matches.practiceMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Silent Matches',
+								matches.silentMatches.liberal.events,
+								matches.silentMatches.liberal.successes,
+								matches.silentMatches.fascist.events,
+								matches.silentMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Casual Matches',
+								matches.casualMatches.liberal.events,
+								matches.casualMatches.liberal.successes,
+								matches.casualMatches.fascist.events,
+								matches.casualMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Custom Matches',
+								matches.customMatches.liberal.events,
+								matches.customMatches.liberal.successes,
+								matches.customMatches.fascist.events,
+								matches.customMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Emote Matches',
+								matches.emoteMatches.liberal.events,
+								matches.emoteMatches.liberal.successes,
+								matches.emoteMatches.fascist.events,
+								matches.emoteMatches.fascist.successes
+							)
+						]
+						// player counts
+					}
 				/>
 			</div>
 		);
@@ -170,6 +227,7 @@ class ProfileWrapper extends React.Component {
 				// 	return this.Badges();
 			}
 		})();
+		console.log(this.props.profile.stats);
 		const toActive = stat => (activeStat === stat ? 'active' : '');
 
 		return (
@@ -195,10 +253,12 @@ class ProfileWrapper extends React.Component {
 					{/* </a> */}
 				</div>
 				<div className="ui bottom attached segment">{table}</div>
-				<div className="column-name">
-					<h2 className="ui header">Badges</h2>
-				</div>
-				{this.Badges()}
+				{/* <div className="column-name"> */}
+				{/* 	<h2 className="ui header">Badges</h2> */}
+				{/* </div> */}
+				<CollapsibleSegment title={'Badges'} defaultExpanded={true}>
+					{this.Badges()}
+				</CollapsibleSegment>
 			</div>
 		);
 	}
