@@ -115,10 +115,10 @@ class ProfileWrapper extends React.Component {
 				</CollapsibleSegment>
 				{Object.entries({
 					practiceMatches: 'Practice Matches',
-					silentMatches: 'Silent Matches',
-					casualMatches: 'Casual Matches',
-					customMatches: 'Custom Matches',
-					emoteMatches: 'Emote Matches'
+					silentMatches: 'Silent Matches'
+					// casualMatches: 'Casual Matches',
+					// customMatches: 'Custom Matches',
+					// emoteMatches: 'Emote Matches'
 				}).map(([k, v]) => (
 					<CollapsibleSegment title={v} key={k}>
 						<Table
