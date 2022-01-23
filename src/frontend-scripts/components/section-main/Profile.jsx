@@ -227,7 +227,7 @@ class ProfileWrapper extends React.Component {
 				// 	return this.Badges();
 			}
 		})();
-		console.log(this.props.profile.stats);
+
 		const toActive = stat => (activeStat === stat ? 'active' : '');
 
 		return (
@@ -256,9 +256,7 @@ class ProfileWrapper extends React.Component {
 				{/* <div className="column-name"> */}
 				{/* 	<h2 className="ui header">Badges</h2> */}
 				{/* </div> */}
-				<CollapsibleSegment title={'Badges'} defaultExpanded={true}>
-					{this.Badges()}
-				</CollapsibleSegment>
+				<CollapsibleSegment title={'Badges'}>{this.Badges()}</CollapsibleSegment>
 			</div>
 		);
 	}
@@ -279,13 +277,14 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div>
-				<h2 className="ui header recent-games-table">Recent Games</h2>
-				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
+				<CollapsibleSegment title={'Recent Games'} titleClass={'recent-games-table'}>
+					<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
+				</CollapsibleSegment>
 				{this.props.profile.lastConnectedIP && (
 					<div>
-						<h2 className="ui header">AEM Info</h2>
-						{/* <Table headers={['Last Connected IP', 'Signup IP']} rows={[[this.props.profile.lastConnectedIP, this.props.profile.signupIP]]} /> */}
-						<Table headers={['Last Connected IP / Signup IP']} rows={[[this.props.profile.lastConnectedIP], [this.props.profile.signupIP]]} />
+						<CollapsibleSegment title={'AEM Info'} defaultExpanded={true}>
+							<Table headers={['Last Connected IP / Signup IP']} rows={[[this.props.profile.lastConnectedIP], [this.props.profile.signupIP]]} />
+						</CollapsibleSegment>
 					</div>
 				)}
 			</div>

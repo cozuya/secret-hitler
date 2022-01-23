@@ -9,7 +9,7 @@ const CollapsibleSegment = props => {
 	return (
 		<>
 			<div className="column-name">
-				<h2 className="ui header">
+				<h2 className={`ui header ${props.titleClass || ''}`}>
 					<i className={'fas fa-chevron-circle-' + (isExpanded ? 'down' : 'right')} {...getToggleProps()} />
 					{props.title}
 				</h2>
