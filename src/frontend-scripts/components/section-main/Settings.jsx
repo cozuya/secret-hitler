@@ -40,6 +40,7 @@ class Settings extends React.Component {
 		failedNameChangeMessage: '',
 		soundSelected: 'Pack 1',
 		staffDisableVisibleElo: '',
+		staffDisableVisibleXP: '',
 		staffDisableStaffColor: '',
 		staffIncognito: '',
 		fullheight: false,
@@ -82,6 +83,7 @@ class Settings extends React.Component {
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
+			staffDisableVisibleXP: gameSettings.staffDisableVisibleXP || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
@@ -905,6 +907,22 @@ class Settings extends React.Component {
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable visible XP
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableVisibleXP"
+											checked={this.state.staffDisableVisibleXP}
+											onChange={() => this.toggleGameSettings('staffDisableVisibleXP')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 					</div>
 					<div className="row centered">

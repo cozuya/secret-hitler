@@ -305,13 +305,15 @@ module.exports = () => {
 							: account.pastElo.toObject().length
 							? account.pastElo.toObject()
 							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
-						_profile.xpOverall = (account.xpOverall || 0).toFixed(numDigits);
-						_profile.eloOverall = (account.eloOverall || 1600).toFixed(numDigits);
-						_profile.xpSeason = (account.xpSeason || 0).toFixed(numDigits);
-						_profile.eloSeason = (account.eloSeason || 1600).toFixed(numDigits);
+						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : (account.xpOverall || 0).toFixed(numDigits);
+						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : (account.eloOverall || 1600).toFixed(numDigits);
+						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : (account.xpSeason || 0).toFixed(numDigits);
+						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : (account.eloSeason || 1600).toFixed(numDigits);
 						_profile.isRainbowOverall = account.isRainbowOverall;
 						_profile.isRainbowSeason = account.isRainbowSeason;
 						_profile.staffRole = account.staffRole;
+						_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
+						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (

@@ -14,6 +14,7 @@ const Account = new Schema({
 	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
+		staffDisableVisibleXP: Boolean,
 		staffDisableStaffColor: Boolean,
 		staffIncognito: Boolean,
 		isRainbow: Boolean,

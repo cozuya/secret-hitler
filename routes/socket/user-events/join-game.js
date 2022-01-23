@@ -54,6 +54,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				previousSeasonAward: account.gameSettings.previousSeasonAward,
 				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+				staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
 				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 				cardStatus: {
 					cardDisplayed: false,

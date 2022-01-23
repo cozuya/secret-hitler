@@ -146,6 +146,7 @@ module.exports.formattedUserList = isAEM => {
 			rainbowLosses: prune(user.rainbowLosses),
 			isPrivate: prune(user.isPrivate),
 			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+			staffDisableVisibleXP: prune(user.staffDisableVisibleXP),
 			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
 			// Tournaments are disabled, no point sending this.

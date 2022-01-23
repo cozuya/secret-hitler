@@ -209,6 +209,7 @@ module.exports.sendUserGameSettings = socket => {
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+					staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 					staffIncognito: account.gameSettings.staffIncognito,
 					wins: account.wins,

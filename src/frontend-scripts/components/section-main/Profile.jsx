@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { updateActiveStats, fetchReplay } from '../../actions/actions';
+import { fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
@@ -13,7 +13,7 @@ import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
-	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
+	// updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
 	fetchReplay: gameId => dispatch(fetchReplay(gameId))
 });
 
@@ -71,8 +71,8 @@ class ProfileWrapper extends React.Component {
 					],
 					[
 						'XP',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.xpSeason || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.xpOverall || 1600
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 1600,
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 1600
 					]
 				]}
 			/>
@@ -213,23 +213,6 @@ class ProfileWrapper extends React.Component {
 
 	Stats() {
 		// Elo | Matches | Actions | Badges
-		const { activeStat } = this.props.profile;
-		const { updateActiveStats } = this.props;
-		const table = (() => {
-			switch (activeStat) {
-				case 'ELO':
-					return this.Elo();
-				case 'MATCHES':
-					return this.Matches();
-				case 'ACTIONS':
-					return this.Actions();
-				// case 'BADGES':
-				// 	return this.Badges();
-			}
-		})();
-
-		const toActive = stat => (activeStat === stat ? 'active' : '');
-
 		return (
 			<div>
 				<div className="column-name">
@@ -238,25 +221,14 @@ class ProfileWrapper extends React.Component {
 						<i className="large help circle icon" />
 					</a>
 				</div>
-				<div className="ui top attached menu">
-					<a className={`${toActive('ELO')} item`} onClick={updateActiveStats.bind(null, 'ELO')}>
-						Elo & XP
-					</a>
-					<a className={`${toActive('MATCHES')} item`} onClick={updateActiveStats.bind(null, 'MATCHES')}>
-						Matches
-					</a>
-					<a className={`${toActive('ACTIONS')} item`} onClick={updateActiveStats.bind(null, 'ACTIONS')}>
-						Actions
-					</a>
-					{/* <a className={`${toActive('BADGES')} item`} onClick={updateActiveStats.bind(null, 'BADGES')}> */}
-					{/* 	Badges */}
-					{/* </a> */}
-				</div>
-				<div className="ui bottom attached segment">{table}</div>
-				{/* <div className="column-name"> */}
-				{/* 	<h2 className="ui header">Badges</h2> */}
-				{/* </div> */}
-				<CollapsibleSegment title={'Badges'}>{this.Badges()}</CollapsibleSegment>
+				<CollapsibleSegment title={'Elo & XP'} defaultExpanded={true}>
+					{this.Elo()}
+				</CollapsibleSegment>
+				<CollapsibleSegment title={'Matches'}>{this.Matches()}</CollapsibleSegment>
+				<CollapsibleSegment title={'Actions'}>{this.Actions()}</CollapsibleSegment>
+				<CollapsibleSegment title={'Badges'} defaultExpanded={true}>
+					{this.Badges()}
+				</CollapsibleSegment>
 			</div>
 		);
 	}
