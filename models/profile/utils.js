@@ -109,7 +109,7 @@ function profileDelta(username, game) {
 	};
 }
 
-function profileDeltaWithMatchType(username, game) {
+function profileDeltaWithMatchType(username, game, gameSummary) {
 	const matchType =
 		game.general.playerChats === 'emotes'
 			? 'emoteMatches'
@@ -133,16 +133,16 @@ function profileDeltaWithMatchType(username, game) {
 	}
 
 	return {
-		delta: profileDelta(username, game),
+		delta: profileDelta(username, gameSummary),
 		matchType,
 		playerCountToLog
 	};
 }
 
 // username: String, game: enhancedGameSummary, options: { version: String, cache: Boolean }
-function updateProfile(username, game, options = {}) {
+function updateProfile(username, game, gameSummary, options = {}) {
 	const { version, cache } = options;
-	const { delta, matchType, playerCountToLog } = profileDeltaWithMatchType(username, game);
+	const { delta, matchType, playerCountToLog } = profileDeltaWithMatchType(username, game, gameSummary);
 
 	let $inc;
 
@@ -201,7 +201,7 @@ function updateProfile(username, game, options = {}) {
 					return profile
 						.update({ version }, { overwrite: true })
 						.exec()
-						.then(() => updateProfile(username, game, options));
+						.then(() => updateProfile(username, game, gameSummary, options));
 				} else {
 					return profile;
 				}
@@ -233,10 +233,10 @@ function updateProfile(username, game, options = {}) {
 }
 
 // game: enhancedGameSummary, options: { version: String, cache: Boolean }
-function updateProfiles(game, options = {}) {
-	debug('Updating profiles for: %s', game.id);
+function updateProfiles(game, gameSummary, options = {}) {
+	debug('Updating profiles for: %s', gameSummary.id);
 
-	return Promise.all(game.players.map(p => p.username).map(username => updateProfile(username, game, options)));
+	return Promise.all(gameSummary.players.map(p => p.username).map(username => updateProfile(username, game, gameSummary, options)));
 }
 
 // side effect: caches profile

@@ -59,8 +59,8 @@ const generateGameObject = game => {
 			isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 			timedMode: game?.general?.timedMode,
 			blindMode: game?.general?.blindMode,
-			eloMinimum: game?.eloMinimum,
-			xpMinimum: game?.xpMinimum,
+			eloMinimum: game?.general?.eloMinimum,
+			xpMinimum: game?.general?.xpMinimum,
 			completed: true
 		};
 	}
@@ -96,6 +96,8 @@ const generateGameObject = game => {
 		isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 		timedMode: game?.general?.timedMode,
 		blindMode: game?.general?.blindMode,
+		eloMinimum: game?.general?.eloMinimum,
+		xpMinimum: game?.general?.xpMinimum,
 		completed: false
 	};
 };
@@ -116,7 +118,7 @@ const saveGame = game => {
 	try {
 		if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
 			enhanced = buildEnhancedGameSummary(summary.toObject());
-			updateProfiles(enhanced, { cache: true });
+			updateProfiles(game, enhanced, { cache: true });
 			if (!game.summarySaved) {
 				summary.save();
 				game.summarySaved = true;
