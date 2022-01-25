@@ -19,6 +19,7 @@ const Account = new Schema({
 		staffIncognito: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
+		hasUnseenBadge: Boolean,
 		customCardback: String,
 		customCardbackSaveTime: String,
 		customCardbackUid: String,

@@ -61,6 +61,7 @@ module.exports.awardBadgePrequeried = awardBadgePrequeried = (user, badgeId, bad
 			title: badgeTitle,
 			dateAwarded: new Date()
 		});
+		user.gameSettings.hasUnseenBadge = true;
 	}
 };
 

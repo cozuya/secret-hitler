@@ -301,7 +301,12 @@ class Menu extends React.Component {
 											className="loggedin"
 											trigger={
 												<a href={`#/profile/${userInfo.userName}`}>
-													<span className="playername">{userInfo.userName}</span>
+													<span
+														className="playername"
+														style={userInfo.gameSettings && userInfo.gameSettings.hasUnseenBadge ? { textShadow: '2px 2px 8px var(--theme-text-1)' } : {}}
+													>
+														{userInfo.userName}
+													</span>
 												</a>
 											}
 											content="Profile"
@@ -400,7 +405,12 @@ class Menu extends React.Component {
 											className="loggedin"
 											trigger={
 												<a href={`#/profile/${userInfo.userName}`}>
-													<span className="playername">{userInfo.userName}</span>
+													<span
+														className="playername"
+														style={userInfo.gameSettings && userInfo.gameSettings.hasUnseenBadge ? { textShadow: '2px 2px 8px var(--theme-text-1)' } : {}}
+													>
+														{userInfo.userName}
+													</span>
 												</a>
 											}
 											content="Profile"

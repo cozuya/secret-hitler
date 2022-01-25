@@ -316,6 +316,10 @@ module.exports = () => {
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 
 						Account.findOne({ username: authedUser }).then(acc => {
+							if (account.username === acc.username) {
+								acc.gameSettings.hasUnseenBadge = false;
+								acc.save();
+							}
 							if (
 								acc &&
 								acc.staffRole &&

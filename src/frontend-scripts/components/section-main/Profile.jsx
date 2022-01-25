@@ -238,7 +238,18 @@ class ProfileWrapper extends React.Component {
 				</CollapsibleSegment>
 				<CollapsibleSegment title={'Matches'}>{this.Matches()}</CollapsibleSegment>
 				<CollapsibleSegment title={'Actions'}>{this.Actions()}</CollapsibleSegment>
-				<CollapsibleSegment title={'Badges'} defaultExpanded={true}>
+				<CollapsibleSegment
+					title={'Badges'}
+					titleClass={
+						this.props.userInfo &&
+						this.props.profile._id === this.props.userInfo.userName &&
+						this.props.userInfo.gameSettings &&
+						this.props.userInfo.gameSettings.hasUnseenBadge
+							? 'newbadge'
+							: ''
+					}
+					defaultExpanded={true}
+				>
 					{this.Badges()}
 				</CollapsibleSegment>
 			</div>
