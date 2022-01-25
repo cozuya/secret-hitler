@@ -487,22 +487,13 @@ class Players extends React.Component {
 				$(this.notRainbowModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
-			} else if (gameInfo.general.eloMinimum) {
-				const user = userList.list.find(user => user.userName === userInfo.userName);
-
-				if (user && (parseInt(user.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(user.eloOverall, 10) >= gameInfo.general.eloMinimum)) {
-					onClickedTakeSeat();
-				} else {
-					$(this.elominimumModal).modal('show');
-				}
-			} else if (gameInfo.general.xpMinimum) {
-				const user = userList.list.find(user => user.userName === userInfo.userName);
-
-				if (user && parseInt(user.xpOverall, 10) >= gameInfo.general.xpMinimum) {
-					onClickedTakeSeat();
-				} else {
-					$(this.xpminimumModal).modal('show');
-				}
+			} else if (
+				gameInfo.general.eloMinimum &&
+				!(user && (parseInt(user.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(user.eloOverall, 10) >= gameInfo.general.eloMinimum))
+			) {
+				$(this.elominimumModal).modal('show');
+			} else if (gameInfo.general.xpMinimum && !(user && parseInt(user.xpOverall, 10) >= gameInfo.general.xpMinimum)) {
+				$(this.xpminimumModal).modal('show');
 			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
 				$(this.passwordModal).modal('show');
 			} else {
