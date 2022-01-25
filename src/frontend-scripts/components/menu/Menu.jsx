@@ -413,7 +413,7 @@ class Menu extends React.Component {
 													</span>
 												</a>
 											}
-											content="Profile"
+											content={userInfo.gameSettings && userInfo.gameSettings.hasUnseenBadge ? 'New badges' : 'Profile'}
 										/>
 										<Popup
 											inverted
