@@ -4,6 +4,7 @@ const { profiles } = require('../../routes/socket/models');
 const debug = require('debug')('game:profile');
 const { List } = require('immutable');
 const { flattenListOpts } = require('../../utils');
+const { checkBadgesGamesPlayed } = require('../../routes/socket/badges');
 
 // handles all stat computation logic
 function profileDelta(username, game) {
@@ -222,6 +223,19 @@ function updateProfile(username, game, gameSummary, options = {}) {
 				} else {
 					return profile;
 				}
+			})
+			.then(profile => {
+				if (!profile) return null;
+				Account.findOne({ username }).then(account => {
+					checkBadgesGamesPlayed(
+						account,
+						profile.stats.matches.customMatches.liberal.events + profile.stats.matches.customMatches.fascist.events,
+						profile.stats.matches.silentMatches.liberal.events + profile.stats.matches.silentMatches.fascist.events,
+						profile.stats.matches.emoteMatches.liberal.events + profile.stats.matches.emoteMatches.fascist.events,
+						gameSummary.id
+					);
+					account.save();
+				});
 			})
 			.then(profile => {
 				if (!profile) return null;
