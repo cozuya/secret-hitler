@@ -495,6 +495,14 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
+			} else if (gameInfo.general.xpMinimum) {
+				const user = userList.list.find(user => user.userName === userInfo.userName);
+
+				if (user && parseInt(user.xpOverall, 10) >= gameInfo.general.xpMinimum) {
+					onClickedTakeSeat();
+				} else {
+					$(this.xpminimumModal).modal('show');
+				}
 			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
 				$(this.passwordModal).modal('show');
 			} else {
@@ -559,6 +567,15 @@ class Players extends React.Component {
 					}}
 				>
 					<div className="ui header">You do not meet the elo minimum to play in this game.</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.xpminimumModal = c;
+					}}
+				>
+					<div className="ui header">You do not meet the XP minimum to play in this game.</div>
 				</div>
 
 				<div

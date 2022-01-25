@@ -52,6 +52,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
+	if (data.xpSliderValue && user.xpOverall < data.xpSliderValue) {
+		return;
+	}
+
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
@@ -141,7 +145,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
 			casualGame: data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual',
-			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && data.gameType === 'practice',
+			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && (data.gameType === 'practice' || data.playerChats === 'disabled'),
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
@@ -151,7 +155,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
-			eloMinimum: data.eloSliderValue
+			eloMinimum: data.eloSliderValue,
+			xpMinimum: data.xpSliderValue
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],

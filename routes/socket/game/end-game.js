@@ -59,6 +59,8 @@ const generateGameObject = game => {
 			isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 			timedMode: game?.general?.timedMode,
 			blindMode: game?.general?.blindMode,
+			eloMinimum: game?.eloMinimum,
+			xpMinimum: game?.xpMinimum,
 			completed: true
 		};
 	}

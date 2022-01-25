@@ -92,7 +92,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						previousSeasonAward: account.gameSettings.previousSeasonAward,
 						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 						eloOverall: account.eloOverall,
+						xpOverall: account.xpOverall,
 						eloSeason: account.eloSeason,
+						xpSeason: account.xpSeason,
 						status: {
 							type: 'none',
 							gameId: null

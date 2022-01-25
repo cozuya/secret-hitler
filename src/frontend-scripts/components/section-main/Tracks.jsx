@@ -139,7 +139,9 @@ class Tracks extends React.Component {
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
+		let xpMinimum;
 		let eloMinimumTooltip;
+		let xpMinimumTooltip;
 		let customgameactive;
 		let flappyMode;
 		let flappyModeTooltip;
@@ -231,7 +233,7 @@ class Tracks extends React.Component {
 
 		if (game.practiceGame) {
 			practiceGame = <i className="chess icon" />;
-			practiceGameTooltip = 'Practice game - results do not count towards wins and losses, gameplay rules are enforced';
+			practiceGameTooltip = 'Practice game - results do not count for Elo, gameplay rules are enforced';
 		}
 
 		if (game.timedMode) {
@@ -253,6 +255,15 @@ class Tracks extends React.Component {
 				</span>
 			);
 			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
+		if (game.xpMinimum) {
+			xpMinimum = (
+				<span>
+					<span style={{ color: 'yellow' }}>XP min: {game.xpMinimum}</span>
+				</span>
+			);
+			xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
 		}
 
 		if (game.flappyMode) {
@@ -340,6 +351,11 @@ class Tracks extends React.Component {
 				{eloMinimum && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+					</span>
+				)}
+				{xpMinimum && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={xpMinimum} content={xpMinimumTooltip} />
 					</span>
 				)}
 				{flappyMode && (
