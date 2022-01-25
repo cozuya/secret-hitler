@@ -131,7 +131,7 @@ class ProfileWrapper extends React.Component {
 					</CollapsibleSegment>
 				))}
 				{['5', '6', '7', '8', '9', '10'].map(n => (
-					<CollapsibleSegment title={`${n} Player Games`} key={n}>
+					<CollapsibleSegment title={`${n} Player Matches`} key={n}>
 						<Table
 							uiTable="top attached four column"
 							headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
@@ -261,7 +261,7 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div>
-				<CollapsibleSegment title={'Recent Games'} titleClass={'recent-games-table'}>
+				<CollapsibleSegment title={'Recent Games'} titleClass={'recent-games-table'} defaultExpanded={true}>
 					<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
 				</CollapsibleSegment>
 				{this.props.profile.lastConnectedIP && (
