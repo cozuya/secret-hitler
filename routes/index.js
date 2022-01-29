@@ -326,13 +326,13 @@ module.exports = () => {
 								(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
 							) {
 								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+									_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
 								} catch (e) {
 									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);
 								}
 								try {
-									_profile.signupIP = '-' + obfIP(acc.signupIP);
+									_profile.signupIP = '-' + obfIP(account.signupIP);
 								} catch (e) {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);
