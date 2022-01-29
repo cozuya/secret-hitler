@@ -279,9 +279,9 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			date,
 			value: account.eloOverall
 		});
-		account.xpOverall += change > 0 ? change / 2 : 1;
+		account.xpOverall += change > 0 ? change / 1.5 : 1;
 		account.eloSeason = eloSeason + changeSeason;
-		account.xpSeason += changeSeason > 0 ? changeSeason / 2 : 1;
+		account.xpSeason += changeSeason > 0 ? changeSeason / 1.5 : 1;
 
 		if (account.xpOverall >= 50.0) {
 			account.isRainbowOverall = true;
