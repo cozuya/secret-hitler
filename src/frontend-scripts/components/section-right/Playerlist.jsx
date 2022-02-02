@@ -668,7 +668,7 @@ class Playerlist extends React.Component {
 					<div className="ui basic modal playerlistinfo">
 						<div className="header">Lobby and player color info:</div>
 						<p>
-							Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played. After that, they are known as "rainbow players"
+							Players in the lobby, general chat, and game chat are grey/white until they reach 50 Experience Points (XP). After that, they are known as "rainbow players"
 							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
@@ -679,13 +679,11 @@ class Playerlist extends React.Component {
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
 							<span className="admin-name">(A)</span> and are always at the top of the list.
 							<br />
-							<span className="anji">Ed</span>
-							<span className="bruno">it</span>
-							<span className="moira">ors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
+							<span className="anji">Edi</span>
+							<span className="moira">tors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
 							stand out, as well as a <span className="admin">(E)</span>.<br />
-							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Ed</span>
-							<span className="bruno">it</span>
-							<span className="moira">ors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
+							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Edi</span>
+							<span className="moira">tors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
 							<br />
 							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
 							<br />
