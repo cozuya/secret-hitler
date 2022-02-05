@@ -297,12 +297,12 @@ module.exports = () => {
 						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('DD/MM/YYYY') : '';
 						_profile.badges = account.badges || [];
 						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
-						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Number.parseFloat(account.maxElo || 1600).toFixed(2);
+						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(Number.parseFloat(account.maxElo || 1600));
 						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
 							? undefined
 							: account.pastElo.toObject().length
 							? account.pastElo.toObject()
-							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
+							: [{ date: new Date(), value: Math.round(Number.parseFloat(account.eloOverall || 1600)) }];
 						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpOverall || 0);
 						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloOverall || 1600);
 						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpSeason || 0);
