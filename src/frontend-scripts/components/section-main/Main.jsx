@@ -132,7 +132,7 @@ export class Main extends React.Component {
 											<a href="https://discord.gg/secrethitlerio" target="_blank" rel="noopener noreferrer">
 												Discord server.
 											</a>{' '}
-											You can also make reports by double clicking someone's name in game.
+											You can also make reports by clicking someone's name in game or lobby, and then choose the "report" option.
 										</p>
 									</React.Fragment>
 								);
@@ -159,8 +159,8 @@ export class Main extends React.Component {
 											</a>{' '}
 											is a great read on how the site works and how to be successful while playing here. Ranked games (this site uses an "ELO" system - cliffs:
 											your ELO points go up more if you win against better players by aggregate ELO than if you win against worse players) are taken seriously
-											by many so you might want to play in some casual (often custom) games to learn how this game works online and the basics of the
-											established metagame before jumping into ranked. They will have this <Icon name="handshake outline" /> icon in the game list.
+											by many so you might want to play in some practice or casual (often custom) games to learn how this game works online and the basics of the
+											established metagame before jumping into ranked. Casual games will have this <Icon name="handshake outline" /> icon in the game list.
 										</p>
 									</React.Fragment>
 								);
@@ -169,8 +169,8 @@ export class Main extends React.Component {
 									<React.Fragment>
 										<h5>How do you get a cool player color or upload your own personal cardback?</h5>
 										<p>
-											Play 50 games to attain "rainbow" status and have a color based off your ELO. Click on the info icon next to "Lobby" in the upper right
-											corner to learn more. These games must be ranked (not private or casual). You can check to see where you're at in your profile page -
+											Practice and Ranked games grant players Experience Points (XP). Gain 50 XP to attain "rainbow" status and have a color based off your ELO. Click on the info icon next to "Lobby" in the upper right
+											corner to learn more. Games that grant ELO must be ranked (not practice, private or casual). You can check to see where you're at in your profile page -
 											click on your name in the upper right corner.
 										</p>
 										<h5>How do you get a medal (seasonal reward)?</h5>
