@@ -291,8 +291,6 @@ module.exports = () => {
 						return new Error(err);
 					}
 					if (account) {
-						const numDigits = 0;
-
 						_profile.created = moment(account.created).format('DD/MM/YYYY');
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
@@ -305,10 +303,10 @@ module.exports = () => {
 							: account.pastElo.toObject().length
 							? account.pastElo.toObject()
 							: [{ date: new Date(), value: Number.parseFloat(account.eloOverall || 1600).toFixed(2) }];
-						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : (account.xpOverall || 0).toFixed(numDigits);
-						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : (account.eloOverall || 1600).toFixed(numDigits);
-						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : (account.xpSeason || 0).toFixed(numDigits);
-						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : (account.eloSeason || 1600).toFixed(numDigits);
+						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpOverall || 0);
+						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloOverall || 1600);
+						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpSeason || 0);
+						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloSeason || 1600);
 						_profile.isRainbowOverall = account.isRainbowOverall;
 						_profile.isRainbowSeason = account.isRainbowSeason;
 						_profile.staffRole = account.staffRole;
