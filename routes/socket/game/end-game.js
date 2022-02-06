@@ -319,6 +319,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange?.change : playerChange?.changeSeason;
+						const activeChangeXP = player.gameSettings.disableSeasonal ? playerChange?.xpChange : playerChange?.xpChangeSeason;
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
@@ -336,6 +337,26 @@ module.exports.completeGame = (game, winningTeamName) => {
 									},
 									{
 										text: Math.abs(activeChange).toFixed(1),
+										type: 'player'
+									}
+								]
+							});
+							seatedPlayer.gameChats.push({
+								gameChat: true,
+								timestamp: new Date(Date.now() + i),
+								chat: [
+									{
+										text: eachPlayer.userName,
+										type: eachPlayer.role.cardName
+									},
+									{
+										text: `'s XP: `
+									},
+									{
+										text: ` ${activeChangeXP > 0 ? '+' : '-'}`
+									},
+									{
+										text: Math.abs(activeChangeXP).toFixed(1),
 										type: 'player'
 									}
 								]

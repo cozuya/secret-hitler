@@ -273,15 +273,19 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
 		const change = p * factor;
 		const changeSeason = pSeason * factor;
+
+		const xpChange = change > 0 ? change / 1.5 : 1;
+		const xpChangeSeason = changeSeason > 0 ? changeSeason / 1.5 : 1;
+
 		account.eloOverall = eloOverall + change;
 		account.maxElo = Math.max(account.maxElo, account.eloOverall);
 		account.pastElo.push({
 			date,
 			value: account.eloOverall
 		});
-		account.xpOverall += change > 0 ? change / 1.5 : 1;
+		account.xpOverall = (account.xpOverall || 0) + xpChange;
 		account.eloSeason = eloSeason + changeSeason;
-		account.xpSeason += changeSeason > 0 ? changeSeason / 1.5 : 1;
+		account.xpSeason = (account.xpSeason || 0) + xpChangeSeason;
 
 		if (account.xpOverall >= 50.0) {
 			account.isRainbowOverall = true;
@@ -292,7 +296,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		}
 
 		account.save();
-		ratingUpdates[account.username] = { change, changeSeason };
+		ratingUpdates[account.username] = { change, changeSeason, xpChange, xpChangeSeason };
 	});
 	return ratingUpdates;
 	// Future work: Someone should make this a single function, applied twice: once to overall and once to seasonal.
