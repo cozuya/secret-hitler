@@ -38,16 +38,16 @@ function profileDelta(username, game) {
 			stats: {
 				matches: {
 					allMatches: {
-						events: 0,
-						successes: 0
+						events: 1,
+						successes: isWinner ? 1 : 0
 					},
 					liberal: {
-						events: 0,
-						successes: 0
+						events: isLiberal ? 1 : 0,
+						successes: isLiberal && isWinner ? 1 : 0
 					},
 					fascist: {
-						events: 0,
-						successes: 0
+						events: isFascist ? 1 : 0,
+						successes: isFascist && isWinner ? 1 : 0
 					}
 				},
 				actions: {
@@ -255,17 +255,7 @@ function updateProfiles(game, gameSummary, options = {}) {
 
 // side effect: caches profile
 function getProfile(username) {
-	const profile = profiles.get(username);
-
-	if (profile) {
-		debug('Cache hit for: %s', username);
-		return Promise.resolve(profile);
-	} else {
-		debug('Cache miss for: %s', username);
-		return Profile.findById(username)
-			.exec()
-			.then(profile => profiles.push(profile));
-	}
+	return Profile.findById(username).exec();
 }
 
 module.exports.updateProfiles = updateProfiles;
