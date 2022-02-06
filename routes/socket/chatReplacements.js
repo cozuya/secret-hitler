@@ -13,7 +13,7 @@ module.exports.chatReplacements = [
 		id: 2,
 		regex: /^o.verall/i,
 		replacement:
-			'If you have played 50 games but still see yourself as being grey, you might have seasonal ELO on, this will get reset with every new season. To see your overall ELO instead, go to settings and toggle “show overall winrates and colors“.',
+			'If you have 50 XP but still see yourself as being grey, you might have seasonal ELO on, this will get reset with every new season. To see your overall ELO instead, go to settings and toggle “show overall winrates and colors“.',
 		aemCooldown: 15,
 		normalCooldown: 180,
 		normalGames: 50

@@ -442,9 +442,9 @@ module.exports = () => {
 
 			Account.findOne({ username })
 				.then(account => {
-					if (account.wins + account.losses < 50) {
+					if (!account.isRainbowOverall) {
 						res.json({
-							message: 'You need to have played 50 games to upload a cardback.'
+							message: 'You need to be rainbow to upload a cardback.'
 						});
 					} else if (
 						new Date(account.gameSettings.customCardbackSaveTime) &&

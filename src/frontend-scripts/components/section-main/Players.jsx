@@ -480,10 +480,7 @@ class Players extends React.Component {
 				Swal.fire('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
-			} else if (
-				(gameInfo.general.rainbowgame && user && user.wins + user.losses <= 49) ||
-				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
-			) {
+			} else if ((gameInfo.general.rainbowgame && user && !user.isRainbowOverall) || (gameInfo.general.rainbowgame && (!user || !user.isRainbowOverall))) {
 				$(this.notRainbowModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
@@ -575,7 +572,7 @@ class Players extends React.Component {
 						this.notRainbowModal = c;
 					}}
 				>
-					<div className="ui header">You do not meet the required amount of games played (50) to play in this game.</div>
+					<div className="ui header">You do not meet the required amount of XP (50) to play in this game.</div>
 				</div>
 
 				<div
