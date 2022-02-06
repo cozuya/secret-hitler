@@ -342,6 +342,12 @@ module.exports = () => {
 								_profile.signupIP = undefined;
 							}
 
+							if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
+								// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
+								res.status(404).send('Profile not found');
+								return;
+							}
+
 							res.json(_profile);
 						});
 					}
