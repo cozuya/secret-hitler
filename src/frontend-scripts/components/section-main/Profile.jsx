@@ -465,12 +465,12 @@ class ProfileWrapper extends React.Component {
 			prefix = staffRolePrefixes[userAdminRole];
 		}
 
-		const disableIfUnclickable = f => {
-			if (this.props.isUserClickable) {
-				return f;
-			}
+		const routeToGame = gameId => {
+			window.location = `#/table/${gameId}`;
+		};
 
-			return () => null;
+		const fetchReplay = gameId => {
+			window.location = `#/replay/${gameId}`;
 		};
 
 		const renderStatus = () => {
@@ -481,8 +481,7 @@ class ProfileWrapper extends React.Component {
 			} else {
 				const iconClasses = cn(
 					'status',
-					{ unclickable: !this.props.isUserClickable },
-					{ clickable: this.props.isUserClickable },
+					{ clickable: true },
 					{ search: status.type === 'observing' },
 					{ fav: status.type === 'playing' },
 					{ rainbow: status.type === 'rainbow' },
@@ -498,14 +497,14 @@ class ProfileWrapper extends React.Component {
 					private: 'This player is playing in a private game.'
 				};
 				const onClick = {
-					playing: this.routeToGame,
-					observing: this.routeToGame,
-					rainbow: this.routeToGame,
-					replay: this.props.fetchReplay,
-					private: this.routeToGame
+					playing: routeToGame,
+					observing: routeToGame,
+					rainbow: routeToGame,
+					replay: fetchReplay,
+					private: routeToGame
 				};
 
-				return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
+				return <i title={title[status.type]} className={iconClasses} onClick={onClick[status.type].bind(this, status.gameId)} />;
 			}
 		};
 
