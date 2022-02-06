@@ -11,7 +11,7 @@ const https = require('https');
 module.exports.handlePlayerReport = (passport, data, callback) => {
 	const user = userList.find(u => u.userName === passport.user);
 
-	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2) && process.env.NODE_ENV === 'production') {
+	if (data.userName !== 'from replay' && (!user || (user.wins + user.losses < 2 && !user.isRainbowOverall)) && process.env.NODE_ENV === 'production') {
 		return;
 	}
 
