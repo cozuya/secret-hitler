@@ -345,6 +345,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.isRainbowOverall = true;
+									account.dateRainbowOverall = new Date();
 									account.save();
 									logOutUser(data.userName);
 								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);

@@ -289,6 +289,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 
 		if (account.xpOverall >= 50.0) {
 			account.isRainbowOverall = true;
+			account.dateRainbowOverall = new Date();
 		}
 
 		if (account.xpSeason >= 50.0) {
