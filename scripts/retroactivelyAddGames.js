@@ -3,7 +3,7 @@ const Game = require('../models/game');
 const Account = require('../models/account');
 
 let count = 0;
-const season = 10;
+const season = 17;
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
@@ -13,7 +13,7 @@ Game.find({
 	// 	$gte: new Date('2019-04-01 00:00:00.000'),
 	// 	$lte: new Date()
 	// },
-	season: 10,
+	season: 17,
 	casualGame: false
 })
 	.cursor()
