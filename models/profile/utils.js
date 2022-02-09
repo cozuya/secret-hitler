@@ -229,6 +229,22 @@ function updateProfile(username, game, gameSummary, options = {}) {
 				Account.findOne({ username }).then(account => {
 					checkBadgesGamesPlayed(
 						account,
+						profile.stats.matches.greyMatches.liberal.events +
+							profile.stats.matches.greyMatches.fascist.events +
+							profile.stats.matches.rainbowMatches.liberal.events +
+							profile.stats.matches.rainbowMatches.fascist.events +
+							profile.stats.matches.practiceMatches.liberal.events +
+							profile.stats.matches.practiceMatches.fascist.events +
+							profile.stats.matches.silentMatches.liberal.events +
+							profile.stats.matches.silentMatches.fascist.events,
+						profile.stats.matches.greyMatches.liberal.successes +
+							profile.stats.matches.greyMatches.fascist.successes +
+							profile.stats.matches.rainbowMatches.liberal.successes +
+							profile.stats.matches.rainbowMatches.fascist.successes +
+							profile.stats.matches.practiceMatches.liberal.successes +
+							profile.stats.matches.practiceMatches.fascist.successes +
+							profile.stats.matches.silentMatches.liberal.successes +
+							profile.stats.matches.silentMatches.fascist.successes,
 						profile.stats.matches.customMatches.liberal.events + profile.stats.matches.customMatches.fascist.events,
 						profile.stats.matches.silentMatches.liberal.events + profile.stats.matches.silentMatches.fascist.events,
 						profile.stats.matches.emoteMatches.liberal.events + profile.stats.matches.emoteMatches.fascist.events,

@@ -19,12 +19,20 @@ const XP_BADGES = [
 ];
 
 const ACCOUNT_AGE_BADGES = [
-	// Account age (in yearss) to badge
+	// Account age (in years) to badge
 	[1, 'birthday1'],
 	[2, 'birthday2'],
 	[3, 'birthday3'],
 	[4, 'birthday4'],
 	[5, 'birthday5']
+];
+
+const GAMES_PLAYED_BADGES = [
+	// number of ranked + practice games played
+];
+
+const GAMES_WON_BADGES = [
+	// number of ranked + practice games won
 ];
 
 const CUSTOM_GAME_BADGES = [
@@ -183,12 +191,48 @@ module.exports.checkBadgesAccount = (user, save = false) => {
  * Checks the user for all deserved gameplay badges
  *
  * @param {*} user user object
+ * @param {*} rankedOrPracticeGamesPlayed
+ * @param {*} rankedOrPracticeGamesWon
  * @param {*} customGamesPlayed
  * @param {*} silentGamesPlayed
  * @param {*} emoteGamesPlayed
  * @param {*} gameJustPlayed the UID of the game this user just played, if this is being called in end-game
  */
-module.exports.checkBadgesGamesPlayed = (user, customGamesPlayed, silentGamesPlayed, emoteGamesPlayed, gameJustPlayed = '') => {
+module.exports.checkBadgesGamesPlayed = (
+	user,
+	rankedOrPracticeGamesPlayed,
+	rankedOrPracticeGamesWon,
+	customGamesPlayed,
+	silentGamesPlayed,
+	emoteGamesPlayed,
+	gameJustPlayed = ''
+) => {
+	for (const badge of GAMES_PLAYED_BADGES) {
+		const [gamesPlayed, badgeId] = badge;
+
+		if (rankedOrPracticeGamesPlayed >= gamesPlayed) {
+			awardBadgePrequeried(
+				user,
+				badgeId,
+				gameJustPlayed ? `You reached ${gamesPlayed} games played in the game ${gameJustPlayed}.` : ``,
+				`You reached ${gamesPlayed} games played!`
+			);
+		}
+	}
+
+	for (const badge of GAMES_WON_BADGES) {
+		const [gamesPlayed, badgeId] = badge;
+
+		if (rankedOrPracticeGamesWon >= gamesPlayed) {
+			awardBadgePrequeried(
+				user,
+				badgeId,
+				gameJustPlayed ? `You reached ${gamesPlayed} games won in the game ${gameJustPlayed}.` : ``,
+				`You reached ${gamesPlayed} games won!`
+			);
+		}
+	}
+
 	for (const badge of CUSTOM_GAME_BADGES) {
 		const [gamesPlayed, badgeId] = badge;
 
