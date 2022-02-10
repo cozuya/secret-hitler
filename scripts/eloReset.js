@@ -243,7 +243,7 @@ Account.find({ 'games.1': { $exists: true } })
 				for (const badge of topOfSeason[acc.username]) {
 					const [season, placement] = badge;
 
-					awardBadgePrequeried(acc, 'topSeason', `You were Rank ${placement} of Season ${season}.`, `Season ${season} Top 10`);
+					awardBadgePrequeried(acc, `topSeason${season}`, `You were Rank ${placement} of Season ${season}.`, `Season ${season} Top 10`);
 				}
 			}
 

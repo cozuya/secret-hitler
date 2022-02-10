@@ -1,12 +1,16 @@
 const Account = require('../../models/account');
 const moment = require('moment');
 
+const gameTypeCount = 500;
+
 const ELO_BADGES = [
 	// ELO to badge
 	[1800, 'elo1800'],
 	[1900, 'elo1900'],
 	[2000, 'elo2000'],
-	[2100, 'elo2100']
+	[2100, 'elo2100'],
+	[2200, 'elo2200'],
+	[2300, 'elo2300']
 ];
 
 const XP_BADGES = [
@@ -29,28 +33,40 @@ const ACCOUNT_AGE_BADGES = [
 
 const GAMES_PLAYED_BADGES = [
 	// number of ranked + practice games played
+	[100, 'games100'],
+	[250, 'games250'],
+	[500, 'games500'],
+	[1000, 'games1000'],
+	[2000, 'games2000'],
+	[3000, 'games3000'],
+	[5000, 'games5000']
 ];
 
 const GAMES_WON_BADGES = [
 	// number of ranked + practice games won
+	[100, 'won100'],
+	[250, 'won250'],
+	[500, 'won500'],
+	[1000, 'won1000'],
+	[2000, 'won2000']
 ];
 
 const CUSTOM_GAME_BADGES = [
 	// Number of custom games played to badge
-	[100, 'customPlayer'],
-	[500, 'customPro']
+	[gameTypeCount, 'customPlayer'],
+	[2 * gameTypeCount, 'customPro']
 ];
 
 const SILENT_GAME_BADGES = [
 	// Number of silent games played to badge
-	[100, 'silentPlayer'],
-	[500, 'silentPro']
+	[gameTypeCount, 'silentPlayer'],
+	[2 * gameTypeCount, 'silentPro']
 ];
 
 const EMOTE_GAME_BADGES = [
 	// Number of emote games played to badge
-	[100, 'emotePlayer'],
-	[500, 'emotePro']
+	[gameTypeCount, 'emotePlayer'],
+	[2 * gameTypeCount, 'emotePro']
 ];
 
 /**
