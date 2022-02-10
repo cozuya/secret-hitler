@@ -161,11 +161,11 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 									<Grid.Row>
 										<Grid.Column textAlign="center" data-tooltip="Overall XP">
 											<List.Icon name="chart bar" />
-											{user.xpOverall || 1600}
+											{user.xpOverall || 0}
 										</Grid.Column>
 										<Grid.Column textAlign="center" data-tooltip="Seasonal XP">
 											<List.Icon name="calendar alternate outline" />
-											{((user.xpSeason || 1600) + '').padStart(4, ' ')}
+											{((user.xpSeason || 0) + '').padStart(4, ' ')}
 										</Grid.Column>
 									</Grid.Row>
 								</Grid>
