@@ -108,6 +108,14 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 	const uid = generateCombination(3, '', true);
 
+	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
+	const casualGame = (data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual') && !customGame;
+	const practiceGame =
+		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
+		(data.gameType === 'practice' || data.playerChats === 'disabled') &&
+		!casualGame &&
+		!customGame;
+
 	const newGame = {
 		gameState: {
 			previousElectedGovernment: [],
@@ -144,8 +152,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
-			casualGame: data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual',
-			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && (data.gameType === 'practice' || data.playerChats === 'disabled'),
+			casualGame,
+			practiceGame,
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,

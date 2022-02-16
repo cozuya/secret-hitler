@@ -413,6 +413,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.save(() => {
 						const userEntry = userList.find(user => user.userName === player.username);
 
+						userEntry.xpSeason = player.xpSeason || 0;
+						userEntry.isRainbowSeason = player.isRainbowSeason;
+						userEntry.xpOverall = player.xpOverall || 0;
+						userEntry.isRainbowOverall = player.isRainbowOverall;
+
 						if (userEntry) {
 							if (winner) {
 								if (isRainbow) {

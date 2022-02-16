@@ -84,6 +84,21 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div style={{ marginLeft: '10px' }}>
+				<CollapsibleSegment title={'Standard Matches'} defaultExpanded={true}>
+					<Table
+						uiTable="top attached four column"
+						headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+						rows={[
+							this.successRowMatches(
+								'Standard Matches',
+								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
+							)
+						]}
+					/>
+				</CollapsibleSegment>
 				<CollapsibleSegment title={'Ranked Matches'}>
 					<Table
 						uiTable="top attached four column"
