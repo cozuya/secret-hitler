@@ -140,7 +140,12 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
 			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
-			casualGame: data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual',
+			casualGame:
+				data.gameType === 'casual' ||
+				(typeof data.timedMode === 'number' && data.timedMode < 30) ||
+				data.avalonSH ||
+				data.withPercival ||
+				data.noTopdecking > 0,
 			practiceGame: !(typeof data.timedMode === 'number' && data.timedMode < 30) && data.gameType === 'practice',
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
@@ -151,7 +156,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
-			eloMinimum: data.eloSliderValue
+			eloMinimum: data.eloSliderValue,
+			avalonSH: data.avalonSH ? { withPercival: Boolean(data.withPercival) } : null,
+			noTopdecking: data.noTopdecking
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],
@@ -161,10 +168,17 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,
 			electionTrackerCount: 0,
-			enactedPolicies: []
+			enactedPolicies: [],
+			consecutiveTopdecks: 0
 		},
-		guesses: {}
+		guesses: {},
+		merlinGuesses: {}
 	};
+
+	// oops its a hack
+	if (newGame.general.practiceGame && newGame.general.casualGame) {
+		newGame.general.practiceGame = false;
+	}
 
 	if (newGame.customGameSettings.enabled) {
 		let chat = {

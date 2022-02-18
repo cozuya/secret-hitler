@@ -295,8 +295,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 				};
 
 				seatedPlayers = [
-					...seatedPlayers.filter(e => e.role.cardName === 'hitler').sort(byUsername),
+					...seatedPlayers.filter(e => e.role.cardName === 'hitler'),
+					...seatedPlayers.filter(e => e.role.cardName === 'morgana'),
 					...seatedPlayers.filter(e => e.role.cardName === 'fascist').sort(byUsername),
+					...seatedPlayers.filter(e => e.role.cardName === 'merlin'),
+					...seatedPlayers.filter(e => e.role.cardName === 'percival'),
 					...seatedPlayers.filter(e => e.role.cardName === 'liberal').sort(byUsername)
 				];
 
@@ -578,10 +581,24 @@ module.exports.completeGame = (game, winningTeamName) => {
 		}
 	}
 
-	// Line guesses not supported in casual and custom games
-	if (!game.general.private && !(game.customGameSettings && game.customGameSettings.enabled)) {
-		const { guesses } = game;
+	const { guesses, merlinGuesses } = game;
+	let guessOrder = 2;
+	const now = Date.now();
 
+	if (!_.isEmpty(guesses) || !_.isEmpty(merlinGuesses)) {
+		game.chats.push({
+			gameChat: true,
+			timestamp: now,
+			chat: [
+				{
+					text: 'Line Guesses',
+					type: 'player'
+				}
+			]
+		});
+	}
+
+	if (!_.isEmpty(guesses)) {
 		const hittySeat = game.private.seatedPlayers.findIndex(p => p.role.cardName === 'hitler') + 1;
 		const fasSeats = game.private.seatedPlayers
 			.map((p, i) => [p, i])
@@ -591,7 +608,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		const numFas = fasSeats.length;
 		const lines = new LineGuess({ regs: fasSeats, hit: hittySeat });
 
-		const groupedGuesses = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+		const groupedGuesses = Array.from({ length: 5 }, () => []);
 		const perfectGuesses = [];
 		const hittyGuesses = [];
 
@@ -608,8 +625,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 			}
 		}
 
-		let guessOrder = 2;
-		const now = Date.now();
 		const guessesToChat = (prefix, guesses) => ({
 			gameChat: true,
 			timestamp: now + guessOrder++,
@@ -619,27 +634,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 				}
 			]
 		});
-
-		if (
-			groupedGuesses[0].length ||
-			groupedGuesses[1].length ||
-			groupedGuesses[2].length ||
-			groupedGuesses[3].length ||
-			groupedGuesses[4].length ||
-			perfectGuesses.length ||
-			hittyGuesses.length
-		) {
-			game.chats.push({
-				gameChat: true,
-				timestamp: now,
-				chat: [
-					{
-						text: 'Line Guesses',
-						type: 'player'
-					}
-				]
-			});
-		}
 
 		if (perfectGuesses.length) {
 			game.chats.push(guessesToChat('All fascists AND hitler correct - ', perfectGuesses));
@@ -665,7 +659,38 @@ module.exports.completeGame = (game, winningTeamName) => {
 		if (hittyGuesses.length) {
 			game.chats.push(guessesToChat('Hitler correct - ', hittyGuesses));
 		}
-
-		sendInProgressGameUpdate(game);
 	}
+
+	if (!_.isEmpty(merlinGuesses)) {
+		const merlinSeat = game.private.seatedPlayers.findIndex(p => p.role.cardName === 'merlin') + 1;
+		const groupedGuesses = _.groupBy(Object.entries(merlinGuesses), ([_, g]) => g);
+
+		if (groupedGuesses[merlinSeat]) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: now + guessOrder++,
+				chat: [
+					{
+						text: 'Merlin correct - ' + groupedGuesses[merlinSeat].map(([user, _]) => user).join(', ')
+					}
+				]
+			});
+		}
+
+		const wrongGuesses = _.range(1, 11).filter(g => g !== merlinSeat && Boolean(groupedGuesses[g]));
+
+		if (wrongGuesses.length) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: now + guessOrder++,
+				chat: [
+					{
+						text: 'Merlin incorrect - ' + wrongGuesses.map(g => groupedGuesses[g].map(([user, _]) => user).join(', ') + ` (${g})`).join(', ')
+					}
+				]
+			});
+		}
+	}
+
+	sendInProgressGameUpdate(game);
 };

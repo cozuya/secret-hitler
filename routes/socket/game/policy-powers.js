@@ -2,6 +2,7 @@ const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../ut
 const { startElection, shufflePolicies } = require('./common.js');
 const { sendGameList } = require('../user-requests');
 const { completeGame } = require('./end-game.js');
+const { assassinateMerlin } = require('./assassination');
 
 /**
  * @param {object} game - game to act on.
@@ -1193,9 +1194,9 @@ module.exports.executePlayer = game => {
 				(player, index) =>
 					index !== presidentIndex &&
 					!seatedPlayers[index].isDead &&
-					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
+					((!game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+						(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+						(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
 			)
 			.forEach(player => {
 				player.notificationStatus = 'notification';
@@ -1208,9 +1209,9 @@ module.exports.executePlayer = game => {
 					(player, i) =>
 						i !== presidentIndex &&
 						!seatedPlayers[i].isDead &&
-						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
+						((!game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+							(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+							(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
 				)
 				.map(player => seatedPlayers.indexOf(player))
 		];
@@ -1326,6 +1327,11 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 			player.notificationStatus = '';
 		});
 
+		if (game.general.avalonSH && selectedPlayer.role.cardName === 'hitler') {
+			assassinateMerlin(game);
+			return;
+		}
+
 		publicSelectedPlayer.cardStatus.cardDisplayed = true;
 		publicSelectedPlayer.cardStatus.cardFront = 'secretrole';
 		publicSelectedPlayer.notificationStatus = 'danger';
@@ -1353,14 +1359,14 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 						]
 					};
 
-					publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
-					publicSelectedPlayer.cardStatus.isFlipped = true;
-
 					seatedPlayers.forEach((player, i) => {
 						player.gameChats.push(chat);
 					});
 
 					game.private.unSeatedGameChats.push(chat);
+
+					publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+					publicSelectedPlayer.cardStatus.isFlipped = true;
 
 					setTimeout(
 						() => {
@@ -1389,7 +1395,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 				} else {
 					let libAlive = false;
 					seatedPlayers.forEach(p => {
-						if (p.role.cardName == 'liberal' && !p.isDead) libAlive = true;
+						if (p.role.team === 'liberal' && !p.isDead) libAlive = true;
 					});
 					if (!libAlive) {
 						const chat = {
@@ -1511,7 +1517,9 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 									game.private.unSeatedGameChats.push(chat);
 								}
-								if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+								if (game.general.avalonSH && game.trackState.liberalPolicyCount === 5) {
+									assassinateMerlin(game);
+								} else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 									game.publicPlayersState.forEach((player, i) => {
 										player.cardStatus.cardFront = 'secretrole';
 										player.cardStatus.cardBack = game.private.seatedPlayers[i].role;

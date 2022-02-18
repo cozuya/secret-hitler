@@ -4,6 +4,7 @@ const { selectVoting } = require('./game/election');
 const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
 const Account = require('../../models/account');
+const { assassinateMerlin, selectPlayerToAssassinate } = require('./game/assassination');
 
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
@@ -59,6 +60,16 @@ module.exports.commands = [
 		description: 'Submits a line guess',
 		examples: ['/g 123', '/g 56h7', '/g 7890h'],
 		argumentsFormat: /^((?:\dh?)+)$/i,
+		aemOnly: false,
+		observerOnly: true,
+		seatedOnly: false,
+		gameStartedOnly: true
+	},
+	{
+		name: ['gm', 'guessmerlin'],
+		description: 'Submits a merlin guess',
+		examples: ['/gm 1'],
+		argumentsFormat: /^(\d+)$/i,
 		aemOnly: false,
 		observerOnly: true,
 		seatedOnly: false,
@@ -138,7 +149,17 @@ module.exports.commands = [
 		name: ['forcerigrole'],
 		description: 'Changes a players role, definitely not fake.',
 		examples: ['/forcerigrole 1 fascist', '/forcerigrole 9 liberal'],
-		argumentsFormat: /^(\d{1,2})\s+(hitler|fascist|liberal|h|f|l|hit|fas|lib)$/i,
+		argumentsFormat: /^(\d{1,2})\s+(hitler|fascist|liberal|h|f|l|hit|fas|lib|merlin|percival|morgana)$/i,
+		aemOnly: true,
+		observerOnly: true,
+		seatedOnly: false,
+		gameStartedOnly: true
+	},
+	{
+		name: ['ass'],
+		description: '',
+		examples: [''],
+		argumentsFormat: /^.*$/i,
 		aemOnly: true,
 		observerOnly: true,
 		seatedOnly: false,
@@ -307,6 +328,28 @@ module.exports.commands.getCommand('g').run = (socket, passport, user, game, arg
 	game.guesses[user.userName] = guess;
 };
 
+module.exports.commands.getCommand('gm').run = (socket, passport, user, game, args) => {
+	if (!game.general.avalonSH) {
+		sendMessage(game, user, 'Merlin guessing is only enabled in avalon SH games.');
+		return;
+	}
+
+	const guess = parseInt(args[0], 10);
+
+	if (!guess || guess < 1 || guess > game.private.seatedPlayers.length) {
+		sendMessage(game, user, 'Invalid merlin guess.');
+		return;
+	}
+
+	if (game.guesses[user.userName]) {
+		sendMessage(game, user, `Updated line guess. (${guess.toString()})`);
+	} else {
+		sendMessage(game, user, `Submitted line guess. (${guess.toString()})`);
+	}
+
+	game.merlinGuesses[user.userName] = guess;
+};
+
 module.exports.commands.getCommand('pingmod').run = (socket, passport, user, game, args) => {
 	if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
 		Account.find({ username: { $in: game.publicPlayersState.map(player => player.userName) } }).then(accounts => {
@@ -453,6 +496,10 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 		return;
 	}
 
+	if (game.gameState.phase !== 'voting') {
+		return sendMessage(game, user, 'This command can only be used during voting.');
+	}
+
 	const { blindMode, replacementNames } = game.general;
 
 	const affectedPlayerIndex = parseInt(args[0]) - 1;
@@ -547,6 +594,10 @@ module.exports.commands.getCommand('forceskip').run = (socket, passport, user, g
 		return;
 	}
 
+	if (game.gameState.phase !== 'selectingChancellor' && game.gameState.phase !== 'voting') {
+		return sendMessage(game, user, 'This command can only be used during elections.');
+	}
+
 	const affectedPlayerIndex = args[0] !== undefined ? parseInt(args[0]) - 1 : game.gameState.presidentIndex;
 	const affectedPlayer = game.private.seatedPlayers[affectedPlayerIndex];
 	if (!affectedPlayer) {
@@ -609,6 +660,11 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 		socket.emit('sendAlert', 'This game has been remade.');
 		return;
 	}
+
+	if (game.gameState.phase !== 'selectingChancellor' && game.gameState.phase !== 'assassination') {
+		return sendMessage(game, user, 'This command can only be used during the president selecting chancellor phase.');
+	}
+
 	const affectedPlayerNumber = args[0] !== undefined ? parseInt(args[0]) - 1 : game.gameState.presidentIndex;
 	const chancellorPick = parseInt(args[1]);
 
@@ -623,6 +679,40 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 			sendMessage(game, user, `There is no seat ${chancellorPick}.`);
 			return;
 		}
+
+		if (game.gameState.phase === 'assassination') {
+			if (affectedPlayer.role.cardName !== 'hitler') {
+				sendMessage(game, user, `The player in seat ${affectedPlayerNumber + 1} is not hitler.`);
+				return;
+			}
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'An AEM member has forced '
+					},
+					{
+						text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+						type: 'player'
+					},
+					{
+						text: ' to assassinate '
+					},
+					{
+						text: `${affectedChancellor.userName} {${chancellorPick}}`,
+						type: 'player'
+					},
+					{
+						text: '.'
+					}
+				]
+			});
+
+			selectPlayerToAssassinate({ user: affectedPlayer.userName }, game, { playerIndex: chancellorPick - 1 }, null);
+			return;
+		}
+
 		if (affectedPlayerNumber !== game.gameState.presidentIndex) {
 			sendMessage(game, user, `The player in seat ${affectedPlayerNumber + 1} is not president.`);
 			return;
@@ -724,8 +814,10 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 				return 'fascist';
 			} else if (['l', 'lib', 'liberal'].includes(r)) {
 				return 'liberal';
-			} else {
+			} else if (['h', 'hit', 'hitler'].includes(r)) {
 				return 'hitler';
+			} else {
+				return r;
 			}
 		})(args[1]);
 
@@ -764,4 +856,12 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 			chat: changedChat
 		});
 	}
+};
+
+module.exports.commands.getCommand('ass').run = (socket, passport, user, game, args) => {
+	if (!game.general.avalonSH || game.gameState.phase === 'assassination') {
+		return;
+	}
+
+	assassinateMerlin(game);
 };

@@ -30,6 +30,9 @@ export default function(snapshot, game, userInfo, hideHand) {
 				];
 			}
 		case 'topDeck':
+			if (snapshot.gameOver) {
+				return gameOverText([text('normal', 'The hammer was neined.')]);
+			}
 			return [text('normal', 'The election tracker is maxed')];
 		case 'presidentLegislation':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'draws')]
@@ -87,5 +90,7 @@ export default function(snapshot, game, userInfo, hideHand) {
 			} else {
 				return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'executes'), text('player', usernameOf(snapshot.execution))];
 			}
+		case 'assassination':
+			return gameOverText([text('hitler', 'Hitler'), text('normal', ' selects to assassinate '), text('normal', usernameOf(snapshot.assassination) + '.')]);
 	}
 }

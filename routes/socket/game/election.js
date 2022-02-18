@@ -14,9 +14,10 @@ const {
 	showPlayerLoyalty,
 	policyPeekAndDrop
 } = require('./policy-powers');
-const { completeGame } = require('./end-game');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
+const { assassinateMerlin } = require('./assassination');
+const { completeGame } = require('./end-game');
 
 const powerMapping = {
 	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
@@ -201,7 +202,9 @@ const enactPolicy = (game, team, socket) => {
 				game.private.unSeatedGameChats.push(chat);
 			}
 
-			if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+			if (game.general.avalonSH && game.trackState.liberalPolicyCount === 5) {
+				assassinateMerlin(game);
+			} else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.cardFront = 'secretrole';
 					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
@@ -275,7 +278,7 @@ const enactPolicy = (game, team, socket) => {
 										});
 										break;
 									case 'The president must select a player for execution.':
-										if (president.role.cardName === 'fascist') {
+										if (president.role.team === 'fascist' && president.role.cardName !== 'hitler') {
 											list = list.filter(player => player.role.cardName !== 'hitler');
 										}
 										selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
@@ -1384,6 +1387,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
 		const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+		game.trackState.consecutiveTopdecks = 0;
 
 		game.private._chancellorPlayerName = game.private.seatedPlayers[chancellorIndex].userName;
 
@@ -1579,6 +1583,39 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		game.trackState.electionTrackerCount++;
 
 		if (game.trackState.electionTrackerCount >= 3) {
+			if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)) {
+				game.chats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'The hammer was rejected.'
+						}
+					]
+				});
+				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.cardFront = 'secretrole';
+					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+					player.cardStatus.cardDisplayed = true;
+					player.cardStatus.isFlipped = false;
+				});
+				game.gameState.audioCue = 'fascistsWin';
+				sendInProgressGameUpdate(game, true);
+
+				setTimeout(() => {
+					game.publicPlayersState.forEach((player, i) => {
+						player.cardStatus.isFlipped = true;
+					});
+					game.gameState.audioCue = '';
+
+					completeGame(game, 'fascist');
+				}, 2000);
+
+				return;
+			} else if (game.general.noTopdecking === 2) {
+				game.trackState.consecutiveTopdecks++;
+			}
+
 			const chat = {
 				timestamp: new Date(),
 				gameChat: true,

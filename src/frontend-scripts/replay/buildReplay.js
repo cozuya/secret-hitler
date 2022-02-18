@@ -34,6 +34,7 @@ export default function buildReplay(game) {
 			chancellorVeto,
 			isVetoSuccessful,
 			execution,
+			assassination,
 			investigatorId,
 			investigationId,
 			investigationClaim,
@@ -141,11 +142,17 @@ export default function buildReplay(game) {
 				return postEnactionAdd({
 					execution: execution.value()
 				});
+			case 'assassination':
+				return postEnactionAdd({
+					assassination: assassination.value()
+				});
 		}
 	}
 
 	// given the current turn and phase, returns the next (or same) turn and phase
 	function step(tick) {
+		console.log(game);
+		const { avalonSH, noTopdecking } = game.summary.gameSetting;
 		const { turnNum, phase } = tick;
 
 		const {
@@ -159,7 +166,8 @@ export default function buildReplay(game) {
 			isExecution,
 			isHitlerKilled,
 			isVeto,
-			isVetoSuccessful
+			isVetoSuccessful,
+			isAssassination
 		} = game.turns.get(turnNum);
 
 		const next = nextPhase => ({ turnNum, phase: nextPhase, gameOver: false });
@@ -185,6 +193,7 @@ export default function buildReplay(game) {
 				else if (isElectionTrackerMaxed) return next('topDeck');
 				else return jump();
 			case 'topDeck':
+				if (noTopdecking) return gameOver();
 				return next('policyEnaction');
 			case 'presidentLegislation':
 				return next('chancellorLegislation');
@@ -199,7 +208,7 @@ export default function buildReplay(game) {
 					return next('policyEnaction');
 				}
 			case 'policyEnaction':
-				if (isGameEndingPolicyEnacted) return gameOver();
+				if (isGameEndingPolicyEnacted) return avalonSH && isAssassination ? next('assassination') : gameOver();
 				else if (isInvestigation) return next('investigation');
 				else if (isPolicyPeek) return next('policyPeek');
 				else if (isSpecialElection) return next('specialElection');
@@ -210,8 +219,10 @@ export default function buildReplay(game) {
 			case 'specialElection':
 				return jump();
 			case 'execution':
-				if (isHitlerKilled) return gameOver();
+				if (isHitlerKilled) return avalonSH ? next('assassination') : gameOver();
 				else return jump();
+			case 'assassination':
+				return gameOver();
 		}
 	}
 
