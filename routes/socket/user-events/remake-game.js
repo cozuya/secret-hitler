@@ -187,6 +187,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.guesses = {};
+		newGame.merlinGuesses = {};
 		newGame.trackState = {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,

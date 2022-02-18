@@ -171,7 +171,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enactedPolicies: [],
 			consecutiveTopdecks: 0
 		},
-		guesses: {}
+		guesses: {},
+		merlinGuesses: {}
 	};
 
 	// oops its a hack

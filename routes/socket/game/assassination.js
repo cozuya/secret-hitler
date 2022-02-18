@@ -9,6 +9,10 @@ module.exports.assassinateMerlin = game => {
 	if (!game.private.lock.assassinateMerlin && game.general.avalonSH && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.assassinateMerlin = true;
 		game.general.status = 'Hitler to choose someone to assassinate.';
+		game.publicPlayersState.forEach(p => {
+			p.cardStatus.cardDisplayed = false;
+			p.cardStatus.cardFront = '';
+		});
 		game.publicPlayersState[hitlerIndex].cardStatus.cardDisplayed = true;
 		game.publicPlayersState[hitlerIndex].cardStatus.cardFront = 'secretrole';
 		sendInProgressGameUpdate(game);
