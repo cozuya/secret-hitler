@@ -159,8 +159,8 @@ export class Main extends React.Component {
 											</a>{' '}
 											is a great read on how the site works and how to be successful while playing here. Ranked games (this site uses an "ELO" system - cliffs:
 											your ELO points go up more if you win against better players by aggregate ELO than if you win against worse players) are taken seriously
-											by many so you might want to play in some practice or casual (often custom) games to learn how this game works online and the basics of the
-											established metagame before jumping into ranked. Casual games will have this <Icon name="handshake outline" /> icon in the game list.
+											by many so you might want to play in some practice or casual (often custom) games to learn how this game works online and the basics of
+											the established metagame before jumping into ranked. Casual games will have this <Icon name="handshake outline" /> icon in the game list.
 										</p>
 									</React.Fragment>
 								);
@@ -169,9 +169,9 @@ export class Main extends React.Component {
 									<React.Fragment>
 										<h5>How do you get a cool player color or upload your own personal cardback?</h5>
 										<p>
-											Practice and Ranked games grant players Experience Points (XP). Gain 50 XP to attain "rainbow" status and have a color based off your ELO. Click on the info icon next to "Lobby" in the upper right
-											corner to learn more. Games that grant ELO must be ranked (not practice, private or casual). You can check to see where you're at in your profile page -
-											click on your name in the upper right corner.
+											Practice and Ranked games grant players Experience Points (XP). Gain 50 XP to attain "rainbow" status and have a color based off your ELO.
+											Click on the info icon next to "Lobby" in the upper right corner to learn more. Games that grant ELO must be ranked (not practice, private
+											or casual). You can check to see where you're at in your profile page - click on your name in the upper right corner.
 										</p>
 										<h5>How do you get a medal (seasonal reward)?</h5>
 										<p>Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at the first of the year.</p>

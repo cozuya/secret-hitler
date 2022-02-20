@@ -668,8 +668,8 @@ class Playerlist extends React.Component {
 					<div className="ui basic modal playerlistinfo">
 						<div className="header">Lobby and player color info:</div>
 						<p>
-							Players in the lobby, general chat, and game chat are grey/white until they reach 50 Experience Points (XP). After that, they are known as "rainbow players"
-							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
+							Players in the lobby, general chat, and game chat are grey/white until they reach 50 Experience Points (XP). After that, they are known as
+							"rainbow players" because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
 							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO to
