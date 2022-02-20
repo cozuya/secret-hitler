@@ -81,7 +81,7 @@ const EMOTE_GAME_BADGES = [
  * @param {*} badgeText
  * @param {*} badgeTitle
  */
-module.exports.awardBadgePrequeried = awardBadgePrequeried = (user, badgeId, badgeText, badgeTitle) => {
+module.exports.awardBadgePrequeried = (user, badgeId, badgeText, badgeTitle) => {
 	if (user.badges.filter(badge => badge.id === badgeId).length === 0) {
 		user.badges.push({
 			id: badgeId,
@@ -92,6 +92,7 @@ module.exports.awardBadgePrequeried = awardBadgePrequeried = (user, badgeId, bad
 		user.gameSettings.hasUnseenBadge = true;
 	}
 };
+const awardBadgePrequeried = module.exports.awardBadgePrequeried;
 
 module.exports.removeBadge = (user, badgeId) => {
 	user.badges.splice(
