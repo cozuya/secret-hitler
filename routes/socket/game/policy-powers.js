@@ -1480,6 +1480,39 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 							sendInProgressGameUpdate(game);
 
 							const playCard = () => {
+								if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)) {
+									game.chats.push({
+										timestamp: new Date(),
+										gameChat: true,
+										chat: [
+											{
+												text: 'The game was topdecked.'
+											}
+										]
+									});
+									game.publicPlayersState.forEach((player, i) => {
+										player.cardStatus.cardFront = 'secretrole';
+										player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+										player.cardStatus.cardDisplayed = true;
+										player.cardStatus.isFlipped = false;
+									});
+									game.gameState.audioCue = 'fascistsWin';
+									sendInProgressGameUpdate(game, true);
+
+									setTimeout(() => {
+										game.publicPlayersState.forEach((player, i) => {
+											player.cardStatus.isFlipped = true;
+										});
+										game.gameState.audioCue = '';
+
+										completeGame(game, 'fascist');
+									}, 2000);
+
+									return;
+								} else if (game.general.noTopdecking === 2) {
+									game.trackState.consecutiveTopdecks++;
+								}
+
 								if (game.private.policies.length < 3) shufflePolicies(game);
 								const index = game.trackState.enactedPolicies.length;
 								const policy = game.private.policies.shift();
@@ -1533,11 +1566,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 												player.cardStatus.isFlipped = true;
 											});
 											game.gameState.audioCue = '';
-											if (process.env.NODE_ENV === 'development') {
-												completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
-											} else {
-												completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-											}
+											completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
 										},
 										process.env.NODE_ENV === 'development' ? 100 : 2000
 									);

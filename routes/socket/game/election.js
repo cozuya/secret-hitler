@@ -1589,7 +1589,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 					gameChat: true,
 					chat: [
 						{
-							text: 'The hammer was rejected.'
+							text: 'The game was topdecked.'
 						}
 					]
 				});

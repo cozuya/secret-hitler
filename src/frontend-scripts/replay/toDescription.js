@@ -31,7 +31,7 @@ export default function(snapshot, game, userInfo, hideHand) {
 			}
 		case 'topDeck':
 			if (snapshot.gameOver) {
-				return gameOverText([text('normal', 'The hammer was neined.')]);
+				return gameOverText([text('normal', 'The game was topdecked.')]);
 			}
 			return [text('normal', 'The election tracker is maxed')];
 		case 'presidentLegislation':

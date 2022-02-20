@@ -25,6 +25,7 @@ const generateGameObject = game => {
 			name: game?.general?.name,
 			date: new Date(),
 			guesses: objMap(game?.guesses, (_, g) => g?.toString()),
+			merlinGuesses: objMap(game?.merlinGuesses, (_, g) => g),
 			playerChats: game?.general?.playerChats,
 			chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
 			hiddenInfoChat: game?.private?.hiddenInfoChat,
@@ -58,6 +59,8 @@ const generateGameObject = game => {
 			isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 			timedMode: game?.general?.timedMode,
 			blindMode: game?.general?.blindMode,
+			avalonSH: game?.general?.avalonSH,
+			noTopdecking: game.general?.noTopdecking,
 			completed: true
 		};
 	}
@@ -71,6 +74,7 @@ const generateGameObject = game => {
 		name: game?.general?.name,
 		date: new Date(),
 		guesses: objMap(game?.guesses, (_, g) => g?.toString()),
+		merlinGuesses: objMap(game?.merlinGuesses, (_, g) => g),
 		playerChats: game?.general?.playerChats,
 		chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
 		isVerifiedOnly: game?.general?.isVerifiedOnly,
@@ -93,6 +97,8 @@ const generateGameObject = game => {
 		isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 		timedMode: game?.general?.timedMode,
 		blindMode: game?.general?.blindMode,
+		avalonSH: game?.general?.avalonSH,
+		noTopdecking: game.general?.noTopdecking,
 		completed: false
 	};
 };

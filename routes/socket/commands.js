@@ -4,7 +4,7 @@ const { selectVoting } = require('./game/election');
 const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
 const Account = require('../../models/account');
-const { assassinateMerlin, selectPlayerToAssassinate } = require('./game/assassination');
+const { selectPlayerToAssassinate } = require('./game/assassination');
 
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
@@ -150,16 +150,6 @@ module.exports.commands = [
 		description: 'Changes a players role, definitely not fake.',
 		examples: ['/forcerigrole 1 fascist', '/forcerigrole 9 liberal'],
 		argumentsFormat: /^(\d{1,2})\s+(hitler|fascist|liberal|h|f|l|hit|fas|lib|merlin|percival|morgana)$/i,
-		aemOnly: true,
-		observerOnly: true,
-		seatedOnly: false,
-		gameStartedOnly: true
-	},
-	{
-		name: ['ass'],
-		description: '',
-		examples: [''],
-		argumentsFormat: /^.*$/i,
 		aemOnly: true,
 		observerOnly: true,
 		seatedOnly: false,
@@ -341,10 +331,10 @@ module.exports.commands.getCommand('gm').run = (socket, passport, user, game, ar
 		return;
 	}
 
-	if (game.guesses[user.userName]) {
-		sendMessage(game, user, `Updated line guess. (${guess.toString()})`);
+	if (game.merlinGuesses[user.userName]) {
+		sendMessage(game, user, `Updated merlin guess. (${guess})`);
 	} else {
-		sendMessage(game, user, `Submitted line guess. (${guess.toString()})`);
+		sendMessage(game, user, `Submitted merlin guess. (${guess})`);
 	}
 
 	game.merlinGuesses[user.userName] = guess;
@@ -856,12 +846,4 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 			chat: changedChat
 		});
 	}
-};
-
-module.exports.commands.getCommand('ass').run = (socket, passport, user, game, args) => {
-	if (!game.general.avalonSH || game.gameState.phase === 'assassination') {
-		return;
-	}
-
-	assassinateMerlin(game);
 };

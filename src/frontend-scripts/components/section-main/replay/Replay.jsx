@@ -28,8 +28,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const buildPlayback = (replay, to) => {
-	console.log(replay);
-
 	const { ticks, position } = replay;
 	const snapshot = ticks.get(position);
 	const { turnNum, phase } = snapshot;

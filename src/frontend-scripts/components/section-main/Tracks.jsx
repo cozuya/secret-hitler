@@ -326,11 +326,6 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
 					</span>
 				)}
-				{rainbowgame && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
-					</span>
-				)}
 				{noTopdecking && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
@@ -339,6 +334,11 @@ class Tracks extends React.Component {
 				{avalonSH && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
+					</span>
+				)}
+				{rainbowgame && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
 					</span>
 				)}
 				{casualgame && (

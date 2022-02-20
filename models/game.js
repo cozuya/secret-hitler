@@ -31,8 +31,16 @@ const Game = new Schema({
 		type: Map,
 		of: String
 	},
+	merlinGuesses: {
+		type: Map,
+		of: Number
+	},
 	timedMode: Number, // timer length
 	blindMode: Boolean,
+	avalonSH: {
+		withPercival: Boolean
+	},
+	noTopdecking: Number,
 	completed: Boolean
 });
 

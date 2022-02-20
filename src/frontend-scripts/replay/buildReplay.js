@@ -151,7 +151,6 @@ export default function buildReplay(game) {
 
 	// given the current turn and phase, returns the next (or same) turn and phase
 	function step(tick) {
-		console.log(game);
 		const { avalonSH, noTopdecking } = game.summary.gameSetting;
 		const { turnNum, phase } = tick;
 
@@ -160,6 +159,7 @@ export default function buildReplay(game) {
 			isGameEndingPolicyEnacted,
 			isHitlerElected,
 			isElectionTrackerMaxed,
+			consecutiveTopdecks,
 			isInvestigation,
 			isPolicyPeek,
 			isSpecialElection,
@@ -193,7 +193,7 @@ export default function buildReplay(game) {
 				else if (isElectionTrackerMaxed) return next('topDeck');
 				else return jump();
 			case 'topDeck':
-				if (noTopdecking) return gameOver();
+				if (noTopdecking === 1 || (noTopdecking === 2 && consecutiveTopdecks === 1)) return gameOver();
 				return next('policyEnaction');
 			case 'presidentLegislation':
 				return next('chancellorLegislation');

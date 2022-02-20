@@ -11,7 +11,8 @@ module.exports = (
 		rebalance7p: false,
 		rebalance9p: false,
 		rerebalance9p: false,
-		avalonSH: null
+		avalonSH: null,
+		noTopdecking: 0
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -59,6 +60,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		afterDeckSize: initialDeckSize(gameSetting),
 		afterTrack: initialTrack(gameSetting),
 		afterElectionTracker: 0,
+		consecutiveTopdecks: 0,
 		enactedPolicy: none
 	});
 
@@ -139,6 +141,9 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 	// Boolean
 	const isElectionTrackerMaxed = afterElectionTracker === 3;
+
+	// Number
+	const consecutiveTopdecks = prevTurn.isVotePassed ? 0 : gameSetting.noTopdecking === 2 && prevTurn.isElectionTrackerMaxed ? 1 : prevTurn.consecutiveTopdecks;
 
 	// { reds: Int, blues: Int }
 	const { beforeTrack, afterTrack } = (() => {
@@ -247,6 +252,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		beforeElectionTracker,
 		afterElectionTracker,
 		isElectionTrackerMaxed,
+		consecutiveTopdecks,
 		isInvestigation,
 		isExecution,
 		isAssassination,
