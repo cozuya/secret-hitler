@@ -38,7 +38,7 @@ const ACCOUNT_AGE_BADGES = [
 const GAMES_PLAYED_BADGES = [
 	// number of ranked + practice games played
 	[100, 'games100'],
-	[250, 'games250'],
+	[200, 'games200'],
 	[500, 'games500'],
 	[1000, 'games1000'],
 	[2000, 'games2000'],
@@ -49,7 +49,7 @@ const GAMES_PLAYED_BADGES = [
 const GAMES_WON_BADGES = [
 	// number of ranked + practice games won
 	[100, 'won100'],
-	[250, 'won250'],
+	[200, 'won200'],
 	[500, 'won500'],
 	[1000, 'won1000'],
 	[2000, 'won2000']

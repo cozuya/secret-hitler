@@ -234,7 +234,7 @@ Account.find({ 'games.1': { $exists: true } })
 			// == BADGES ==
 			awardBadgePrequeried(
 				acc,
-				'eloReset',
+				`eloReset${preResetElo.toFixed(0)}`,
 				`At the time of the Elo reset, you had ${preResetElo.toFixed(0)} overall Elo and ${preResetGameCount} games played.`,
 				`Elo Reset`
 			); // other badges will be awarded when players log in

@@ -218,21 +218,26 @@ class ProfileWrapper extends React.Component {
 				{badges
 					.sort((a, b) => (this.state.badgeSort === 'badge' ? compare(a.id, b.id) : compare(new Date(a.dateAwarded), new Date(b.dateAwarded))))
 					.map(x => (
-						<img
-							style={{ padding: '2px' }}
-							src={`../images/badges/${x.id}.png`}
-							alt={x.title}
-							key={x.id}
-							width={50}
-							onClick={() =>
-								Swal.fire({
-									title: x.title,
-									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('DD/MM/YYYY HH:mm')}.`,
-									imageUrl: `../images/badges/${x.id}.png`,
-									imageWidth: 100
-								})
-							}
-						/>
+						<>
+							<img
+								style={{ padding: '2px', display: 'inline' }}
+								src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
+								alt={x.title}
+								key={x.id}
+								height={50}
+								onClick={() =>
+									Swal.fire({
+										title: x.title,
+										text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('DD/MM/YYYY HH:mm')}.`,
+										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+										imageWidth: 100
+									})
+								}
+							/>
+							{x.id.startsWith('eloReset') ? (
+								<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }}>{x.id.substring(8)}</p>
+							) : null}
+						</>
 					))}
 			</div>
 		);
