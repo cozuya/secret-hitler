@@ -91,7 +91,7 @@ const profile = (state = { status: 'INITIAL' }, action) => {
 		case 'RECEIVE_PROFILE':
 			return Object.assign({}, action.profile, {
 				status: 'READY',
-				activeStat: 'MATCHES'
+				activeStat: 'ELO'
 			});
 		case 'UPDATE_ACTIVE_STATS':
 			return Object.assign({}, state, { activeStat: action.activeStat });

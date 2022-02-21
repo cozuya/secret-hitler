@@ -45,6 +45,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				const restrictedSettings = [
 					'blacklist',
 					'staffDisableVisibleElo',
+					'staffDisableVisibleXP',
 					'staffDisableStaffColor',
 					'staffIncognito',
 					'newReport',
@@ -61,6 +62,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					!restrictedSettings.includes(setting) ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
+					(setting === 'staffDisableVisibleXP' && (aem || veteran)) ||
 					(setting === 'staffIncognito' && aem) ||
 					(setting === 'staffDisableStaffColor' && (aem || veteran))
 				) {
@@ -73,12 +75,15 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						staffRole: account.staffRole || '',
 						isContributor: account.isContributor || false,
 						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+						staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
 						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 						staffIncognito: account.gameSettings.staffIncognito,
 						wins: account.wins,
 						losses: account.losses,
 						rainbowWins: account.rainbowWins,
 						rainbowLosses: account.rainbowLosses,
+						isRainbowOverall: account.isRainbowOverall,
+						isRainbowSeason: account.isRainbowSeason,
 						isPrivate: account.gameSettings.isPrivate,
 						tournyWins: account.gameSettings.tournyWins,
 						blacklist: account.gameSettings.blacklist,
@@ -87,7 +92,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						previousSeasonAward: account.gameSettings.previousSeasonAward,
 						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 						eloOverall: account.eloOverall,
+						xpOverall: account.xpOverall,
 						eloSeason: account.eloSeason,
+						xpSeason: account.xpSeason,
 						status: {
 							type: 'none',
 							gameId: null

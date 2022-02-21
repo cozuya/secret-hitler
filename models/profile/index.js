@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+
+const matchData = {
+	events: { type: Number, default: 0 },
+	successes: { type: Number, default: 0 }
+};
+
+const roleMatchData = {
+	liberal: matchData,
+	fascist: matchData
+};
+
 const profileSchema = new Schema({
 	_id: String, // username
 	username: String,
@@ -10,28 +21,40 @@ const profileSchema = new Schema({
 	lastConnectedIP: String,
 	stats: {
 		matches: {
-			allMatches: {
-				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
+			legacyMatches: roleMatchData, // pre-reset games
+			greyMatches: {
+				// ranked grey games
+				liberal: matchData,
+				fascist: matchData,
+				5: roleMatchData,
+				6: roleMatchData,
+				7: roleMatchData,
+				8: roleMatchData,
+				9: roleMatchData,
+				10: roleMatchData
 			},
-			liberal: {
-				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
+			rainbowMatches: {
+				// ranked rainbow games
+				liberal: matchData,
+				fascist: matchData,
+				5: roleMatchData,
+				6: roleMatchData,
+				7: roleMatchData,
+				8: roleMatchData,
+				9: roleMatchData,
+				10: roleMatchData
 			},
-			fascist: {
-				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
-			}
+			practiceMatches: roleMatchData, // practice games
+			silentMatches: roleMatchData, // silent games
+			emoteMatches: roleMatchData, // emote-only games
+			casualMatches: roleMatchData, // casual games
+			customMatches: roleMatchData // custom (any settings) games
 		},
 		actions: {
-			voteAccuracy: {
-				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
-			},
-			shotAccuracy: {
-				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
-			}
+			voteAccuracy: matchData,
+			shotAccuracy: matchData,
+			legacyVoteAccuracy: matchData,
+			legacyShotAccuracy: matchData
 		}
 	},
 	recentGames: {

@@ -14,10 +14,12 @@ const Account = new Schema({
 	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
+		staffDisableVisibleXP: Boolean,
 		staffDisableStaffColor: Boolean,
 		staffIncognito: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
+		hasUnseenBadge: Boolean,
 		customCardback: String,
 		customCardbackSaveTime: String,
 		customCardbackUid: String,
@@ -77,6 +79,7 @@ const Account = new Schema({
 	},
 	signupIP: String,
 	lastConnectedIP: String,
+	lastConnected: Date,
 	ipHistory: Array,
 	verified: Boolean,
 	isBanned: Boolean,
@@ -157,6 +160,7 @@ const Account = new Schema({
 	rainbowWinsSeason17: Number,
 	rainbowLossesSeason17: Number,
 	previousDayElo: Number,
+	previousDayXP: Number,
 	created: Date,
 	isOnFire: Boolean,
 	lastCompletedGame: Date,
@@ -178,6 +182,18 @@ const Account = new Schema({
 	tertiaryColor: String,
 	backgroundColor: String,
 	textColor: String,
+	eloPercentile: {
+		seasonal: Number,
+		overall: Number
+	},
+	isRainbowSeason: Boolean,
+	isRainbowOverall: Boolean,
+	xpOverall: { type: Number, default: 0 },
+	xpSeason: { type: Number, default: 0 },
+	dateRainbowOverall: Date,
+	badges: [{ id: String, text: String, title: String, dateAwarded: Date }],
+	maxElo: { type: Number, default: 1600 },
+	pastElo: [{ date: Date, value: Number }],
 	isTournamentMod: Boolean
 });
 

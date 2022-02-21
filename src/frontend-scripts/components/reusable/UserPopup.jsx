@@ -154,6 +154,24 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 							</List.Content>
 						</List.Item>
 					)}
+					{!notVisible && !blindMode && user && !user.staffDisableVisibleXP && (
+						<List.Item>
+							<List.Content>
+								<Grid columns={2} divided inverted>
+									<Grid.Row>
+										<Grid.Column textAlign="center" data-tooltip="Overall XP">
+											<List.Icon name="chart bar" />
+											{user.xpOverall || 0}
+										</Grid.Column>
+										<Grid.Column textAlign="center" data-tooltip="Seasonal XP">
+											<List.Icon name="calendar alternate outline" />
+											{((user.xpSeason || 0) + '').padStart(4, ' ')}
+										</Grid.Column>
+									</Grid.Row>
+								</Grid>
+							</List.Content>
+						</List.Item>
+					)}
 					{!notVisible && userSeated && gameStarted && !isMe && (
 						<List.Item>
 							<Button

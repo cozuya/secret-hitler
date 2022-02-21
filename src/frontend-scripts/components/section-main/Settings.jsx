@@ -6,6 +6,7 @@ import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 import { SketchPicker } from 'react-color';
+import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
@@ -40,6 +41,7 @@ class Settings extends React.Component {
 		failedNameChangeMessage: '',
 		soundSelected: 'Pack 1',
 		staffDisableVisibleElo: '',
+		staffDisableVisibleXP: '',
 		staffDisableStaffColor: '',
 		staffIncognito: '',
 		fullheight: false,
@@ -82,6 +84,7 @@ class Settings extends React.Component {
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
+			staffDisableVisibleXP: gameSettings.staffDisableVisibleXP || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
@@ -180,12 +183,6 @@ class Settings extends React.Component {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
-	};
-
-	profileSearchSubmit = e => {
-		e.preventDefault();
-
-		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
 	};
 
 	renderFonts() {
@@ -663,10 +660,6 @@ class Settings extends React.Component {
 			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
-		const handleSearchProfileChange = e => {
-			this.setState({ profileSearchValue: e.currentTarget.value });
-		};
-
 		const gameSettings = this.props.gameSettings || window.gameSettings;
 
 		const ownProfileSubmit = event => {
@@ -682,253 +675,324 @@ class Settings extends React.Component {
 				</a>
 				<div className="ui header">
 					<div className="content">
-						Game settings
+						Settings
 						<div className="sub header">
 							Account settings can be found{' '}
 							<a href="/account" rel="noopener noreferrer">
 								here.
 							</a>
-						</div>
-						<button className="ui primary button" onClick={ownProfileSubmit}>
-							View your profile
-						</button>
-						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
-							<div className="ui action input">
-								<input
-									placeholder="Search profiles.."
-									value={this.state.profileSearchValue}
-									onChange={handleSearchProfileChange}
-									maxLength="20"
-									spellCheck="false"
-								/>
-							</div>
-							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
-						</form>
-					</div>
-				</div>
-				<div className="ui grid">
-					<div className="row">
-						<div className="four wide column popups">
-							<h4 className="ui header">Add timestamps to chats</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="timestamps" checked={this.state.enableTimestamps} onChange={() => this.toggleGameSettings('enableTimestamps')} />
-								<label /> {/* N.B You need a blank label tag after input for the semantic checkboxes to display! */}
-							</div>
-							<h4 className="ui header">Disable Help Messages</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disableHelpMessages"
-									checked={this.state.disableHelpMessages}
-									onChange={() => this.toggleGameSettings('disableHelpMessages')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Show overall winrates and colors (instead of current season)</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disableSeasonal"
-									checked={this.state.disableSeasonal}
-									onChange={() => this.toggleGameSettings('disableSeasonal')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Policy claim representation</h4>
-							<select onChange={this.handleClaimCharactersChange} value={this.state.claimCharacters}>
-								<option value="short">Short (L/F)</option>
-								<option value="full">Full (liberal/fascist)</option>
-								<option value="legacy">Legacy (B/R)</option>
-							</select>
-							<h4 className="ui header">Claim Buttons</h4>
-							<select onChange={this.handleClaimButtonsChange} value={this.state.claimButtons}>
-								<option value="text">Legacy (Text)</option>
-								<option value="cards">Cards</option>
-							</select>
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
-								<React.Fragment>
-									<h4 className="ui header" style={{ color: '#05bba0' }}>
-										Incognito (hide from userlist)
-									</h4>
-									<div className="ui fitted toggle checkbox">
-										<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
-										<label />
-									</div>
-								</React.Fragment>
-							)}
-						</div>
-						<div className="four wide column popups">
-							<h4 className="ui header">Show right sidebar in games</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="sidebar"
-									checked={this.state.enableRightSidebarInGame}
-									onChange={() => this.toggleGameSettings('enableRightSidebarInGame')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Disable Help Icons</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disableHelpIcons"
-									checked={this.state.disableHelpIcons}
-									onChange={() => this.toggleGameSettings('disableHelpIcons')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Disable elo system</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
-								<label />
-							</div>
-							<h4 className="ui header">Truncated Chat Length</h4>
-							<div className="ui fitted">
-								<input
-									style={{ width: '35%' }}
-									type="text"
-									name="truncatedSize"
-									value={this.state.truncatedSize}
-									onChange={e => {
-										if (/^\d{1,}$/.test(e.target.value) || e.target.value === '') {
-											if (e.target.value === '') {
-												this.setState({ truncatedSize: e.target.value });
-												return;
-											}
-											this.props.socket.emit('updateGameSettings', { truncatedSize: e.target.value > 0 ? e.target.value : 1 });
-											this.setState({ truncatedSize: e.target.value > 0 ? e.target.value : 1 });
-										}
-									}}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Keyboard shortcuts</h4>
-							<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
-								<option value="disable">Disable keyboard shortcuts</option>
-								<option value="2s">Shortcuts with 2s delay</option>
-								<option value="0s">Shortcuts with no delay</option>
-							</select>
-
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
-								<React.Fragment>
-									<h4 className="ui header" style={{ color: '#05bba0' }}>
-										Disable visible elo
-									</h4>
-									<div className="ui fitted toggle checkbox">
-										<input
-											type="checkbox"
-											name="staffDisableVisibleElo"
-											checked={this.state.staffDisableVisibleElo}
-											onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
-										/>
-										<label />
-									</div>
-								</React.Fragment>
-							)}
-						</div>
-						<div className="four wide column popups">
-							<h4 className="ui header">Disable player cardbacks</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="cardbacks"
-									checked={this.state.disablePlayerCardbacks}
-									onChange={() => this.toggleGameSettings('disablePlayerCardbacks')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Disable confetti</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
-								<label />
-							</div>
-							<h4 className="ui header">Disable seasonal awards</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
-								<label />
-							</div>
-							<h4 className="ui header">Disable playerlist aggregations</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disableaggregations"
-									checked={this.state.disableAggregations}
-									onChange={() => this.toggleGameSettings('disableAggregations')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Disable kill confirmation</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="disablekillconfirmation"
-									checked={this.state.disableKillConfirmation}
-									onChange={() => this.toggleGameSettings('disableKillConfirmation')}
-								/>
-								<label />
-							</div>
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
-								<React.Fragment>
-									<h4 className="ui header" style={{ color: '#05bba0' }}>
-										Disable staff color (show elo color)
-									</h4>
-									<div className="ui fitted toggle checkbox">
-										<input
-											type="checkbox"
-											name="staffDisableStaffColor"
-											checked={this.state.staffDisableStaffColor}
-											onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
-										/>
-										<label />
-									</div>
-								</React.Fragment>
-							)}
-						</div>
-						<div className="four wide column popups">
-							<h4 className="ui header">Disable player colors in chat</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="playercolors"
-									checked={this.state.disablePlayerColorsInChat}
-									onChange={() => this.toggleGameSettings('disablePlayerColorsInChat')}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header">Sound effect status</h4>
-							<select onChange={this.handleSoundChange} value={this.state.soundSelected}>
-								<option>Off</option>
-								<option>pack1</option>
-								<option>pack2</option>
-							</select>
-							<h4 className="ui header">UI full height in games</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
-								<label />
-							</div>
-							<h4 className="ui header">Safe For Work Mode</h4>
-							<div className="ui fitted toggle checkbox">
-								<input
-									type="checkbox"
-									name="fullheight"
-									checked={this.state.safeForWork}
-									onChange={() => {
-										this.toggleGameSettings('safeForWork');
-										location.reload();
-									}}
-								/>
-								<label />
-							</div>
-							<h4 className="ui header" style={{ color: 'red' }}>
-								Private-games-only (this action will log you out, 18 hour cooldown)
-							</h4>
+							<br />
+							<span style={{ color: 'red' }}> Private-games-only (this action will log you out, 18 hour cooldown)</span>{' '}
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
 						</div>
+						<button className="ui primary button" onClick={ownProfileSubmit}>
+							View your profile
+						</button>
 					</div>
+				</div>
+				<div className="ui grid">
+					<CollapsibleSegment title={'Game Settings'} style={{ width: '100%', padding: '7px' }}>
+						<div className="ui grid">
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Add timestamps to chats</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="timestamps"
+											checked={this.state.enableTimestamps}
+											onChange={() => this.toggleGameSettings('enableTimestamps')}
+										/>
+										<label /> {/* N.B You need a blank label tag after input for the semantic checkboxes to display! */}
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Policy claim representation</h4>
+									<select onChange={this.handleClaimCharactersChange} value={this.state.claimCharacters}>
+										<option value="short">Short (L/F)</option>
+										<option value="full">Full (liberal/fascist)</option>
+										<option value="legacy">Legacy (B/R)</option>
+									</select>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Claim Buttons</h4>
+									<select onChange={this.handleClaimButtonsChange} value={this.state.claimButtons}>
+										<option value="text">Legacy (Text)</option>
+										<option value="cards">Cards</option>
+									</select>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable elo system</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
+										<label />
+									</div>
+								</div>
+							</div>
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Keyboard shortcuts</h4>
+									<select onChange={this.handleKeyboardShortcutsChange} value={this.state.keyboardShortcuts}>
+										<option value="disable">Disable keyboard shortcuts</option>
+										<option value="2s">Shortcuts with 2s delay</option>
+										<option value="0s">Shortcuts with no delay</option>
+									</select>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable confetti</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable kill confirmation</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disablekillconfirmation"
+											checked={this.state.disableKillConfirmation}
+											onChange={() => this.toggleGameSettings('disableKillConfirmation')}
+										/>
+										<label />
+									</div>
+								</div>
+							</div>
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Sound effect status</h4>
+									<select onChange={this.handleSoundChange} value={this.state.soundSelected}>
+										<option>Off</option>
+										<option>pack1</option>
+										<option>pack2</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</CollapsibleSegment>
+					<CollapsibleSegment title={'Player Settings'} style={{ width: '100%', padding: '7px' }}>
+						<div className="ui grid">
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Show overall winrates and colors (instead of current season)</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disableSeasonal"
+											checked={this.state.disableSeasonal}
+											onChange={() => this.toggleGameSettings('disableSeasonal')}
+										/>
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable player cardbacks</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="cardbacks"
+											checked={this.state.disablePlayerCardbacks}
+											onChange={() => this.toggleGameSettings('disablePlayerCardbacks')}
+										/>
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable seasonal awards</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable playerlist aggregations</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disableaggregations"
+											checked={this.state.disableAggregations}
+											onChange={() => this.toggleGameSettings('disableAggregations')}
+										/>
+										<label />
+									</div>
+								</div>
+							</div>
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable player colors in chat</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="playercolors"
+											checked={this.state.disablePlayerColorsInChat}
+											onChange={() => this.toggleGameSettings('disablePlayerColorsInChat')}
+										/>
+										<label />
+									</div>
+								</div>
+							</div>
+						</div>
+					</CollapsibleSegment>
+					<CollapsibleSegment title={'UI Settings'} style={{ width: '100%', padding: '7px' }}>
+						<div className="ui grid">
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">Show right sidebar in games</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="sidebar"
+											checked={this.state.enableRightSidebarInGame}
+											onChange={() => this.toggleGameSettings('enableRightSidebarInGame')}
+										/>
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable Help Messages</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disableHelpMessages"
+											checked={this.state.disableHelpMessages}
+											onChange={() => this.toggleGameSettings('disableHelpMessages')}
+										/>
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Disable Help Icons</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="disableHelpIcons"
+											checked={this.state.disableHelpIcons}
+											onChange={() => this.toggleGameSettings('disableHelpIcons')}
+										/>
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Truncated Chat Length</h4>
+									<div className="ui fitted">
+										<input
+											style={{ width: '35%' }}
+											type="text"
+											name="truncatedSize"
+											value={this.state.truncatedSize}
+											onChange={e => {
+												if (/^\d{1,}$/.test(e.target.value) || e.target.value === '') {
+													if (e.target.value === '') {
+														this.setState({ truncatedSize: e.target.value });
+														return;
+													}
+													this.props.socket.emit('updateGameSettings', { truncatedSize: e.target.value > 0 ? e.target.value : 1 });
+													this.setState({ truncatedSize: e.target.value > 0 ? e.target.value : 1 });
+												}
+											}}
+										/>
+										<label />
+									</div>
+								</div>
+							</div>
+							<div className="row">
+								<div className="four wide column popups">
+									<h4 className="ui header">UI full height in games</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
+										<label />
+									</div>
+								</div>
+								<div className="four wide column popups">
+									<h4 className="ui header">Safe For Work Mode</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="fullheight"
+											checked={this.state.safeForWork}
+											onChange={() => {
+												this.toggleGameSettings('safeForWork');
+												location.reload();
+											}}
+										/>
+										<label />
+									</div>
+								</div>
+							</div>
+						</div>
+					</CollapsibleSegment>
+					{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+						<CollapsibleSegment title={'AEM Settings'} style={{ width: '100%', padding: '7px' }}>
+							<div className="ui grid">
+								<div className="row">
+									<div className="four wide column popups">
+										<React.Fragment>
+											<h4 className="ui header" style={{ color: '#05bba0' }}>
+												Disable staff color (show elo color)
+											</h4>
+											<div className="ui fitted toggle checkbox">
+												<input
+													type="checkbox"
+													name="staffDisableStaffColor"
+													checked={this.state.staffDisableStaffColor}
+													onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+												/>
+												<label />
+											</div>
+										</React.Fragment>
+									</div>
+									<div className="four wide column popups">
+										<React.Fragment>
+											<h4 className="ui header" style={{ color: '#05bba0' }}>
+												Disable visible elo
+											</h4>
+											<div className="ui fitted toggle checkbox">
+												<input
+													type="checkbox"
+													name="staffDisableVisibleElo"
+													checked={this.state.staffDisableVisibleElo}
+													onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
+												/>
+												<label />
+											</div>
+										</React.Fragment>
+									</div>
+									<div className="four wide column popups">
+										<React.Fragment>
+											<h4 className="ui header" style={{ color: '#05bba0' }}>
+												Disable visible XP
+											</h4>
+											<div className="ui fitted toggle checkbox">
+												<input
+													type="checkbox"
+													name="staffDisableVisibleXP"
+													checked={this.state.staffDisableVisibleXP}
+													onChange={() => this.toggleGameSettings('staffDisableVisibleXP')}
+												/>
+												<label />
+											</div>
+										</React.Fragment>
+									</div>
+									<div className="four wide column popups">
+										{window.staffRole !== 'veteran' && (
+											<React.Fragment>
+												<h4 className="ui header" style={{ color: '#05bba0' }}>
+													Incognito (hide from userlist)
+												</h4>
+												<div className="ui fitted toggle checkbox">
+													<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
+													<label />
+												</div>
+											</React.Fragment>
+										)}
+									</div>
+								</div>
+							</div>
+						</CollapsibleSegment>
+					)}
 					<div className="row centered">
 						<div className="four wide column popups" />
 					</div>

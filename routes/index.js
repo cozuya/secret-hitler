@@ -5,7 +5,6 @@ const GameSummary = require('../models/game-summary');
 const ModThread = require('../models/modThread');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
-const _ = require('lodash');
 const { accounts } = require('./accounts');
 const version = require('../version');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
@@ -14,6 +13,8 @@ const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
 const { DEFAULTTHEMECOLORS } = require('../src/frontend-scripts/node-constants');
+const { checkBadgesAccount } = require('./socket/badges');
+const moment = require('moment');
 
 /**
  * @param {object} req - express request object.
@@ -150,7 +151,7 @@ module.exports = () => {
 			Profile.findOne({ _id: username })
 				.then(profile => {
 					if (profile) {
-						profile.lastConnectedIP = ip;
+						profile.lastConnectedIP = ip; // why?
 						profile.save();
 					}
 				})
@@ -163,6 +164,7 @@ module.exports = () => {
 					console.log(err);
 					return;
 				}
+				checkBadgesAccount(account);
 				const { blacklist } = account.gameSettings;
 
 				const backgroundColor = account.backgroundColor || DEFAULTTHEMECOLORS.baseBackgroundColor;
@@ -200,6 +202,7 @@ module.exports = () => {
 				}
 
 				account.lastConnectedIP = ip;
+				account.lastConnected = new Date();
 				if (
 					(account.ipHistory && account.ipHistory.length === 0) ||
 					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
@@ -282,29 +285,67 @@ module.exports = () => {
 				res.status(404).send('Profile not found');
 			} else {
 				Account.findOne({ username }, (err, account) => {
-					const _profile = _.cloneDeep(profile);
+					const _profile = profile.toObject();
 
 					if (err) {
 						return new Error(err);
 					}
 					if (account) {
+						_profile.created = moment(account.created).format('DD/MM/YYYY');
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
+						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('DD/MM/YYYY') : '';
+						_profile.badges = account.badges || [];
+						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
+						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(Number.parseFloat(account.maxElo || 1600));
+						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
+							? undefined
+							: account.pastElo.toObject().length
+							? account.pastElo.toObject()
+							: [{ date: new Date(), value: Math.round(Number.parseFloat(account.eloOverall || 1600)) }];
+						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpOverall || 0);
+						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloOverall || 1600);
+						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpSeason || 0);
+						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloSeason || 1600);
+						_profile.isRainbowOverall = account.isRainbowOverall;
+						_profile.isRainbowSeason = account.isRainbowSeason;
+						_profile.staffRole = account.staffRole;
+						_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
+						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 
 						Account.findOne({ username: authedUser }).then(acc => {
+							if (acc && account.username === acc.username) {
+								acc.gameSettings.hasUnseenBadge = false;
+								acc.save();
+							}
 							if (
 								acc &&
 								acc.staffRole &&
 								(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
 							) {
 								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+									_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
 								} catch (e) {
 									_profile.lastConnectedIP = "Couldn't find IP";
 									console.log(e);
 								}
+								try {
+									_profile.signupIP = '-' + obfIP(account.signupIP);
+								} catch (e) {
+									_profile.signupIP = "Couldn't find IP";
+									console.log(e);
+								}
+								_profile.lastConnected = moment(account.lastConnected).format('DD/MM/YYYY h:mm');
+								_profile.created = moment(account.created).format('DD/MM/YYYY h:mm');
 							} else {
 								_profile.lastConnectedIP = undefined;
+								_profile.signupIP = undefined;
+							}
+
+							if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
+								// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
+								res.status(404).send('Profile not found');
+								return;
 							}
 
 							res.json(_profile);
@@ -401,9 +442,9 @@ module.exports = () => {
 
 			Account.findOne({ username })
 				.then(account => {
-					if (account.wins + account.losses < 50) {
+					if (!account.isRainbowOverall) {
 						res.json({
-							message: 'You need to have played 50 games to upload a cardback.'
+							message: 'You need to be rainbow to upload a cardback.'
 						});
 					} else if (
 						new Date(account.gameSettings.customCardbackSaveTime) &&

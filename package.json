@@ -52,6 +52,7 @@
 		"pug": "^3.0.1",
 		"rc-slider": "^8.4.0",
 		"react": "16.8.1",
+		"react-collapsed": "^3.3.0",
 		"react-color": "^2.18.0",
 		"react-custom-scrollbars": "^4.2.1",
 		"react-dom": "16.8.1",

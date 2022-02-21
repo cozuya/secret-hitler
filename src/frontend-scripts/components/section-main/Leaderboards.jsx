@@ -1,12 +1,16 @@
 import React from 'react';
+import moment from 'moment';
 
 class Leaderboard extends React.Component {
 	constructor() {
 		super();
 
 		this.state = {
-			seasonalLeaderboard: [],
-			dailyLeaderboard: []
+			seasonalLeaderboardElo: [],
+			seasonalLeaderboardXP: [],
+			dailyLeaderboardElo: [],
+			dailyLeaderboardXP: [],
+			rainbowLeaderboard: []
 		};
 	}
 
@@ -15,8 +19,11 @@ class Leaderboard extends React.Component {
 			.then(res => res.json())
 			.then(data => {
 				this.setState({
-					seasonalLeaderboard: data.seasonalLeaderboard || [],
-					dailyLeaderboard: data.dailyLeaderboard || [],
+					seasonalLeaderboardElo: data.seasonalLeaderboardElo || [],
+					seasonalLeaderboardXP: data.seasonalLeaderboardXP || [],
+					dailyLeaderboardElo: data.dailyLeaderboardElo || [],
+					dailyLeaderboardXP: data.dailyLeaderboardXP || [],
+					rainbowLeaderboard: data.rainbowLeaderboard || [],
 					errored: false
 				});
 			})
@@ -34,46 +41,106 @@ class Leaderboard extends React.Component {
 				<a href="#/">
 					<i className="remove icon" style={{ marginTop: '30px' }} />
 				</a>
-				{this.state.seasonalLeaderboard.length + this.state.dailyLeaderboard.length && !this.state.errored ? (
-					<div className="ui grid">
-						<div className="eight wide column">
-							{this.state.seasonalLeaderboard.length > 0 && (
-								<>
-									<h2 className="ui header">Seasonal leaders</h2>
-									<ul>
-										{this.state.seasonalLeaderboard.map(user => (
-											<li key={user.userName}>
-												<p>
-													<a href={`#/profile/${user.userName}`}>{user.userName}</a>
-												</p>
-												<p>{user.elo.toFixed(0)}</p>
-											</li>
-										))}
-									</ul>
-								</>
-							)}
+				{this.state.seasonalLeaderboardElo.length && !this.state.errored ? (
+					<>
+						<div className="ui grid">
+							<div className="eight wide column">
+								{this.state.seasonalLeaderboardElo.length > 0 && (
+									<>
+										<h2 className="ui header">Seasonal Elo leaders</h2>
+										<ul>
+											{this.state.seasonalLeaderboardElo.map(user => (
+												<li key={user.userName}>
+													<p>
+														<a href={`#/profile/${user.userName}`}>{user.userName}</a>
+													</p>
+													<p>{user.elo.toFixed(0)}</p>
+												</li>
+											))}
+										</ul>
+									</>
+								)}
+							</div>
+							<div className="eight wide column">
+								{this.state.dailyLeaderboardElo.length > 0 && (
+									<>
+										<h2 className="ui header">Daily Elo leaders</h2>
+										<ul>
+											{this.state.dailyLeaderboardElo.map(
+												user =>
+													user.dailyEloDifference.toFixed(0) >= 0 && (
+														<li key={user.userName}>
+															<p>
+																<a href={`#/profile/${user.userName}`}>{user.userName}</a>
+															</p>
+															<p>+{user.dailyEloDifference.toFixed(0)}</p>
+														</li>
+													)
+											)}
+										</ul>
+									</>
+								)}
+							</div>
 						</div>
-						<div className="eight wide column">
-							{this.state.dailyLeaderboard.length > 0 && (
-								<>
-									<h2 className="ui header">Daily leaders</h2>
-									<ul>
-										{this.state.dailyLeaderboard.map(
-											user =>
-												user.dailyEloDifference.toFixed(0) >= 0 && (
-													<li key={user.userName}>
-														<p>
-															<a href={`#/profile/${user.userName}`}>{user.userName}</a>
-														</p>
-														<p>+{user.dailyEloDifference.toFixed(0)}</p>
-													</li>
-												)
-										)}
-									</ul>
-								</>
-							)}
+						<div className="ui grid">
+							<div className="eight wide column">
+								{this.state.seasonalLeaderboardXP.length > 0 && (
+									<>
+										<h2 className="ui header">Seasonal XP leaders</h2>
+										<ul>
+											{this.state.seasonalLeaderboardXP.map(user => (
+												<li key={user.userName}>
+													<p>
+														<a href={`#/profile/${user.userName}`}>{user.userName}</a>
+													</p>
+													<p>{user.xp.toFixed(0)}</p>
+												</li>
+											))}
+										</ul>
+									</>
+								)}
+							</div>
+							<div className="eight wide column">
+								{this.state.dailyLeaderboardXP.length > 0 && (
+									<>
+										<h2 className="ui header">Daily XP leaders</h2>
+										<ul>
+											{this.state.dailyLeaderboardXP.map(
+												user =>
+													user.dailyXPDifference.toFixed(0) >= 0 && (
+														<li key={user.userName}>
+															<p>
+																<a href={`#/profile/${user.userName}`}>{user.userName}</a>
+															</p>
+															<p>+{user.dailyXPDifference.toFixed(0)}</p>
+														</li>
+													)
+											)}
+										</ul>
+									</>
+								)}
+							</div>
 						</div>
-					</div>
+						<div className="ui grid">
+							<div className="eight wide column">
+								{this.state.rainbowLeaderboard.length > 0 && (
+									<>
+										<h2 className="ui header">Most recent rainbow players</h2>
+										<ul>
+											{this.state.rainbowLeaderboard.map(user => (
+												<li key={user.userName}>
+													<p>
+														<a href={`#/profile/${user.userName}`}>{user.userName}</a>
+													</p>
+													<p>{moment(user.date).format('DD-MM-YYYY')}</p>
+												</li>
+											))}
+										</ul>
+									</>
+								)}
+							</div>
+						</div>
+					</>
 				) : this.state.errored ? (
 					<h2 className="ui header">Leaderboard Error</h2>
 				) : (

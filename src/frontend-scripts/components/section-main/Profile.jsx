@@ -1,15 +1,19 @@
 import { connect } from 'react-redux';
-import { updateActiveStats, fetchReplay } from '../../actions/actions';
+import { fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
+import Swal from 'sweetalert2';
+import { Dropdown } from 'semantic-ui-react';
+import moment from 'moment';
+import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
-	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
+	// updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
 	fetchReplay: gameId => dispatch(fetchReplay(gameId))
 });
 
@@ -20,7 +24,9 @@ class ProfileWrapper extends React.Component {
 			bioStatus: 'displayed',
 			blacklistClicked: false,
 			blacklistShown: false,
-			openTime: Date.now()
+			openTime: Date.now(),
+			badgeSort: 'badge',
+			profileSearchValue: ''
 		};
 	}
 
@@ -38,7 +44,7 @@ class ProfileWrapper extends React.Component {
 	formatDateString(dateString) {
 		const date = new Date(dateString);
 
-		return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('-');
+		return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join('-');
 	}
 
 	successRate(trials, outcomes) {
@@ -49,24 +55,127 @@ class ProfileWrapper extends React.Component {
 		return [name, trials, this.successRate(trials, outcomes)];
 	}
 
+	successRowMatches(name, libGames, libWins, fasGames, fasWins) {
+		return [name, libGames + fasGames, this.successRate(libGames, libWins), this.successRate(fasGames, fasWins)];
+	}
+
+	Elo() {
+		return (
+			<Table
+				headers={['Type', 'Seasonal', 'Overall']}
+				rows={[
+					[
+						'Elo',
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
+					],
+					[
+						'XP',
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 1600,
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 1600
+					]
+				]}
+			/>
+		);
+	}
+
 	Matches() {
 		const { matches } = this.props.profile.stats;
 
 		return (
-			<div>
-				<Table
-					uiTable="top attached three column"
-					headers={['All Matches', 'Matches', 'Winrate']}
-					rows={[this.successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)]}
-				/>
-				<Table
-					uiTable="bottom attached three column"
-					headers={['Loyalty', 'Matches', 'Winrate']}
-					rows={[
-						this.successRow('Liberal', matches.liberal.events, matches.liberal.successes),
-						this.successRow('Fascist', matches.fascist.events, matches.fascist.successes)
-					]}
-				/>
+			<div style={{ marginLeft: '10px' }}>
+				<CollapsibleSegment title={'Standard Matches'} defaultExpanded={true}>
+					<Table
+						uiTable="top attached four column"
+						headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+						rows={[
+							this.successRowMatches(
+								'Standard Matches',
+								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
+							)
+						]}
+					/>
+				</CollapsibleSegment>
+				<CollapsibleSegment title={'Ranked Matches'}>
+					<Table
+						uiTable="top attached four column"
+						headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+						rows={[
+							this.successRowMatches(
+								'All Ranked Matches',
+								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Rainbow Matches',
+								matches.rainbowMatches.liberal.events,
+								matches.rainbowMatches.liberal.successes,
+								matches.rainbowMatches.fascist.events,
+								matches.rainbowMatches.fascist.successes
+							),
+							this.successRowMatches(
+								'Non-Rainbow Matches',
+								matches.greyMatches.liberal.events,
+								matches.greyMatches.liberal.successes,
+								matches.greyMatches.fascist.events,
+								matches.greyMatches.fascist.successes
+							)
+						]}
+					/>
+				</CollapsibleSegment>
+				{Object.entries({
+					practiceMatches: 'Practice Matches',
+					silentMatches: 'Silent Matches'
+					// casualMatches: 'Casual Matches',
+					// customMatches: 'Custom Matches',
+					// emoteMatches: 'Emote Matches'
+				}).map(([k, v]) => (
+					<CollapsibleSegment title={v} key={k}>
+						<Table
+							uiTable="top attached four column"
+							headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+							rows={[
+								this.successRowMatches(v, matches[k].liberal.events, matches[k].liberal.successes, matches[k].fascist.events, matches[k].fascist.successes)
+							]}
+						/>
+					</CollapsibleSegment>
+				))}
+				{['5', '6', '7', '8', '9', '10'].map(n => (
+					<CollapsibleSegment title={`${n} Player Matches`} key={n}>
+						<Table
+							uiTable="top attached four column"
+							headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
+							rows={[
+								this.successRowMatches(
+									`Ranked ${n}p`,
+									matches.greyMatches[n].liberal.events + matches.rainbowMatches[n].liberal.events,
+									matches.greyMatches[n].liberal.successes + matches.rainbowMatches[n].liberal.successes,
+									matches.greyMatches[n].fascist.events + matches.rainbowMatches[n].fascist.events,
+									matches.greyMatches[n].fascist.successes + matches.rainbowMatches[n].fascist.successes
+								),
+								this.successRowMatches(
+									`Rainbow ${n}p`,
+									matches.rainbowMatches[n].liberal.events,
+									matches.rainbowMatches[n].liberal.successes,
+									matches.rainbowMatches[n].fascist.events,
+									matches.rainbowMatches[n].fascist.successes
+								),
+								this.successRowMatches(
+									`Non-Rainbow ${n}p`,
+									matches.greyMatches[n].liberal.events,
+									matches.greyMatches[n].liberal.successes,
+									matches.greyMatches[n].fascist.events,
+									matches.greyMatches[n].fascist.successes
+								)
+							]}
+						/>
+					</CollapsibleSegment>
+				))}
 			</div>
 		);
 	}
@@ -85,19 +194,57 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	Stats() {
-		const { activeStat } = this.props.profile;
-		const { updateActiveStats } = this.props;
-		const table = (() => {
-			switch (activeStat) {
-				case 'MATCHES':
-					return this.Matches();
-				case 'ACTIONS':
-					return this.Actions();
-			}
-		})();
-		const toActive = stat => (activeStat === stat ? 'active' : '');
+	Badges() {
+		const { badges } = this.props.profile;
+		const changeSort = sort => this.setState({ badgeSort: sort });
+		const compare = (a, b) => (a > b ? 1 : -1);
 
+		return (
+			<div>
+				<Dropdown
+					selection
+					placeholder={'Sort by:'}
+					onChange={(a, { name, value }) => {
+						changeSort(value);
+					}}
+					options={[
+						{ key: 0, text: 'Badge', value: 'badge' },
+						{ key: 1, text: 'Date earned', value: 'date' }
+					]}
+					style={{ right: '0', left: 'auto', position: 'absolute' }}
+				/>
+				<br />
+				<br />
+				{badges
+					.sort((a, b) => (this.state.badgeSort === 'badge' ? compare(a.id, b.id) : compare(new Date(a.dateAwarded), new Date(b.dateAwarded))))
+					.map(x => (
+						<>
+							<img
+								style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
+								src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
+								alt={x.title}
+								key={x.id}
+								height={50}
+								onClick={() =>
+									Swal.fire({
+										title: x.title,
+										text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('DD/MM/YYYY HH:mm')}.`,
+										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+										imageWidth: 100
+									})
+								}
+							/>
+							{x.id.startsWith('eloReset') ? (
+								<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }}>{x.id.substring(8)}</p>
+							) : null}
+						</>
+					))}
+			</div>
+		);
+	}
+
+	Stats() {
+		// Elo | Matches | Actions | Badges
 		return (
 			<div>
 				<div className="column-name">
@@ -106,15 +253,25 @@ class ProfileWrapper extends React.Component {
 						<i className="large help circle icon" />
 					</a>
 				</div>
-				<div className="ui top attached menu">
-					<a className={`${toActive('MATCHES')} item`} onClick={updateActiveStats.bind(null, 'MATCHES')}>
-						Matches
-					</a>
-					<a className={`${toActive('ACTIONS')} item`} onClick={updateActiveStats.bind(null, 'ACTIONS')}>
-						Actions
-					</a>
-				</div>
-				<div className="ui bottom attached segment">{table}</div>
+				<CollapsibleSegment title={'Elo & XP'} defaultExpanded={true}>
+					{this.Elo()}
+				</CollapsibleSegment>
+				<CollapsibleSegment title={'Matches'}>{this.Matches()}</CollapsibleSegment>
+				<CollapsibleSegment title={'Actions'}>{this.Actions()}</CollapsibleSegment>
+				<CollapsibleSegment
+					title={'Badges'}
+					titleClass={
+						this.props.userInfo &&
+						this.props.profile._id === this.props.userInfo.userName &&
+						this.props.userInfo.gameSettings &&
+						this.props.userInfo.gameSettings.hasUnseenBadge
+							? 'newbadge'
+							: ''
+					}
+					defaultExpanded={true}
+				>
+					{this.Badges()}
+				</CollapsibleSegment>
 			</div>
 		);
 	}
@@ -135,8 +292,16 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div>
-				<h2 className="ui header recent-games-table">Recent Games</h2>
-				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
+				<CollapsibleSegment title={'Recent Games'} titleClass={'recent-games-table'} defaultExpanded={true}>
+					<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
+				</CollapsibleSegment>
+				{this.props.profile.lastConnectedIP && (
+					<div>
+						<CollapsibleSegment title={'AEM Info'} defaultExpanded={true}>
+							<Table headers={['Last Connected IP / Signup IP']} rows={[[this.props.profile.lastConnectedIP], [this.props.profile.signupIP]]} />
+						</CollapsibleSegment>
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -270,30 +435,35 @@ class ProfileWrapper extends React.Component {
 		$(this.blacklistModal).modal('show');
 	};
 
+	profileSearchSubmit = e => {
+		e.preventDefault();
+
+		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
+	};
+
 	Profile() {
 		const { gameSettings, profile, userInfo, userList } = this.props;
 		const user = userList.list ? userList.list.find(u => u.userName == profile._id) : null;
-		const w =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'wins'
-					: 'rainbowWins'
-				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
-		const l =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'losses'
-					: 'rainbowLosses'
-				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+		// const w =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'wins'
+		// 			: 'rainbowWins'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'winsSeason'
+		// 		: 'rainbowWinsSeason';
+		// const l =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'losses'
+		// 			: 'rainbowLosses'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'lossesSeason'
+		// 		: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
-		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
+				(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) || Boolean(user.staffRole) || user.isContributor
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -301,11 +471,66 @@ class ProfileWrapper extends React.Component {
 							{ clickable: this.props.isUserClickable }
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
-			const { wins = 0, losses = 0 } = user;
-			if (wins + losses < 50) {
-				gamesUntilRainbow = 50 - wins - losses;
-			}
 		}
+
+		const userAdminRole =
+			this.props.profile.staffRole === 'admin' || this.props.profile.staffRole === 'editor' || this.props.profile.staffRole === 'moderator'
+				? this.props.profile.staffRole
+				: null;
+
+		const staffRolePrefixes = { admin: '(A) 📛', editor: '(E) 🔰', moderator: '(M) 🌀' };
+
+		let prefix = '';
+		if (userAdminRole) {
+			prefix = staffRolePrefixes[userAdminRole];
+		}
+
+		const routeToGame = gameId => {
+			window.location = `#/table/${gameId}`;
+		};
+
+		const fetchReplay = gameId => {
+			window.location = `#/replay/${gameId}`;
+		};
+
+		const renderStatus = () => {
+			const status = user ? user.status : null;
+
+			if (!status || status.type === 'none') {
+				return null;
+			} else {
+				const iconClasses = cn(
+					'status',
+					{ clickable: true },
+					{ search: status.type === 'observing' },
+					{ fav: status.type === 'playing' },
+					{ rainbow: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ private: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: routeToGame,
+					observing: routeToGame,
+					rainbow: routeToGame,
+					replay: fetchReplay,
+					private: routeToGame
+				};
+
+				return <i title={title[status.type]} className={iconClasses} onClick={onClick[status.type].bind(this, status.gameId)} />;
+			}
+		};
+
+		const handleSearchProfileChange = e => {
+			this.setState({ profileSearchValue: e.currentTarget.value });
+		};
 
 		return (
 			<div>
@@ -318,30 +543,42 @@ class ProfileWrapper extends React.Component {
 					/>
 				)}
 				<div className="ui grid">
-					<h1 className="ui header ten wide column">{profile._id}</h1>
-					<div className="ui right aligned five wide column">
+					<h1 className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`} style={{ paddingLeft: 0 }}>
+						{renderStatus()}
+						{prefix}
+						{profile._id}
+					</h1>
+					<div className="ui right aligned six wide column">
 						<span>
 							<strong>
 								<em>Created: </em>
 							</strong>
 						</span>
-						<span>{this.formatDateString(profile.created)}</span>
-						{!isNaN(gamesUntilRainbow) && (
-							<div>
-								<span>
-									<strong>
-										<em>Games Until Rainbow: </em>
-									</strong>
-								</span>
-								<span>{gamesUntilRainbow}</span>
-							</div>
-						)}
-						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						<span>{profile.created}</span>
+						<br />
+						<span>
+							<strong>
+								<em>Last online: </em>
+							</strong>
+						</span>
+						<span>{profile.lastConnected}</span>
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist
 							</a>
 						)}
+						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
+							<div className="ui action input">
+								<input
+									placeholder="Search profiles.."
+									value={this.state.profileSearchValue}
+									onChange={handleSearchProfileChange}
+									maxLength="20"
+									spellCheck="false"
+								/>
+							</div>
+							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
+						</form>
 					</div>
 				</div>
 				{this.renderBio()}
