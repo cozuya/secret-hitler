@@ -220,7 +220,7 @@ class ProfileWrapper extends React.Component {
 					.map(x => (
 						<>
 							<img
-								style={{ padding: '2px', display: 'inline' }}
+								style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
 								src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
 								alt={x.title}
 								key={x.id}

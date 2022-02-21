@@ -159,9 +159,8 @@ module.exports.checkBadgesXP = (user, gameJustPlayed = '') => {
  * Checks the user for all deserved account age or other status badges
  *
  * @param {*} user user object
- * @param {*} save save the user afterwards?
  */
-module.exports.checkBadgesAccount = (user, save = false) => {
+module.exports.checkBadgesAccount = user => {
 	if (!user.created) {
 		return;
 	}
@@ -204,8 +203,6 @@ module.exports.checkBadgesAccount = (user, save = false) => {
 	if (user.staffRole === 'admin') {
 		awardBadgePrequeried(user, 'admin', 'Thank you for your service to the site!', 'You are an Admin!');
 	}
-
-	if (save) user.save();
 };
 
 /**
