@@ -44,7 +44,7 @@ class ProfileWrapper extends React.Component {
 	formatDateString(dateString) {
 		const date = new Date(dateString);
 
-		return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join('-');
+		return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('-');
 	}
 
 	successRate(trials, outcomes) {
@@ -228,7 +228,7 @@ class ProfileWrapper extends React.Component {
 								onClick={() =>
 									Swal.fire({
 										title: x.title,
-										text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('DD/MM/YYYY HH:mm')}.`,
+										text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
 										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
 										imageWidth: 100
 									})

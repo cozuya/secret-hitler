@@ -291,10 +291,10 @@ module.exports = () => {
 						return new Error(err);
 					}
 					if (account) {
-						_profile.created = moment(account.created).format('DD/MM/YYYY');
+						_profile.created = moment(account.created).format('MM/DD/YYYY');
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
-						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('DD/MM/YYYY') : '';
+						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('MM/DD/YYYY') : '';
 						_profile.badges = account.badges || [];
 						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
 						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(Number.parseFloat(account.maxElo || 1600));
@@ -335,8 +335,8 @@ module.exports = () => {
 									_profile.signupIP = "Couldn't find IP";
 									console.log(e);
 								}
-								_profile.lastConnected = moment(account.lastConnected).format('DD/MM/YYYY h:mm');
-								_profile.created = moment(account.created).format('DD/MM/YYYY h:mm');
+								_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
+								_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
 							} else {
 								_profile.lastConnectedIP = undefined;
 								_profile.signupIP = undefined;

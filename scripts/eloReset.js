@@ -7,6 +7,8 @@ const { awardBadgePrequeried } = require('../routes/socket/badges');
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
+let count = 0;
+
 const topOfSeason = {
 	maki2: [[1, 1]],
 	karamia: [[1, 2]],
@@ -261,6 +263,17 @@ Account.find({ 'games.1': { $exists: true } })
 			// == WE ARE DONE ==
 			profile.save(() => {
 				acc.save();
+				count++;
+				if (Number.isInteger(count / 100)) {
+					console.log('processed account ' + count);
+				}
 			});
 		});
+	})
+	.then(() => {
+		console.log('done');
+		mongoose.connection.close();
+	})
+	.catch(err => {
+		console.log(err, 'caught err');
 	});
