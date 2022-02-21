@@ -20,7 +20,8 @@ class Changelog extends React.Component {
 				<h3>New Features:</h3>
 				<p>
 					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Enhances Profiles</strong> - user profiles now show additional information, and as such
-					have the capability for sections to be collapsed and expanded as you see fit.
+					have the capability for sections to be collapsed and expanded as you see fit.{' '}
+					<em style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Thanks to Paladin for these changes, and to Jules for the beautiful badge artwork!</em>
 				</p>
 				<img src="../images/1.9.0-images/collapsed-menus.png" alt="Collapsed Menus screenshot" style={{ width: '50%', alignSelf: 'center' }}></img>
 				<p>
@@ -41,14 +42,16 @@ class Changelog extends React.Component {
 
 				<h3>XP System:</h3>
 				<p>
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>XP System Details Header </strong>
-					XP System Details
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>XP System Details: </strong>
+					Instead of Experienced players being those who have played 50 games, experience will be determined via Experience Points (XP), which can be gained in
+					Standard matches (ranked or practice). You will gain more XP for winning but will still gain XP for losing, just less.
 				</p>
 
 				<h3>Badge System:</h3>
 				<p>
-					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Badge System Details Header </strong>
-					Badge System Details (Not a list of badges - just an overview of types available + how to earn them)
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>Badge System Details: </strong>
+					Badges are a great way to keep track of your milestones on the site! Some track games played or won, while others track other statistics such as Elo.
+					There are also special badges for our volunteer moderators and contributors -- thank you!
 				</p>
 
 				<hr style={{ width: '100%' }} />
