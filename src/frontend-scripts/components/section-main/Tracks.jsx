@@ -134,10 +134,10 @@ class Tracks extends React.Component {
 		let casualgameTooltip;
 		let practiceGame;
 		let practiceGameTooltip;
-		let noTopdecking;
-		let noTopdeckingTooltip;
 		let avalonSH;
 		let avalonSHTooltip;
+		let noTopdecking;
+		let noTopdeckingTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -238,14 +238,14 @@ class Tracks extends React.Component {
 			practiceGameTooltip = 'Practice game - results do not count towards wins and losses, gameplay rules are enforced';
 		}
 
-		if (game.noTopdecking) {
-			noTopdecking = <i className="fast forward icon" />;
-			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
+		if (game.avalonSH) {
+			avalonSH = <i className="shield icon" />;
+			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
 		}
 
-		if (game.avalonSH) {
-			avalonSH = <i className="fast forward icon" />;
-			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
+		if (game.noTopdecking) {
+			noTopdecking = <i className="gavel icon" />;
+			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
 		}
 
 		if (game.timedMode) {
@@ -326,14 +326,14 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
 					</span>
 				)}
-				{noTopdecking && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
-					</span>
-				)}
 				{avalonSH && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
+					</span>
+				)}
+				{noTopdecking && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
 					</span>
 				)}
 				{rainbowgame && (

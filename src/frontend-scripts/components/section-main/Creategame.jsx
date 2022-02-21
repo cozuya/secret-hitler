@@ -2172,7 +2172,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">
 						<div className="four wide column">
-							<i className="big fast forward icon" />
+							<i className="big shield icon" />
 							<h4 className="ui header">Avalon SH - Adds roles from The Resistance: Avalon to the game, causal only</h4>
 							<Switch
 								className="create-game-switch"
@@ -2211,8 +2211,8 @@ export default class Creategame extends React.Component {
 							)}
 						</div>
 						<div className="four wide column">
-							<i className="big fast forward icon" />
-							<h4 className="ui header">Hammer mode - Topdecking results in a fascist win.</h4>
+							<i className="big gavel icon" />
+							<h4 className="ui header">No topdecking - Topdecking results in a fascist win.</h4>
 							<Range
 								min={0}
 								max={2}
