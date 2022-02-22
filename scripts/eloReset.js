@@ -208,7 +208,7 @@ const topOfSeason = {
 	hecetox249: [[16, 10]]
 };
 
-Account.find({ 'games.1': { $exists: true } })
+Account.find({ 'games.0': { $exists: true } })
 	.cursor()
 	.eachAsync(acc => {
 		// == QUERY PROFILE ==
@@ -216,22 +216,6 @@ Account.find({ 'games.1': { $exists: true } })
 			// == DATA TO SAVE ==
 			const preResetElo = acc.eloOverall;
 			const preResetGameCount = acc.games.length;
-
-			// == UPDATE PROFILE STATS ==
-			profile.stats.matches.legacyMatches = {
-				liberal: _.clone(profile.stats.matches.liberal),
-				fascist: _.clone(profile.stats.matches.fascist)
-			};
-			profile.stats.actions.legacyVoteAccuracy = _.clone(profile.stats.actions.voteAccuracy);
-			profile.stats.actions.legacyShotAccuracy = _.clone(profile.stats.actions.shotAccuracy);
-			profile.stats.actions.voteAccuracy = {
-				events: 0,
-				successes: 0
-			};
-			profile.stats.actions.shotAccuracy = {
-				events: 0,
-				successes: 0
-			};
 
 			// == BADGES ==
 			awardBadgePrequeried(
@@ -260,14 +244,40 @@ Account.find({ 'games.1': { $exists: true } })
 			}
 			acc.isRainbowSeason = false;
 
-			// == WE ARE DONE ==
-			profile.save(() => {
-				acc.save();
-				count++;
-				if (Number.isInteger(count / 100)) {
-					console.log('processed account ' + count);
-				}
-			});
+			if (profile) {
+				// == UPDATE PROFILE STATS ==
+				profile.stats.matches.legacyMatches = {
+					liberal: _.clone(profile.stats.matches.liberal),
+					fascist: _.clone(profile.stats.matches.fascist)
+				};
+				profile.stats.actions.legacyVoteAccuracy = _.clone(profile.stats.actions.voteAccuracy);
+				profile.stats.actions.legacyShotAccuracy = _.clone(profile.stats.actions.shotAccuracy);
+				profile.stats.actions.voteAccuracy = {
+					events: 0,
+					successes: 0
+				};
+				profile.stats.actions.shotAccuracy = {
+					events: 0,
+					successes: 0
+				};
+
+				// == WE ARE DONE ==
+				profile.save(() => {
+					acc.save(() => {
+						count++;
+						if (Number.isInteger(count / 100)) {
+							console.log('processed account ' + count);
+						}
+					});
+				});
+			} else {
+				acc.save(() => {
+					count++;
+					if (Number.isInteger(count / 100)) {
+						console.log('processed account ' + count);
+					}
+				});
+			}
 		});
 	})
 	.then(() => {
