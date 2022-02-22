@@ -19,18 +19,17 @@ block content
 			p Due to technical limitations, stats reflected in player profiles will only track matches starting this release version #[em 0.5.0] onward.
 
 
-			h3.ui.header What does &nbsp; __________ &nbsp; stat mean?
-			p Look below for more detailed documentation on how stats are calculated.
+			h3.ui.header What does &nbsp; __________ &nbsp; stat mean? What is a "standard match"?
+			p Look below for more detailed documentation on how games are counted and stats are calculated.
 
 
 			h3.ui.header Why are you calculating &nbsp; __________ &nbsp; stat this way?
 			p Choosing how to calculate a stat is tricky. My philosophy is that a stat should measure either an objectively good action or a playstyle trait but not both.
 			p For example, "Vote Accuracy" is an example of an objective stat. The rationale is that if a Fascist becomes president in hitler zone, it is an objectively worse position for the Liberal side - voting "nein" is always better. However, voting for a Liberal president is less clear-cut. A conservative player might opt to vote "nein" to gauge the votes and gain information, while an aggressive player might vote "ja" to take a gamble or gain trust. Therefore, votes on Liberal presidents are based on playstyle and shouldn't be conflated with an objective measure.
-			p Feel free to #[a(href="https://goo.gl/forms/IxDi9f1fKyGhefDx2") send] suggestions if you think a stat can be better evaluated!
 
 
 			h3.ui.header You should add a stat to track &nbsp; __________ &nbsp.
-			p Suggestions welcome! Send them through the #[a(href="https://goo.gl/forms/IxDi9f1fKyGhefDx2") webform] or make an #[a(href="https://github.com/cozuya/secret-hitler/issues/new") issue] on Github.
+			p Suggestions welcome! Send them in the #development-contribution channel of #[a(href="https://discord.gg/secrethitlerio") our discord] or make an #[a(href="https://github.com/cozuya/secret-hitler/issues/new") issue] on Github.
 
 
 			.ui.divider
@@ -44,23 +43,29 @@ block content
 
 			h3.ui.header Matches
 
+			p Every type of match has total winrate, liberal winrate, and fascist winrate tracked.
 
-			h4.ui.header All Matches
-			p #[em Instance:] Game is completed
-			p #[em Success:] Game is won
+			h4.ui.header Standard Matches
+			p Ranked or Practice matches, experienced or otherwise.
 
+			h4.ui.header Ranked Matches
+			p All ranked matches, experienced or otherwise.
+			p #[em Rainbow Matches]: Only Experienced (50+ XP players only) matches.
+			p #[em Non-Rainbow Matches]: Only non-Experienced matches.
 
-			h4.ui.header By Loyalty: Liberal
-			p #[em Instance:] Game is completed
-			p #[em Success:] Player loyalty is Liberal AND game is won
+			h4.ui.header Ranked Matches
+			p All practice matches, including Silent matches, experienced or otherwise.
 
+			h4.ui.header Silent Matches
+			p All silent matches, experienced or otherwise.
 
-			h4.ui.header By Loyalty: Fascist
-			p #[em Instance:] Game is completed
-			p #[em Success:] Player loyalty is Fascist AND game is won
-
+			h4.ui.header #[em n] Player Matches
+			p All ranked matches (experienced or otherwise) with #[em n] players.
+			p #[em Rainbow Matches]: Only Experienced (50+ XP players only) matches with #[em n] players.
+			p #[em Non-Rainbow Matches]: Only non-Experienced matches with #[em n] players.
 
 			h3.ui.header Actions
+			p Only tracked in Ranked matches (experienced or otherwise).
 
 
 			h4 Vote Accuracy
@@ -73,4 +78,4 @@ block content
 			p #[em Success:] Other player is Fascist
 
 			.ui.divider
-			p.author #[em - Sethe]
+			p.author #[em - Sethe & Paladin]

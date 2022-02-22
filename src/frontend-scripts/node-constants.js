@@ -78,6 +78,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	} else {
 		const w = isSeasonal ? user.winsSeason : user.wins;
 		const l = isSeasonal ? user.lossesSeason : user.losses;
+		const rainbow = isSeasonal ? user.isRainbowSeason : user.isRainbowOverall;
 		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
 		let grade;
 		if (elo < 1500) {
@@ -90,7 +91,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const gradeObj = {};
 		gradeObj['elo' + grade.toFixed(0)] = true;
 
-		return w + l >= 50
+		return rainbow
 			? eloDisabled
 				? cn(defaultClass, {
 						experienced1: w + l > 49,

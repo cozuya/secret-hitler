@@ -11,6 +11,47 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 
+				<div className="ui header" style={{ fontSize: '1.1em' }}>
+					<p>Welcome back to Season 17!</p>
+				</div>
+				<div className="ui header">
+					<p>Version 1.9 released 2-22-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Badges</strong> - users now have the ability to earn several badges for various
+					achievements and milestones. These are permanent to your account, and are visible to anyone viewing your profile. Badges are a great way to keep track
+					of your milestones on the site! Some track games played or won, while others track other statistics such as Elo. There are also special badges for our
+					volunteer moderators and contributors -- thank you!
+					<br />
+					<em style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Thanks to Paladin for these changes, and to Jules for the beautiful badge artwork!</em>
+				</p>
+				<img src="../images/1.9.0-images/badges.png" alt="All badges screenshot" style={{ width: '25%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Badge details</strong> - earned badges will show specific additional information,
+					including when they were earned, and which game earned it for you (as applicable).
+				</p>
+				<img src="../images/1.9.0-images/badge-details.png" alt="Badge details screenshot" style={{ width: '25%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Enhances Profiles</strong> - user profiles now show additional information, and as such
+					have the capability for sections to be collapsed and expanded as you see fit.
+				</p>
+				<img src="../images/1.9.0-images/collapsed-menus.png" alt="Collapsed Menus screenshot" style={{ width: '50%', alignSelf: 'center' }}></img>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Improved match counting</strong> - matches are now counted separately, and can be viewed
+					as such on your profile.
+				</p>
+				<img src="../images/1.9.0-images/matches.png" alt="Match counting screenshot" style={{ width: '35%', alignSelf: 'center' }}></img>
+
+				<h3>XP System:</h3>
+				<p>
+					<strong style={{ fontSize: '1em', color: 'darkmagenta' }}>XP System Details: </strong>
+					Instead of Experienced players being those who have played 50 games, experience will be determined via Experience Points (XP), which can be gained in
+					Standard matches (ranked or practice). You will gain more XP for winning but will still gain XP for losing, just less.
+				</p>
+
+				<hr style={{ width: '100%' }} />
+
 				<div className="ui header">
 					<p>Welcome to 2022 🥂 and to Season 17!</p>
 				</div>
