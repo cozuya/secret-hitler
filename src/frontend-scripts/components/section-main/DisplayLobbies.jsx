@@ -340,6 +340,8 @@ const DisplayLobbies = props => {
 				players[index].lossesSeason = userStats.lossesSeason;
 				players[index].eloOverall = userStats.eloOverall;
 				players[index].eloSeason = userStats.eloSeason;
+				players[index].isRainbowOverall = userStats.isRainbowOverall;
+				players[index].isRainbowSeason = userStats.isRainbowSeason;
 				players[index].staffRole = userStats.staffRole;
 				players[index].isContributor = userStats.isContributor;
 			}
