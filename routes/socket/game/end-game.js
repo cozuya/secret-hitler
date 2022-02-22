@@ -410,6 +410,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.games.push(game.general.uid);
 					player.lastCompletedGame = new Date();
 					checkBadgesELO(player, game.general.uid);
+					checkBadgesXP(player, game.general.uid);
 					player.save(() => {
 						const userEntry = userList.find(user => user.userName === player.username);
 

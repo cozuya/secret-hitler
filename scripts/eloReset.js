@@ -111,7 +111,7 @@ const topOfSeason = {
 		[8, 2],
 		[9, 3]
 	],
-	'Rivstar:1937': [[8, 5]],
+	Rivstar: [[8, 5]],
 	MaximTheMeme: [
 		[8, 6],
 		[13, 9]
