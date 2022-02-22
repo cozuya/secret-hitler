@@ -71,8 +71,8 @@ class ProfileWrapper extends React.Component {
 					],
 					[
 						'XP',
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 1600,
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 1600
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 0,
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 0
 					]
 				]}
 			/>
