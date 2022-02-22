@@ -109,7 +109,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const uid = generateCombination(3, '', true);
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
-	const casualGame = (data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual') && !customGame;
+	const casualGame =
+		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
+			? true
+			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.noTopdecking > 0) && !customGame;
 	const practiceGame =
 		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
 		(data.gameType === 'practice' || data.playerChats === 'disabled') &&
@@ -164,7 +167,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			electionCount: 0,
 			isRemade: false,
 			eloMinimum: data.eloSliderValue,
-			xpMinimum: data.xpSliderValue
+			xpMinimum: data.xpSliderValue,
+			avalonSH: data.avalonSH ? { withPercival: Boolean(data.withPercival) } : null,
+			noTopdecking: data.noTopdecking
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],
@@ -174,10 +179,17 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,
 			electionTrackerCount: 0,
-			enactedPolicies: []
+			enactedPolicies: [],
+			consecutiveTopdecks: 0
 		},
-		guesses: {}
+		guesses: {},
+		merlinGuesses: {}
 	};
+
+	// oops its a hack
+	if (newGame.general.practiceGame && newGame.general.casualGame) {
+		newGame.general.practiceGame = false;
+	}
 
 	if (newGame.customGameSettings.enabled) {
 		let chat = {

@@ -250,7 +250,9 @@ module.exports.formattedGameList = () => {
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
 		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlistedGame || undefined
+		isUnlisted: games[gameName].general.unlistedGame || undefined,
+		avalonSH: games[gameName].general.avalonSH || undefined,
+		noTopdecking: games[gameName].general.noTopdecking || undefined
 	}));
 };
 

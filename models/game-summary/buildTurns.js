@@ -10,7 +10,9 @@ module.exports = (
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false,
-		rerebalance9p: false
+		rerebalance9p: false,
+		avalonSH: null,
+		noTopdecking: 0
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -54,9 +56,11 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
+		assassination: none,
 		afterDeckSize: initialDeckSize(gameSetting),
 		afterTrack: initialTrack(gameSetting),
 		afterElectionTracker: 0,
+		consecutiveTopdecks: 0,
 		enactedPolicy: none
 	});
 
@@ -100,6 +104,9 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 	const isExecution = log.execution.isSome();
 
 	// Boolean
+	const isAssassination = log.assassination.isSome();
+
+	// Boolean
 	const isInvestigation = log.investigationId.isSome();
 
 	// Boolean
@@ -134,6 +141,9 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 	// Boolean
 	const isElectionTrackerMaxed = afterElectionTracker === 3;
+
+	// Number
+	const consecutiveTopdecks = prevTurn.isVotePassed ? 0 : gameSetting.noTopdecking === 2 && prevTurn.isElectionTrackerMaxed ? 1 : prevTurn.consecutiveTopdecks;
 
 	// { reds: Int, blues: Int }
 	const { beforeTrack, afterTrack } = (() => {
@@ -170,6 +180,15 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 		return log.execution.map(e => e === hitlerIndex).valueOrElse(false);
 	})();
+
+	// Boolean
+	const isMerlinShot =
+		gameSetting.avalonSH &&
+		(() => {
+			const merlinIndex = players.findIndex(p => p.role === 'merlin');
+
+			return log.assassination.map(e => e === merlinIndex).valueOrElse(false);
+		})();
 
 	// Option[String]
 	const { presidentDiscard, chancellorDiscard } = (() => {
@@ -233,10 +252,13 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		beforeElectionTracker,
 		afterElectionTracker,
 		isElectionTrackerMaxed,
+		consecutiveTopdecks,
 		isInvestigation,
 		isExecution,
+		isAssassination,
 		isHitlerKilled,
 		isHitlerElected,
+		isMerlinShot,
 		presidentDiscard,
 		chancellorDiscard,
 		isSpecialElection,

@@ -40,7 +40,7 @@ export default function toGameInfo(snapshot) {
 				if (snapshot.gameOver) {
 					return f(true, true, '', {
 						cardName: p.role,
-						icon: p.icon || 0
+						icon: p.icon
 					});
 				}
 
@@ -68,6 +68,15 @@ export default function toGameInfo(snapshot) {
 						} else {
 							return blank;
 						}
+					case 'assassination':
+						if (i === snapshot.assassination) {
+							return f(true, true, '', {
+								cardName: p.role,
+								icon: p.icon
+							});
+						}
+
+						return blank;
 					default:
 						return blank;
 				}

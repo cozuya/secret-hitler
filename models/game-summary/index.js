@@ -17,7 +17,14 @@ const gameSummary = new Schema({
 		rerebalance9p: Boolean,
 		casualGame: Boolean,
 		practiceGame: Boolean,
-		unlistedGame: Boolean
+		unlistedGame: Boolean,
+		avalonSH: {
+			type: {
+				withPercival: Boolean
+			},
+			default: null
+		},
+		noTopdecking: Number
 	},
 	players: [
 		{
@@ -61,6 +68,7 @@ const gameSummary = new Schema({
 			investigationClaim: String,
 			specialElection: Number,
 			execution: Number,
+			assassination: Number,
 
 			// other metadata
 			deckState: Array // [String], eg. [ "fascist", "liberal", "fascist", "fascist", "liberal" ]
