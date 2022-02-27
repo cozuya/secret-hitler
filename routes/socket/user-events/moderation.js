@@ -24,6 +24,7 @@ const Profile = require('../../../models/profile/index');
 const fs = require('fs');
 const https = require('https');
 const { sendCommandChatsUpdate } = require('../util');
+const { removeBadge, checkBadgesAccount } = require('../badges');
 let lagTest = [];
 
 /**
@@ -343,8 +344,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.losses = account.losses >= 50 ? account.losses : 50;
-									account.wins = account.wins >= 1 ? account.wins : 1;
+									account.isRainbowOverall = true;
+									account.dateRainbowOverall = new Date();
 									account.save();
 									logOutUser(data.userName);
 								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
@@ -779,6 +780,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.isContributor = false;
+									removeBadge(account, 'contributor');
 									account.save(() => {
 										const idx = newStaff.contributorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
@@ -798,6 +800,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
+									const staffRole = account.staffRole;
+									if (staffRole === 'moderator' || staffRole === 'editor') {
+										removeBadge(account, staffRole);
+									}
 									account.staffRole = '';
 									account.save(() => {
 										let idx = newStaff.modUserNames.indexOf(account.username);
@@ -825,6 +831,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.isContributor = true;
+									checkBadgesAccount(account);
 									account.save(() => {
 										newStaff.contributorUserNames.push(account.username);
 										logOutUser(account.username);
@@ -900,6 +907,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.staffRole = 'moderator';
+									checkBadgesAccount(account);
 									account.save(() => {
 										newStaff.modUserNames.push(account.username);
 										logOutUser(account.username);
@@ -919,6 +927,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.staffRole = 'editor';
+									checkBadgesAccount(account);
 									account.save(() => {
 										newStaff.editorUserNames.push(account.username);
 										logOutUser(account.username);
@@ -938,6 +947,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							.then(account => {
 								if (account) {
 									account.staffRole = 'veteran';
+									checkBadgesAccount(account);
 									account.save(() => {
 										logOutUser(account.username);
 									});

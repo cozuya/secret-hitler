@@ -642,17 +642,6 @@ module.exports.accounts = torIpsParam => {
 					res.send();
 				});
 
-				Profile.findOne({ _id: req.user.username })
-					.then(profile => {
-						if (profile) {
-							profile.lastConnectedIP = ip;
-							profile.save();
-						}
-					})
-					.catch(err => {
-						console.log(err, 'profile find err');
-					});
-
 				if (player.isTimeout && new Date() < player.isTimeout) {
 					req.logOut();
 					res.status(403).json({

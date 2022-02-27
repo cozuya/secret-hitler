@@ -16,7 +16,7 @@ export default class Creategame extends React.Component {
 			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
 		if (user) {
-			isRainbow = user.wins + user.losses > 49;
+			isRainbow = user.isRainbowOverall;
 		}
 
 		this.state = {
@@ -43,7 +43,9 @@ export default class Creategame extends React.Component {
 			timedSliderValue: [120],
 			customGameSliderValue: [7],
 			eloSliderValue: [1600],
+			xpSliderValue: [0],
 			isEloLimited: false,
+			isXPLimited: false,
 			flappyMode: false,
 			flappyOnlyMode: false,
 			privateAnonymousRemakes: false,
@@ -428,7 +430,11 @@ export default class Creategame extends React.Component {
 				styles={style}
 				value={findValue(this.state.gameType)}
 				onChange={(inputValue, action) => {
-					const resetPlayerChats = ['ranked', 'practice'].includes(inputValue.value) && this.state.playerChats === 'emotes';
+					const resetPlayerChats =
+						(['ranked', 'practice'].includes(inputValue.value) && this.state.playerChats === 'emotes') ||
+						(inputValue.value === 'ranked' && this.state.playerChats === 'disabled');
+					// emote only can't be ranked or practice and silent can't be ranked
+
 					this.setState({
 						gameType: inputValue.value,
 						customGameSettings: { ...this.state.customGameSettings, enabled: inputValue.value === 'custom' },
@@ -499,7 +505,8 @@ export default class Creategame extends React.Component {
 				value={findValue(this.state.playerChats)}
 				onChange={(inputValue, _action) => {
 					this.setState({
-						playerChats: inputValue.value
+						playerChats: inputValue.value,
+						gameType: inputValue.value === 'disabled' && this.state.gameType === 'ranked' ? 'practice' : this.state.gameType
 					});
 				}}
 				menuPlacement={'auto'}
@@ -561,7 +568,7 @@ export default class Creategame extends React.Component {
 			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
 		if (user) {
-			isRainbow = user.wins + user.losses > 49;
+			isRainbow = user.isRainbowOverall;
 		}
 
 		switch (preset) {
@@ -590,6 +597,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -629,6 +638,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1700],
 					isEloLimited: true,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -668,6 +679,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -708,6 +721,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -725,7 +740,7 @@ export default class Creategame extends React.Component {
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
-					gameType: 'casual',
+					gameType: 'practice',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					playerChats: 'disabled',
@@ -748,6 +763,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -788,6 +805,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -828,6 +847,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -868,6 +889,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -908,6 +931,8 @@ export default class Creategame extends React.Component {
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
+					xpSliderValue: [0],
+					isXPLimited: false,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -1034,6 +1059,7 @@ export default class Creategame extends React.Component {
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
+				xpSliderValue: this.state.isXPLimited ? this.state.xpSliderValue[0] : null,
 				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
 				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				privateAnonymousRemakes: this.state.privateAnonymousRemakes,
@@ -1184,6 +1210,10 @@ export default class Creategame extends React.Component {
 		this.setState({ eloSliderValue });
 	};
 
+	xpSliderChange = xpSliderValue => {
+		this.setState({ xpSliderValue });
+	};
+
 	renderEloSlider() {
 		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000', 2050: '', 2100: '2100' };
 		const { userInfo, userList } = this.props;
@@ -1243,6 +1273,62 @@ export default class Creategame extends React.Component {
 		}
 	}
 
+	renderXPSlider() {
+		const origMarks = { 250: '250', 500: '500', 1000: '1000', 1500: '1500', 2000: '2000' };
+		const { userInfo, userList } = this.props;
+		if (userInfo.gameSettings && userInfo.gameSettings.disableElo) return null;
+		let player = null;
+		if (userList.list) player = userList.list.find(p => p.userName === userInfo.userName);
+		const playerXP = (player && player.xpOverall && Math.min(2000, player.xpOverall)) || 0;
+		const marks = Object.keys(origMarks)
+			.filter(k => origMarks[k] <= playerXP)
+			.reduce((obj, key) => {
+				obj[key] = origMarks[key];
+				return obj;
+			}, {});
+
+		if (playerXP) {
+			return (
+				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
+					{this.state.isXPLimited && (
+						<div>
+							<h4 className="ui header">Minimum XP to sit in this game</h4>
+							<Range onChange={this.xpSliderChange} min={0} max={playerXP} defaultValue={[1600]} value={this.state.xpSliderValue} marks={marks} />
+
+							<input
+								value={this.state.xpSliderValue[0]}
+								onChange={e => {
+									if (!isNaN(e.target.value)) {
+										this.setState({ xpSliderValue: [e.target.value] });
+									}
+								}}
+								style={{ background: `${this.state.xpSliderValue[0] < 0 || this.state.xpSliderValue[0] > playerXP ? '#f66' : 'white'}`, marginTop: '30px' }}
+							/>
+						</div>
+					)}
+					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
+						<i className="big arrows alternate horizontal icon" />
+						<h4 className="ui header">XP limited game</h4>
+						<Switch
+							onChange={checked => {
+								this.setState({ isXPLimited: checked });
+							}}
+							className="create-game-switch"
+							checked={this.state.isXPLimited}
+							onColor="#627cc8"
+							offColor="#444444"
+							uncheckedIcon={false}
+							checkedIcon={false}
+							height={21}
+							width={48}
+							handleDiameter={21}
+						/>
+					</div>
+				</div>
+			);
+		}
+	}
+
 	renderDeck() {
 		const { customGameSettings } = this.state;
 		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
@@ -1269,7 +1355,7 @@ export default class Creategame extends React.Component {
 		}
 		return thirds.map((val, i) => {
 			return (
-				<div key={i} className="column" style={{ width: '4em', marginBottom: '-2.5rem', display: 'flex', width: 'auto' }}>
+				<div key={i} className="column" style={{ marginBottom: '-2.5rem', display: 'flex', width: 'auto' }}>
 					{val}
 				</div>
 			);
@@ -1691,6 +1777,12 @@ export default class Creategame extends React.Component {
 				if (this.state.eloSliderValue[0] < 1600 || this.state.eloSliderValue[0] > max) {
 					errs.push(`ELO slider value is invalid, your maximum is ${max}.`);
 				}
+			} else if (this.state.isXPLimited) {
+				const playerXP = (player && player.xpOverall) || 0;
+
+				if (this.state.xpSliderValue[0] < 0 || this.state.xpSliderValue[0] > playerXP) {
+					errs.push(`XP slider value is invalid, your maximum is ${playerXP}.`);
+				}
 			}
 		}
 		if (this.state.customGameSettings.enabled) {
@@ -1981,6 +2073,7 @@ export default class Creategame extends React.Component {
 						</div>
 					)}
 					{this.renderEloSlider()}
+					{this.renderXPSlider()}
 					<div className="row sliderrow">
 						<div className="four wide column playerchats">
 							<i className="big unmute icon" />
@@ -2033,7 +2126,7 @@ export default class Creategame extends React.Component {
 								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 							}
 							if (user) {
-								isRainbow = user.wins + user.losses > 49;
+								isRainbow = user.isRainbowOverall;
 							}
 							if (isRainbow) {
 								return (

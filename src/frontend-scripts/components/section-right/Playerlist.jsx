@@ -84,28 +84,26 @@ class Playerlist extends React.Component {
 	sortByElo(sort) {
 		const { gameSettings } = this.props.userInfo;
 		const elo = gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason';
-		const w =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'wins'
-					: 'rainbowWins'
-				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
-		const l =
-			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all'
-					? 'losses'
-					: 'rainbowLosses'
-				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+		// const w =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'wins'
+		// 			: 'rainbowWins'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'winsSeason'
+		// 		: 'rainbowWinsSeason';
+		// const l =
+		// 	gameSettings && gameSettings.disableSeasonal
+		// 		? this.state.userListFilter === 'all'
+		// 			? 'losses'
+		// 			: 'rainbowLosses'
+		// 		: this.state.userListFilter === 'all'
+		// 		? 'lossesSeason'
+		// 		: 'rainbowLossesSeason';
 
 		return (a, b) => {
-			const wl1 = a[w] + a[l];
-			const wl2 = b[w] + b[l];
-			const e1 = wl1 >= 50 && a[elo] ? a[elo] : 0;
-			const e2 = wl2 >= 50 && b[elo] ? b[elo] : 0;
+			const e1 = (gameSettings && gameSettings.disableSeasonal ? a.isRainbowOverall : a.isRainbowSeason) && a[elo] ? a[elo] : 0;
+			const e2 = (gameSettings && gameSettings.disableSeasonal ? b.isRainbowOverall : b.isRainbowSeason) && b[elo] ? b[elo] : 0;
 			if (e1 !== e2) {
 				return e1 < e2 ? 1 : -1;
 			} else {
@@ -234,7 +232,11 @@ class Playerlist extends React.Component {
 					userInfo.staffRole !== 'altmod' &&
 					userInfo.staffRole !== 'veteran'
 			);
-			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			const visible = list.filter(
+				user =>
+					(this.state.userListFilter === 'all' || (gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason)) &&
+					(!user.isPrivate || isStaff)
+			);
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
@@ -247,10 +249,20 @@ class Playerlist extends React.Component {
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
 				? nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.filter(
+							user =>
+								!contributors.includes(user) &&
+								!privateUser.includes(user) &&
+								(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason)
+						)
 						.sort(this.sortByElo(this.alphabetical()))
 				: nonStaff
-						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.filter(
+							user =>
+								!contributors.includes(user) &&
+								!privateUser.includes(user) &&
+								(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason)
+						)
 						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
@@ -269,7 +281,9 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
+					(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) ||
+					Boolean(user.staffRole && user.staffRole.length) ||
+					user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -466,7 +480,11 @@ class Playerlist extends React.Component {
 					userInfo.staffRole !== 'altmod' &&
 					userInfo.staffRole !== 'veteran'
 			);
-			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			const visible = list.filter(
+				user =>
+					(this.state.userListFilter === 'all' || (gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason)) &&
+					(!user.isPrivate || isStaff)
+			);
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
@@ -477,8 +495,12 @@ class Playerlist extends React.Component {
 			aem.push(...contributors);
 
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
-				: visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
+				? visible
+						.filter(user => !aem.includes(user) && (gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason))
+						.sort(this.sortByElo(this.alphabetical()))
+				: visible
+						.filter(user => !aem.includes(user) && (gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason))
+						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
@@ -495,7 +517,9 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
+					(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) ||
+					Boolean(user.staffRole && user.staffRole.length) ||
+					user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -644,8 +668,8 @@ class Playerlist extends React.Component {
 					<div className="ui basic modal playerlistinfo">
 						<div className="header">Lobby and player color info:</div>
 						<p>
-							Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played. After that, they are known as "rainbow players"
-							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
+							Players in the lobby, general chat, and game chat are grey/white until they reach 50 Experience Points (XP). After that, they are known as
+							"rainbow players" because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
 							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO to
@@ -655,13 +679,11 @@ class Playerlist extends React.Component {
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
 							<span className="admin-name">(A)</span> and are always at the top of the list.
 							<br />
-							<span className="anji">Ed</span>
-							<span className="bruno">it</span>
-							<span className="moira">ors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
+							<span className="anji">Edi</span>
+							<span className="moira">tors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
 							stand out, as well as a <span className="admin">(E)</span>.<br />
-							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Ed</span>
-							<span className="bruno">it</span>
-							<span className="moira">ors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
+							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Edi</span>
+							<span className="moira">tors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
 							<br />
 							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
 							<br />

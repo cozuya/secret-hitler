@@ -146,6 +146,7 @@ module.exports.formattedUserList = isAEM => {
 			rainbowLosses: prune(user.rainbowLosses),
 			isPrivate: prune(user.isPrivate),
 			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+			staffDisableVisibleXP: prune(user.staffDisableVisibleXP),
 			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
 			// Tournaments are disabled, no point sending this.
@@ -156,7 +157,11 @@ module.exports.formattedUserList = isAEM => {
 			customCardback: user.customCardback,
 			customCardbackUid: user.customCardbackUid,
 			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+			xpOverall: user.xpOverall ? Math.floor(user.xpOverall) : undefined,
 			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+			xpSeason: user.xpSeason ? Math.floor(user.xpSeason) : undefined,
+			isRainbowOverall: user.isRainbowOverall,
+			isRainbowSeason: user.isRainbowSeason,
 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
 			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
 			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
@@ -214,6 +219,7 @@ module.exports.formattedGameList = () => {
 		casualGame: games[gameName].general.casualGame || undefined,
 		practiceGame: games[gameName].general.practiceGame || undefined,
 		eloMinimum: games[gameName].general.eloMinimum || undefined,
+		xpMinimum: games[gameName].general.xpMinimum || undefined,
 		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
 		isTourny: games[gameName].general.isTourny || undefined,
 		timedMode: games[gameName].general.timedMode || undefined,

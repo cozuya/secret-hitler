@@ -83,6 +83,8 @@ const DisplayLobbies = props => {
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
 		let eloMinimumTooltip;
+		let xpMinimum;
+		let xpMinimumTooltip;
 		let customgameactive;
 		let customgameactiveTooltip;
 		let flappyMode;
@@ -195,6 +197,11 @@ const DisplayLobbies = props => {
 			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
 		}
 
+		if (game.xpMinimum) {
+			xpMinimum = <span style={{ color: 'yellow' }}>XP min: {game.xpMinimum}</span>;
+			xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
+		}
+
 		if (game.flappyMode && !game.flappyOnlyMode) {
 			flappyMode = <i className="plane icon" />;
 			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
@@ -282,6 +289,11 @@ const DisplayLobbies = props => {
 						{eloMinimum}
 					</span>
 				)}
+				{xpMinimum && (
+					<span data-tooltip={xpMinimumTooltip} data-inverted="">
+						{xpMinimum}
+					</span>
+				)}
 				{isVerifiedOnly && (
 					<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
 						{isVerifiedOnly}
@@ -328,6 +340,8 @@ const DisplayLobbies = props => {
 				players[index].lossesSeason = userStats.lossesSeason;
 				players[index].eloOverall = userStats.eloOverall;
 				players[index].eloSeason = userStats.eloSeason;
+				players[index].isRainbowOverall = userStats.isRainbowOverall;
+				players[index].isRainbowSeason = userStats.isRainbowSeason;
 				players[index].staffRole = userStats.staffRole;
 				players[index].isContributor = userStats.isContributor;
 			}

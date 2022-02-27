@@ -12,6 +12,7 @@ const _ = require('lodash');
 const { makeReport } = require('../report.js');
 const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 const { LineGuess } = require('../util');
+const { checkBadgesELO, checkBadgesXP } = require('../badges');
 
 const generateGameObject = game => {
 	const casualBool = Boolean(game?.general?.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
@@ -58,6 +59,8 @@ const generateGameObject = game => {
 			isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 			timedMode: game?.general?.timedMode,
 			blindMode: game?.general?.blindMode,
+			eloMinimum: game?.general?.eloMinimum,
+			xpMinimum: game?.general?.xpMinimum,
 			completed: true
 		};
 	}
@@ -93,6 +96,8 @@ const generateGameObject = game => {
 		isTournySecondRound: game?.general?.isTourny && game?.general?.tournyInfo?.round === 2,
 		timedMode: game?.general?.timedMode,
 		blindMode: game?.general?.blindMode,
+		eloMinimum: game?.general?.eloMinimum,
+		xpMinimum: game?.general?.xpMinimum,
 		completed: false
 	};
 };
@@ -113,7 +118,7 @@ const saveGame = game => {
 	try {
 		if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
 			enhanced = buildEnhancedGameSummary(summary.toObject());
-			updateProfiles(enhanced, { cache: true });
+			updateProfiles(game, enhanced, { cache: true });
 			if (!game.summarySaved) {
 				summary.save();
 				game.summarySaved = true;
@@ -270,9 +275,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.general.isRecorded = true;
 
-	// Don't compute Elo for private, casual, custom, private, or unlisted games
+	// Don't compute Elo for private, casual, custom, silent, private, or unlisted games
 	if (
 		!game.general.private &&
+		game.general.playerChats !== 'disabled' &&
 		!game.general.casualGame &&
 		!(game.customGameSettings && game.customGameSettings.enabled) &&
 		!game.general.practiceGame &&
@@ -305,12 +311,15 @@ module.exports.completeGame = (game, winningTeamName) => {
 					if (listUser) {
 						listUser.eloOverall = player.eloOverall;
 						listUser.eloSeason = player.eloSeason;
+						listUser.isRainbowOverall = player.isRainbowOverall;
+						listUser.isRainbowSeason = player.isRainbowSeason;
 					}
 
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
 					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange?.change : playerChange?.changeSeason;
+						const activeChangeXP = player.gameSettings.disableSeasonal ? playerChange?.xpChange : playerChange?.xpChangeSeason;
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
@@ -328,6 +337,26 @@ module.exports.completeGame = (game, winningTeamName) => {
 									},
 									{
 										text: Math.abs(activeChange).toFixed(1),
+										type: 'player'
+									}
+								]
+							});
+							seatedPlayer.gameChats.push({
+								gameChat: true,
+								timestamp: new Date(Date.now() + i),
+								chat: [
+									{
+										text: eachPlayer.userName,
+										type: eachPlayer.role.cardName
+									},
+									{
+										text: `'s XP: `
+									},
+									{
+										text: ` ${activeChangeXP > 0 ? '+' : '-'}`
+									},
+									{
+										text: Math.abs(activeChangeXP).toFixed(1),
 										type: 'player'
 									}
 								]
@@ -380,10 +409,17 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 					player.games.push(game.general.uid);
 					player.lastCompletedGame = new Date();
+					checkBadgesELO(player, game.general.uid);
+					checkBadgesXP(player, game.general.uid);
 					player.save(() => {
 						const userEntry = userList.find(user => user.userName === player.username);
 
 						if (userEntry) {
+							userEntry.xpSeason = player.xpSeason || 0;
+							userEntry.isRainbowSeason = player.isRainbowSeason;
+							userEntry.xpOverall = player.xpOverall || 0;
+							userEntry.isRainbowOverall = player.isRainbowOverall;
+
 							if (winner) {
 								if (isRainbow) {
 									userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
@@ -434,6 +470,24 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.catch(err => {
 				console.log(err, 'error in updating accounts at end of game');
 			});
+	} else if (game.general.playerChats === 'disabled' || game.general.practiceGame) {
+		// 2 XP for win, 1 for loss
+		Account.find({
+			username: { $in: seatedPlayers.map(player => player.userName) }
+		}).then(results => {
+			for (const player of results) {
+				if (winningPlayerNames.includes(player.username)) {
+					player.xpOverall += 2;
+					player.xpSeason += 2;
+				} else {
+					player.xpOverall += 1;
+					player.xpSeason += 1;
+				}
+
+				checkBadgesXP(player, game.general.uid);
+				player.save();
+			}
+		});
 	}
 
 	if (game.general.isTourny) {

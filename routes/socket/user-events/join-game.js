@@ -31,17 +31,18 @@ const updateSeatedUser = (socket, passport, data) => {
 	Account.findOne({ username: passport.user }).then(account => {
 		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
+		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.isRainbowOverall);
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
+		const isMeetingXPMinimum = !game.general.xpMinimum || game.general.xpMinimum <= account.xpOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
 			return;
 		}
 
-		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum) {
+		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isMeetingXPMinimum) {
 			const { publicPlayersState } = game;
 			const player = {
 				userName: passport.user,
@@ -54,6 +55,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				previousSeasonAward: account.gameSettings.previousSeasonAward,
 				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+				staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
 				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 				cardStatus: {
 					cardDisplayed: false,

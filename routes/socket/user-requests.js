@@ -64,7 +64,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 				return usr
 					? {
 							status: usr.status,
-							isRainbow: user.wins + user.losses > 49,
+							isRainbow: user.isRainbowOverall,
 							userName: user.username,
 							ip: user.lastConnectedIP || user.signupIP,
 							email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
@@ -209,12 +209,15 @@ module.exports.sendUserGameSettings = socket => {
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+					staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 					staffIncognito: account.gameSettings.staffIncognito,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
+					isRainbowOverall: account.isRainbowOverall,
+					isRainbowSeason: account.isRainbowSeason,
 					isPrivate: account.gameSettings.isPrivate,
 					tournyWins: account.gameSettings.tournyWins,
 					blacklist: account.gameSettings.blacklist,
@@ -223,7 +226,9 @@ module.exports.sendUserGameSettings = socket => {
 					previousSeasonAward: account.gameSettings.previousSeasonAward,
 					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 					eloOverall: account.eloOverall,
+					xpOverall: account.xpOverall,
 					eloSeason: account.eloSeason,
+					xpSeason: account.xpSeason,
 					status: {
 						type: 'none',
 						gameId: null

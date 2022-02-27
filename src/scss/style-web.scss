@@ -45,13 +45,13 @@ html {
 #header-container {
 	width: 100%;
 	margin: 55px auto 0;
-	background: no-repeat center center url('../images/banner-christmas.png') #14204f; /*  #f2654b; */
-	background-size: contain;
+	background: no-repeat center center url('../images/banner-valentines.png') #14204f; /*  #f2654b; */
+	background-size: cover;
 	padding-top: 43%;
 
 	.online-count {
 		padding: 5px;
-		background: #39416f; /*#ee89309c #9609bd9c #39bd099c #bd09329c #6f3939; */
+		background: #a64f4f; /*#39416f #ee89309c #9609bd9c #39bd099c #bd09329c #6f3939; */
 		position: absolute;
 		top: 10px;
 		right: 20px;
