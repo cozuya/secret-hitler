@@ -1037,10 +1037,9 @@ class Settings extends React.Component {
 										viewMode={1}
 										dragMode={'move'}
 										cropBoxMovable={false}
-										cropBoxResizable={false}
 										minCropBoxHeight={95}
 										minCropBoxWidth={70}
-										aspectRatio={70 / 95}
+										initialAspectRatio={70 / 95}
 										onInitialized={onCropperReady}
 									/>
 								</SweetAlert2>
