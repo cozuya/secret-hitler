@@ -311,6 +311,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 					if (listUser) {
 						listUser.eloOverall = player.eloOverall;
 						listUser.eloSeason = player.eloSeason;
+						listUser.xpOverall = player.xpOverall;
+						listUser.xpSeason = player.xpSeason;
 						listUser.isRainbowOverall = player.isRainbowOverall;
 						listUser.isRainbowSeason = player.isRainbowSeason;
 					}
