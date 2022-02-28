@@ -48,17 +48,29 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && parseInt(data.eloSliderValue) && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
-		return;
+	console.log(data.eloSliderValue, data.xpSliderValue);
+
+	if (data.eloSliderValue) {
+		if (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue) {
+			return;
+		}
+
+		data.eloSliderValue = parseInt(data.eloSliderValue);
+		if (isNaN(data.eloSliderValue)) {
+			return;
+		}
 	}
 
-	data.eloSliderValue = parseInt(data.eloSliderValue);
+	if (data.xpSliderValue) {
+		if (user.xpOverall < data.xpSliderValue) {
+			return;
+		}
 
-	if (data.xpSliderValue && parseInt(data.xpSliderValue) && user.xpOverall < data.xpSliderValue) {
-		return;
+		data.xpSliderValue = parseInt(data.xpSliderValue);
+		if (isNaN(data.xpSliderValue)) {
+			return;
+		}
 	}
-
-	data.xpSliderValue = parseInt(data.xpSliderValue);
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
