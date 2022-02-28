@@ -48,13 +48,17 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
+	if (data.eloSliderValue && parseInt(data.eloSliderValue) && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
 		return;
 	}
 
-	if (data.xpSliderValue && user.xpOverall < data.xpSliderValue) {
+	data.eloSliderValue = parseInt(data.eloSliderValue);
+
+	if (data.xpSliderValue && parseInt(data.xpSliderValue) && user.xpOverall < data.xpSliderValue) {
 		return;
 	}
+
+	data.xpSliderValue = parseInt(data.xpSliderValue);
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
