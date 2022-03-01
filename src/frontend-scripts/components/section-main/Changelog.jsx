@@ -11,6 +11,28 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 
+				<div className="ui header">
+					<p>Version 1.9.1 released 3-1-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Cardback cropping</strong> - you can now choose how your cardback gets cropped if it isn't
+					the right size, thanks to Gambo for this!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Various moderation improvements</strong>
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>
+						New Colors <a href="#/colors">page</a>
+					</strong>{' '}
+					- easily view all the colors used on site for usernames and Elo ratings, and their hex codes!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Replaces AEM terminology</strong> - following the sunset of the editor role, swaps the
+					word AEM for Staff across the site.
+				</p>
+
 				<div className="ui header" style={{ fontSize: '1.1em' }}>
 					<p>Welcome back to Season 17!</p>
 				</div>
