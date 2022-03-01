@@ -962,7 +962,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'regatherAEMList':
 					if (!isSuperMod) {
-						socket.emit('sendAlert', 'Only editors and admins can refresh the AEM usernames list.');
+						socket.emit('sendAlert', 'Only editors and admins can refresh the staff usernames list.');
 						return;
 					}
 					break;
@@ -1106,15 +1106,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				removeStaffRole: 'Remove Staff Role',
 				toggleContributor: 'Add/Remove Role (Contributor)',
 				toggleTourneyMod: 'Add/Remove Role (Tourney Mod)',
-				promoteToAltMod: 'Promote (AEM Alt)',
+				promoteToAltMod: 'Promote (Staff Alt)',
 				promoteToTrialMod: 'Promote (Trial Mod)',
-				promoteToVeteran: 'Promote (Veteran AEM)',
+				promoteToVeteran: 'Promote (Veteran Staff)',
 				promoteToMod: 'Promote (Mod)',
 				promoteToEditor: 'Promote (Editor)',
 				makeBypass: 'Create Bypass Key',
 				bypassKeyUsed: 'Consume Bypass Key',
 				resetServer: 'Server Restart',
-				regatherAEMList: 'Refresh AEM List'
+				regatherAEMList: 'Refresh Staff List'
 			};
 
 			const modAction = JSON.stringify({

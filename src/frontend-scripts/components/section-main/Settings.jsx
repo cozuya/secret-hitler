@@ -945,7 +945,7 @@ class Settings extends React.Component {
 						</div>
 					</CollapsibleSegment>
 					{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
-						<CollapsibleSegment title={'AEM Settings'} style={{ width: '100%', padding: '7px' }}>
+						<CollapsibleSegment title={'Staff Settings'} style={{ width: '100%', padding: '7px' }}>
 							<div className="ui grid">
 								<div className="row">
 									<div className="four wide column popups">

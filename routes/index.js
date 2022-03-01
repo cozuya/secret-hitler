@@ -337,6 +337,7 @@ module.exports = () => {
 								}
 								_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
 								_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
+								_profile.blacklist = account.gameSettings.blacklist;
 							} else {
 								_profile.lastConnectedIP = undefined;
 								_profile.signupIP = undefined;

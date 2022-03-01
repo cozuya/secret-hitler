@@ -459,7 +459,7 @@ class Changelog extends React.Component {
 				<p>Adds Color to Replay Chat</p>
 				<p>Fixes Remake Visual Bugs</p>
 				<p>Fixes Leaderboard Caching</p>
-				<p>Adds Veteran AEM Role</p>
+				<p>Adds Veteran Staff Role</p>
 				<p>Multiple Bug Fixes</p>
 				<hr style={{ width: '100%' }} />
 				<div className="ui header">

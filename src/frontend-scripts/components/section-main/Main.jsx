@@ -15,6 +15,7 @@ import Moderation from './Moderation.jsx';
 import Signups from './Signups.jsx';
 import Reports from './Reports.jsx';
 import Leaderboards from './Leaderboards.jsx';
+import Colors from './Colors.jsx';
 
 export class Main extends React.Component {
 	constructor(props) {
@@ -285,6 +286,8 @@ export class Main extends React.Component {
 					return <Reports socket={socket} userInfo={userInfo} />;
 				case 'leaderboards':
 					return <Leaderboards />;
+				case 'colors':
+					return <Colors />;
 				default:
 					return (
 						<GamesList

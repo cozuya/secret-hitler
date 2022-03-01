@@ -359,7 +359,7 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -539,7 +539,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -746,7 +746,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -999,7 +999,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -1368,7 +1368,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 
 	if (game.gameState.isGameFrozen && !force) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
