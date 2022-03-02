@@ -612,7 +612,8 @@ class Settings extends React.Component {
 
 		const closeCropperSwal = () => {
 			this.setState({
-				cropperSwal: {}
+				cropperSwal: {},
+				cardbackUploadStatus: ''
 			});
 		};
 
