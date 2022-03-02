@@ -1095,7 +1095,14 @@ class Settings extends React.Component {
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
-								<SweetAlert2 {...this.state.cropperSwal} onConfirm={cropCardback} didClose={closeCropperSwal}>
+								<SweetAlert2
+									{...this.state.cropperSwal}
+									onConfirm={cropCardback}
+									didClose={closeCropperSwal}
+									allowOutsideClick={false}
+									allowEscapeKey={false}
+									allowEnterKey={false}
+								>
 									<Cropper
 										id="cb-cropper"
 										src={this.state.cropperImage}
