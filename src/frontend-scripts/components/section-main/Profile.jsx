@@ -382,7 +382,8 @@ class ProfileWrapper extends React.Component {
 				return (
 					<span>
 						<a href={`/game/#/profile/${element['userName']}`}>{element['userName']}</a>&nbsp;
-						{getTimestamp(element['timestamp'])} {element['reason'] ? `: ${element['reason']}` : ''}
+						{getTimestamp(element['timestamp'])}
+						{element['reason'] ? `: ${element['reason']}` : ''}
 					</span>
 				);
 			}
