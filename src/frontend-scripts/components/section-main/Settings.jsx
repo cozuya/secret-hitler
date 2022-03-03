@@ -612,7 +612,8 @@ class Settings extends React.Component {
 
 		const closeCropperSwal = () => {
 			this.setState({
-				cropperSwal: {}
+				cropperSwal: {},
+				cardbackUploadStatus: ''
 			});
 		};
 
@@ -1094,16 +1095,23 @@ class Settings extends React.Component {
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
-								<SweetAlert2 {...this.state.cropperSwal} onConfirm={cropCardback} didClose={closeCropperSwal}>
+								<SweetAlert2
+									{...this.state.cropperSwal}
+									onConfirm={cropCardback}
+									didClose={closeCropperSwal}
+									allowOutsideClick={false}
+									allowEscapeKey={false}
+									allowEnterKey={false}
+								>
 									<Cropper
 										id="cb-cropper"
 										src={this.state.cropperImage}
-										viewMode={1}
+										viewMode={0}
 										dragMode={'move'}
-										cropBoxMovable={false}
+										cropBoxMovable={true}
 										minCropBoxHeight={95}
 										minCropBoxWidth={70}
-										initialAspectRatio={70 / 95}
+										aspectRatio={70 / 95}
 										onInitialized={onCropperReady}
 									/>
 								</SweetAlert2>
