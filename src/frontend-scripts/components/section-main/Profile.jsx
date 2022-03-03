@@ -466,7 +466,6 @@ class ProfileWrapper extends React.Component {
 							{ unclickable: !this.props.isUserClickable },
 							{ clickable: this.props.isUserClickable }
 					  )
-
 					: cn({ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) }, 'profile-picture');
 		}
 
@@ -628,7 +627,8 @@ class ProfileWrapper extends React.Component {
 				return (
 					<span>
 						<a href={`/game/#/profile/${element['userName']}`}>{element['userName']}</a>&nbsp;
-						{getTimestamp(element['timestamp'])} {element['reason'] ? `: ${element['reason']}` : ''}
+						{getTimestamp(element['timestamp'])}
+						{element['reason'] ? `: ${element['reason']}` : ''}
 					</span>
 				);
 			}
@@ -679,7 +679,8 @@ class ProfileWrapper extends React.Component {
 											className="large close icon"
 											style={{ cursor: 'pointer' }}
 										/>
-										{blacklistInfo(playerName)}
+									)}
+									{blacklistInfo(playerName)}
 								</div>
 							);
 						})}

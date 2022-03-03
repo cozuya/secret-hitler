@@ -3,7 +3,7 @@ const Account = require('../../../models/account');
 const { updateUserStatus, sendGameList } = require('../user-requests');
 const { sendCommandChatsUpdate } = require('../util');
 const { checkStartConditions } = require('./leave-game'); // this used to be a separate game-countdown.js but that isn't really helpful tbh
-const { userInBlaclist } = require('../../../utils');
+const { userInBlacklist } = require('../../../utils');
 
 /**
  * @param {object} socket - user socket reference.

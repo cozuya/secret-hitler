@@ -193,10 +193,8 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 				</Popup>
 			</div>
 		);
-    } else {
-
+	} else {
 		return (
-
 			<Popup
 				inverted
 				trigger={children}
