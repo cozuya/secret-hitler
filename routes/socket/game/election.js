@@ -1098,7 +1098,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									player: president.userName,
 									seat: presidentIndex + 1,
 									role: president.role.cardName,
-									situation: `got BBR with 4 blues on the track, and did not force.`,
+									situation: `got BBR with 4 blues on the track, and did not force the 5th blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
@@ -1143,14 +1143,14 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								game,
 								'report'
 							);
-						} else if (passedNicer === 'BR' && track4blue) {
+						} else if (passedNicer === 'BR') {
 							// tossed blue in VZ
 							makeReport(
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
 									role: president.role.cardName,
-									situation: `got BBR during veto zone, and did not force 5th blue.`,
+									situation: `got BBR during veto zone, and offered choice.`,
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
