@@ -38,7 +38,7 @@ const moment = require('moment');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
-import { userInBlacklist } from '../../utils';
+const { userInBlacklist } = require('../../utils');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');

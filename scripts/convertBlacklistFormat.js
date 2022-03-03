@@ -10,7 +10,9 @@ Account.find()
 	.lean()
 	.eachAsync(account => {
 		for (let i = 0; i < account.gameSettings.blacklist.length; i++) {
-			account.gameSettings.blacklist[i] = { userName: account.gameSettings.blacklist[i] };
+			if (typeof account.gameSettings.blacklist[i] == 'string') {
+				account.gameSettings.blacklist[i] = { userName: account.gameSettings.blacklist[i] };
+			}
 		}
 		account.save();
 		count++;
