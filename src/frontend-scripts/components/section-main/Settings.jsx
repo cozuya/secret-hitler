@@ -1106,12 +1106,12 @@ class Settings extends React.Component {
 									<Cropper
 										id="cb-cropper"
 										src={this.state.cropperImage}
-										viewMode={1}
+										viewMode={0}
 										dragMode={'move'}
-										cropBoxMovable={false}
+										cropBoxMovable={true}
 										minCropBoxHeight={95}
 										minCropBoxWidth={70}
-										initialAspectRatio={70 / 95}
+										aspectRatio={70 / 95}
 										onInitialized={onCropperReady}
 									/>
 								</SweetAlert2>
