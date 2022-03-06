@@ -59,6 +59,14 @@ class ProfileWrapper extends React.Component {
 		return [name, libGames + fasGames, this.successRate(libGames, libWins), this.successRate(fasGames, fasWins)];
 	}
 
+	gamesAndSuccessTable(name, libGames, libWins, fasGames, fasWins) {
+		return [
+			[name, libGames + fasGames, this.successRate(libGames + fasGames, libWins + fasWins)],
+			[name + ' (Liberal)', libGames, this.successRate(libGames, libWins)],
+			[name + ' (Fascist)', fasGames, this.successRate(fasGames, fasWins)]
+		];
+	}
+
 	Elo() {
 		return (
 			<Table
@@ -87,16 +95,14 @@ class ProfileWrapper extends React.Component {
 				<CollapsibleSegment title={'Standard Matches'} defaultExpanded={true}>
 					<Table
 						uiTable="top attached four column"
-						headers={['Match Type', 'Matches', 'Liberal Winrate', 'Fascist Winrate']}
-						rows={[
-							this.successRowMatches(
-								'Standard Matches',
-								matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
-								matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
-								matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
-								matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
-							)
-						]}
+						headers={['Match Type', 'Matches', 'Winrate']}
+						rows={this.gamesAndSuccessTable(
+							'Standard Matches',
+							matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
+							matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
+							matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
+							matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
+						)}
 					/>
 				</CollapsibleSegment>
 				<CollapsibleSegment title={'Ranked Matches'}>
