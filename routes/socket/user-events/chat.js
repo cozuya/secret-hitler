@@ -253,7 +253,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
-			if (user.wins + user.losses < 10) {
+			if (user.xpOverall < 10) {
 				return;
 			}
 		}

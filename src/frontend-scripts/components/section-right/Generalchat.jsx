@@ -180,10 +180,10 @@ export default class Generalchat extends React.Component {
 			};
 		}
 
-		if ((user.wins || 0) + (user.losses || 0) < 10 && !user.isRainbowOverall) {
+		if ((user.xpOverall || 0) < 10 && !user.isRainbowOverall) {
 			return {
 				isDisabled: true,
-				placeholder: 'You must finish ten games to use general chat'
+				placeholder: 'You must have 10 XP to use general chat'
 			};
 		}
 
