@@ -411,7 +411,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 								]
 							});
 						}
-						// this is done instead of changing the above calls in order to abide by player selection to disable elo
 					});
 
 					let winner = false;
