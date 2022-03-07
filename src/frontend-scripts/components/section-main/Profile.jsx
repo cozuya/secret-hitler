@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
+import _ from 'lodash';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -203,7 +204,21 @@ class ProfileWrapper extends React.Component {
 	Badges() {
 		const { badges } = this.props.profile;
 		const changeSort = sort => this.setState({ badgeSort: sort });
-		const compare = (a, b) => (a > b ? 1 : -1);
+		const compare = (a, b) => (a === b ? 0 : a > b ? 1 : -1);
+		const compareID = (a, b) => {
+			const aNum = parseInt(a.match(/\d+$/));
+			const bNum = parseInt(b.match(/\d+$/));
+
+			const aStr = a.match(/^[^0-9]+/).toString();
+			const bStr = b.match(/^[^0-9]+/).toString();
+
+			return compare(aStr, bStr) || compare(aNum, bNum);
+		};
+
+		let badgesToSort = _.clone(badges);
+		badgesToSort = badgesToSort.sort((a, b) =>
+			this.state.badgeSort === 'badge' ? compareID(a.id, b.id) : compare(new Date(a.dateAwarded), new Date(b.dateAwarded)) || compareID(a.id, b.id)
+		);
 
 		return (
 			<div>
@@ -221,30 +236,30 @@ class ProfileWrapper extends React.Component {
 				/>
 				<br />
 				<br />
-				{badges
-					.sort((a, b) => (this.state.badgeSort === 'badge' ? compare(a.id, b.id) : compare(new Date(a.dateAwarded), new Date(b.dateAwarded))))
-					.map(x => (
-						<>
-							<img
-								style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
-								src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
-								alt={x.title}
-								key={x.id}
-								height={50}
-								onClick={() =>
-									Swal.fire({
-										title: x.title,
-										text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
-										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
-										imageWidth: 100
-									})
-								}
-							/>
-							{x.id.startsWith('eloReset') ? (
-								<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }}>{x.id.substring(8)}</p>
-							) : null}
-						</>
-					))}
+				{badgesToSort.map(x => (
+					<>
+						<img
+							style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
+							src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
+							alt={x.title}
+							key={x.id}
+							height={50}
+							onClick={() =>
+								Swal.fire({
+									title: x.title,
+									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
+									imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+									imageWidth: 100
+								})
+							}
+						/>
+						{x.id.startsWith('eloReset') ? (
+							<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }} key={x.id + 'p'}>
+								{x.id.substring(8)}
+							</p>
+						) : null}
+					</>
+				))}
 			</div>
 		);
 	}
