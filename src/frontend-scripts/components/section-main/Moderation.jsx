@@ -1047,7 +1047,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToAltMod');
 					}}
 				>
-					Assign to Staff Role - AEM Alt
+					Assign to Staff Role - Staff Alt
 				</button>
 				<button
 					style={{ background: 'purple' }}
@@ -1099,7 +1099,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToVeteran');
 					}}
 				>
-					Promote to Role - Veteran AEM
+					Promote to Role - Veteran Staff
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -1113,7 +1113,7 @@ export default class Moderation extends React.Component {
 						takeModAction('regatherAEMList');
 					}}
 				>
-					Refresh AEM List
+					Refresh Staff List
 				</button>
 				<hr />
 				<button
@@ -1202,15 +1202,15 @@ export default class Moderation extends React.Component {
 			removeStaffRole: 'Remove Staff Role',
 			toggleContributor: 'Add/Remove Role (Contributor)',
 			toggleTourneyMod: 'Add/Remove Role (Tourney Mod)',
-			promoteToAltMod: 'Promote (AEM Alt)',
+			promoteToAltMod: 'Promote (Staff Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
-			promoteToVeteran: 'Promote (Veteran AEM)',
+			promoteToVeteran: 'Promote (Veteran Staff)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart',
-			regatherAEMList: 'Refresh AEM List'
+			regatherAEMList: 'Refresh Staff List'
 		};
 
 		return (

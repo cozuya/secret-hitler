@@ -6,6 +6,9 @@ import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 import { SketchPicker } from 'react-color';
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
+import SweetAlert2 from 'react-sweetalert2';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 $.fn.checkbox = Checkbox;
@@ -59,7 +62,11 @@ class Settings extends React.Component {
 		secondaryPickerVisible: false,
 		tertiaryPickerVisible: false,
 		backgroundPickerVisible: false,
-		textPickerVisible: false
+		textPickerVisible: false,
+		cropper: null,
+		cropperImage: null,
+		cropperImageType: null,
+		cropperSwal: {}
 	};
 
 	componentDidMount() {
@@ -582,38 +589,52 @@ class Settings extends React.Component {
 			}
 
 			this.setState({
-				cardbackUploadStatus: 'Resizing...'
+				cardbackUploadStatus: 'Cropping...'
 			});
 			try {
 				const img = new Image();
 				img.onload = () => {
-					const canvas = document.createElement('canvas');
-					canvas.width = 70;
-					canvas.height = 95;
-					const ctx = canvas.getContext('2d');
-					ctx.drawImage(img, 0, 0, 70, 95);
-					const data = canvas.toDataURL('image/png');
-					if (data.length > 100 * 1024) {
-						this.setState({
-							cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
-						});
-						return;
-					}
-					const targetRatio = 70 / 95;
-					const thisRatio = img.width / img.height;
-					const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
 					this.setState({
-						preview: data,
-						cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
+						cropperImageType: files[0].type,
+						cropperImage: img.src,
+						cropperSwal: {
+							show: true
+						}
 					});
 				};
-
 				img.src = URL.createObjectURL(files[0]);
 			} catch (err) {
 				this.setState({
 					cardbackUploadStatus: 'The file you selected is not an image.'
 				});
 			}
+		};
+
+		const closeCropperSwal = () => {
+			this.setState({
+				cropperSwal: {},
+				cardbackUploadStatus: ''
+			});
+		};
+
+		const onCropperReady = cropper => {
+			this.setState({
+				cropper: cropper
+			});
+		};
+
+		const cropCardback = () => {
+			const data = this.state.cropper.getCroppedCanvas({ height: 95, width: 70 }).toDataURL(this.state.cropperImageType);
+			if (data.length > 100 * 1024) {
+				this.setState({
+					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
+				});
+				return;
+			}
+			this.setState({
+				preview: data,
+				cardbackUploadStatus: ''
+			});
 		};
 
 		const displayCardbackInfoModal = () => {
@@ -925,7 +946,7 @@ class Settings extends React.Component {
 						</div>
 					</CollapsibleSegment>
 					{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
-						<CollapsibleSegment title={'AEM Settings'} style={{ width: '100%', padding: '7px' }}>
+						<CollapsibleSegment title={'Staff Settings'} style={{ width: '100%', padding: '7px' }}>
 							<div className="ui grid">
 								<div className="row">
 									<div className="four wide column popups">
@@ -1074,6 +1095,26 @@ class Settings extends React.Component {
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
+								<SweetAlert2
+									{...this.state.cropperSwal}
+									onConfirm={cropCardback}
+									didClose={closeCropperSwal}
+									allowOutsideClick={false}
+									allowEscapeKey={false}
+									allowEnterKey={false}
+								>
+									<Cropper
+										id="cb-cropper"
+										src={this.state.cropperImage}
+										viewMode={0}
+										dragMode={'move'}
+										cropBoxMovable={true}
+										minCropBoxHeight={95}
+										minCropBoxWidth={70}
+										aspectRatio={70 / 95}
+										onInitialized={onCropperReady}
+									/>
+								</SweetAlert2>
 							</div>
 							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>

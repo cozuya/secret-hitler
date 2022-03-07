@@ -359,7 +359,7 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -539,7 +539,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -746,7 +746,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -999,7 +999,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -1098,7 +1098,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 									player: president.userName,
 									seat: presidentIndex + 1,
 									role: president.role.cardName,
-									situation: `got BBR with 4 blues on the track, and did not force.`,
+									situation: `got BBR with 4 blues on the track, and did not force the 5th blue.`,
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
@@ -1143,14 +1143,14 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 								game,
 								'report'
 							);
-						} else if (passedNicer === 'BR' && track4blue) {
+						} else if (passedNicer === 'BR') {
 							// tossed blue in VZ
 							makeReport(
 								{
 									player: president.userName,
 									seat: presidentIndex + 1,
 									role: president.role.cardName,
-									situation: `got BBR during veto zone, and did not force 5th blue.`,
+									situation: `got BBR during veto zone, and offered choice.`,
 									election: game.general.electionCount,
 									title: game.general.name,
 									uid: game.general.uid,
@@ -1368,7 +1368,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 
 	if (game.gameState.isGameFrozen && !force) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}

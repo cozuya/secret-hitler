@@ -651,6 +651,7 @@ class Playerlist extends React.Component {
 
 	render() {
 		const { userInfo } = this.props;
+		const adminGradientData = { A: 'admin', d: 'moira', m: 'vig', i: 'admin', n: 'moira', s: 'vig' };
 
 		return (
 			<section className="playerlist">
@@ -673,23 +674,39 @@ class Playerlist extends React.Component {
 						</p>
 						<p>
 							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO to
-							deep indigo as highest ELO, passing through yellow, orange, red, and purple on its way.
+							deep indigo as highest ELO, passing through yellow, orange, pink, and purple on its way.
 						</p>
 						<p>
-							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
-							<span className="admin-name">(A)</span> and are always at the top of the list.
+							Additionally, <span className="admin">Administrators</span> have an <strong>(A) 📛</strong> before their name and are always at the top of the
+							list, their color dictates which facet of the site they oversee. The owner of the site has a <span className="admin">red name</span>, the head of
+							the moderation team has a <span className="moira">pink name</span>, and the head of the development team has a{' '}
+							<span className="vig">purple name</span>.
 							<br />
-							<span className="anji">Edi</span>
-							<span className="moira">tors</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
-							stand out, as well as a <span className="admin">(E)</span>.<br />
-							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="anji">Edi</span>
-							<span className="moira">tors</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M)</span>.
+							<span className="moderatorcolor">Moderators</span>, placed at the top below the{' '}
+							{Object.keys(adminGradientData).map(data => (
+								<span className={adminGradientData[data]} key={data}>
+									{data}
+								</span>
+							))}
+							, have a <span className="moderatorcolor">blue color</span> with a <span className="moderatorcolor">(M) 🌀</span> before their name.
 							<br />
-							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
+							Staff <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
 							<br />
 							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special color</span> as well! Contribute code to
 							this open source project!.
 						</p>
+						Click{' '}
+						<a
+							href="#/colors"
+							onClick={() =>
+								$('.playerlistinfo')
+									.modal('setting', 'transition', 'scale')
+									.modal('hide')
+							}
+						>
+							here
+						</a>{' '}
+						to view a detailed list of all the colors used for usernames on site.
 					</div>
 					{Object.keys(this.props.userList).length && (
 						<span>

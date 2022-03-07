@@ -318,7 +318,7 @@ class ProfileWrapper extends React.Component {
 				</CollapsibleSegment>
 				{this.props.profile.lastConnectedIP && (
 					<div>
-						<CollapsibleSegment title={'AEM Info'} defaultExpanded={true}>
+						<CollapsibleSegment title={'Private Info'} defaultExpanded={true}>
 							<Table headers={['Last Connected IP / Signup IP']} rows={[[this.props.profile.lastConnectedIP], [this.props.profile.signupIP]]} />
 						</CollapsibleSegment>
 					</div>
@@ -588,6 +588,11 @@ class ProfileWrapper extends React.Component {
 								Your blacklist
 							</a>
 						)}
+						{profile.blacklist && (
+							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
+								Player blacklist
+							</a>
+						)}
 						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
 							<div className="ui action input">
 								<input
@@ -631,6 +636,7 @@ class ProfileWrapper extends React.Component {
 
 	render() {
 		const { profile } = this.props;
+		const blacklist = this.props?.profile?.blacklist || this.props?.userInfo?.gameSettings?.blacklist;
 
 		const children = (() => {
 			switch (profile.status) {
@@ -656,23 +662,25 @@ class ProfileWrapper extends React.Component {
 						this.blacklistModal = c;
 					}}
 				>
-					<div className="ui header">Your blacklist</div>
-					{this.props.userInfo.gameSettings &&
-						this.props.userInfo.gameSettings.blacklist.map(playerName => (
+					<div className="ui header">{this.props?.profile?.blacklist ? "Player's" : 'Your'} blacklist</div>
+					{blacklist &&
+						blacklist.map(playerName => (
 							<div key={playerName} className={`blacklist-${playerName}`}>
-								<i
-									onClick={() => {
-										const { gameSettings } = this.props.userInfo;
+								{!this.props?.profile?.blacklist && (
+									<i
+										onClick={() => {
+											const { gameSettings } = this.props.userInfo;
 
-										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(playerName), 1);
-										this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-										setTimeout(() => {
-											this.forceUpdate();
-										}, 500);
-									}}
-									className="large close icon"
-									style={{ cursor: 'pointer' }}
-								/>
+											gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(playerName), 1);
+											this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
+											setTimeout(() => {
+												this.forceUpdate();
+											}, 500);
+										}}
+										className="large close icon"
+										style={{ cursor: 'pointer' }}
+									/>
+								)}
 								{playerName}
 							</div>
 						))}

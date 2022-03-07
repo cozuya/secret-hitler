@@ -189,7 +189,7 @@ module.exports.checkBadgesAccount = user => {
 	}
 
 	if (user.staffRole === 'veteran') {
-		awardBadgePrequeried(user, 'veteran', 'Thank you for your service to the site!', 'You retired from AEM.');
+		awardBadgePrequeried(user, 'veteran', 'Thank you for your service to the site!', 'You retired from Staff.');
 	}
 
 	if (user.staffRole === 'moderator') {

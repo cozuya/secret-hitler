@@ -64,11 +64,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			moderatorcolor: user.staffRole === 'moderator',
 			editorcolor: user.staffRole === 'editor',
 			veteran: user.staffRole === 'veteran',
-			cbell: user.userName === 'cbell' && user.staffRole === 'editor',
-			max: user.userName === 'Max' && user.staffRole === 'editor',
-			moira: user.userName === 'moira' && user.staffRole === 'editor',
-			bruno: user.userName === 'Bruno' && user.staffRole === 'editor',
-			anji: user.userName === 'Anji' && user.staffRole === 'editor'
+			moira: user.userName === 'moira' && user.staffRole === 'admin',
+			vig: user.userName === 'Vig' && user.staffRole === 'admin'
 		});
 	} else if (
 		user.isContributor &&

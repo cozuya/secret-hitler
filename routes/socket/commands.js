@@ -422,7 +422,7 @@ module.exports.commands.getCommand('ping').run = (socket, passport, user, game, 
 module.exports.commands.getCommand('forcerigdeck').run = (socket, passport, user, game, args) => {
 	const changedChat = [
 		{
-			text: 'An AEM member has changed the deck to '
+			text: 'A staff member has changed the deck to '
 		}
 	];
 
@@ -481,7 +481,7 @@ module.exports.commands.getCommand('forcevote').run = (socket, passport, user, g
 			timestamp: new Date(),
 			chat: [
 				{
-					text: 'An AEM member has forced '
+					text: 'A staff member has forced '
 				},
 				{
 					text: blindMode
@@ -583,7 +583,7 @@ module.exports.commands.getCommand('forceskip').run = (socket, passport, user, g
 		timestamp: new Date(),
 		chat: [
 			{
-				text: 'An AEM member has force skipped the government with '
+				text: 'A staff member has force skipped the government with '
 			},
 			{
 				text: blindMode ? `${replacementNames[affectedPlayerIndex]} {${affectedPlayerIndex + 1}} ` : `${affectedPlayer.userName} {${affectedPlayerIndex + 1}}`,
@@ -642,7 +642,7 @@ module.exports.commands.getCommand('forcepick').run = (socket, passport, user, g
 			timestamp: new Date(),
 			chat: [
 				{
-					text: 'An AEM member has forced '
+					text: 'A staff member has forced '
 				},
 				{
 					text: blindMode
@@ -686,7 +686,7 @@ module.exports.commands.getCommand('forceping').run = (socket, passport, user, g
 		timestamp: new Date(),
 		chat: [
 			{
-				text: 'An AEM member has pinged '
+				text: 'A staff member has pinged '
 			},
 			{
 				text: blindMode
@@ -736,7 +736,7 @@ module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user
 
 		const changedChat = [
 			{
-				text: 'An AEM member has changed the role of player '
+				text: 'A staff member has changed the role of player '
 			}
 		];
 

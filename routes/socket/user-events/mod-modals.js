@@ -105,7 +105,7 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 	}
 
 	gameToFreeze.chats.push({
-		userName: `(AEM) ${modUserName}`,
+		userName: `(Staff) ${modUserName}`,
 		chat: `has ${game.gameState.isGameFrozen ? 'frozen' : 'unfrozen'} the game. ${game.gameState.isGameFrozen ? 'All actions are prevented.' : ''}`,
 		isBroadcast: true,
 		timestamp: new Date()

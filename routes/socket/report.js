@@ -109,7 +109,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 
 	if (type === 'report' || type === 'reportdelayed') {
 		const upperRole = role[0].toUpperCase() + role.substr(1);
-		const isDelayed = type === 'reportdelayed' ? ' - **AEM DELAYED**' : '';
+		const isDelayed = type === 'reportdelayed' ? ' - **Staff DELAYED**' : '';
 		let throwerIP;
 		const otherPlayers = [];
 
@@ -188,7 +188,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 	}
 
 	if (type === 'modchat' || type === 'modchatdelayed') {
-		const isDelayed = type === 'modchatdelayed' ? ' - **AEM DELAYED**' : '';
+		const isDelayed = type === 'modchatdelayed' ? ' - **Staff DELAYED**' : '';
 		report = {
 			content: `<@&${process.env.DISCORDMODID}>${isDelayed}\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
 			username: 'Mod Chat',

@@ -144,11 +144,13 @@
 		-o-transition: all 0.15s ease-in-out;
 		transition: all 0.15s ease-in-out;
 		padding: 0;
-		z-index: 1001;
+		z-index: 10001;
 		position: absolute;
 		background-color: var(--theme-background-3);
 		display: flex;
 		flex-direction: column;
+		resize: both;
+		overflow: hidden;
 		&.player .notes-header {
 			background: var(--theme-secondary);
 		}
@@ -1066,27 +1068,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	box-shadow: 0 0 5px 2px red !important;
 }
 
-.cbell {
-	color: #ff1a75 !important;
-}
-.player-small-cardback.cbell {
-	box-shadow: 0 0 5px 2px #ff1a75 !important;
-}
-
-.jdudle3 {
-	color: #997fff !important;
-}
-.player-small-cardback.jdudle3 {
-	box-shadow: 0 0 5px 2px #997fff !important;
-}
-
-.max {
-	color: #b7ae0b !important;
-}
-.player-small-cardback.max {
-	box-shadow: 0 0 5px 2px #b7ae0b !important;
-}
-
 .moira {
 	color: #ff95fb !important;
 }
@@ -1094,25 +1075,11 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	box-shadow: 0 0 5px 2px #ff95fb !important;
 }
 
-.thejuststopo {
-	color: #dc143c !important;
+.vig {
+	color: #ab85ff !important;
 }
-.player-small-cardback.thejuststopo {
-	box-shadow: 0 0 5px 2px #dc143c !important;
-}
-
-.bruno {
-	color: #70deaa !important;
-}
-.player-small-cardback.bruno {
-	box-shadow: 0 0 5px 2px #70deaa !important;
-}
-
-.anji {
-	color: #9073c9 !important;
-}
-.player-small-cardback.anji {
-	box-shadow: 0 0 5px 2px #9073c9 !important;
+.player-small-cardback.vig {
+	box-shadow: 0 0 5px 2px #ab85ff !important;
 }
 
 #confetti {
@@ -1231,10 +1198,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	color: $darkfascistteam !important;
 }
 
-.admin-name {
-	color: $hitlerteam !important;
-}
-
 .modal-warning {
 	color: coral;
 	padding: 5px 20px;
@@ -1265,6 +1228,36 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		justify-content: space-between;
 		height: 28px;
 		padding: 0 70px;
+	}
+}
+
+.colors {
+	h2 {
+		margin-top: 20px !important;
+		text-align: center;
+	}
+	ul {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		height: 80vh;
+	}
+	li {
+		text-decoration: none;
+		display: flex;
+		height: 28px;
+		padding: 0 10px;
+	}
+	.back {
+		cursor: pointer;
+		position: absolute;
+		left: 5%;
+		color: lightblue;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		top: 10px;
+		text-decoration: underline;
 	}
 }
 

@@ -21,7 +21,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}

@@ -86,7 +86,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 
 	const discordThreadNotifyBody = JSON.stringify({
 		// and post it to discord
-		content: `__**Mod DM Opened**__\n__AEM Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
+		content: `__**Mod DM Opened**__\n__Staff Member__: ${data.aemMember}\n__User__: ${dmReceiver.userName}`
 	});
 	const discordThreadNotifOptions = {
 		hostname: 'discordapp.com',
@@ -140,7 +140,7 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
 			const savedDM = new ModThread(dm);
 			savedDM.save();
 
-			const dmCloseMessage = `__**Mod DM Closed**__\n__AEM Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
+			const dmCloseMessage = `__**Mod DM Closed**__\n__Staff Member__: ${dm.aemMember}\n__User__: ${dm.username}\n__Start Date__: ${dm.startDate}\n__End Date__: ${dm.endDate}\n__Chat Log__: https://secrethitler.io/modThread?id=${dm._id}`;
 			const discordThreadNotifyBody = JSON.stringify({
 				// save and send to discord
 				content: dmCloseMessage

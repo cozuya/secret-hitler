@@ -225,7 +225,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -449,7 +449,7 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -633,7 +633,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -846,7 +846,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -1085,7 +1085,7 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}
@@ -1235,7 +1235,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
 		}
 		return;
 	}

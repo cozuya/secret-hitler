@@ -384,6 +384,8 @@ export class App extends React.Component {
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash === '#/leaderboards') {
 			dispatch(updateMidsection('leaderboards'));
+		} else if (hash === '#/colors') {
+			dispatch(updateMidsection('colors'));
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
@@ -739,8 +741,9 @@ export class App extends React.Component {
 
 						{(() => {
 							if (
-								(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-								(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
+								this.props.midSection !== 'colors' &&
+								((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+									(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame))
 							) {
 								return (
 									<RightSidebar
