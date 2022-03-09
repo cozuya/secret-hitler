@@ -3,6 +3,7 @@ const { LEGALCHARACTERS } = require('../../../src/frontend-scripts/node-constant
 const { generateCombination } = require('gfycat-style-urls');
 const { chatReplacements } = require('../chatReplacements');
 const Account = require('../../../models/account');
+const Game = require('../../../models/game');
 const { updateUserStatus, sendGameList } = require('../user-requests');
 const { secureGame } = require('../util.js');
 
@@ -11,7 +12,7 @@ const { secureGame } = require('../util.js');
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewGame = (socket, passport, data) => {
+module.exports.handleAddNewGame = async (socket, passport, data) => {
 	// Authentication Assured in routes.js
 	if (gameCreationDisabled.status || (!data.privatePassword && limitNewPlayers.status)) {
 		return;
@@ -48,12 +49,26 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
-		return;
+	if (data.eloSliderValue) {
+		if (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue) {
+			return;
+		}
+
+		data.eloSliderValue = parseInt(data.eloSliderValue);
+		if (isNaN(data.eloSliderValue)) {
+			return;
+		}
 	}
 
-	if (data.xpSliderValue && user.xpOverall < data.xpSliderValue) {
-		return;
+	if (data.xpSliderValue) {
+		if (user.xpOverall < data.xpSliderValue) {
+			return;
+		}
+
+		data.xpSliderValue = parseInt(data.xpSliderValue);
+		if (isNaN(data.xpSliderValue)) {
+			return;
+		}
 	}
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
@@ -106,7 +121,13 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enabled: false
 		};
 	}
-	const uid = generateCombination(3, '', true);
+
+	let uid = generateCombination(3, '', true);
+	while (true) {
+		const foundGame = await Game.findOne({ uid });
+		if (foundGame) uid = generateCombination(3, '', true);
+		else break;
+	}
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame = (data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual') && !customGame;

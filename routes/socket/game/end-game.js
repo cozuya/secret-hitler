@@ -306,11 +306,60 @@ module.exports.completeGame = (game, winningTeamName) => {
 					...seatedPlayers.filter(e => e.role.cardName === 'liberal').sort(byUsername)
 				];
 
+				seatedPlayers.forEach((eachPlayer, i) => {
+					const playerChange = eloAdjustments[eachPlayer.userName];
+					const activeChange = playerChange?.change;
+					const activeChangeXP = playerChange?.xpChange;
+
+					game.private.replayGameChats.push({
+						gameChat: true,
+						timestamp: new Date(Date.now() + i),
+						chat: [
+							{
+								text: eachPlayer.userName,
+								type: eachPlayer.role.cardName
+							},
+							{
+								text: `'s Elo: `
+							},
+							{
+								text: ` ${activeChange > 0 ? '+' : '-'}`
+							},
+							{
+								text: Math.abs(activeChange).toFixed(1),
+								type: 'player'
+							}
+						]
+					});
+					game.private.replayGameChats.push({
+						gameChat: true,
+						timestamp: new Date(Date.now() + i),
+						chat: [
+							{
+								text: eachPlayer.userName,
+								type: eachPlayer.role.cardName
+							},
+							{
+								text: `'s XP: `
+							},
+							{
+								text: ` ${activeChangeXP > 0 ? '+' : '-'}`
+							},
+							{
+								text: Math.abs(activeChangeXP).toFixed(1),
+								type: 'player'
+							}
+						]
+					});
+				});
+
 				results.forEach(player => {
 					const listUser = userList.find(user => user.userName === player.username);
 					if (listUser) {
 						listUser.eloOverall = player.eloOverall;
 						listUser.eloSeason = player.eloSeason;
+						listUser.xpOverall = player.xpOverall;
+						listUser.xpSeason = player.xpSeason;
 						listUser.isRainbowOverall = player.isRainbowOverall;
 						listUser.isRainbowSeason = player.isRainbowSeason;
 					}
