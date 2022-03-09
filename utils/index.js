@@ -168,3 +168,28 @@ exports.capitalize = s => {
 exports.objectContains = (target, subset) => {
 	return Object.keys(subset).reduce((acc, key) => acc && target[key] === subset[key], true);
 };
+
+const getBlacklistIndex = (userName, blacklist) => {
+	if (typeof blacklist === 'undefined') {
+		return -1;
+	}
+	for (let i = 0; i < blacklist.length; i++) {
+		if (blacklist[i]['userName'] === userName) {
+			return i;
+		}
+	}
+	return -1;
+};
+const userInBlacklist = (userName, blacklist) => {
+	if (typeof blacklist === 'undefined') {
+		return false;
+	}
+	for (let i = 0; i < blacklist.length; i++) {
+		if (blacklist[i]['userName'] === userName) {
+			return true;
+		}
+	}
+	return false;
+};
+exports.userInBlacklist = userInBlacklist;
+exports.getBlacklistIndex = getBlacklistIndex;

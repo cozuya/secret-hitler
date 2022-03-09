@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import UserPopup from '../reusable/UserPopup.jsx';
+import { userInBlacklist } from '../../../../utils';
 
 $.fn.modal = Modal;
 
@@ -286,11 +287,11 @@ class Playerlist extends React.Component {
 					user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }
 						  )
-						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+						: cn({ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
 
@@ -522,11 +523,11 @@ class Playerlist extends React.Component {
 					user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }
 						  )
-						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+						: cn({ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
 

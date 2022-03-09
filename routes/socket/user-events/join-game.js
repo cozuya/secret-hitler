@@ -3,6 +3,7 @@ const Account = require('../../../models/account');
 const { updateUserStatus, sendGameList } = require('../user-requests');
 const { sendCommandChatsUpdate } = require('../util');
 const { checkStartConditions } = require('./leave-game'); // this used to be a separate game-countdown.js but that isn't really helpful tbh
+const { userInBlacklist } = require('../../../utils');
 
 /**
  * @param {object} socket - user socket reference.
@@ -19,7 +20,7 @@ const updateSeatedUser = (socket, passport, data) => {
 		return; // Game already started
 	}
 
-	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !game.private.gameCreatorBlacklist.includes(passport.user); // we can check blacklist before hitting mongo
+	const isBlacklistSafe = !game.private.gameCreatorBlacklist || !userInBlacklist(passport.user, game.private.gameCreatorBlacklist); // we can check blacklist before hitting mongo
 
 	if (!isBlacklistSafe) {
 		socket.emit('gameJoinStatusUpdate', {
