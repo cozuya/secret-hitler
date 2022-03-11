@@ -533,6 +533,15 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.xpSeason += 1;
 				}
 
+				if (player.xpOverall >= 50.0) {
+					player.isRainbowOverall = true;
+					player.dateRainbowOverall = new Date();
+				}
+
+				if (player.xpSeason >= 50.0) {
+					player.isRainbowSeason = true;
+				}
+
 				checkBadgesXP(player, game.general.uid);
 				player.save();
 			}
