@@ -140,6 +140,7 @@ module.exports.formattedUserList = isAEM => {
 	return module.exports.userList
 		.map(user => ({
 			userName: user.userName,
+			playerPronouns: user.playerPronouns,
 			wins: prune(user.wins),
 			losses: prune(user.losses),
 			rainbowWins: prune(user.rainbowWins),

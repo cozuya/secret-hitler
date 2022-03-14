@@ -1,6 +1,6 @@
 const Account = require('../../../models/account');
 const { userList, currentSeasonNumber } = require('../models');
-const { sendUserList } = require('../user-requests');
+const { sendUserList, sendUserGameSettings } = require('../user-requests');
 
 /**
  * @param {object} socket - user socket reference.
@@ -20,6 +20,21 @@ module.exports.handleUpdatedTheme = (socket, passport, data) => {
 		}
 
 		account.save();
+	});
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleUpdatedPlayerPronouns = (socket, passport, data) => {
+	// Authentication is assured in routes.js
+	Account.findOne({ username: passport.user }).then(account => {
+		account.playerPronouns = data.playerPronouns;
+		account.save();
+		sendUserList(socket);
+		sendUserGameSettings(socket);
 	});
 };
 
@@ -72,6 +87,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (setting === 'staffIncognito' && aem) {
 					const userListInfo = {
 						userName: passport.user,
+						playerPronouns: account.gameSettings.playerPronouns,
 						staffRole: account.staffRole || '',
 						isContributor: account.isContributor || false,
 						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,

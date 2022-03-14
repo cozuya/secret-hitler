@@ -5,6 +5,7 @@ const {
 	handleAddNewGameChat,
 	handleNewGeneralChat,
 	handleUpdatedGameSettings,
+	handleUpdatedPlayerPronouns,
 	handleSocketDisconnect,
 	handleUserLeaveGame,
 	checkUserStatus,
@@ -521,6 +522,12 @@ module.exports.socketRoutes = () => {
 			socket.on('updateGameSettings', data => {
 				if (authenticated) {
 					handleUpdatedGameSettings(socket, passport, data);
+				}
+			});
+
+			socket.on('updatePlayerPronouns', data => {
+				if (authenticated) {
+					handleUpdatedPlayerPronouns(socket, passport, data);
 				}
 			});
 

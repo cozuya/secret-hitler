@@ -647,6 +647,15 @@ export default class Moderation extends React.Component {
 					Reset player bio
 				</button>
 				<button
+					style={{ width: '100%', background: 'purple' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('setPlayerPronouns');
+					}}
+				>
+					Set player pronouns
+				</button>
+				<button
 					style={{ width: '100%', background: 'palevioletred' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
 					onClick={() => {
@@ -1197,6 +1206,7 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
+			setPlayerPronouns: 'Set Player Pronouns',
 			resetGameName: 'Reset Game Name',
 			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',

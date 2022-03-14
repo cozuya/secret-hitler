@@ -15,7 +15,7 @@ const {
 	currentSeasonNumber
 } = require('../models');
 const PlayerReport = require('../../../models/playerReport');
-const { sendUserReports, getModInfo, sendGameList } = require('../user-requests');
+const { sendUserReports, getModInfo, sendGameList, sendUserList } = require('../user-requests');
 const ModAction = require('../../../models/modAction');
 const BannedIP = require('../../../models/bannedIP');
 const { handleDefaultIPv6Range } = require('../util.js');
@@ -436,6 +436,16 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						if (account) {
 							account.bio = '';
 							account.save();
+						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+					});
+					break;
+				case 'setPlayerPronouns':
+					Account.findOne({ username: data.userName }).then(account => {
+						if (account) {
+							account.playerPronouns = data.comment;
+							account.gameSettings.playerPronouns = data.comment;
+							account.save();
+							sendUserList();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
 					break;
@@ -1101,6 +1111,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				deleteBio: 'Delete Bio',
 				deleteProfile: 'Delete Profile',
 				deleteCardback: 'Delete Cardback',
+				setPlayerPronouns: 'Set Player Pronouns',
 				resetGameName: 'Reset Game Name',
 				rainbowUser: 'Grant Rainbow',
 				removeStaffRole: 'Remove Staff Role',

@@ -565,6 +565,7 @@ class ProfileWrapper extends React.Component {
 						{renderStatus()}
 						{prefix}
 						{profile._id}
+						{gameSettings.playerPronouns !== '' && <span>({gameSettings.playerPronouns})</span>}
 					</h1>
 					<div className="ui right aligned six wide column">
 						<span>
