@@ -260,6 +260,7 @@ export default class Moderation extends React.Component {
 		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
 		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
 		const splitIP = ip => {
+			if (!ip) return ['', ''];
 			let idx = ip.lastIndexOf('.');
 
 			if (idx === -1) {
