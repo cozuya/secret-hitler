@@ -22,6 +22,7 @@ class Gamenotes extends React.Component {
 
 	clearNotes = () => {
 		this.props.changeNotesValue('');
+		localStorage.setItem('GameNotes', '');
 	};
 
 	dismissNotes = () => {
@@ -46,6 +47,9 @@ class Gamenotes extends React.Component {
 	componentDidMount() {
 		document.body.addEventListener('dragover', dragOverFn);
 		document.body.addEventListener('drop', this.noteDrop);
+
+		const notes = localStorage.getItem('GameNotes');
+		this.props.changeNotesValue(notes == null ? '' : notes);
 	}
 
 	componentWillUnmount() {
@@ -65,6 +69,7 @@ class Gamenotes extends React.Component {
 	render() {
 		const notesChange = e => {
 			this.props.changeNotesValue(`${e.target.value}`);
+			localStorage.setItem('GameNotes', e.target.value);
 		};
 
 		return (
