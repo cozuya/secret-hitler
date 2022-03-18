@@ -195,8 +195,7 @@ const Account = new Schema({
 	badges: [{ id: String, text: String, title: String, dateAwarded: Date }],
 	maxElo: { type: Number, default: 1600 },
 	pastElo: [{ date: Date, value: Number }],
-	isTournamentMod: Boolean,
-	playerPronouns: String
+	isTournamentMod: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

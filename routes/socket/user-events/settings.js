@@ -31,8 +31,9 @@ module.exports.handleUpdatedTheme = (socket, passport, data) => {
 module.exports.handleUpdatedPlayerPronouns = (socket, passport, data) => {
 	// Authentication is assured in routes.js
 	Account.findOne({ username: passport.user }).then(account => {
-		account.playerPronouns = data.playerPronouns;
+		account.gameSettings.playerPronouns = data.playerPronouns;
 		account.save();
+		userList.find(user => user.userName === passport.user).playerPronouns = data.playerPronouns;
 		sendUserList(socket);
 		sendUserGameSettings(socket);
 	});

@@ -207,11 +207,9 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 				position={position}
 				className="user-popup"
 			>
-				<Popup.Header>
-					{notVisible ? '?' : blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}
-					{user.playerPronouns !== '' && !notVisible && !blindMode && <div>({user.playerPronouns})</div>}
-				</Popup.Header>
+				<Popup.Header>{notVisible ? '?' : blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
 				<Popup.Content>
+					{user && user.playerPronouns && user.playerPronouns !== '' && !notVisible && !blindMode && <div>({user.playerPronouns})</div>}
 					<List>
 						{!notVisible && !blindMode && user && !user.staffDisableVisibleElo && (
 							<List.Item>
