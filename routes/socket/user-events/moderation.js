@@ -444,8 +444,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						if (account) {
 							account.gameSettings.playerPronouns = data.comment;
 							account.save();
-							userList.find(user => user.userName === data.userName).playerPronouns = data.comment;
-							sendUserList(socket);
+							const userListUser = userList.find(user => user.userName === data.userName);
+							if (userListUser) userListUser.playerPronouns = data.comment;
+							sendUserList();
 							sendUserGameSettings(socket);
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});

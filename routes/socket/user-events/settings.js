@@ -33,8 +33,9 @@ module.exports.handleUpdatedPlayerPronouns = (socket, passport, data) => {
 	Account.findOne({ username: passport.user }).then(account => {
 		account.gameSettings.playerPronouns = data.playerPronouns;
 		account.save();
-		userList.find(user => user.userName === passport.user).playerPronouns = data.playerPronouns;
-		sendUserList(socket);
+		const userListUser = userList.find(user => user.userName === passport.user);
+		if (userListUser) userListUser.playerPronouns = data.playerPronouns;
+		sendUserList();
 		sendUserGameSettings(socket);
 	});
 };
