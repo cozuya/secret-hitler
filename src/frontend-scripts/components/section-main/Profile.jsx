@@ -561,11 +561,19 @@ class ProfileWrapper extends React.Component {
 					/>
 				)}
 				<div className="ui grid">
-					<h1 className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`} style={{ paddingLeft: 0 }}>
+					<h1
+						className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`}
+						style={{ paddingLeft: 0, paddingBottom: 0, marginBottom: 0 }}
+					>
 						{renderStatus()}
 						{prefix}
 						{profile._id}
 					</h1>
+					{user && user.playerPronouns && user.playerPronouns !== '' && (
+						<span className="ui pronouns eight wide column" style={{ paddingLeft: 0, paddingTop: 0, fontStyle: 'italic', fontWeight: 700 }}>
+							({user.playerPronouns})
+						</span>
+					)}
 					<div className="ui right aligned six wide column">
 						<span>
 							<strong>

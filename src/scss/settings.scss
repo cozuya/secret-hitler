@@ -206,6 +206,38 @@
 		}
 	}
 
+	.pronoun-container {
+		h4 {
+			text-align: center;
+			display: block;
+			width: 100%;
+			font-size: 18px;
+		}
+
+		p {
+			color: var(--theme-primary);
+		}
+
+		input:active ~ label,
+		input:focus ~ label {
+			color: var(--theme-secondary);
+		}
+		label {
+			color: var(--theme-primary);
+			line-height: 1.3;
+
+			&:hover {
+				color: var(--theme-secondary);
+				cursor: pointer;
+			}
+
+			&:before,
+			&:after {
+				top: 6px !important;
+			}
+		}
+	}
+
 	.ui.header {
 		text-align: center;
 	}

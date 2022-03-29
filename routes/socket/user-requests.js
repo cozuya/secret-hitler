@@ -206,6 +206,7 @@ module.exports.sendUserGameSettings = socket => {
 			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
+					playerPronouns: account.gameSettings.playerPronouns,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,

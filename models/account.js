@@ -13,6 +13,7 @@ const Account = new Schema({
 	isContributor: Boolean,
 	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
+		playerPronouns: String,
 		staffDisableVisibleElo: Boolean,
 		staffDisableVisibleXP: Boolean,
 		staffDisableStaffColor: Boolean,
