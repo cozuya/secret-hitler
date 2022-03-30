@@ -19,7 +19,7 @@ import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
 import '../../scss/style-dark.scss';
-import * as Swal from 'sweetalert2';
+import SweetAlert2 from 'react-sweetalert2';
 
 const select = state => state;
 
@@ -28,7 +28,10 @@ class TopLevelErrorBoundary extends React.Component {
 		super(props);
 		this.state = {
 			error: null,
-			errorInfo: null
+			errorInfo: null,
+			feedbackResponseSwal: {},
+			sendAlertSwal: {},
+			toLobbySwal: {}
 		};
 	}
 
@@ -182,7 +185,13 @@ export class App extends React.Component {
 		});
 
 		socket.on('feedbackResponse', data => {
-			Swal.fire(data.message, '', data.status);
+			this.setState({
+				feedbackResponseSwal: {
+					show: true,
+					title: data.message,
+					icon: data.status
+				}
+			});
 		});
 
 		socket.on('manualDisconnection', () => {
@@ -283,8 +292,11 @@ export class App extends React.Component {
 		});
 
 		socket.on('sendAlert', data => {
-			Swal.fire({
-				html: data
+			this.setState({
+				sendAlertSwal: {
+					show: true,
+					html: data
+				}
 			});
 		});
 
@@ -292,7 +304,12 @@ export class App extends React.Component {
 			if (window.location.hash === '/table/' + uid) {
 				// only eject the player from their current state if they are in the now-deleted game
 				window.location.hash = '#/';
-				Swal.fire('The game you were previously in was deleted automatically.');
+				this.setState({
+					toLobbySwal: {
+						show: true,
+						title: 'The game you were previously in was deleted automatically.'
+					}
+				});
 			}
 		});
 
@@ -774,6 +791,9 @@ export class App extends React.Component {
 						})()}
 					</div>
 				</section>
+				<SweetAlert2 {...this.state.feedbackSwal} didClose={() => this.setState({ feedbackSwal: {} })} />
+				<SweetAlert2 {...this.state.sendAlertSwal} didClose={() => this.setState({ sendAlertSwal: {} })} />
+				<SweetAlert2 {...this.state.toLobbySwal} didClose={() => this.setState({ toLobbySwal: {} })} />
 			</TopLevelErrorBoundary>
 		);
 	}

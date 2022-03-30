@@ -8,7 +8,7 @@ import classnames from 'classnames';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
-import * as Swal from 'sweetalert2';
+import SweetAlert2 from 'react-sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
@@ -20,7 +20,10 @@ class Players extends React.Component {
 		reportTextValue: '',
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
-		reportLength: 0
+		reportLength: 0,
+		banSwal: {},
+		killSwal: {},
+		temporaryIndex: 0
 	};
 
 	componentDidMount() {
@@ -98,16 +101,14 @@ class Players extends React.Component {
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				if (!gameSettings.disableKillConfirmation) {
-					Swal.fire({
-						title: `Are you sure you want to execute {${index + 1}} ${name}?`,
-						showCancelButton: true,
-						icon: 'warning'
-					}).then(result => {
-						if (result.value) {
-							socket.emit('selectedPlayerToExecute', {
-								playerIndex: index,
-								uid: gameInfo.general.uid
-							});
+					this.setState({
+						temporaryIndex: index,
+						killSwal: {
+							show: true,
+							title: `Are you sure you want to execute {${index + 1}} ${name}?`,
+							showCancelButton: true,
+							showConfirmButton: true,
+							icon: 'warning'
 						}
 					});
 				} else {
@@ -477,7 +478,12 @@ class Players extends React.Component {
 			if (user && user.staffIncognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				Swal.fire('Sorry, this service is currently unavailable.');
+				this.setState({
+					banSwal: {
+						show: true,
+						title: 'Sorry, this service is currently unavailable.'
+					}
+				});
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if ((gameInfo.general.rainbowgame && user && !user.isRainbowOverall) || (gameInfo.general.rainbowgame && (!user || !user.isRainbowOverall))) {
@@ -662,6 +668,19 @@ class Players extends React.Component {
 					socket={this.props.socket}
 					isReplay={isReplay}
 					deckShown={this.props.deckShown}
+				/>
+				<SweetAlert2 {...this.state.banSwal} didClose={() => this.setState({ banSwal: {} })} />
+				<SweetAlert2
+					{...this.state.killSwal}
+					onConfirm={result => {
+						if (result.value) {
+							this.props.socket.emit('selectedPlayerToExecute', {
+								playerIndex: this.state.temporaryIndex,
+								uid: this.props.gameInfo.general.uid
+							});
+						}
+					}}
+					didClose={() => this.setState({ killSwal: {} })}
 				/>
 			</section>
 		);

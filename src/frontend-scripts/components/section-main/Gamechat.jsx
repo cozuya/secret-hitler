@@ -8,7 +8,8 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
-import * as Swal from 'sweetalert2';
+import SweetAlert2 from 'react-sweetalert2';
+// import * as Swal from 'sweetalert2';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -91,7 +92,15 @@ class Gamechat extends React.Component {
 		emoteHelperSelectedIndex: 0,
 		emoteHelperElements: this.defaultEmotes,
 		emoteColonIndex: -1,
-		excludedColonIndices: []
+		excludedColonIndices: [],
+		modChatSwal: {},
+		modEndGameSwal: {},
+		winningTeam: '',
+		modGetVotesSwal: {},
+		modGetRemakesSwal: {},
+		modFreezeGameSwal: {},
+		modDeleteGameSwal: {},
+		secondModDeleteGameSwal: {}
 	};
 
 	componentDidMount() {
@@ -398,14 +407,12 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubscribeModChat = () => {
-		Swal.fire({
-			title: 'Are you sure you want to subscribe to mod-only chat to see private information?',
-			showCancelButton: true,
-			icon: 'warning'
-		}).then(result => {
-			if (result.value) {
-				const { gameInfo } = this.props;
-				this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
+		this.setState({
+			modChatSwal: {
+				show: true,
+				title: 'Are you sure you want to subscribe to mod-only chat to see private information?',
+				showCancelButton: true,
+				icon: 'warning'
 			}
 		});
 	};
@@ -1118,20 +1125,13 @@ class Gamechat extends React.Component {
 		};
 
 		const sendModEndGame = winningTeamName => {
-			Swal.fire({
-				title: 'Are you sure you want to end this game with the ' + winningTeamName + ' team winning?',
-				showCancelButton: true,
-				icon: 'warning'
-			}).then(result => {
-				if (result.value) {
-					socket.emit('updateModAction', {
-						modName: userInfo.userName,
-						userName: userInfo.userName,
-						comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
-						uid: gameInfo.general.uid,
-						winningTeamName,
-						action: 'modEndGame'
-					});
+			this.setState({
+				winningTeam: winningTeamName,
+				modEndGameSwal: {
+					show: true,
+					title: 'Are you sure you want to end this game with the ' + winningTeamName + ' team winning?',
+					showCancelButton: true,
+					icon: 'warning'
 				}
 			});
 
@@ -1179,16 +1179,12 @@ class Gamechat extends React.Component {
 										className="ui button primary"
 										onClick={() => {
 											if (!this.state.votesPeeked) {
-												Swal.fire({
-													title: 'Are you sure you want to peek votes for this game?',
-													showCancelButton: true,
-													icon: 'warning'
-												}).then(result => {
-													if (result.value) {
-														modGetCurrentVotes();
-														this.setState({
-															votesPeeked: true
-														});
+												this.setState({
+													modGetVotesSwal: {
+														show: true,
+														title: 'Are you sure you want to peek votes for this game?',
+														showCancelButton: true,
+														icon: 'warning'
 													}
 												});
 											} else {
@@ -1215,16 +1211,12 @@ class Gamechat extends React.Component {
 										className="ui button primary"
 										onClick={() => {
 											if (!this.state.remakeVotesPeeked) {
-												Swal.fire({
-													title: 'Are you sure you want to see the votes to remake for this game?',
-													showCancelButton: true,
-													icon: 'warning'
-												}).then(result => {
-													if (result.value) {
-														modGetRemakes();
-														this.setState({
-															remakeVotesPeeked: true
-														});
+												this.setState({
+													modGetRemakesSwal: {
+														show: true,
+														title: 'Are you sure you want to see the votes to remake for this game?',
+														showCancelButton: true,
+														icon: 'warning'
 													}
 												});
 											} else {
@@ -1251,16 +1243,12 @@ class Gamechat extends React.Component {
 										className="ui button primary"
 										onClick={() => {
 											if (!this.state.gameFrozen) {
-												Swal.fire({
-													title: 'Are you sure you want to freeze this game?',
-													showCancelButton: true,
-													icon: 'warning'
-												}).then(result => {
-													if (result.value) {
-														modFreezeGame();
-														this.setState({
-															gameFrozen: true
-														});
+												this.setState({
+													modFreezeGameSwal: {
+														show: true,
+														title: 'Are you sure you want to freeze this game?',
+														showCancelButton: true,
+														icon: 'warning'
 													}
 												});
 											} else {
@@ -1280,19 +1268,12 @@ class Gamechat extends React.Component {
 								<div
 									className="ui button primary"
 									onClick={() => {
-										Swal.fire({
-											title: 'Are you sure you want to delete this game?',
-											showCancelButton: true,
-											icon: 'warning'
-										}).then(result => {
-											if (result.value) {
-												Swal.fire({
-													title: 'Enter a reason for deleting this game, leave blank if dead',
-													input: 'text'
-												}).then(result => {
-													const reason = result.value || 'Dead';
-													modDeleteGame(reason);
-												});
+										this.setState({
+											modDeleteGameSwal: {
+												show: true,
+												title: 'Are you sure you want to delete this game?',
+												showCancelButton: true,
+												icon: 'warning'
 											}
 										});
 									}}
@@ -1704,6 +1685,103 @@ class Gamechat extends React.Component {
 						Submit
 					</div>
 				</div>
+				<SweetAlert2
+					{...this.state.modChatSwal}
+					onConfirm={result => {
+						if (result.value) {
+							const { gameInfo } = this.props;
+							this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
+							this.setState({ modChatSwal: {} });
+						}
+					}}
+					didClose={() => this.setState({ modChatSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.modEndGameSwal}
+					onConfirm={result => {
+						if (result.value) {
+							const winningTeamName = this.state.winningTeam;
+							this.props.socket.emit('updateModAction', {
+								modName: this.props.userInfo.userName,
+								userName: this.props.userInfo.userName,
+								comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
+								uid: this.props.gameInfo.general.uid,
+								winningTeamName,
+								action: 'modEndGame'
+							});
+							this.setState({ modEndGameSwal: {} });
+						}
+					}}
+					didClose={() => this.setState({ modEndGameSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.modGetVotesSwal}
+					onConfirm={result => {
+						if (result.value) {
+							modGetCurrentVotes();
+							this.setState({
+								votesPeeked: true
+							});
+							this.setState({ modGetVotesSwal: {} });
+						}
+					}}
+					didClose={() => this.setState({ modGetVotesSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.modGetRemakesSwal}
+					onConfirm={result => {
+						if (result.value) {
+							modGetRemakes();
+							this.setState({
+								remakeVotesPeeked: true
+							});
+							this.setState({ modGetRemakesSwal: {} });
+						}
+					}}
+					didClose={() => this.setState({ modGetRemakesSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.modFreezeGameSwal}
+					onConfirm={result => {
+						if (result.value) {
+							modFreezeGame();
+							this.setState({
+								gameFrozen: true
+							});
+							this.setState({ modFreezeGameSwal: {} });
+						}
+					}}
+					didClose={() => this.setState({ modFreezeGameSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.modDeleteGameSwal}
+					onConfirm={result => {
+						if (result.value) {
+							this.setState({
+								secondModDeleteGameSwal: {
+									show: true,
+									title: 'Enter a reason for deleting this game, leave blank if dead',
+									input: 'text'
+								}
+							});
+						}
+					}}
+					didClose={() => this.setState({ modDeleteGameSwal: {} })}
+				/>
+				<SweetAlert2
+					{...this.state.secondModDeleteGameSwal}
+					onConfirm={result => {
+						if (result.isConfirmed) {
+							const reason = result.value === '' ? 'Dead' : result.value;
+							modDeleteGame(reason);
+							this.setState({
+								secondModDeleteGameSwal: {},
+								modDeleteGameSwal: {}
+							});
+						}
+					}}
+					didClose={() => this.setState({ secondModDeleteGameSwal: {} })}
+				/>
 			</section>
 		);
 	}

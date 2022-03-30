@@ -5,7 +5,6 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
-import Swal from 'sweetalert2';
 import SweetAlert2 from 'react-sweetalert2';
 import { Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
@@ -28,7 +27,8 @@ class ProfileWrapper extends React.Component {
 			openTime: Date.now(),
 			badgeSort: 'badge',
 			profileSearchValue: '',
-			blacklistSwal: {}
+			blacklistSwal: {},
+			badgeSwal: {}
 		};
 	}
 
@@ -38,7 +38,7 @@ class ProfileWrapper extends React.Component {
 		let updatedState = null;
 
 		if (name !== newName) {
-			updatedState = { ...updatedState, profileUser: newName, blacklistSwal: {} };
+			updatedState = { ...updatedState, profileUser: newName, blacklistSwal: {}, badgeSwal: {} };
 		}
 		return updatedState;
 	}
@@ -246,14 +246,18 @@ class ProfileWrapper extends React.Component {
 							key={x.id}
 							height={50}
 							onClick={() =>
-								Swal.fire({
-									title: x.title,
-									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
-									imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
-									imageWidth: 100
+								this.setState({
+									badgeSwal: {
+										show: true,
+										title: x.title,
+										html: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
+										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+										imageWidth: 100
+									}
 								})
 							}
 						/>
+						<SweetAlert2 {...this.state.badgeSwal} didClose={() => this.setState({ badgeSwal: {} })} />
 						{x.id.startsWith('eloReset') ? (
 							<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }} key={x.id + 'p'}>
 								{x.id.substring(8)}
@@ -433,7 +437,7 @@ class ProfileWrapper extends React.Component {
 		this.setState({
 			blacklistSwal: {
 				show: true,
-				title: this.props?.profile?.blacklist ? "Player's Blacklist" : 'Your Blacklist',
+				title: this.props?.profile?._id !== this.props?.userInfo?.userName ? "Player's Blacklist" : 'Your Blacklist',
 				width: '800px'
 			}
 		});
@@ -652,10 +656,6 @@ class ProfileWrapper extends React.Component {
 			}
 		};
 
-		const closeBlacklistSwal = () => {
-			this.setState({ blacklistSwal: {} });
-		};
-
 		const children = (() => {
 			switch (profile.status) {
 				case 'INITIAL':
@@ -674,7 +674,7 @@ class ProfileWrapper extends React.Component {
 					<i className="remove icon" />
 				</a>
 				{children}
-				<SweetAlert2 {...this.state.blacklistSwal} didClose={closeBlacklistSwal}>
+				<SweetAlert2 {...this.state.blacklistSwal} didClose={() => this.setState({ blacklistSwal: {} })}>
 					{blacklist && (
 						<table className="ui single line table">
 							<thead>
@@ -692,7 +692,7 @@ class ProfileWrapper extends React.Component {
 									return (
 										<tr key={userName} className={`blacklist-${userName}`}>
 											<td>
-												<a href={`/game/#/profile/${blacklistInfo.username}`} onClick={closeBlacklistSwal}>
+												<a href={`/game/#/profile/${blacklistInfo.username}`} onClick={() => this.setState({ blacklistSwal: {} })}>
 													{blacklistInfo.username}
 												</a>
 											</td>
