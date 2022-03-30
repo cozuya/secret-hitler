@@ -724,7 +724,6 @@ class ProfileWrapper extends React.Component {
 						</table>
 					)}
 				</SweetAlert2>
-				{/* </div> */}
 			</section>
 		);
 	}
