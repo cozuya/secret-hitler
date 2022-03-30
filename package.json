@@ -82,7 +82,6 @@
 		"snyk": "^1.189.0",
 		"socket.io": "2.0.3",
 		"socket.io-client": "2.0.3",
-		"sweetalert2": "9.10.9",
 		"tempy": "^1.0.1",
 		"yamljs": "^0.3.0"
 	},
