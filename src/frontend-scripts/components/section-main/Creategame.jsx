@@ -61,7 +61,7 @@ export default class Creategame extends React.Component {
 				trackState: { lib: 0, fas: 0 },
 				fasCanShootHit: false
 			},
-			userBannedSwal: {}
+			swal: {}
 		};
 	}
 
@@ -1035,7 +1035,7 @@ export default class Creategame extends React.Component {
 			return;
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			this.setState({
-				userBannedSwal: {
+				swal: {
 					show: true,
 					html: 'Sorry, this service is currently unavailable.'
 				}
@@ -2297,7 +2297,7 @@ export default class Creategame extends React.Component {
 						Create game
 					</div>
 				</div>
-				<SweetAlert2 didClose={() => this.setState({ userBannedSwal: {} })} />
+				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</section>
 		);
 	}

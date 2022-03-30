@@ -21,8 +21,7 @@ class Players extends React.Component {
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
 		reportLength: 0,
-		banSwal: {},
-		killSwal: {},
+		swal: {},
 		temporaryIndex: 0
 	};
 
@@ -103,7 +102,7 @@ class Players extends React.Component {
 				if (!gameSettings.disableKillConfirmation) {
 					this.setState({
 						temporaryIndex: index,
-						killSwal: {
+						swal: {
 							show: true,
 							title: `Are you sure you want to execute {${index + 1}} ${name}?`,
 							showCancelButton: true,
@@ -479,7 +478,7 @@ class Players extends React.Component {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				this.setState({
-					banSwal: {
+					swal: {
 						show: true,
 						title: 'Sorry, this service is currently unavailable.'
 					}
@@ -669,9 +668,8 @@ class Players extends React.Component {
 					isReplay={isReplay}
 					deckShown={this.props.deckShown}
 				/>
-				<SweetAlert2 {...this.state.banSwal} didClose={() => this.setState({ banSwal: {} })} />
 				<SweetAlert2
-					{...this.state.killSwal}
+					{...this.state.swal}
 					onConfirm={result => {
 						if (result.value) {
 							this.props.socket.emit('selectedPlayerToExecute', {
@@ -680,7 +678,7 @@ class Players extends React.Component {
 							});
 						}
 					}}
-					didClose={() => this.setState({ killSwal: {} })}
+					didClose={() => this.setState({ swal: {} })}
 				/>
 			</section>
 		);

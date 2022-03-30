@@ -23,8 +23,7 @@ class Menu extends React.Component {
 		super();
 
 		this.state = {
-			feedbackSwal: {},
-			loginSwal: {}
+			swal: {}
 		};
 	}
 
@@ -233,7 +232,7 @@ class Menu extends React.Component {
 									onClick={() => {
 										if (userInfo.userName) {
 											this.setState({
-												feedbackSwal: {
+												swal: {
 													show: true,
 													allowOutsideClick: false,
 													title: 'Feedback',
@@ -250,7 +249,7 @@ class Menu extends React.Component {
 											});
 										} else {
 											this.setState({
-												loginSwal: {
+												swal: {
 													show: true,
 													icon: 'error',
 													title: 'You must log in to submit feedback!'
@@ -448,7 +447,7 @@ class Menu extends React.Component {
 					</section>
 				</div>
 				<SweetAlert2
-					{...this.state.feedbackSwal}
+					{...this.state.swal}
 					onConfirm={result => {
 						if (result.value) {
 							socket.emit('feedbackForm', {
@@ -456,9 +455,8 @@ class Menu extends React.Component {
 							});
 						}
 					}}
-					didClose={() => this.setState({ feedbackSwal: {} })}
+					didClose={() => this.setState({ swal: {} })}
 				/>
-				<SweetAlert2 {...this.state.loginSwal} didClose={() => this.setState({ feedbackSwal: {} })} />
 			</div>
 		);
 	}

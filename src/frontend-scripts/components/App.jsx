@@ -29,9 +29,7 @@ class TopLevelErrorBoundary extends React.Component {
 		this.state = {
 			error: null,
 			errorInfo: null,
-			feedbackResponseSwal: {},
-			sendAlertSwal: {},
-			toLobbySwal: {}
+			swal: {}
 		};
 	}
 
@@ -186,7 +184,7 @@ export class App extends React.Component {
 
 		socket.on('feedbackResponse', data => {
 			this.setState({
-				feedbackResponseSwal: {
+				swal: {
 					show: true,
 					title: data.message,
 					icon: data.status
@@ -293,7 +291,7 @@ export class App extends React.Component {
 
 		socket.on('sendAlert', data => {
 			this.setState({
-				sendAlertSwal: {
+				swal: {
 					show: true,
 					html: data
 				}
@@ -305,7 +303,7 @@ export class App extends React.Component {
 				// only eject the player from their current state if they are in the now-deleted game
 				window.location.hash = '#/';
 				this.setState({
-					toLobbySwal: {
+					swal: {
 						show: true,
 						title: 'The game you were previously in was deleted automatically.'
 					}
@@ -791,9 +789,7 @@ export class App extends React.Component {
 						})()}
 					</div>
 				</section>
-				<SweetAlert2 {...this.state.feedbackSwal} didClose={() => this.setState({ feedbackSwal: {} })} />
-				<SweetAlert2 {...this.state.sendAlertSwal} didClose={() => this.setState({ sendAlertSwal: {} })} />
-				<SweetAlert2 {...this.state.toLobbySwal} didClose={() => this.setState({ toLobbySwal: {} })} />
+				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</TopLevelErrorBoundary>
 		);
 	}
