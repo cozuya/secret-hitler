@@ -9,7 +9,6 @@ import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import SweetAlert2 from 'react-sweetalert2';
-// import * as Swal from 'sweetalert2';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
