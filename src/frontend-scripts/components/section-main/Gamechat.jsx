@@ -1192,20 +1192,17 @@ class Gamechat extends React.Component {
 					}
 					break;
 				case 'modDeleteGameConfirm':
-					console.log('confirm', result);
-					setTimeout(() => {
-						if (result.value) {
-							this.setState({
-								swalAction: '',
-								swal: {},
-								delSwal: {
-									show: true,
-									title: 'Enter a reason for deleting this game, leave blank if dead',
-									input: 'text'
-								}
-							});
-						}
-					}, 100);
+					if (result.value) {
+						this.setState({
+							swalAction: '',
+							swal: {},
+							delSwal: {
+								show: true,
+								title: 'Enter a reason for deleting this game, leave blank if dead',
+								input: 'text'
+							}
+						});
+					}
 					break;
 				default:
 					break;
@@ -1773,7 +1770,6 @@ class Gamechat extends React.Component {
 				<SweetAlert2
 					{...this.state.delSwal}
 					onConfirm={result => {
-						console.log('reason', result);
 						if (result.isConfirmed) {
 							const reason = result.value === '' ? 'Dead' : result.value;
 							modDeleteGame(reason);
