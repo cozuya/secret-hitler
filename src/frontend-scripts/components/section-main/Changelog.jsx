@@ -12,6 +12,38 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
+					<p>Version 1.9.2 released 4-1-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Pronouns setting</strong> - you can now choose to display your pronouns on your profile
+					through your settings - to set yours as ones not available in settings, message a moderator!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Improved Blacklist</strong> - your blacklist now shows the date you blacklisted someone,
+					as well as letting you save a reason to help you keep your blacklist organized. (A new and improved UI for this is on the way, and coming soon)
+				</p>
+
+				<div className="ui header">
+					<p>Welcome to Season 18!</p>
+				</div>
+				<h4>The top 10 players of season 17 are:</h4>
+				<ol>
+					<li>Godxevoir: 2035</li>
+					<li>pinguREFORMED: 1946</li>
+					<li>johnscoutman: 1843</li>
+					<li>007Bunny: 1819</li>
+					<li>godhemzelve: 1817</li>
+					<li>carlgauss: 1813</li>
+					<li>thenavneet: 1804</li>
+					<li>alwaysHigh: 1800</li>
+					<li>scorcha333: 1798</li>
+					<li>ClownGamer: 1796</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<p>Version 1.9.1 released 3-1-2022</p>
 				</div>
 				<h3>New Features:</h3>

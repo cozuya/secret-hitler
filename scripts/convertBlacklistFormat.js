@@ -6,7 +6,7 @@ mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 let count = 0;
 
-Account.find()
+Account.find({ 'gameSettings.blacklist.0': { $exists: true } })
 	.lean()
 	.eachAsync(account => {
 		for (let i = 0; i < account.gameSettings.blacklist.length; i++) {
@@ -16,6 +16,9 @@ Account.find()
 		}
 		account.save();
 		count++;
+		if (count % 100 == 0) {
+			console.log(count + ' processed');
+		}
 	})
 	.then(() => {
 		console.log('done ' + count);
