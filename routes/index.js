@@ -312,7 +312,6 @@ module.exports = () => {
 						_profile.staffRole = account.staffRole;
 						_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
-
 						_profile.playerPronouns = account.gameSettings.playerPronouns || '';
 
 						Account.findOne({ username: authedUser }).then(acc => {
