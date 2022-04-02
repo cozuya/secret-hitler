@@ -701,7 +701,7 @@ class ProfileWrapper extends React.Component {
 											{this.props?.profile?._id === this.props?.userInfo?.userName && (
 												<td>
 													<button
-														className="ui red button"
+														className="ui blacklist button"
 														onClick={() => {
 															const { gameSettings } = this.props.userInfo;
 															gameSettings.blacklist.splice(getBlacklistIndex(userName, gameSettings.blacklist), 1);
@@ -713,7 +713,7 @@ class ProfileWrapper extends React.Component {
 															}, 500);
 														}}
 													>
-														Delete
+														<span className="ui blacklist text">Delete</span>
 													</button>
 												</td>
 											)}
