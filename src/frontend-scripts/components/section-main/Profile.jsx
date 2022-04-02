@@ -569,9 +569,9 @@ class ProfileWrapper extends React.Component {
 						{prefix}
 						{profile._id}
 					</h1>
-					{user && user.playerPronouns && user.playerPronouns !== '' && (
+					{profile.playerPronouns && profile.playerPronouns !== '' && (
 						<span className="ui pronouns eight wide column" style={{ paddingLeft: 0, paddingTop: 0, fontStyle: 'italic', fontWeight: 700 }}>
-							({user.playerPronouns})
+							({profile.playerPronouns})
 						</span>
 					)}
 					<div className="ui right aligned six wide column">
