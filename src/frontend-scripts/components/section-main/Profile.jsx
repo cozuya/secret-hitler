@@ -101,10 +101,22 @@ class ProfileWrapper extends React.Component {
 						headers={['Match Type', 'Matches', 'Winrate']}
 						rows={this.gamesAndSuccessTable(
 							'Standard Matches',
-							matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
-							matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
-							matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
-							matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
+							matches.rainbowMatches.liberal.events +
+								matches.greyMatches.liberal.events +
+								matches.practiceMatches.liberal.events +
+								matches.silentMatches.liberal.events,
+							matches.rainbowMatches.liberal.successes +
+								matches.greyMatches.liberal.successes +
+								matches.practiceMatches.liberal.successes +
+								matches.silentMatches.liberal.successes,
+							matches.rainbowMatches.fascist.events +
+								matches.greyMatches.fascist.events +
+								matches.practiceMatches.fascist.events +
+								matches.silentMatches.fascist.events,
+							matches.rainbowMatches.fascist.successes +
+								matches.greyMatches.fascist.successes +
+								matches.practiceMatches.fascist.successes +
+								matches.silentMatches.fascist.successes
 						)}
 					/>
 				</CollapsibleSegment>
