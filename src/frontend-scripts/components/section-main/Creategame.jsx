@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { Range } from 'rc-slider';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
-import * as Swal from 'sweetalert2';
+import SweetAlert2 from 'react-sweetalert2';
 
 export default class Creategame extends React.Component {
 	constructor(props) {
@@ -60,7 +60,8 @@ export default class Creategame extends React.Component {
 				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 				trackState: { lib: 0, fas: 0 },
 				fasCanShootHit: false
-			}
+			},
+			swal: {}
 		};
 	}
 
@@ -1033,7 +1034,12 @@ export default class Creategame extends React.Component {
 		if (this.state.containsBadWord) {
 			return;
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-			Swal.fire('Sorry, this service is currently unavailable.');
+			this.setState({
+				swal: {
+					show: true,
+					html: 'Sorry, this service is currently unavailable.'
+				}
+			});
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
@@ -2291,6 +2297,7 @@ export default class Creategame extends React.Component {
 						Create game
 					</div>
 				</div>
+				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</section>
 		);
 	}

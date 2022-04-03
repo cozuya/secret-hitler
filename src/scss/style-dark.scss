@@ -824,8 +824,13 @@
 	color: var(--theme-primary);
 }
 
+.ui.blacklist,
 .ui.pronouns {
 	color: var(--theme-primary);
+}
+
+.ui.blacklist.text {
+	color: var(--theme-text-1);
 }
 
 .ui.primary.buttons .button:hover,
