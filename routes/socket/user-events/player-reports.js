@@ -48,7 +48,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
 	const game = games[data.uid];
-	if (!game && data.uid) return;
+	if ((!game || !game.general) && data.uid) return;
 
 	const gameType = data.uid ? (game.general.isTourny ? 'tournament' : game.general.casualGame ? 'casual' : 'standard') : 'homepage';
 

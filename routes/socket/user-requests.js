@@ -359,7 +359,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 	const game = games[uid];
 	const { passport } = socket.handshake.session;
 
-	if (game) {
+	if (game && game.publicPlayersState && game.general) {
 		if (passport && Object.keys(passport).length) {
 			const player = game.publicPlayersState.find(player => player.userName === passport.user);
 

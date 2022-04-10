@@ -1012,14 +1012,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (data.userName.substr(0, 7) === 'DELGAME') {
 						const game = games[data.userName.slice(7)];
 
-						if (game) {
+						if (game && game.general) {
 							saveAndDeleteGame(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
 						const game = games[data.userName.slice(13)];
-						if (game) {
+						if (game && game.general) {
 							if (modaction.modNotes.length > 0) {
 								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							} else {

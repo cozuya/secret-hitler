@@ -541,7 +541,7 @@ module.exports.socketRoutes = () => {
 			socket.on('leaveGame', data => {
 				const game = findGame(data);
 
-				if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
+				if (game && game.general && io.sockets.adapter.rooms[game.general.uid] && socket) {
 					socket.leave(game.general.uid);
 				}
 

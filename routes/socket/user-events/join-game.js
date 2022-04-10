@@ -16,7 +16,7 @@ const updateSeatedUser = (socket, passport, data) => {
 	const game = games[data.uid];
 	// prevents race condition between 1) taking a seat and 2) the game starting
 
-	if (!game || game.gameState.isTracksFlipped) {
+	if (!game || !game.gameState || game.gameState.isTracksFlipped) {
 		return; // Game already started
 	}
 
