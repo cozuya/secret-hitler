@@ -99,7 +99,7 @@ class Players extends React.Component {
 
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-				if (!gameSettings.disableKillConfirmation) {
+				if (!userInfo.gameSettings.disableKillConfirmation) {
 					this.setState({
 						temporaryIndex: index,
 						swal: {
