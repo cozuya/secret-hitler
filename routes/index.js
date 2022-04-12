@@ -171,8 +171,8 @@ module.exports = () => {
 				const textColor = account.textColor || DEFAULTTHEMECOLORS.baseTextColor;
 				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
 				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
-				
-				const gameSettingsWithoutBlacklist = Object.assign({},  account.gameSettings);
+
+				const gameSettingsWithoutBlacklist = Object.assign({}, account.gameSettings);
 				delete gameSettingsWithoutBlacklist.blacklist;
 
 				const gameObj = {
