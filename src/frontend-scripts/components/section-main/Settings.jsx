@@ -338,7 +338,7 @@ class Settings extends React.Component {
 				playerPronouns: pronouns
 			});
 
-			this.props.socket.emit('updatePlayerPronouns', {
+			this.props.socket.emit('updateGameSettings', {
 				playerPronouns: pronouns
 			});
 		};

@@ -15,7 +15,7 @@ const {
 	currentSeasonNumber
 } = require('../models');
 const PlayerReport = require('../../../models/playerReport');
-const { sendUserReports, getModInfo, sendGameList, sendUserList, sendUserGameSettings } = require('../user-requests');
+const { sendUserReports, getModInfo, sendGameList, sendUserList } = require('../user-requests');
 const ModAction = require('../../../models/modAction');
 const BannedIP = require('../../../models/bannedIP');
 const { handleDefaultIPv6Range } = require('../util.js');
@@ -447,7 +447,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							const userListUser = userList.find(user => user.userName === data.userName);
 							if (userListUser) userListUser.playerPronouns = data.comment;
 							sendUserList();
-							sendUserGameSettings(socket);
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
 					break;
