@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import playSound from '../reusable/playSound.js';
 import moment from 'moment';
-import SweetAlert2 from 'react-sweetalert2';
+import * as Swal from 'sweetalert2';
 
 class Tracks extends React.Component {
 	constructor() {
@@ -15,8 +15,7 @@ class Tracks extends React.Component {
 			minutes: 0,
 			seconds: 0,
 			timedMode: false,
-			showTimer: false,
-			swal: {}
+			showTimer: false
 		};
 	}
 
@@ -632,12 +631,7 @@ class Tracks extends React.Component {
 		const showDate = () => {
 			if (gameInfo && gameInfo.general && gameInfo.general.date) {
 				// field only exists in replays
-				this.setState({
-					swal: {
-						show: true,
-						title: `This game was played on ${moment(gameInfo.general.date)}.`
-					}
-				});
+				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}.`);
 			}
 		};
 
@@ -722,7 +716,6 @@ class Tracks extends React.Component {
 					</div>
 					{renderElectionTracker()}
 				</section>
-				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</section>
 		);
 	}
