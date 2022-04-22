@@ -41,7 +41,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			for (const setting in data) {
 				if (setting == 'blacklist') {
-					const blacklist = data[setting].slice(0, 30);
+					const blacklist = data[setting].slice(-30);
 					if (
 						typeof blacklist === 'object' &&
 						typeof blacklist.length === 'number' &&
