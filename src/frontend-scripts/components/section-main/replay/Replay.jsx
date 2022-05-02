@@ -14,7 +14,7 @@ import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
 import socket from '../../../socket';
 import PropTypes from 'prop-types';
-import SweetAlert2 from 'react-sweetalert2';
+import * as Swal from 'sweetalert2';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
@@ -217,8 +217,7 @@ class ReplayWrapper extends React.Component {
 			requestedData: false,
 			deckShown: false,
 			legacyReplay: true,
-			gameData: {},
-			swal: {}
+			gameData: {}
 		};
 	}
 
@@ -276,13 +275,7 @@ class ReplayWrapper extends React.Component {
 
 		const toggleDeck = () => {
 			if (this.state.legacyReplay) {
-				this.setState({
-					swal: {
-						show: true,
-						html: 'You cannot load deck information for a legacy replay',
-						icon: 'error'
-					}
-				});
+				Swal.fire('', 'You cannot load deck information for a legacy replay.', 'error');
 			}
 
 			this.setState({
@@ -342,7 +335,6 @@ class ReplayWrapper extends React.Component {
 					Exit Replay
 				</button>
 				{children}
-				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</section>
 		);
 	}

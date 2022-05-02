@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import SweetAlert2 from 'react-sweetalert2';
+import Swal from 'sweetalert2';
 
 let signupType = 'getSignups';
 
 const Signups = ({ socket }) => {
 	const [signuplog, updateSignuplog] = useState([]);
 	const [logSort, updateLogSort] = useState({ type: 'date', direction: 'descending' });
-	const [reportDiscordSwal, updateReportDiscordSwal] = useState({});
 	useEffect(() => {
 		socket.emit(signupType);
 
@@ -118,10 +117,7 @@ const Signups = ({ socket }) => {
 									<td
 										onClick={() => {
 											if (report.email.indexOf('#') !== -1) {
-												updateReportDiscordSwal({
-													show: true,
-													title: 'Discord ID: ' + report.oauthID
-												});
+												Swal.fire('Discord ID: ' + report.oauthID);
 											}
 										}}
 										style={{ cursor: `${report.email.indexOf('#') !== -1 ? 'pointer' : ''}` }}
@@ -168,7 +164,6 @@ const Signups = ({ socket }) => {
 				Toggle Signup Type
 			</span>
 			{renderSignupsLog()}
-			<SweetAlert2 {...reportDiscordSwal} didClose={() => updateReportDiscordSwal({})} />
 		</section>
 	);
 };
