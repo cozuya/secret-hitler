@@ -687,11 +687,7 @@ class ProfileWrapper extends React.Component {
 									const blacklistInfo = getBlackListInfo(playerName);
 									return (
 										<tr key={userName} className={`blacklist-${userName}`}>
-											<td>
-												<a href={`/game/#/profile/${blacklistInfo.username}`} onClick={() => this.setState({ blacklistSwal: {} })}>
-													{blacklistInfo.username}
-												</a>
-											</td>
+											<td>{blacklistInfo.username}</td>
 											<td>{blacklistInfo.timestamp}</td>
 											<td>{blacklistInfo.reason}</td>
 											{this.props?.profile?._id === this.props?.userInfo?.userName && (
