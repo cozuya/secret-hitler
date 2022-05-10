@@ -76,6 +76,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'fullheight',
 					'safeForWork',
 					'keyboardShortcuts',
+					'notifyForNewLobby',
 					'gameFilters',
 					'gameNotes',
 					'playerNotes',

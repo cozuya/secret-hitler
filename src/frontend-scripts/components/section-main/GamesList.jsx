@@ -19,6 +19,13 @@ export class GamesList extends React.Component {
 		changeGameFilter(gameFilter);
 	};
 
+	toggleNotify = () => {
+		const { notify, socket } = this.props;
+		socket.emit('updateGameSettings', {
+			notifyForNewLobby: !notify
+		});
+	};
+
 	componentWillReceiveProps(nextProps) {
 		const { generalChats } = this.props;
 		const nextGeneralChats = nextProps.generalChats;
@@ -44,7 +51,7 @@ export class GamesList extends React.Component {
 	};
 
 	renderFilters() {
-		const { gameFilter } = this.props;
+		const { gameFilter, notify } = this.props;
 
 		return (
 			<div className="browser-filters ui grid">
@@ -145,6 +152,16 @@ export class GamesList extends React.Component {
 						checked={!gameFilter.rainbow}
 						onChange={() => {
 							this.toggleFilter('rainbow');
+						}}
+					/>
+				</div>
+				<div className="one wide column">
+					<i title="Get notified when new games are available" className="alarm half icon" />
+					<Checkbox
+						toggle
+						checked={notify}
+						onChange={() => {
+							this.toggleNotify();
 						}}
 					/>
 				</div>

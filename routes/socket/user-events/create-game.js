@@ -340,6 +340,18 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		updateUserStatus(passport, newGame);
 		games[newGame.general.uid] = newGame;
 		sendGameList();
+		if (!newGame.general.unlistedGame) {
+			io.sockets.emit('newGameAdded', {
+				priv: newGame.general.private,
+				pub: !newGame.general.private,
+				timedMode: newGame.general.timedMode,
+				rainbow: newGame.general.rainbowgame,
+				standard: !newGame.general.rainbowgame,
+				customgame: newGame.customGameSettings.enabled,
+				casualgame: newGame.general.casualGame,
+				creator: account.username
+			});
+		}
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
 		const cloneNewGame = Object.assign({}, newGame);

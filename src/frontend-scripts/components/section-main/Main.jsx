@@ -16,6 +16,7 @@ import Signups from './Signups.jsx';
 import Reports from './Reports.jsx';
 import Leaderboards from './Leaderboards.jsx';
 import Colors from './Colors.jsx';
+import socket from '../../socket';
 
 export class Main extends React.Component {
 	constructor(props) {
@@ -50,6 +51,19 @@ export class Main extends React.Component {
 				}
 			});
 		}
+
+		socket.on('newGameAdded', game => {
+			if (this.props.userInfo.gameSettings.notifyForNewLobby && game.creator !== this.props.userInfo.userName) {
+				for (const prop of Object.keys(game)) {
+					if (prop === 'creator') continue;
+					if (this.state.gameFilter[prop] || !game[prop]) {
+						new Notification('A new lobby that matches your selections has opened.');
+						// maybe check bl before hand? kinda hard to do without computing the seating of every player server side or sending blacklist to client
+						break;
+					}
+				}
+			}
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -302,6 +316,7 @@ export class Main extends React.Component {
 							allEmotes={this.props.allEmotes}
 							stickyEnabled={this.state.stickyEnabled}
 							setStickyEnabled={this.setStickyEnabled}
+							notify={userInfo?.gameSettings?.notifyForNewLobby}
 						/>
 					);
 			}
