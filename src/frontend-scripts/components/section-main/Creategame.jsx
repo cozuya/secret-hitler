@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { Range } from 'rc-slider';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
-import * as Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 export default class Creategame extends React.Component {
 	constructor(props) {

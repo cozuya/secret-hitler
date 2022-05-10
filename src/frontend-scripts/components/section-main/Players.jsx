@@ -3,12 +3,11 @@ import $ from 'jquery';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 import classnames from 'classnames';
-
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
-import * as Swal from 'sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;

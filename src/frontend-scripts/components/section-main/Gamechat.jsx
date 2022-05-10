@@ -8,7 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
-import * as Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -1186,9 +1186,7 @@ class Gamechat extends React.Component {
 												}).then(result => {
 													if (result.value) {
 														modGetCurrentVotes();
-														this.setState({
-															votesPeeked: true
-														});
+														this.setState({ votesPeeked: true });
 													}
 												});
 											} else {
@@ -1222,9 +1220,7 @@ class Gamechat extends React.Component {
 												}).then(result => {
 													if (result.value) {
 														modGetRemakes();
-														this.setState({
-															remakeVotesPeeked: true
-														});
+														this.setState({ remakeVotesPeeked: true });
 													}
 												});
 											} else {
@@ -1258,9 +1254,7 @@ class Gamechat extends React.Component {
 												}).then(result => {
 													if (result.value) {
 														modFreezeGame();
-														this.setState({
-															gameFrozen: true
-														});
+														this.setState({ gameFrozen: true });
 													}
 												});
 											} else {

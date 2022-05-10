@@ -631,7 +631,7 @@ class Tracks extends React.Component {
 		const showDate = () => {
 			if (gameInfo && gameInfo.general && gameInfo.general.date) {
 				// field only exists in replays
-				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}.`);
+				Swal.fire(`This game was played on ${moment(gameInfo.general.uid)}`);
 			}
 		};
 
