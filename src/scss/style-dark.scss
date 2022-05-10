@@ -820,12 +820,18 @@
 	}
 }
 
-.ui.header {
+.ui.header,
+.ui.blacklist,
+.ui.pronouns {
 	color: var(--theme-primary);
 }
 
-.ui.pronouns {
-	color: var(--theme-primary);
+.ui.blacklist.header {
+	text-align: center;
+}
+
+.ui.blacklist.text {
+	color: var(--theme-text-1);
 }
 
 .ui.primary.buttons .button:hover,

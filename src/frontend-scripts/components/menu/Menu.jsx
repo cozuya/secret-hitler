@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
-import * as Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import socket from '../../socket';
 
 const mapStateToProps = ({ version }) => ({ version });
@@ -241,7 +241,6 @@ class Menu extends React.Component {
 												cancelButtonText: 'Cancel'
 											}).then(result => {
 												if (result.value) {
-													// result.value holds the feedback
 													socket.emit('feedbackForm', {
 														feedback: result.value
 													});
