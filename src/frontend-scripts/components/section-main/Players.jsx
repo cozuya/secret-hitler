@@ -3,12 +3,11 @@ import $ from 'jquery';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 import classnames from 'classnames';
-
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
-import SweetAlert2 from 'react-sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
@@ -20,9 +19,7 @@ class Players extends React.Component {
 		reportTextValue: '',
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
-		reportLength: 0,
-		swal: {},
-		temporaryIndex: 0
+		reportLength: 0
 	};
 
 	componentDidMount() {
@@ -100,14 +97,16 @@ class Players extends React.Component {
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				if (!userInfo.gameSettings.disableKillConfirmation) {
-					this.setState({
-						temporaryIndex: index,
-						swal: {
-							show: true,
-							title: `Are you sure you want to execute {${index + 1}} ${name}?`,
-							showCancelButton: true,
-							showConfirmButton: true,
-							icon: 'warning'
+					Swal.fire({
+						title: `Are you sure you want to execute {${index + 1}} ${name}?`,
+						showCancelButton: true,
+						icon: 'warning'
+					}).then(result => {
+						if (result.value) {
+							socket.emit('selectedPlayerToExecute', {
+								playerIndex: index,
+								uid: gameInfo.general.uid
+							});
 						}
 					});
 				} else {
@@ -477,12 +476,7 @@ class Players extends React.Component {
 			if (user && user.staffIncognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				this.setState({
-					swal: {
-						show: true,
-						title: 'Sorry, this service is currently unavailable.'
-					}
-				});
+				Swal.fire('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if ((gameInfo.general.rainbowgame && user && !user.isRainbowOverall) || (gameInfo.general.rainbowgame && (!user || !user.isRainbowOverall))) {
@@ -667,18 +661,6 @@ class Players extends React.Component {
 					socket={this.props.socket}
 					isReplay={isReplay}
 					deckShown={this.props.deckShown}
-				/>
-				<SweetAlert2
-					{...this.state.swal}
-					onConfirm={result => {
-						if (result.value) {
-							this.props.socket.emit('selectedPlayerToExecute', {
-								playerIndex: this.state.temporaryIndex,
-								uid: this.props.gameInfo.general.uid
-							});
-						}
-					}}
-					didClose={() => this.setState({ swal: {} })}
 				/>
 			</section>
 		);

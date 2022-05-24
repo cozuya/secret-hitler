@@ -51,6 +51,7 @@ const Account = new Schema({
 		fullheight: Boolean,
 		safeForWork: Boolean,
 		keyboardShortcuts: String,
+		notifyForNewLobby: Boolean,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,

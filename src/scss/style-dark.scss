@@ -455,7 +455,7 @@
 
 		> .column {
 			text-align: center;
-			width: 10% !important;
+			width: 9% !important;
 			padding: 10px 0 2px !important;
 		}
 	}
@@ -820,13 +820,14 @@
 	}
 }
 
-.ui.header {
-	color: var(--theme-primary);
-}
-
+.ui.header,
 .ui.blacklist,
 .ui.pronouns {
 	color: var(--theme-primary);
+}
+
+.ui.blacklist.header {
+	text-align: center;
 }
 
 .ui.blacklist.text {

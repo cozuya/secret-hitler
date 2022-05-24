@@ -19,7 +19,7 @@ import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
 import '../../scss/style-dark.scss';
-import SweetAlert2 from 'react-sweetalert2';
+import Swal from 'sweetalert2';
 
 const select = state => state;
 
@@ -28,8 +28,7 @@ class TopLevelErrorBoundary extends React.Component {
 		super(props);
 		this.state = {
 			error: null,
-			errorInfo: null,
-			swal: {}
+			errorInfo: null
 		};
 	}
 
@@ -183,13 +182,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('feedbackResponse', data => {
-			this.setState({
-				swal: {
-					show: true,
-					title: data.message,
-					icon: data.status
-				}
-			});
+			Swal.fire(data.message, '', data.status);
 		});
 
 		socket.on('manualDisconnection', () => {
@@ -290,24 +283,14 @@ export class App extends React.Component {
 		});
 
 		socket.on('sendAlert', data => {
-			this.setState({
-				swal: {
-					show: true,
-					html: data
-				}
-			});
+			Swal.fire({ html: data });
 		});
 
 		socket.on('toLobby', uid => {
 			if (window.location.hash === '/table/' + uid) {
 				// only eject the player from their current state if they are in the now-deleted game
 				window.location.hash = '#/';
-				this.setState({
-					swal: {
-						show: true,
-						title: 'The game you were previously in was deleted automatically.'
-					}
-				});
+				Swal.fire('The game you were previously in was deleted automatically.');
 			}
 		});
 
@@ -789,7 +772,6 @@ export class App extends React.Component {
 						})()}
 					</div>
 				</section>
-				<SweetAlert2 {...this.state.swal} didClose={() => this.setState({ swal: {} })} />
 			</TopLevelErrorBoundary>
 		);
 	}

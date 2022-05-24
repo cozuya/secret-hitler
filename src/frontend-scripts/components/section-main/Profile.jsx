@@ -5,7 +5,8 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
-import SweetAlert2 from 'react-sweetalert2';
+import Swal from 'sweetalert2';
+import $ from 'jquery';
 import { Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
@@ -24,11 +25,10 @@ class ProfileWrapper extends React.Component {
 		super(props);
 		this.state = {
 			bioStatus: 'displayed',
+			blacklistClicked: false,
 			openTime: Date.now(),
 			badgeSort: 'badge',
-			profileSearchValue: '',
-			blacklistSwal: {},
-			badgeSwal: {}
+			profileSearchValue: ''
 		};
 	}
 
@@ -38,7 +38,7 @@ class ProfileWrapper extends React.Component {
 		let updatedState = null;
 
 		if (name !== newName) {
-			updatedState = { ...updatedState, profileUser: newName, blacklistSwal: {}, badgeSwal: {} };
+			updatedState = { ...updatedState, profileUser: newName, blacklistClicked: false };
 		}
 		return updatedState;
 	}
@@ -258,18 +258,14 @@ class ProfileWrapper extends React.Component {
 							key={x.id}
 							height={50}
 							onClick={() =>
-								this.setState({
-									badgeSwal: {
-										show: true,
-										title: x.title,
-										html: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
-										imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
-										imageWidth: 100
-									}
+								Swal.fire({
+									title: x.title,
+									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
+									imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+									imageWidth: 100
 								})
 							}
 						/>
-						<SweetAlert2 {...this.state.badgeSwal} didClose={() => this.setState({ badgeSwal: {} })} />
 						{x.id.startsWith('eloReset') ? (
 							<p style={{ position: 'relative', top: '50%', transform: 'translateY(-100%)', display: 'inline-block' }} key={x.id + 'p'}>
 								{x.id.substring(8)}
@@ -446,13 +442,7 @@ class ProfileWrapper extends React.Component {
 	}
 
 	showBlacklist = () => {
-		this.setState({
-			blacklistSwal: {
-				show: true,
-				title: this.props?.profile?._id !== this.props?.userInfo?.userName ? "Player's Blacklist" : 'Your Blacklist',
-				width: '800px'
-			}
-		});
+		$(this.blacklistModal).modal('show');
 	};
 
 	profileSearchSubmit = e => {
@@ -615,7 +605,7 @@ class ProfileWrapper extends React.Component {
 					</div>
 				</div>
 				{this.renderBio()}
-				{this.props.userInfo.userName && this.props.userInfo.userName !== profile._id && this.state.blacklistSwal !== {} && this.renderBlacklist()}
+				{this.props.userInfo.userName && this.props.userInfo.userName !== profile._id && !this.state.blacklistClicked && this.renderBlacklist()}
 				<div className="ui two column grid">
 					<div className="column">{this.Stats()}</div>
 					<div className="column">{this.RecentGames()}</div>
@@ -686,7 +676,13 @@ class ProfileWrapper extends React.Component {
 					<i className="remove icon" />
 				</a>
 				{children}
-				<SweetAlert2 {...this.state.blacklistSwal} didClose={() => this.setState({ blacklistSwal: {} })}>
+				<div
+					className="ui basic modal blacklistmodal"
+					ref={c => {
+						this.blacklistModal = c;
+					}}
+				>
+					<div className="ui blacklist header">{this.props?.profile?._id !== this.props?.userInfo.userName ? "Player's Blacklist" : 'Your Blacklist'}</div>
 					{blacklist && (
 						<table className="ui single line table">
 							<thead>
@@ -703,11 +699,7 @@ class ProfileWrapper extends React.Component {
 									const blacklistInfo = getBlackListInfo(playerName);
 									return (
 										<tr key={userName} className={`blacklist-${userName}`}>
-											<td>
-												<a href={`/game/#/profile/${blacklistInfo.username}`} onClick={() => this.setState({ blacklistSwal: {} })}>
-													{blacklistInfo.username}
-												</a>
-											</td>
+											<td>{blacklistInfo.username}</td>
 											<td>{blacklistInfo.timestamp}</td>
 											<td>{blacklistInfo.reason}</td>
 											{this.props?.profile?._id === this.props?.userInfo?.userName && (
@@ -735,7 +727,7 @@ class ProfileWrapper extends React.Component {
 							</tbody>
 						</table>
 					)}
-				</SweetAlert2>
+				</div>
 			</section>
 		);
 	}
