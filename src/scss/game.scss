@@ -176,6 +176,14 @@
 					font-weight: 700;
 					color: $darkliberalteam;
 				}
+				.chat-role--merlin {
+					font-weight: 700;
+					color: $merlin;
+				}
+				.chat-role--percival {
+					font-weight: 700;
+					color: $percival;
+				}
 				.chat-role--hitler {
 					font-weight: 700;
 					color: #be0804;
@@ -183,6 +191,10 @@
 				.chat-role--fascist {
 					font-weight: 700;
 					color: $darkfascistteam;
+				}
+				.chat-role--morgana {
+					font-weight: 700;
+					color: $morgana;
 				}
 				.chat-player {
 					color: var(--theme-text-1);

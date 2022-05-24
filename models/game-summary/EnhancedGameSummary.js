@@ -81,7 +81,7 @@ module.exports = class EnhancedGameSummary {
 	loyaltyOf(identifier) {
 		const player = this.playerOf(identifier);
 
-		if (player.role === 'fascist' || player.role === 'hitler') {
+		if (player.role.team === 'fascist') {
 			return 'fascist';
 		} else {
 			return 'liberal';
