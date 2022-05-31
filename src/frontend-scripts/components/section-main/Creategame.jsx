@@ -2271,7 +2271,8 @@ export default class Creategame extends React.Component {
 								className="create-game-switch"
 								onChange={checked => {
 									this.setState({
-										avalonSH: checked
+										avalonSH: checked,
+										gameType: checked ? 'casual' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
 									});
 								}}
 								checked={this.state.avalonSH}
@@ -2312,7 +2313,8 @@ export default class Creategame extends React.Component {
 								defaultValue={[0]}
 								onChange={x => {
 									this.setState({
-										noTopdecking: x
+										noTopdecking: x,
+										gameType: x ? 'casual' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
 									});
 								}}
 								value={[this.state.noTopdecking]}
