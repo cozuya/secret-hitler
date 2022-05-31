@@ -855,7 +855,7 @@ export default class Creategame extends React.Component {
 						powers: ['investigate', 'reverseinv', 'investigate', 'reverseinv', 'investigate'], // last "power" is always a fas victory
 						hitlerZone: 3, // 1-5
 						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
+						fascistCount: 2, // 1-3, does not include hit
 						hitKnowsFas: false,
 						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
@@ -1063,7 +1063,10 @@ export default class Creategame extends React.Component {
 				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
 				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				privateAnonymousRemakes: this.state.privateAnonymousRemakes,
-				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
+				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined,
+				avalonSH: this.state.avalonSH,
+				withPercival: this.state.avalonSH && this.state.withPercival,
+				noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0
 			};
 
 			if (this.state.isTourny) {
@@ -1674,7 +1677,7 @@ export default class Creategame extends React.Component {
 							<Range
 								min={5}
 								max={8}
-								defaultValue={[6]}
+								defaultValue={[5]}
 								onChange={this.sliderDeckLib}
 								value={[this.state.customGameSettings.deckState.lib]}
 								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
@@ -2259,6 +2262,65 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						)}
+					</div>
+					<div className="row">
+						<div className="four wide column">
+							<i className="big shield icon" />
+							<h4 className="ui header">Avalon SH - Adds roles from The Resistance: Avalon to the game, causal only</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({
+										avalonSH: checked,
+										gameType: checked ? 'casual' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
+									});
+								}}
+								checked={this.state.avalonSH}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+							{this.state.avalonSH && <h4 className="ui header">With Percival & Morgana</h4>}
+							{this.state.avalonSH && (
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({
+											withPercival: checked
+										});
+									}}
+									checked={this.state.avalonSH && this.state.withPercival}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							)}
+						</div>
+						<div className="four wide column">
+							<i className="big gavel icon" />
+							<h4 className="ui header">No topdecking - Topdecking results in a fascist win.</h4>
+							<Range
+								min={0}
+								max={2}
+								defaultValue={[0]}
+								onChange={x => {
+									this.setState({
+										noTopdecking: x,
+										gameType: x ? 'casual' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
+									});
+								}}
+								value={[this.state.noTopdecking]}
+								marks={{ 0: 'TDing', 1: 'No TDing', 2: 'No Double TDing' }}
+							/>
+						</div>
 					</div>
 					<div className="row">
 						<div className="sixteen wide column">
