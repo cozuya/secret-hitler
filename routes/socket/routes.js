@@ -270,7 +270,7 @@ module.exports.socketRoutes = () => {
 				socket.emit('emoteList', emoteList);
 
 				// sockets should not be unauthenticated but let's make sure anyway
-				if (passport.user) {
+				if (passport && passport.user) {
 					const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
 					if (dmID) {
 						socket.emit('preOpenModDMs');
