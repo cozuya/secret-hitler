@@ -195,9 +195,11 @@ module.exports.sendCommandChatsUpdate = game => {
 	roomSockets.forEach(sock => {
 		if (sock) {
 			const _game = Object.assign({}, game);
-			const user = sock.handshake.session.passport.user;
-			_game.chats = combineCommandChats(_game, user, game.private.commandChats);
-			sock.emit('gameUpdate', secureGame(_game));
+			const user = sock.handshake?.session?.passport?.user;
+			if (user) {
+				_game.chats = combineCommandChats(_game, user, game.private.commandChats);
+				sock.emit('gameUpdate', secureGame(_game));
+			}
 		}
 	});
 };

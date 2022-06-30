@@ -12,6 +12,37 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
+					<p>Version 1.10.0 released 7-1-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Avalon SH</strong> - adds two new game modes, Avalon SH and No Topdecking - see{' '}
+					<a href="https://github.com/cozuya/secret-hitler/pull/1948" style={{ textDecoration: 'underline' }}>
+						the original pull request
+					</a>{' '}
+					for more details. Thanks to themeeman for the great work on this, the role art by jules, and the overall guidance and review by paladin!
+				</p>
+
+				<div className="ui header">
+					<p>Welcome to Season 19!</p>
+				</div>
+				<h4>The top 10 players of season 18 are:</h4>
+				<ol>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<p>Version 1.9.2 released 4-1-2022</p>
 				</div>
 				<h3>New Features:</h3>
