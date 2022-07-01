@@ -28,16 +28,16 @@ class Changelog extends React.Component {
 				</div>
 				<h4>The top 10 players of season 18 are:</h4>
 				<ol>
-					<li>Mell0: 2024.68</li>
-					<li>noooothitler: 1971.70</li>
-					<li>olly97: 1941.58</li>
-					<li>carlgauss: 1921.95</li>
-					<li>Skate01king: 1921.67</li>
-					<li>pinguREFORMED: 1866.55</li>
-					<li>joe: 1855.93</li>
-					<li>JusNextLib: 1851.90</li>
-					<li>imbapingu: 1843.61</li>
-					<li>johnscoutman: 1830.72</li>
+					<li>Mell0: 2024</li>
+					<li>noooothitler: 1971</li>
+					<li>olly97: 1941</li>
+					<li>carlgauss: 1921</li>
+					<li>Skate01king: 1921</li>
+					<li>pinguREFORMED: 1866</li>
+					<li>joe: 1855</li>
+					<li>JusNextLib: 1851</li>
+					<li>Tyrrox: 1802</li>
+					<li>LimesGamer: 1790</li>
 				</ol>
 
 				<hr style={{ width: '100%' }} />
