@@ -57,6 +57,9 @@ function buildEnhancedGameSummary(_summary) {
 	const players = (() => {
 		const roleToLoyalty = Map({
 			liberal: 'liberal',
+			percival: 'liberal',
+			merlin: 'liberal',
+			morgana: 'fascist',
 			fascist: 'fascist',
 			hitler: 'fascist'
 		});
