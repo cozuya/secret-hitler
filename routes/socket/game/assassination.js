@@ -51,7 +51,7 @@ module.exports.assassinateMerlin = game => {
 			}
 
 			hitler.playersState
-				.filter((player, index) => seatedPlayers[index].role.cardName === 'fascist')
+				.filter((player, index) => seatedPlayers[index].role.team === 'fascist') // Hitler sees entire Fascist team, including Morgana
 				.forEach(player => {
 					player.nameStatus = 'fascist';
 				});
