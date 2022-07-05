@@ -129,7 +129,7 @@ class Gamenotes extends React.Component {
 					<p>Game Notes</p>
 					<div className="icon-container">
 						<i
-							className="large gavel icon"
+							className="large ban icon"
 							onClick={() => {
 								if (this.props.value !== '') {
 									this.setState({
