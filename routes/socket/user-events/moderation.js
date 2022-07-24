@@ -981,7 +981,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (isSuperMod) {
 						console.log('server crashing manually via mod action');
 						const crashReport = JSON.stringify({
-							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
+							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin.`
 						});
 
 						const crashOptions = {
