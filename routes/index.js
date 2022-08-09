@@ -2,6 +2,7 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
+const Game = require('../models/game');
 const ModThread = require('../models/modThread');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
@@ -411,7 +412,36 @@ module.exports = () => {
 							res.send(chatLog.join('<br>'));
 						}
 					})
-					.catch(err => debug(err));
+					.catch(err => console.debug(err));
+			} else {
+				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
+			}
+		});
+	});
+
+	app.get('/gameJSON', (req, res) => {
+		const id = req.query.id;
+
+		if (!req.session.passport) {
+			return;
+		}
+
+		const username = req.session.passport.user;
+
+		Account.findOne({ username }).then(account => {
+			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin' || account.staffRole === 'trialmod') {
+				Game.findOne({ uid: id })
+					.lean()
+					.exec()
+					.then(game => {
+						if (!game) {
+							res.status(404).send('Game not found');
+						} else {
+							res.header('Content-Type', 'application/json');
+							res.send(game);
+						}
+					})
+					.catch(err => console.debug(err));
 			} else {
 				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
 			}

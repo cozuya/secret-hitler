@@ -446,6 +446,10 @@ module.exports.accounts = torIpsParam => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email, isPrivate } = req.body;
+		if (!username || !password || !password2) {
+			res.status(401).json({ message: 'Your username or password cannot be empty.' });
+			return;
+		}
 		let { bypassKey, bypass } = req.body;
 		bypassKey = bypass || bypassKey;
 		let hasBypass = false;
