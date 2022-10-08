@@ -270,7 +270,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 								</Button>
 							</List.Item>
 						)}
-						{!notVisible && !privateGame && (!isMe || (!gameStarted && blindMode)) && (
+						{!notVisible && !privateGame && !areTheyAEM && (!isMe || (!gameStarted && blindMode)) && (
 							<List.Item>
 								<List.Icon name="gavel" />
 								<List.Content>
