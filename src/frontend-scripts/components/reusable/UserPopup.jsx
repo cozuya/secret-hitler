@@ -126,7 +126,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 		}
 
 		socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-		socket.emit('sendUser', userInfo); // To force a new playerlist pull
+		socket.emit('requestUserList'); // To force a new playerlist pull
 		if (renderInProfile) {
 			setBlacklistVisible(visibleStatus);
 			setPopupOpen(false);

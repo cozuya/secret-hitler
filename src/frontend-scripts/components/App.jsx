@@ -112,7 +112,7 @@ export class App extends React.Component {
 			};
 
 			socket.emit('getUserGameSettings');
-			socket.emit('sendUser', this.props.userInfo);
+			socket.emit('requestUserList');
 
 			// ** begin devhelpers **
 			//			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
@@ -242,10 +242,6 @@ export class App extends React.Component {
 
 			_game.chats.push(chat);
 			dispatch(updateGameInfo(_game));
-		});
-
-		socket.on('fetchUser', () => {
-			socket.emit('sendUser', this.props.userInfo);
 		});
 
 		socket.on('userList', list => {

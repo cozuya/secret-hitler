@@ -39,7 +39,6 @@ const {
 	sendGameList,
 	sendGeneralChats,
 	sendUserList,
-	sendSpecificUserList,
 	sendReplayGameData,
 	sendSignups,
 	sendAllSignups,
@@ -58,7 +57,7 @@ const {
 	selectBurnCard
 } = require('./game/policy-powers');
 const { saveAndDeleteGame } = require('./game/end-game');
-const { games, emoteList, cloneSettingsFromRedis, modDMs } = require('./models');
+const { games, emoteList, cloneSettingsFromRedis, modDMs, getStaffList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -309,12 +308,8 @@ module.exports.socketRoutes = () => {
 				handleSocketDisconnect(socket);
 			});
 
-			socket.on('sendUser', user => {
-				if (authenticated && isAEM) {
-					sendSpecificUserList(socket, 'moderator');
-				} else {
-					sendSpecificUserList(socket);
-				}
+			socket.on('requestUserList', () => {
+				sendUserList(socket);
 			});
 
 			socket.on('feedbackForm', data => {
@@ -421,6 +416,7 @@ module.exports.socketRoutes = () => {
 			socket.on('regatherAEMUsernames', () => {
 				if (authenticated && isAEM) {
 					gatherStaffUsernames();
+					getStaffList();
 				}
 			});
 
