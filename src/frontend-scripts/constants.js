@@ -58,7 +58,7 @@ export const LEGALCHARACTERS = text => {
  * @return {string} list of classes for colors.
  */
 export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') && !user.staffDisableStaffColor) {
+	if (Boolean(user?.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') && !user?.staffDisableStaffColor) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
@@ -68,15 +68,15 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			vig: user.userName === 'Vig' && user.staffRole === 'admin'
 		});
 	} else if (
-		user.isContributor &&
-		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || user.staffDisableStaffColor)
+		user?.isContributor &&
+		(!(user?.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || user.staffDisableStaffColor)
 	) {
 		return cn(defaultClass, 'contributor');
 	} else {
-		const w = isSeasonal ? user.winsSeason : user.wins;
-		const l = isSeasonal ? user.lossesSeason : user.losses;
-		const rainbow = isSeasonal ? user.isRainbowSeason : user.isRainbowOverall;
-		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
+		const w = isSeasonal ? user?.winsSeason : user?.wins;
+		const l = isSeasonal ? user?.lossesSeason : user?.losses;
+		const rainbow = isSeasonal ? user?.isRainbowSeason : user?.isRainbowOverall;
+		const elo = isSeasonal ? user?.eloSeason : user?.eloOverall;
 		let grade;
 		if (elo < 1500) {
 			grade = 0;
