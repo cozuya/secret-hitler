@@ -16,18 +16,6 @@ const GameChatItem = ({ chat, playerListPlayer, seatedUserNames, gameSettings, a
 	const isBlind = gameInfo?.general?.blindMode && !gameInfo?.gameState.isCompleted;
 	const playerColorsClasses = useMemo(() => PLAYERCOLORS(playerListPlayer, !gameSettings?.disableSeasonal, 'chat-user'), [playerListPlayer, gameSettings]);
 
-	console.log('----DEBUG----');
-	console.log('chat', chat);
-	console.log('playerListPlayer', playerListPlayer);
-	console.log('chat contents', chatContents);
-	console.log('timestamp', timestamp);
-	console.log('isMod', isMod);
-	console.log('isSeated', isSeated);
-	console.log('isGreenText', isGreenText);
-	console.log('isBlind', isBlind);
-	console.log('playerColorsClasses', playerColorsClasses);
-	console.log('----DEBUG----');
-
 	const chatIndex = JSON.stringify(chat);
 
 	const renderPreviousSeasonAward = type => {
