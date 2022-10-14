@@ -16,7 +16,15 @@ class Changelog extends React.Component {
 				</div>
 				<h4>The top 10 players of season 19 are:</h4>
 				<ol>
-					<li>not yet determined - stay tuned!</li>
+					<li>Godxevoir: 2104</li>
+					<li>imbapingu: 1977</li>
+					<li>noooothitler: 1948</li>
+					<li>near1337: 1915</li>
+					<li>ScorchaBW2: 1884</li>
+					<li>Tempest1K: 1876</li>
+					<li>Morientes: 1875</li>
+					<li>godhemzelve: 1871</li>
+					<li>IPandamoniumI: 1862</li>
 				</ol>
 
 				<hr style={{ width: '100%' }} />
