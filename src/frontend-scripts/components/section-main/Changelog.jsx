@@ -25,6 +25,7 @@ class Changelog extends React.Component {
 					<li>Morientes: 1875</li>
 					<li>godhemzelve: 1871</li>
 					<li>IPandamoniumI: 1862</li>
+					<li>GioIzHawt: 1858</li>
 				</ol>
 
 				<hr style={{ width: '100%' }} />

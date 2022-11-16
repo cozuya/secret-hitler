@@ -63,7 +63,7 @@ const generateGameObject = game => {
 			eloMinimum: game?.general?.eloMinimum,
 			xpMinimum: game?.general?.xpMinimum,
 			avalonSH: game?.general?.avalonSH,
-			noTopdecking: game.general?.noTopdecking,
+			noTopdecking: game?.general?.noTopdecking,
 			completed: true
 		};
 	}
