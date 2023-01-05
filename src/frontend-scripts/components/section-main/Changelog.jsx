@@ -12,9 +12,9 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
-					<p>Welcome to Season 20!</p>
+					<p>Welcome to Season 21!</p>
 				</div>
-				<h4>The top 10 players of season 19 are not yet determined - stay tuned!</h4>
+				<h4>The top 10 players of season 20 are not yet finalized - stay tuned!</h4>
 
 				<hr style={{ width: '100%' }} />
 
