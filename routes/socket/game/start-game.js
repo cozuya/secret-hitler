@@ -46,7 +46,7 @@ const beginGame = game => {
 	const roles = [
 		{
 			cardName: 'hitler',
-			icon: 1,
+			icon: 6,
 			team: 'fascist'
 		}
 	]
@@ -80,7 +80,7 @@ const beginGame = game => {
 		)
 		.concat(
 			_.shuffle(
-				_.range(6, 9)
+				_.range(18, 21)
 					.map(el => {
 						if (game.general.avalonSH?.withPercival) {
 							return {
