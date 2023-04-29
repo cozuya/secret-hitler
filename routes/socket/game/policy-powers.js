@@ -402,6 +402,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 										() => {
 											if (game.gameState.timedModeEnabled) {
 												game.gameState.timedModeEnabled = false;
+												// eslint-disable-next-line no-use-before-define
 												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
 												game.private.replayGameChats.push({
 													gameChat: true,
