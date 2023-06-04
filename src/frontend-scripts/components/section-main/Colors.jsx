@@ -7,6 +7,7 @@ const additionalRoles = [
 	['editor', 'editorcolor'],
 	['admin', 'admin'],
 	['moira', 'moira'],
+	['godhemzelve', 'godhemzelve'],
 	['vig', 'vig']
 ];
 

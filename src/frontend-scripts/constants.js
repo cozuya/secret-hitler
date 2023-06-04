@@ -65,6 +65,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			editorcolor: user.staffRole === 'editor',
 			veteran: user.staffRole === 'veteran',
 			moira: user.userName === 'moira' && user.staffRole === 'admin',
+			godhemzelve: user.userName === 'godhemzelve' && user.staffRole === 'admin',
 			vig: user.userName === 'Vig' && user.staffRole === 'admin'
 		});
 	} else if (

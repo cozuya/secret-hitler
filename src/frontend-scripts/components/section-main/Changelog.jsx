@@ -15,7 +15,18 @@ class Changelog extends React.Component {
 					<p>Welcome to the delayed Season 22!</p>
 				</div>
 				<h4>The top 10 players of season 21 are:</h4>
-				<ol>To be updated soon!</ol>
+				<ol>
+					<li>godhemzelve: 2094</li>
+					<li>Gamesolver: 1852</li>
+					<li>GodMedusa: 1844</li>
+					<li>KingofSilents: 1817</li>
+					<li>ImThatGuyPal: 1804</li>
+					<li>LeonardoDiCaprio: 1780</li>
+					<li>GioIzHawt: 1766</li>
+					<li>VictorPeen: 1758</li>
+					<li>morphy: 1757</li>
+					<li>Athanor: 1747</li>
+				</ol>
 
 				<hr style={{ width: '100%' }} />
 
