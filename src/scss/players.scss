@@ -360,7 +360,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.card-container.flipped {
 			transform: rotateY(180deg);
 		}
-		.player-number.leftgame {
+		.player-number.leftgame,
+		.player-number.isDead {
 			opacity: 0.3;
 		}
 		.player-number.disconnected {

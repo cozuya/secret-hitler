@@ -206,9 +206,10 @@ class Playerlist extends React.Component {
 	renderPlayerlist() {
 		if (Object.keys(this.props.userList).length) {
 			const { list } = this.props.userList;
-			const { userInfo } = this.props;
+			const { userInfo, gameInfo } = this.props;
 			const { expandInfo } = this.state;
 			const { gameSettings } = userInfo;
+			const { gameState, publicPlayersState } = gameInfo;
 			const w =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
@@ -295,7 +296,13 @@ class Playerlist extends React.Component {
 				const renderStatus = () => {
 					const status = user.status;
 
-					if (!status || status.type === 'none') {
+					let isDead = false;
+					if (publicPlayersState)
+						publicPlayersState.forEach(playerState => {
+							if (playerState.userName === user.userName && playerState.isDead && !gameState.isCompleted) isDead = true;
+						});
+
+					if (!status || status.type === 'none' || isDead) {
 						return <i className={'status unclickable icon'} />;
 					} else {
 						const iconClasses = classnames(
