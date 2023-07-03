@@ -11,7 +11,7 @@ const RightSidebar = props => {
 
 	return (
 		<section className={classes} id={'playerlist'}>
-			{!props.forceMounted && <Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />}
+			{!props.forceMounted && <Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} gameInfo={props.gameInfo} />}
 			<Generalchat
 				gameInfo={props.gameInfo}
 				socket={props.socket}

@@ -349,7 +349,9 @@ class Players extends React.Component {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
 
-							if (publicPlayersState[i].leftGame) {
+							if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead && !gameState.isCompleted) {
+								classes = `${classes} isDead`;
+							} else if (publicPlayersState[i].leftGame) {
 								classes = `${classes} leftgame`;
 							} else if (!publicPlayersState[i].connected) {
 								classes = `${classes} disconnected`;
