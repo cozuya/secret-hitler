@@ -299,11 +299,7 @@ class Playerlist extends React.Component {
 					let isDead = false;
 					if (publicPlayersState)
 						publicPlayersState.forEach(playerState => {
-							if (playerState.userName === user.userName) {
-								if (playerState.isDead && !gameState.isCompleted) {
-									isDead = true;
-								}
-							}
+							if (playerState.userName === user.userName && playerState.isDead && !gameState.isCompleted) isDead = true;
 						});
 
 					if (!status || status.type === 'none' || isDead) {
