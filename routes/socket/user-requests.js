@@ -57,7 +57,10 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 
 				return usr
 					? {
-							status: usr.status,
+							status: {
+								type: 'none',
+								gameId: null
+							}, // usr.status,
 							isRainbow: user.isRainbowOverall,
 							userName: user.username,
 							ip: user.lastConnectedIP || user.signupIP,

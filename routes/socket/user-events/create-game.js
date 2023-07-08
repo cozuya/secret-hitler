@@ -122,6 +122,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		};
 	}
 
+	if (!(data.privatePassword || data.unlistedGame)) {
+		socket.emit('sendAlert', 'Only Unlisted or Private games are allowed on this server.');
+		return;
+	}
+
 	let uid = generateCombination(3, '', true);
 	while (true) {
 		const foundGame = await Game.findOne({ uid });

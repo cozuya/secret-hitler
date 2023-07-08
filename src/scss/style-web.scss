@@ -48,7 +48,7 @@ html {
 #header-container {
 	width: 100%;
 	margin: 55px auto 0;
-	background: no-repeat center center url('../images/banner-summer.png') #14204f; /*  #f2654b; */
+	background: no-repeat center center url('../images/banner-tourney.png') #14204f; /*  #f2654b; */
 	background-size: cover;
 	padding-top: 43%;
 
@@ -75,9 +75,9 @@ html {
 	}
 }
 
-#header-container:hover {
-	background: no-repeat center center url('../images/banner-summer.gif');
-}
+// #header-container:hover {
+// 	background: no-repeat center center url('../images/banner-summer.gif');
+// }
 
 @media only screen and (min-width: 1130px) {
 	#header-container {
