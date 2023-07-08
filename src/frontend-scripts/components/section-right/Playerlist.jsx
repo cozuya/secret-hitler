@@ -718,7 +718,12 @@ class Playerlist extends React.Component {
 				</div>
 				<Scrollbars renderThumbVertical={props => <div {...props} className="thumb-vertical" />}>
 					<div className="playerlist-body">
-						{/* {this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableAggregations ? this.renderLegacyPlayerlist() : this.renderPlayerlist()} */}
+						{Boolean(Object.keys(userInfo).length) &&
+						(Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran') || userInfo.isTournamentMod)
+							? this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableAggregations
+								? this.renderLegacyPlayerlist()
+								: this.renderPlayerlist()
+							: null}
 					</div>
 				</Scrollbars>
 			</section>
