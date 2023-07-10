@@ -1599,10 +1599,10 @@ export default class Creategame extends React.Component {
 							<Range
 								min={10}
 								max={20}
-								defaultValue={[12]}
+								defaultValue={[11]}
 								onChange={this.sliderDeckFas}
 								value={[this.state.customGameSettings.deckState.fas]}
-								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' , 20: '20' }}
+								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '', 17: '17', 18: '', 19: '' , 20: '20' }}
 							/>
 						</div>
 					</div>
