@@ -1587,11 +1587,11 @@ export default class Creategame extends React.Component {
 							<h4 className="ui header">Liberal policies</h4>
 							<Range
 								min={5}
-								max={10}
+								max={11}
 								defaultValue={[6]}
 								onChange={this.sliderDeckLib}
 								value={[this.state.customGameSettings.deckState.lib]}
-								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' , 9: '9', 10: '10' }}
+								marks={{ 5: '5', 6: '', 7: '7', 8: '', 9: '9', 10: '', 11: '11' }}
 							/>
 						</div>
 						<div className="eight wide column">
@@ -1602,7 +1602,7 @@ export default class Creategame extends React.Component {
 								defaultValue={[11]}
 								onChange={this.sliderDeckFas}
 								value={[this.state.customGameSettings.deckState.fas]}
-								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '', 17: '17', 18: '', 19: '' , 20: '20' }}
+								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '', 17: '17', 18: '', 19: '', 20: '20' }}
 							/>
 						</div>
 					</div>
