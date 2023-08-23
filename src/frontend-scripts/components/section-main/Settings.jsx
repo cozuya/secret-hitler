@@ -9,6 +9,7 @@ import { SketchPicker } from 'react-color';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import SweetAlert2 from 'react-sweetalert2';
+import Swal from 'sweetalert2';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 $.fn.checkbox = Checkbox;
@@ -1212,6 +1213,53 @@ class Settings extends React.Component {
 										</a>
 									</div>
 								)}
+								<div>
+									<h5 className="ui header">Reset</h5>
+									<button
+										onClick={() => {
+											Swal.fire({
+												title: 'Are you sure?',
+												text: 'This will reset your cardback to the default.',
+												type: 'warning',
+												showCancelButton: true,
+												confirmButtonText: 'Yes, reset it!',
+												cancelButtonText: 'No, cancel!',
+												closeOnConfirm: false,
+												closeOnCancel: false
+											}).then(result => {
+												if (result.value === true) {
+													const defaultCardback =
+														'data:image/png;base64,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';
+													$.ajax({
+														url: '/upload-cardback',
+														method: 'POST',
+														data: {
+															image: defaultCardback
+														}
+													})
+														.then(data => {
+															this.setState({
+																cardbackUploadStatus: data.message,
+																isUploaded: data.message === 'Cardback did reset successfully.' ? defaultCardback : '',
+																preview: ''
+															});
+														})
+														.catch(err => {
+															this.setState({
+																cardbackUploadStatus: 'An unknown error occurred, refer to the console and show a dev.',
+																isUploaded: '',
+																preview: ''
+															});
+															console.log('Unknown cardback error', err);
+														});
+												}
+											});
+										}}
+										className="ui button"
+									>
+										Reset
+									</button>
+								</div>
 								<div className="ui basic modal cardbackinfo">
 									<div className="header">Cardback info and terms of use</div>
 									<p>Rainbow players only. Can only upload an image once per 30 second.</p>
