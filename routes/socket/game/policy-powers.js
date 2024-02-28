@@ -773,7 +773,14 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 					game.private.hiddenInfoChat.push(modOnlyChat);
 					sendInProgressModChatUpdate(game, modOnlyChat);
 
-					if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
+					if (
+						!game.general.disableGamechat &&
+						!(
+							game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' &&
+							president.role.team === 'fascist' &&
+							president.role.cardName !== 'monarchist'
+						)
+					) {
 						president.playersState[playerIndex].nameStatus = playersTeam;
 					}
 					game.private.invIndex = playerIndex;
@@ -1001,7 +1008,11 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 
 					if (
 						!game.general.disableGamechat &&
-						!(game.private.seatedPlayers[presidentIndex].role.cardName === 'hitler' && targetPlayer.role.team === 'fascist')
+						!(
+							game.private.seatedPlayers[presidentIndex].role.cardName === 'hitler' &&
+							targetPlayer.role.team === 'fascist' &&
+							targetPlayer.role.team !== 'monarchist'
+						)
 					) {
 						targetPlayer.playersState[presidentIndex].nameStatus = playersTeam;
 					}
@@ -1194,7 +1205,8 @@ module.exports.executePlayer = game => {
 				(player, index) =>
 					index !== presidentIndex &&
 					!seatedPlayers[index].isDead &&
-					((!game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+						(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'morgana' && seatedPlayers[index].role.cardName === 'hitler')) ||
 						(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
 						(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
 			)
@@ -1209,7 +1221,8 @@ module.exports.executePlayer = game => {
 					(player, i) =>
 						i !== presidentIndex &&
 						!seatedPlayers[i].isDead &&
-						((!game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+							(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'morgana' && seatedPlayers[index].role.cardName === 'hitler')) ||
 							(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
 							(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
 				)
@@ -1358,6 +1371,22 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 							{ text: '  has been executed.' }
 						]
 					};
+
+					if (game.general.monarchistSH) {
+						chat.chat = chat.chat.concat([
+							{ text: ' Consequently, the ' },
+							{
+								text: 'monarchist',
+								type: 'monarchist'
+							},
+							{ text: '  has won with the' },
+							{
+								text: ' liberals',
+								type: 'liberal'
+							},
+							{ text: '.' }
+						]);
+					}
 
 					seatedPlayers.forEach((player, i) => {
 						player.gameChats.push(chat);

@@ -136,6 +136,8 @@ class Tracks extends React.Component {
 		let practiceGameTooltip;
 		let avalonSH;
 		let avalonSHTooltip;
+		let monarchistSH;
+		let monarchistSHTooltip;
 		let noTopdecking;
 		let noTopdeckingTooltip;
 		let timedMode;
@@ -245,6 +247,11 @@ class Tracks extends React.Component {
 			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
 		}
 
+		if (game.monarchistSH) {
+			monarchistSH = <i className="chess king icon" />;
+			monarchistSHTooltip = 'Monarchist SH';
+		}
+
 		if (game.noTopdecking) {
 			noTopdecking = <i className="gavel icon" />;
 			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
@@ -340,6 +347,11 @@ class Tracks extends React.Component {
 				{avalonSH && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
+					</span>
+				)}
+				{monarchistSH && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={monarchistSH} content={monarchistSHTooltip} />
 					</span>
 				)}
 				{noTopdecking && (

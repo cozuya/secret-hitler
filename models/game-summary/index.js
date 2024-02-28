@@ -18,6 +18,7 @@ const gameSummary = new Schema({
 		casualGame: Boolean,
 		practiceGame: Boolean,
 		unlistedGame: Boolean,
+		monarchistSH: Boolean,
 		avalonSH: {
 			type: {
 				withPercival: Boolean

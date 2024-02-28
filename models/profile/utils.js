@@ -5,14 +5,19 @@ const debug = require('debug')('game:profile');
 const { List } = require('immutable');
 const { flattenListOpts } = require('../../utils');
 const { checkBadgesGamesPlayed } = require('../../routes/socket/badges');
+const { isHitlerKilled, isHitlerElected, isGameEndingPolicyEnacted } = require('../game-summary/buildTurns');
 
 // handles all stat computation logic
 function profileDelta(username, game) {
 	const { playerSize, isRebalanced, date, id } = game;
 	const isWinner = game.isWinner(username).value();
 	const loyalty = game.loyaltyOf(username).value();
+	const role = game.roleOf(username).value();
 	const isLiberal = loyalty === 'liberal';
 	const isFascist = !isLiberal;
+	const isMonarchist = role === 'monarchist';
+	const isCardWin = isWinner && isGameEndingPolicyEnacted;
+	const monarchistWinCondition = isMonarchist && !isHitlerElected && (!isHitlerKilled || isCardWin); // I don't quite understand why isHitlerKilled needs to be negated to function, but hey it works
 	const votes = game.hitlerZone
 		.map(hz =>
 			flattenListOpts(
@@ -65,7 +70,7 @@ function profileDelta(username, game) {
 				_id: id,
 				loyalty,
 				playerSize,
-				isWinner,
+				isWinner: isMonarchist ? monarchistWinCondition : isWinner,
 				isRebalanced,
 				date
 			}
