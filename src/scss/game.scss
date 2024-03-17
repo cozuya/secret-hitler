@@ -3,11 +3,9 @@
 }
 .game > .ui.grid {
 	margin: 0;
-
 	> .row:first-child {
 		padding: 0;
 	}
-
 	.chat-container {
 		background: var(--theme-text-1);
 		padding: 0;
@@ -23,7 +21,6 @@
 			left: 20%;
 			display: none;
 		}
-
 		@media screen and (max-width: 600px) {
 			left: 0%;
 		}
@@ -60,7 +57,6 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-
 			form {
 				background: var(--theme-background-3);
 				display: flex;
@@ -79,18 +75,15 @@
 				.observer-chat {
 					opacity: 0.75;
 				}
-
 				margin: 0;
 				min-height: initial;
 				overflow-x: initial !important;
 				width: 100% !important;
 				border-radius: 0;
-
 				.item {
 					padding: 0px 1px 6px 0px;
 					position: relative;
 					z-index: 101;
-
 					&:after {
 						left: 40%;
 					}
@@ -99,12 +92,10 @@
 						color: #529243 !important;
 					}
 				}
-
 				.icon {
 					margin-top: 4px;
 					cursor: pointer;
 				}
-
 				.button {
 					padding: 2px 0px;
 					font-size: 12px;
@@ -112,7 +103,6 @@
 					font-size: 11px;
 					background: var(--theme-tertiary) !important;
 					color: var(--theme-background-1) !important;
-
 					&:hover {
 						background: var(--theme-tertiary) !important;
 					}
@@ -121,19 +111,16 @@
 				.tourny-button {
 					width: 110px;
 					background: $tourny !important;
-
 					&:hover {
 						background: darkgreen !important;
 					}
 				}
-
 				.button.ui-disabled {
 					opacity: 0.45 !important;
 					box-shadow: none !important;
 					cursor: pointer;
 				}
 			}
-
 			.chats {
 				flex-grow: 1;
 				position: relative;
@@ -144,7 +131,6 @@
 				img {
 					vertical-align: middle;
 				}
-
 				.ui.list {
 					padding-left: 5px;
 					position: absolute;
@@ -154,7 +140,6 @@
 					width: 98%;
 					margin: 0;
 				}
-
 				.item {
 					word-wrap: break-word;
 					line-height: 130%;
@@ -164,60 +149,48 @@
 						max-width: 90%;
 					}
 				}
-
 				.chat-user {
 					color: var(--theme-text-3);
 					white-space: nowrap;
 				}
-
 				.chat-user--game .chat-timestamp {
 					font-size: 12px;
 				}
-
 				.chat-user--game,
 				.game-chat,
 				.chat-user--game .chat-timestamp {
 					color: var(--theme-text-3);
 				}
-
 				.chat-user--claim,
 				.claim-chat {
 					color: #fbbd08;
 				}
-
 				.chat-user.broadcast {
 					color: lightsalmon;
 				}
-
 				.broadcast-chat {
 					color: lightskyblue !important;
 				}
-
 				.chat-role--liberal {
 					font-weight: 700;
 					color: $darkliberalteam;
 				}
-
 				.chat-role--merlin {
 					font-weight: 700;
 					color: $merlin;
 				}
-
 				.chat-role--percival {
 					font-weight: 700;
 					color: $percival;
 				}
-
 				.chat-role--hitler {
 					font-weight: 700;
 					color: #be0804;
 				}
-
 				.chat-role--fascist {
 					font-weight: 700;
 					color: $darkfascistteam;
 				}
-
 				.chat-role--morgana {
 					font-weight: 700;
 					color: $morgana;
@@ -227,7 +200,6 @@
 					font-weight: 700;
 					color: $monarchist;
 				}
-
 				.chat-player {
 					color: var(--theme-text-1);
 					font-weight: 700;
@@ -240,11 +212,9 @@
 				white-space: nowrap;
 				font-family: arial;
 			}
-
 			.chats.blurred {
 				filter: blur(4px);
 			}
-
 			.claim-container {
 				position: absolute;
 				top: 80px;
@@ -252,7 +222,6 @@
 				width: 100%;
 				opacity: 0;
 				transition: opacity 1s;
-
 				p {
 					font-family: $headerfont;
 					font-size: 32px;
@@ -260,7 +229,6 @@
 					text-align: center;
 					margin-bottom: 15px;
 				}
-
 				.ui.button {
 					text-align: center;
 					color: var(--theme-text-1);
@@ -268,30 +236,24 @@
 					width: 230px;
 					margin: 0 auto 15px;
 				}
-
 				.threefascist {
 					background: #c36563;
 				}
-
 				.twofascistoneliberal {
 					background: #e4bcba;
 					color: var(--theme-background-2) !important;
 				}
-
 				.onefascistoneliberal {
 					background: #fff;
 					color: var(--theme-background-2) !important;
 				}
-
 				.twoliberalonefascist {
 					background: #bfd8ee;
 					color: var(--theme-background-2) !important;
 				}
-
 				.threeliberal {
 					background: #608cb3;
 				}
-
 				.card-container {
 					display: flex;
 					padding: 10px;
@@ -299,37 +261,30 @@
 					border-radius: 3px;
 					height: 76px;
 					margin: 10px;
-
 					&:hover {
 						cursor: pointer;
 					}
 				}
-
 				.card {
 					width: 40px;
 					height: 56px;
 					background-size: contain;
 				}
-
 				.card.liberal {
 					background-image: url('../../public/images/cards/liberalp-l.png');
 				}
-
 				.card.fascist {
 					background-image: url('../../public/images/cards/fascistp-l.png');
 				}
-
 				.claim-button-container {
 					display: flex;
 					justify-content: center;
 					flex-flow: row wrap;
 				}
 			}
-
 			.claim-container.active {
 				opacity: 1;
 			}
-
 			.inputbar {
 				.claim-button {
 					color: #fbbd08;
@@ -340,7 +295,6 @@
 					z-index: 102;
 					cursor: pointer;
 					position: relative;
-
 					&:after {
 						content: '';
 						display: table;
@@ -354,14 +308,12 @@
 						border-radius: 5px;
 					}
 				}
-
 				.expando-container {
 					position: relative;
 					top: 7px;
 					left: 4px;
 					float: left;
 					cursor: pointer;
-
 					.hotkey-container {
 						position: absolute;
 						width: 150px;
@@ -370,17 +322,14 @@
 						background: #eee;
 						bottom: 0;
 						border: 1px solid var(--theme-text-3);
-
 						> div:hover {
 							font-weight: bold;
 							color: var(--theme-primary);
 						}
-
 						div:first-child {
 							width: 75px;
 							border-right: 1px solid var(--theme-text-3);
 						}
-
 						div {
 							width: 73px;
 							float: left;
@@ -391,28 +340,22 @@
 						}
 					}
 				}
-
 				span {
 					padding-left: 20px;
 				}
-
 				.input {
 					flex-grow: 1;
-
 					button {
 						padding: 0px 10px;
 						background: var(--theme-primary);
-
 						&:hover {
 							background: var(--theme-tertiary);
 						}
 					}
 				}
-
 				.input.disabled {
 					cursor: not-allowed;
 				}
-
 				> .icon {
 					float: left;
 					position: relative;
@@ -422,7 +365,6 @@
 			}
 		}
 	}
-
 	.gameroles-container {
 		background: var(--theme-text-1);
 	}
