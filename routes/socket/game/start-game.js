@@ -82,26 +82,37 @@ const beginGame = game => {
 			_.shuffle(
 				_.range(18, 21)
 					.map(el => {
-						if (game.general.avalonSH?.withPercival) {
+						if (game.general.avalonSH?.withPercival && game.general.monarchistSH) {
+							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+							if (el % 3 === 1) return { cardName: 'morgana', icon: el, team: 'fascist' };
+							return { cardName: 'fascist', icon: el, team: 'fascist' };
+						} else if (game.general.avalonSH?.withPercival) {
 							return {
-								cardName: el % 3 === 0 ? 'morgana' : 'fascist',
+								cardName: el % 3 === 1 ? 'morgana' : 'fascist',
 								icon: el,
 								team: 'fascist'
 							};
-						} else if (game.general.monarchistSH) {
+						} else if (game.general.monarchistSH || game.general.avalonSH?.withPercival || game.general.playerCount >= 7) {
+								return {
+									cardName: el % 3 === 0 ? 'monarchist' : 'fascist',
+									icon: el % 3 === 0 ? undefined : el,
+									team: 'fascist'
+								};
+					} else if (game.general.monarchistSH || !game.general.avalonSH?.withPercival) {
+						return {
+							cardName: el % 3 === 0 ? 'monarchist' : 'fascist',
+							icon: el % 3 === 0 ? undefined : el,
+							team: 'fascist'
+						};
+					}
+
 							return {
-								cardName: el % 3 === 0 ? 'monarchist' : 'fascist',
+								cardName: 'fascist',
 								icon: el,
 								team: 'fascist'
 							};
 						}
-
-						return {
-							cardName: 'fascist',
-							icon: el,
-							team: 'fascist'
-						};
-					})
+					)
 					.slice(0, customGameSettings.fascistCount)
 			)
 		);
@@ -162,7 +173,7 @@ const beginGame = game => {
 					{ text: '.' }
 				]
 			});
-		} else if (game.general.monarchistSH) {
+		} if (game.general.monarchistSH) {
 			player.gameChats.push({
 				gameChat: true,
 				timestamp: new Date(),
@@ -593,7 +604,7 @@ const beginGame = game => {
 										},
 										{
 											text: `${
-												customGameSettings.fascistCount === 1 ? " they don't know who you are since it is the " : ' they know who you are except for the '
+												customGameSettings.fascistCount === 1 ? ' they do not know who you are since it is the ' : ' they know who you are except for the '
 											} `
 										},
 										{
@@ -763,7 +774,11 @@ const beginGame = game => {
 					}
 					fascists.forEach(p => (player.playersState[seatedPlayers.indexOf(p)].nameStatus = 'fascist'));
 				} else if (game.general.avalonSH?.withPercival && cardName === 'percival') {
-					const candidates = seatedPlayers.filter(player => player.role.cardName === 'merlin' || player.role.cardName === 'morgana');
+					const hasMorgana = seatedPlayers.some(player => player.role.cardName === 'morgana');
+					const candidates = seatedPlayers.filter(player =>
+						player.role.cardName === 'merlin' ||
+						(hasMorgana ? player.role.cardName === 'morgana' : player.role.cardName === 'monarchist')
+					);
 
 					player.gameChats.push({
 						timestamp: new Date(),
