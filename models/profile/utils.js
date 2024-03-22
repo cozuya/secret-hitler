@@ -12,12 +12,8 @@ function profileDelta(username, game) {
 	const { playerSize, isRebalanced, date, id } = game;
 	const isWinner = game.isWinner(username).value();
 	const loyalty = game.loyaltyOf(username).value();
-	const role = game.roleOf(username).value();
 	const isLiberal = loyalty === 'liberal';
 	const isFascist = !isLiberal;
-	const isMonarchist = role === 'monarchist';
-	const isCardWin = isWinner && isGameEndingPolicyEnacted;
-	const monarchistWinCondition = isMonarchist && !isHitlerElected && (!isHitlerKilled || isCardWin); // I don't quite understand why isHitlerKilled needs to be negated to function, but hey it works
 	const votes = game.hitlerZone
 		.map(hz =>
 			flattenListOpts(
@@ -70,7 +66,7 @@ function profileDelta(username, game) {
 				_id: id,
 				loyalty,
 				playerSize,
-				isWinner: isMonarchist ? monarchistWinCondition : isWinner,
+				isWinner: isWinner,
 				isRebalanced,
 				date
 			}
