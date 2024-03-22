@@ -1773,6 +1773,22 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 							]
 						};
 
+						if (game.general.monarchistSH) {
+							chat.chat = chat.chat.concat([
+								{ text: ' Consequently, the ' },
+								{
+									text: 'monarchist',
+									type: 'monarchist'
+								},
+								{ text: '  has lost with the' },
+								{
+									text: ' liberals',
+									type: 'liberal'
+								},
+								{ text: '.' }
+							]);
+						}
+
 						setTimeout(
 							() => {
 								game.publicPlayersState.forEach((player, i) => {

@@ -11,6 +11,7 @@ module.exports = (
 		rebalance7p: false,
 		rebalance9p: false,
 		rerebalance9p: false,
+		monarchistSH: null,
 		avalonSH: null,
 		noTopdecking: 0
 	}

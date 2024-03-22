@@ -79,6 +79,8 @@ const DisplayLobbies = props => {
 		let practiceGameTooltip;
 		let avalonSH;
 		let avalonSHTooltip;
+		let monarchistSH;
+		let monarchistSHTooltip;
 		let noTopdecking;
 		let noTopdeckingTooltip;
 		let timedMode;
@@ -191,6 +193,11 @@ const DisplayLobbies = props => {
 			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
 		}
 
+		if (game.monarchistSH) {
+			monarchistSH = <i className="chess king icon" />;
+			monarchistSHTooltip = 'Monarchist SH';
+		}
+
 		if (game.noTopdecking) {
 			noTopdecking = <i className="gavel icon" />;
 			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
@@ -291,6 +298,11 @@ const DisplayLobbies = props => {
 				{avalonSH && (
 					<span data-tooltip={avalonSHTooltip} data-inverted="">
 						{avalonSH}
+					</span>
+				)}
+				{monarchistSH && (
+					<span data-tooltip={monarchistSHTooltip} data-inverted="">
+						{monarchistSH}
 					</span>
 				)}
 				{noTopdecking && (
