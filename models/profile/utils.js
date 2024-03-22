@@ -5,7 +5,6 @@ const debug = require('debug')('game:profile');
 const { List } = require('immutable');
 const { flattenListOpts } = require('../../utils');
 const { checkBadgesGamesPlayed } = require('../../routes/socket/badges');
-const { isHitlerKilled, isHitlerElected, isGameEndingPolicyEnacted } = require('../game-summary/buildTurns');
 
 // handles all stat computation logic
 function profileDelta(username, game) {
@@ -66,7 +65,7 @@ function profileDelta(username, game) {
 				_id: id,
 				loyalty,
 				playerSize,
-				isWinner: isWinner,
+				isWinner,
 				isRebalanced,
 				date
 			}
