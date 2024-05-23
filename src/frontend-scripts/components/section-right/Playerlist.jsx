@@ -652,7 +652,7 @@ class Playerlist extends React.Component {
 
 	render() {
 		const { userInfo } = this.props;
-		const adminGradientData = { A: 'admin', d: 'moira', m: 'vig', i: 'admin', n: 'moira', s: 'vig' };
+		const adminGradientData = { A: 'godhemzelve', d: 'moira', m: 'vig', i: 'admin', n: 'godhemzelve', s: 'vig' };
 
 		return (
 			<section className="playerlist">

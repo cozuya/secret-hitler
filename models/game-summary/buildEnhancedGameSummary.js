@@ -25,7 +25,8 @@ function buildEnhancedGameSummary(_summary) {
 			'investigationId',
 			'investigationClaim',
 			'specialElection',
-			'execution'
+			'execution',
+			'assassination'
 		];
 
 		return key === 'logs'
@@ -56,6 +57,9 @@ function buildEnhancedGameSummary(_summary) {
 	const players = (() => {
 		const roleToLoyalty = Map({
 			liberal: 'liberal',
+			percival: 'liberal',
+			merlin: 'liberal',
+			morgana: 'fascist',
 			fascist: 'fascist',
 			hitler: 'fascist'
 		});
@@ -64,7 +68,7 @@ function buildEnhancedGameSummary(_summary) {
 			return Object.assign({}, p, {
 				id: i,
 				loyalty: roleToLoyalty.get(p.role),
-				icon: p.icon || 0
+				icon: p.icon
 			});
 		});
 	})();
@@ -86,6 +90,14 @@ function buildEnhancedGameSummary(_summary) {
 	// String
 	const winningTeam = (() => {
 		const lastTurn = turns.last();
+
+		if (lastTurn.isMerlinShot) {
+			return 'fascist';
+		}
+
+		if (summary.gameSetting.noTopdecking > 0 && lastTurn.isElectionTrackerMaxed) {
+			return 'fascist';
+		}
 
 		if (lastTurn.isHitlerElected) {
 			return 'fascist';

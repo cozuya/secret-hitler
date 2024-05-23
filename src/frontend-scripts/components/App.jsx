@@ -19,7 +19,7 @@ import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
 import '../../scss/style-dark.scss';
-import * as Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 const select = state => state;
 
@@ -112,7 +112,7 @@ export class App extends React.Component {
 			};
 
 			socket.emit('getUserGameSettings');
-			socket.emit('sendUser', this.props.userInfo);
+			socket.emit('requestUserList');
 
 			// ** begin devhelpers **
 			//			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
@@ -244,10 +244,6 @@ export class App extends React.Component {
 			dispatch(updateGameInfo(_game));
 		});
 
-		socket.on('fetchUser', () => {
-			socket.emit('sendUser', this.props.userInfo);
-		});
-
 		socket.on('userList', list => {
 			dispatch(updateUserList(list));
 			const now = new Date();
@@ -283,9 +279,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('sendAlert', data => {
-			Swal.fire({
-				html: data
-			});
+			Swal.fire({ html: data });
 		});
 
 		socket.on('toLobby', uid => {

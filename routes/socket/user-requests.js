@@ -17,7 +17,8 @@ const {
 	userListEmitter,
 	formattedUserList,
 	gameListEmitter,
-	formattedGameList
+	formattedGameList,
+	staffList
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -31,26 +32,19 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('fetchUser');
-		// socket.emit('userList', {
-		// 	list: formattedUserList()
-		// });
+		const staffUserList = Object.keys(staffList).filter(
+			name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+		);
+
+		if (staffUserList.includes(socket?.handshake?.session?.passport?.user)) {
+			socket.emit('userList', { list: formattedUserList(true) });
+		} else {
+			socket.emit('userList', { list: formattedUserList() });
+		}
 	} else {
 		userListEmitter.send = true;
 	}
 });
-
-module.exports.sendSpecificUserList = (socket, staffRole) => {
-	// eslint-disable-line one-var
-	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
-	if (socket) {
-		socket.emit('userList', {
-			list: formattedUserList(isAEM)
-		});
-	} else {
-		console.log('no socket received!');
-	}
-};
 
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
@@ -206,6 +200,7 @@ module.exports.sendUserGameSettings = socket => {
 			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
+					playerPronouns: account.gameSettings.playerPronouns,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
@@ -358,7 +353,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 	const game = games[uid];
 	const { passport } = socket.handshake.session;
 
-	if (game) {
+	if (game && game.publicPlayersState && game.general) {
 		if (passport && Object.keys(passport).length) {
 			const player = game.publicPlayersState.find(player => player.userName === passport.user);
 

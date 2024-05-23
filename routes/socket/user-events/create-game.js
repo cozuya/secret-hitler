@@ -130,7 +130,10 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	}
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
-	const casualGame = (data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30) ? true : data.gameType === 'casual') && !customGame;
+	const casualGame =
+		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
+			? true
+			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.noTopdecking > 0) && !customGame;
 	const practiceGame =
 		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
 		(data.gameType === 'practice' || data.playerChats === 'disabled') &&
@@ -185,7 +188,9 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			electionCount: 0,
 			isRemade: false,
 			eloMinimum: data.eloSliderValue,
-			xpMinimum: data.xpSliderValue
+			xpMinimum: data.xpSliderValue,
+			avalonSH: data.avalonSH ? { withPercival: Boolean(data.withPercival) } : null,
+			noTopdecking: data.noTopdecking
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],
@@ -195,10 +200,17 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			liberalPolicyCount: 0,
 			fascistPolicyCount: 0,
 			electionTrackerCount: 0,
-			enactedPolicies: []
+			enactedPolicies: [],
+			consecutiveTopdecks: 0
 		},
-		guesses: {}
+		guesses: {},
+		merlinGuesses: {}
 	};
+
+	// oops its a hack
+	if (newGame.general.practiceGame && newGame.general.casualGame) {
+		newGame.general.practiceGame = false;
+	}
 
 	if (newGame.customGameSettings.enabled) {
 		let chat = {
@@ -340,6 +352,18 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		updateUserStatus(passport, newGame);
 		games[newGame.general.uid] = newGame;
 		sendGameList();
+		if (!newGame.general.unlistedGame) {
+			io.sockets.emit('newGameAdded', {
+				priv: newGame.general.private,
+				pub: !newGame.general.private,
+				timedMode: newGame.general.timedMode,
+				rainbow: newGame.general.rainbowgame,
+				standard: !newGame.general.rainbowgame,
+				customgame: newGame.customGameSettings.enabled,
+				casualgame: newGame.general.casualGame,
+				creator: account.username
+			});
+		}
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
 		const cloneNewGame = Object.assign({}, newGame);

@@ -97,7 +97,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 		}
 	}
 
-	if (user.wins + user.losses >= 10 || process.env.NODE_ENV !== 'production') {
+	if (user.xpOverall >= 10.0 || user.isRainbowOverall || process.env.NODE_ENV !== 'production') {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
@@ -253,7 +253,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
-			if (user.xpOverall < 10) {
+			if (user.xpOverall < 10 && !user.isRainbowOverall) {
 				return;
 			}
 		}

@@ -15,7 +15,7 @@ const {
 	currentSeasonNumber
 } = require('../models');
 const PlayerReport = require('../../../models/playerReport');
-const { sendUserReports, getModInfo, sendGameList } = require('../user-requests');
+const { sendUserReports, getModInfo, sendGameList, sendUserList } = require('../user-requests');
 const ModAction = require('../../../models/modAction');
 const BannedIP = require('../../../models/bannedIP');
 const { handleDefaultIPv6Range } = require('../util.js');
@@ -436,6 +436,17 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						if (account) {
 							account.bio = '';
 							account.save();
+						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+					});
+					break;
+				case 'setPlayerPronouns':
+					Account.findOne({ username: data.userName }).then(account => {
+						if (account) {
+							account.gameSettings.playerPronouns = data.comment;
+							account.save();
+							const userListUser = userList.find(user => user.userName === data.userName);
+							if (userListUser) userListUser.playerPronouns = data.comment;
+							sendUserList();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
 					break;
@@ -970,7 +981,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (isSuperMod) {
 						console.log('server crashing manually via mod action');
 						const crashReport = JSON.stringify({
-							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
+							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin.`
 						});
 
 						const crashOptions = {
@@ -1000,14 +1011,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (data.userName.substr(0, 7) === 'DELGAME') {
 						const game = games[data.userName.slice(7)];
 
-						if (game) {
+						if (game && game.general) {
 							saveAndDeleteGame(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
 						const game = games[data.userName.slice(13)];
-						if (game) {
+						if (game && game.general) {
 							if (modaction.modNotes.length > 0) {
 								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.private.gameCreatorName}"`;
 							} else {
@@ -1101,6 +1112,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				deleteBio: 'Delete Bio',
 				deleteProfile: 'Delete Profile',
 				deleteCardback: 'Delete Cardback',
+				setPlayerPronouns: 'Set Player Pronouns',
 				resetGameName: 'Reset Game Name',
 				rainbowUser: 'Grant Rainbow',
 				removeStaffRole: 'Remove Staff Role',

@@ -12,6 +12,126 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
+					<p>Welcome to the delayed Season 22!</p>
+				</div>
+				<h4>The top 10 players of season 21 are:</h4>
+				<ol>
+					<li>godhemzelve: 2094</li>
+					<li>Gamesolver: 1852</li>
+					<li>GodMedusa: 1844</li>
+					<li>KingofSilents: 1817</li>
+					<li>ImThatGuyPal: 1804</li>
+					<li>LeonardoDiCaprio: 1780</li>
+					<li>GioIzHawt: 1766</li>
+					<li>VictorPeen: 1758</li>
+					<li>morphy: 1757</li>
+					<li>Athanor: 1747</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
+					<p>Welcome to Season 21!</p>
+				</div>
+				<h4>The top 10 players of season 20 are:</h4>
+				<ol>
+					<li>NotAPrincePerry: 1945</li>
+					<li>Tempest1K: 1923</li>
+					<li>pinguREFORMED: 1899</li>
+					<li>noooothitler: 1876</li>
+					<li>MaxOnMobile: 1866</li>
+					<li>Depressedd: 1841</li>
+					<li>Gamethrower: 1820</li>
+					<li>artzy: 1789</li>
+					<li>rags009: 1787</li>
+					<li>godhemzelve: 1773</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
+					<p>Welcome to Season 20!</p>
+				</div>
+				<h4>The top 10 players of season 19 are:</h4>
+				<ol>
+					<li>Godxevoir: 2104</li>
+					<li>imbapingu: 1977</li>
+					<li>noooothitler: 1948</li>
+					<li>near1337: 1915</li>
+					<li>ScorchaBW2: 1884</li>
+					<li>Tempest1K: 1876</li>
+					<li>Morientes: 1875</li>
+					<li>godhemzelve: 1871</li>
+					<li>IPandamoniumI: 1862</li>
+					<li>GioIzHawt: 1858</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
+					<p>Version 1.10.0 released 7-1-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Avalon SH</strong> - adds two new game modes, Avalon SH and No Topdecking - see{' '}
+					<a href="https://github.com/cozuya/secret-hitler/pull/1948" style={{ textDecoration: 'underline' }}>
+						the original pull request
+					</a>{' '}
+					for more details. Thanks to themeeman for the great work on this, the role art by jules, and the overall guidance and review by paladin!
+				</p>
+
+				<div className="ui header">
+					<p>Welcome to Season 19!</p>
+				</div>
+				<h4>The top 10 players of season 18 are:</h4>
+				<ol>
+					<li>Mell0: 2024</li>
+					<li>noooothitler: 1971</li>
+					<li>olly97: 1941</li>
+					<li>carlgauss: 1921</li>
+					<li>Skate01king: 1921</li>
+					<li>pinguREFORMED: 1866</li>
+					<li>joe: 1855</li>
+					<li>JusNextLib: 1851</li>
+					<li>Tyrrox: 1802</li>
+					<li>LimesGamer: 1790</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
+					<p>Version 1.9.2 released 4-1-2022</p>
+				</div>
+				<h3>New Features:</h3>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Pronouns setting</strong> - you can now choose to display your pronouns on your profile
+					through your settings - to set yours as ones not available in settings, message a moderator!
+				</p>
+				<p>
+					<strong style={{ fontSize: '1.1em', color: 'darkmagenta' }}>Improved Blacklist</strong> - your blacklist now shows the date you blacklisted someone,
+					as well as letting you save a reason to help you keep your blacklist organized. (A new and improved UI for this is on the way, and coming soon)
+				</p>
+
+				<div className="ui header">
+					<p>Welcome to Season 18!</p>
+				</div>
+				<h4>The top 10 players of season 17 are:</h4>
+				<ol>
+					<li>Godxevoir: 2035</li>
+					<li>pinguREFORMED: 1946</li>
+					<li>johnscoutman: 1843</li>
+					<li>007Bunny: 1819</li>
+					<li>godhemzelve: 1817</li>
+					<li>carlgauss: 1813</li>
+					<li>thenavneet: 1804</li>
+					<li>alwaysHigh: 1800</li>
+					<li>scorcha333: 1798</li>
+					<li>ClownGamer: 1796</li>
+				</ol>
+
+				<hr style={{ width: '100%' }} />
+
+				<div className="ui header">
 					<p>Version 1.9.1 released 3-1-2022</p>
 				</div>
 				<h3>New Features:</h3>

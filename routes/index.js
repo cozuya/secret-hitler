@@ -2,6 +2,7 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
+const Game = require('../models/game');
 const ModThread = require('../models/modThread');
 const Profile = require('../models/profile');
 const { socketRoutes } = require('./socket/routes');
@@ -172,6 +173,9 @@ module.exports = () => {
 				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
 				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
 
+				const gameSettingsWithoutBlacklist = Object.assign({}, account.gameSettings);
+				delete gameSettingsWithoutBlacklist.blacklist;
+
 				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
@@ -180,7 +184,7 @@ module.exports = () => {
 					verified: req.user.verified,
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
-					gameSettings: account.gameSettings,
+					gameSettings: gameSettingsWithoutBlacklist,
 					blacklist,
 					primaryColor: account.primaryColor || DEFAULTTHEMECOLORS.primaryColor,
 					secondaryColor: account.secondaryColor || DEFAULTTHEMECOLORS.secondaryColor,
@@ -234,11 +238,6 @@ module.exports = () => {
 	app.get('/observe/', (req, res) => {
 		if (req.user) {
 			res.redirect('/game/');
-			return;
-		}
-
-		if (process.env.NODE_ENV === 'production') {
-			renderPage(req, res, '403', '403');
 			return;
 		}
 
@@ -312,6 +311,7 @@ module.exports = () => {
 						_profile.staffRole = account.staffRole;
 						_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
+						_profile.playerPronouns = account.gameSettings.playerPronouns || '';
 
 						Account.findOne({ username: authedUser }).then(acc => {
 							if (acc && account.username === acc.username) {
@@ -412,7 +412,36 @@ module.exports = () => {
 							res.send(chatLog.join('<br>'));
 						}
 					})
-					.catch(err => debug(err));
+					.catch(err => console.debug(err));
+			} else {
+				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
+			}
+		});
+	});
+
+	app.get('/gameJSON', (req, res) => {
+		const id = req.query.id;
+
+		if (!req.session.passport) {
+			return;
+		}
+
+		const username = req.session.passport.user;
+
+		Account.findOne({ username }).then(account => {
+			if (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin' || account.staffRole === 'trialmod') {
+				Game.findOne({ uid: id })
+					.lean()
+					.exec()
+					.then(game => {
+						if (!game) {
+							res.status(404).send('Game not found');
+						} else {
+							res.header('Content-Type', 'application/json');
+							res.send(game);
+						}
+					})
+					.catch(err => console.debug(err));
 			} else {
 				res.status(401).send('You cannot access this resource. Ensure you are logged in.');
 			}

@@ -37,30 +37,56 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const userIdx = userList.findIndex(user => user.userName === passport.user);
 			const aem = account.staffRole && (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin');
 			const veteran = account.staffRole && account.staffRole === 'veteran';
+			const user = userList.find(u => u.userName === passport.user);
+
 			for (const setting in data) {
 				if (setting == 'blacklist') {
-					data[setting].splice(0, data[setting].length - 30);
+					const blacklist = data[setting].slice(-30);
+					if (
+						typeof blacklist === 'object' &&
+						typeof blacklist.length === 'number' &&
+						blacklist.length <= 30 &&
+						blacklist.every(
+							entry =>
+								typeof entry === 'object' && typeof entry.userName === 'string' && typeof entry.reason === 'string' && typeof entry.timestamp === 'number'
+						)
+					) {
+						account.gameSettings.blacklist = blacklist;
+						if (user) user.blacklist = blacklist;
+					}
 				}
 
-				const restrictedSettings = [
-					'blacklist',
-					'staffDisableVisibleElo',
-					'staffDisableVisibleXP',
-					'staffDisableStaffColor',
-					'staffIncognito',
-					'newReport',
-					'previousSeasonAward',
-					'specialTournamentStatus',
-					'ignoreIPBans',
-					'tournyWins',
-					'__proto__',
-					'prototype',
-					'constructor'
+				const allowedSettings = [
+					'enableTimestamps',
+					'enableRightSidebarInGame',
+					'disablePlayerColorsInChat',
+					'disablePlayerCardbacks',
+					'disableHelpMessages',
+					'disableHelpIcons',
+					'disableConfetti',
+					'disableCrowns',
+					'disableSeasonal',
+					'disableAggregations',
+					'disableKillConfirmation',
+					'soundStatus',
+					'fontSize',
+					'fontFamily',
+					'isPrivate',
+					'disableElo',
+					'fullheight',
+					'safeForWork',
+					'keyboardShortcuts',
+					'notifyForNewLobby',
+					'gameFilters',
+					'gameNotes',
+					'playerNotes',
+					'truncatedSize',
+					'claimCharacters',
+					'claimButtons'
 				];
 
 				if (
-					!restrictedSettings.includes(setting) ||
-					(setting === 'blacklist' && data[setting].length <= 30) ||
+					allowedSettings.includes(setting) ||
 					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
 					(setting === 'staffDisableVisibleXP' && (aem || veteran)) ||
 					(setting === 'staffIncognito' && aem) ||
@@ -72,6 +98,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (setting === 'staffIncognito' && aem) {
 					const userListInfo = {
 						userName: passport.user,
+						playerPronouns: account.gameSettings.playerPronouns,
 						staffRole: account.staffRole || '',
 						isContributor: account.isContributor || false,
 						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
@@ -109,10 +136,12 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userList.push(userListInfo);
 					sendUserList();
 				}
-			}
 
-			const user = userList.find(u => u.userName === passport.user);
-			if (user) user.blacklist = account.gameSettings.blacklist;
+				if (setting === 'playerPronouns' && ['he/him/his', 'she/her/hers', 'they/them/theirs', 'Any Pronouns', ''].includes(data[setting])) {
+					account.gameSettings.playerPronouns = data[setting];
+					if (user) user.playerPronouns = data[setting];
+				}
+			}
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
@@ -126,6 +155,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				account.gameSettings.isPrivate = currentPrivate;
 				account.save(() => {
 					socket.emit('gameSettings', account.gameSettings);
+					sendUserList();
 				});
 			}
 		})

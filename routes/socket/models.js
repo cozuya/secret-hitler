@@ -71,10 +71,16 @@ module.exports.newStaff = {
 	contributorUserNames: []
 };
 
-const staffList = [];
-Account.find({ staffRole: { $exists: true } }).then(accounts => {
-	accounts.forEach(user => (staffList[user.username] = user.staffRole));
-});
+const staffList = (module.exportsstaffList = []);
+
+module.exports.getStaffList = () => {
+	module.exports.staffList = [];
+	Account.find({ staffRole: { $exists: true } }).then(accounts => {
+		accounts.forEach(user => (staffList[user.username] = user.staffRole));
+	});
+};
+
+module.exports.getStaffList();
 
 module.exports.getPowerFromRole = role => {
 	if (role === 'admin') return 3;
@@ -140,6 +146,7 @@ module.exports.formattedUserList = isAEM => {
 	return module.exports.userList
 		.map(user => ({
 			userName: user.userName,
+			playerPronouns: user.playerPronouns,
 			wins: prune(user.wins),
 			losses: prune(user.losses),
 			rainbowWins: prune(user.rainbowWins),
@@ -189,10 +196,23 @@ const userListEmitter = {
 		}
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
+			const staffUserList = Object.keys(staffList).filter(
+				name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+			);
+			const staffSocketIds = Object.keys(io.sockets.sockets).filter(id => staffUserList.includes(io.sockets.sockets[id].handshake.session.passport?.user));
+			const nonStaffSocketIds = Object.keys(io.sockets.sockets).filter(id => !staffSocketIds.includes(id));
+
 			userListEmitter.send = false;
-			io.sockets.emit('fetchUser'); // , {
-			// 	list: module.exports.formattedUserList()
-			// });
+
+			// Send to staff
+			staffSocketIds.forEach(id => {
+				io.sockets.sockets[id].emit('userList', { list: module.exports.formattedUserList(true) });
+			});
+
+			// Send to non-staff
+			nonStaffSocketIds.forEach(id => {
+				io.sockets.sockets[id].emit('userList', { list: module.exports.formattedUserList(false) });
+			});
 		}
 	}, 100)
 };
@@ -250,7 +270,9 @@ module.exports.formattedGameList = () => {
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
 		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlistedGame || undefined
+		isUnlisted: games[gameName].general.unlistedGame || undefined,
+		avalonSH: games[gameName].general.avalonSH || undefined,
+		noTopdecking: games[gameName].general.noTopdecking || undefined
 	}));
 };
 

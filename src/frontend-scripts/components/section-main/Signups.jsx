@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import * as Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 let signupType = 'getSignups';
 

@@ -446,6 +446,10 @@ module.exports.accounts = torIpsParam => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email, isPrivate } = req.body;
+		if (!username || !password || !password2) {
+			res.status(401).json({ message: 'Your username or password cannot be empty.' });
+			return;
+		}
 		let { bypassKey, bypass } = req.body;
 		bypassKey = bypass || bypassKey;
 		let hasBypass = false;
@@ -544,8 +548,8 @@ module.exports.accounts = torIpsParam => {
 		'/account/signin',
 		(req, res, next) => {
 			testIP(req.expandedIP, (banType, unbanTime, permanent) => {
-				if (banType && banType != 'new') {
-					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+				if (banType && banType !== 'new' && banType !== 'fragbanSmall' && banType !== 'fragbanLarge') {
+					if (banType === 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 					else if (banType === 'small' || banType === 'big' || banType === 'tiny') {
 						req.ipBanned = banType;
 						req.ipBanEnd = unbanTime;
@@ -772,8 +776,8 @@ module.exports.accounts = torIpsParam => {
 	const oAuthAuthentication = (req, res, next, type) => {
 		const ip = req.expandedIP;
 		testIP(ip, (banType, unbanTime) => {
-			if (banType && banType !== 'new') {
-				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+			if (banType && banType !== 'new' && banType !== 'fragbanSmall' && banType !== 'fragbanLarge') {
+				if (banType === 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 				else if (banType === 'small' || banType === 'big') {
 					res
 						.status(403)

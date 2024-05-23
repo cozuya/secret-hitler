@@ -3,12 +3,11 @@ import $ from 'jquery';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 import classnames from 'classnames';
-
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
-import * as Swal from 'sweetalert2';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
@@ -97,7 +96,7 @@ class Players extends React.Component {
 
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-				if (!gameSettings.disableKillConfirmation) {
+				if (!userInfo.gameSettings.disableKillConfirmation) {
 					Swal.fire({
 						title: `Are you sure you want to execute {${index + 1}} ${name}?`,
 						showCancelButton: true,
@@ -125,6 +124,30 @@ class Players extends React.Component {
 					playerIndex: index,
 					uid: gameInfo.general.uid
 				});
+			}
+		}
+
+		if (phase === 'assassination' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				if (!gameSettings.disableKillConfirmation) {
+					Swal.fire({
+						title: `Are you sure you want to assassinate {${index + 1}} ${name}?`,
+						showCancelButton: true,
+						icon: 'warning'
+					}).then(result => {
+						if (result.value) {
+							socket.emit('selectedPlayerToAssassinate', {
+								playerIndex: index,
+								uid: gameInfo.general.uid
+							});
+						}
+					});
+				} else {
+					socket.emit('selectedPlayerToAssassinate', {
+						playerIndex: index,
+						uid: gameInfo.general.uid
+					});
+				}
 			}
 		}
 	};
@@ -389,21 +412,23 @@ class Players extends React.Component {
 								Object.keys(playersState[i].cardStatus).length &&
 								Object.keys(playersState[i].cardStatus.cardBack).length
 							) {
-								if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+								const cardBack = playersState[i].cardStatus.cardBack;
+								const cardName = cardBack.cardName === 'morgana' ? 'fascist' : cardBack.cardName;
+
+								if (cardBack.icon !== undefined) {
+									classes = `${classes} ${cardName}${cardBack.icon.toString()}`;
 								} else {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
+									classes = `${classes} ${cardName}`;
 								}
-							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-								if (publicPlayersState[i].cardStatus.cardBack.icon || (publicPlayersState[i].cardStatus.cardBack.icon === 0 && !hideRoles)) {
+							} else if (publicPlayersState && publicPlayersState.length && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+								const cardBack = publicPlayersState[i].cardStatus.cardBack;
+								const cardName = cardBack.cardName === 'morgana' ? 'fascist' : cardBack.cardName;
+
+								if (cardBack.icon !== undefined) {
 									// we want to only exclude role information -- the `icon` property is a solid tipoff that we have a role card shown
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
-								} else if (
-									!hideRoles ||
-									(publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-fascist' &&
-										publicPlayersState[i].cardStatus.cardBack.cardName !== 'membership-liberal')
-								) {
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
+									classes = `${classes} ${cardName}${cardBack.icon.toString()}`;
+								} else if (!hideRoles || (cardName !== 'membership-fascist' && cardName !== 'membership-liberal')) {
+									classes = `${classes} ${cardName}`;
 								}
 							}
 

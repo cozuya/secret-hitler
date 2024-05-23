@@ -23,6 +23,7 @@ class Settings extends React.Component {
 			.substring(6),
 		preview: '',
 		cardbackUploadStatus: '',
+		playerPronouns: '',
 		isUploaded: false,
 		profileSearchValue: '',
 		fontChecked: 'comfortaa',
@@ -73,6 +74,7 @@ class Settings extends React.Component {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
+			playerPronouns: gameSettings.playerPronouns || '',
 			fontChecked: gameSettings.fontFamily || 'comfortaa',
 			fontSize: gameSettings.fontSize ? gameSettings.fontSize : 16,
 			enableTimestamps: gameSettings.enableTimestamps || '',
@@ -324,6 +326,129 @@ class Settings extends React.Component {
 						>
 							The quick brown fascist jumped over the lazy liberal. (inter)
 						</label>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	renderPronouns() {
+		const changePronounSubmit = pronouns => {
+			this.setState({
+				playerPronouns: pronouns
+			});
+
+			this.props.socket.emit('updateGameSettings', {
+				playerPronouns: pronouns
+			});
+		};
+
+		return (
+			<div className="row pronoun-container">
+				<h4 className="ui header">Pronouns</h4>
+				<div className="ui list">
+					<div className="item">
+						<div className="ui radio checkbox">
+							<input
+								type="radio"
+								id="none"
+								onChange={() => {
+									changePronounSubmit('');
+								}}
+								checked={this.state.playerPronouns === ''}
+							/>
+							<label
+								htmlFor="none"
+								style={{
+									fontSize: this.state.fontSize
+								}}
+							>
+								N/A (No pronouns will display)
+							</label>
+						</div>
+					</div>
+					<div className="item">
+						<div className="ui radio checkbox">
+							<input
+								type="radio"
+								id="male"
+								onChange={() => {
+									changePronounSubmit('he/him/his');
+								}}
+								checked={this.state.playerPronouns === 'he/him/his'}
+							/>
+							<label
+								htmlFor="male"
+								style={{
+									fontSize: this.state.fontSize
+								}}
+							>
+								he/him/his
+							</label>
+						</div>
+					</div>
+					<div className="item">
+						<div className="ui radio checkbox">
+							<input
+								type="radio"
+								id="female"
+								onChange={() => {
+									changePronounSubmit('she/her/hers');
+								}}
+								checked={this.state.playerPronouns === 'she/her/hers'}
+							/>
+							<label
+								htmlFor="female"
+								style={{
+									fontSize: this.state.fontSize
+								}}
+							>
+								she/her/hers
+							</label>
+						</div>
+					</div>
+					<div className="item">
+						<div className="ui radio checkbox">
+							<input
+								type="radio"
+								id="they"
+								onChange={() => {
+									changePronounSubmit('they/them/theirs');
+								}}
+								checked={this.state.playerPronouns === 'they/them/theirs'}
+							/>
+							<label
+								htmlFor="they"
+								style={{
+									fontSize: this.state.fontSize
+								}}
+							>
+								they/them/theirs
+							</label>
+						</div>
+					</div>
+					<div className="item">
+						<div className="ui radio checkbox">
+							<input
+								type="radio"
+								id="any"
+								onChange={() => {
+									changePronounSubmit('Any Pronouns');
+								}}
+								checked={this.state.playerPronouns === 'Any Pronouns'}
+							/>
+							<label
+								htmlFor="any"
+								style={{
+									fontSize: this.state.fontSize
+								}}
+							>
+								Any Pronouns
+							</label>
+						</div>
+					</div>
+					<div className="ui centered">
+						<p>If you do not see your pronouns listed above, please contact a moderator to have them set manually.</p>
 					</div>
 				</div>
 			</div>
@@ -1119,6 +1244,7 @@ class Settings extends React.Component {
 							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>
 					</div>
+					{this.renderPronouns()}
 				</div>
 			</section>
 		);

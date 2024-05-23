@@ -455,7 +455,7 @@
 
 		> .column {
 			text-align: center;
-			width: 10% !important;
+			width: 9% !important;
 			padding: 10px 0 2px !important;
 		}
 	}
@@ -820,8 +820,18 @@
 	}
 }
 
-.ui.header {
+.ui.header,
+.ui.blacklist,
+.ui.pronouns {
 	color: var(--theme-primary);
+}
+
+.ui.blacklist.header {
+	text-align: center;
+}
+
+.ui.blacklist.text {
+	color: var(--theme-text-1);
 }
 
 .ui.primary.buttons .button:hover,
@@ -1073,6 +1083,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 .player-small-cardback.moira {
 	box-shadow: 0 0 5px 2px #ff95fb !important;
+}
+
+.godhemzelve {
+	color: #beedc8 !important;
+}
+.player-small-cardback.godhemzelve {
+	box-shadow: 0 0 5px 2px #beedc8 !important;
 }
 
 .vig {

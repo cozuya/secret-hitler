@@ -134,6 +134,10 @@ class Tracks extends React.Component {
 		let casualgameTooltip;
 		let practiceGame;
 		let practiceGameTooltip;
+		let avalonSH;
+		let avalonSHTooltip;
+		let noTopdecking;
+		let noTopdeckingTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -236,6 +240,16 @@ class Tracks extends React.Component {
 			practiceGameTooltip = 'Practice game - results do not count for Elo, gameplay rules are enforced';
 		}
 
+		if (game.avalonSH) {
+			avalonSH = <i className="shield icon" />;
+			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
+		}
+
+		if (game.noTopdecking) {
+			noTopdecking = <i className="gavel icon" />;
+			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
+		}
+
 		if (game.timedMode) {
 			timedMode = (
 				<span>
@@ -321,6 +335,16 @@ class Tracks extends React.Component {
 				{blind && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
+					</span>
+				)}
+				{avalonSH && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
+					</span>
+				)}
+				{noTopdecking && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
 					</span>
 				)}
 				{rainbowgame && (
@@ -631,7 +655,7 @@ class Tracks extends React.Component {
 		const showDate = () => {
 			if (gameInfo && gameInfo.general && gameInfo.general.date) {
 				// field only exists in replays
-				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}.`);
+				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}`);
 			}
 		};
 

@@ -126,7 +126,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 		}
 
 		socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-		socket.emit('sendUser', userInfo); // To force a new playerlist pull
+		socket.emit('requestUserList'); // To force a new playerlist pull
 		if (renderInProfile) {
 			setBlacklistVisible(visibleStatus);
 			setPopupOpen(false);
@@ -209,6 +209,7 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
 			>
 				<Popup.Header>{notVisible ? '?' : blindMode ? (isTracksFlipped ? gameInfo?.general?.replacementNames[index] : '?') : userName}</Popup.Header>
 				<Popup.Content>
+					{user && user.playerPronouns && user.playerPronouns !== '' && !notVisible && !blindMode && <div>({user.playerPronouns})</div>}
 					<List>
 						{!notVisible && !blindMode && user && !user.staffDisableVisibleElo && (
 							<List.Item>

@@ -77,6 +77,10 @@ const DisplayLobbies = props => {
 		let casualGameTooltip;
 		let practiceGame;
 		let practiceGameTooltip;
+		let avalonSH;
+		let avalonSHTooltip;
+		let noTopdecking;
+		let noTopdeckingTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -182,6 +186,16 @@ const DisplayLobbies = props => {
 			rainbowgameTooltip = 'Experienced Game';
 		}
 
+		if (game.avalonSH) {
+			avalonSH = <i className="shield icon" />;
+			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
+		}
+
+		if (game.noTopdecking) {
+			noTopdecking = <i className="gavel icon" />;
+			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
+		}
+
 		if (game.timedMode) {
 			timedMode = (
 				<span style={{ color: 'peru' }}>
@@ -272,6 +286,16 @@ const DisplayLobbies = props => {
 				{experiencedMode && (
 					<span data-tooltip={experiancedModeTooltip} data-inverted="">
 						{experiencedMode}
+					</span>
+				)}
+				{avalonSH && (
+					<span data-tooltip={avalonSHTooltip} data-inverted="">
+						{avalonSH}
+					</span>
+				)}
+				{noTopdecking && (
+					<span data-tooltip={noTopdeckingTooltip} data-inverted="">
+						{noTopdecking}
 					</span>
 				)}
 				{rainbowgame && (

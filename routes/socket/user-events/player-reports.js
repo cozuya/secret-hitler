@@ -1,4 +1,4 @@
-const Account = require('../../../models/account');
+// const Account = require('../../../models/account');
 const { userList, games } = require('../models');
 const PlayerReport = require('../../../models/playerReport');
 const https = require('https');
@@ -48,7 +48,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
 	const game = games[data.uid];
-	if (!game && data.uid) return;
+	if ((!game || !game.general) && data.uid) return;
 
 	const gameType = data.uid ? (game.general.isTourny ? 'tournament' : game.general.casualGame ? 'casual' : 'standard') : 'homepage';
 
@@ -109,21 +109,21 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 			return;
 		}
 
-		Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
-			accounts.forEach(account => {
-				const onlineSocketId = Object.keys(io.sockets.sockets).find(
-					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-				);
+		// Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
+		// 	accounts.forEach(account => {
+		// 		const onlineSocketId = Object.keys(io.sockets.sockets).find(
+		// 			socketId =>
+		// 				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+		// 		);
 
-				account.gameSettings.newReport = true;
+		// 		account.gameSettings.newReport = true;
 
-				if (onlineSocketId) {
-					io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
-				}
-				account.save();
-			});
-		});
+		// 		if (onlineSocketId) {
+		// 			io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+		// 		}
+		// 		account.save();
+		// 	});
+		// });
 
 		if (typeof callback === 'function') {
 			if (reportError) {
@@ -136,18 +136,16 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 };
 
 module.exports.handlePlayerReportDismiss = () => {
-	Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
-		accounts.forEach(account => {
-			const onlineSocketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-			);
-
-			account.gameSettings.newReport = false;
-
-			if (onlineSocketId) {
-				io.sockets.sockets[onlineSocketId].emit('reportUpdate', false);
-			}
-			account.save();
-		});
-	});
+	// Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
+	// 	accounts.forEach(account => {
+	// 		const onlineSocketId = Object.keys(io.sockets.sockets).find(
+	// 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+	// 		);
+	// 		account.gameSettings.newReport = false;
+	// 		if (onlineSocketId) {
+	// 			io.sockets.sockets[onlineSocketId].emit('reportUpdate', false);
+	// 		}
+	// 		account.save();
+	// 	});
+	// });
 };

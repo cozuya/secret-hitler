@@ -39,7 +39,6 @@ const {
 	sendGameList,
 	sendGeneralChats,
 	sendUserList,
-	sendSpecificUserList,
 	sendReplayGameData,
 	sendSignups,
 	sendAllSignups,
@@ -58,12 +57,13 @@ const {
 	selectBurnCard
 } = require('./game/policy-powers');
 const { saveAndDeleteGame } = require('./game/end-game');
-const { games, emoteList, cloneSettingsFromRedis, modDMs } = require('./models');
+const { games, emoteList, cloneSettingsFromRedis, modDMs, getStaffList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 const https = require('https');
 const moment = require('moment');
+const { selectPlayerToAssassinate } = require('./game/assassination');
 
 let modUserNames = [],
 	editorUserNames = [],
@@ -208,9 +208,6 @@ module.exports.socketRoutes = () => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 					if (account.isTournamentMod) isTourneyMod = true;
 				});
-			} else {
-				socket.disconnect();
-				return;
 			}
 
 			sendGeneralChats(socket);
@@ -272,7 +269,7 @@ module.exports.socketRoutes = () => {
 				socket.emit('emoteList', emoteList);
 
 				// sockets should not be unauthenticated but let's make sure anyway
-				if (passport.user) {
+				if (passport && passport.user) {
 					const dmID = Object.keys(modDMs).find(x => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
 					if (dmID) {
 						socket.emit('preOpenModDMs');
@@ -311,12 +308,8 @@ module.exports.socketRoutes = () => {
 				handleSocketDisconnect(socket);
 			});
 
-			socket.on('sendUser', user => {
-				if (authenticated && isAEM) {
-					sendSpecificUserList(socket, 'moderator');
-				} else {
-					sendSpecificUserList(socket);
-				}
+			socket.on('requestUserList', () => {
+				sendUserList(socket);
 			});
 
 			socket.on('feedbackForm', data => {
@@ -423,6 +416,7 @@ module.exports.socketRoutes = () => {
 			socket.on('regatherAEMUsernames', () => {
 				if (authenticated && isAEM) {
 					gatherStaffUsernames();
+					getStaffList();
 				}
 			});
 
@@ -534,7 +528,7 @@ module.exports.socketRoutes = () => {
 			socket.on('leaveGame', data => {
 				const game = findGame(data);
 
-				if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
+				if (game && game.general && io.sockets.adapter.rooms[game.general.uid] && socket) {
 					socket.leave(game.general.uid);
 				}
 
@@ -752,6 +746,13 @@ module.exports.socketRoutes = () => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data, socket);
+				}
+			});
+			socket.on('selectedPlayerToAssassinate', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPlayerToAssassinate(passport, game, data, socket);
 				}
 			});
 		});

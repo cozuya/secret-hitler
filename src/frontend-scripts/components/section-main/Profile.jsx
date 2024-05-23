@@ -3,10 +3,10 @@ import { fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
-import $ from 'jquery';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
 import Swal from 'sweetalert2';
+import $ from 'jquery';
 import { Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
@@ -26,7 +26,6 @@ class ProfileWrapper extends React.Component {
 		this.state = {
 			bioStatus: 'displayed',
 			blacklistClicked: false,
-			blacklistShown: false,
 			openTime: Date.now(),
 			badgeSort: 'badge',
 			profileSearchValue: ''
@@ -101,10 +100,22 @@ class ProfileWrapper extends React.Component {
 						headers={['Match Type', 'Matches', 'Winrate']}
 						rows={this.gamesAndSuccessTable(
 							'Standard Matches',
-							matches.rainbowMatches.liberal.events + matches.greyMatches.liberal.events + matches.practiceMatches.liberal.events,
-							matches.rainbowMatches.liberal.successes + matches.greyMatches.liberal.successes + matches.practiceMatches.liberal.successes,
-							matches.rainbowMatches.fascist.events + matches.greyMatches.fascist.events + matches.practiceMatches.fascist.events,
-							matches.rainbowMatches.fascist.successes + matches.greyMatches.fascist.successes + matches.practiceMatches.fascist.successes
+							matches.rainbowMatches.liberal.events +
+								matches.greyMatches.liberal.events +
+								matches.practiceMatches.liberal.events +
+								matches.silentMatches.liberal.events,
+							matches.rainbowMatches.liberal.successes +
+								matches.greyMatches.liberal.successes +
+								matches.practiceMatches.liberal.successes +
+								matches.silentMatches.liberal.successes,
+							matches.rainbowMatches.fascist.events +
+								matches.greyMatches.fascist.events +
+								matches.practiceMatches.fascist.events +
+								matches.silentMatches.fascist.events,
+							matches.rainbowMatches.fascist.successes +
+								matches.greyMatches.fascist.successes +
+								matches.practiceMatches.fascist.successes +
+								matches.silentMatches.fascist.successes
 						)}
 					/>
 				</CollapsibleSegment>
@@ -416,25 +427,6 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	blackListClick = e => {
-		const { gameSettings } = this.props.userInfo;
-		const { profile } = this.props;
-		const name = profile._id;
-		e.preventDefault();
-		this.setState(
-			{
-				blacklistClicked: true
-			},
-			() => {
-				if (gameSettings && userInBlacklist(name, gameSettings.blacklist)) {
-					gameSettings.blacklist.splice(getBlacklistIndex(name, gameSettings.blacklist), 1);
-				}
-				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-				this.props.socket.emit('sendUser', this.props.userInfo); // To force a new playerlist pull
-			}
-		);
-	};
-
 	renderBlacklist() {
 		const { gameSettings } = this.props.userInfo;
 		const { profile } = this.props;
@@ -561,11 +553,19 @@ class ProfileWrapper extends React.Component {
 					/>
 				)}
 				<div className="ui grid">
-					<h1 className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`} style={{ paddingLeft: 0 }}>
+					<h1
+						className={`ui header ten wide column profile ${userClasses.replace('profile-picture', '')}`}
+						style={{ paddingLeft: 0, paddingBottom: 0, marginBottom: 0 }}
+					>
 						{renderStatus()}
 						{prefix}
 						{profile._id}
 					</h1>
+					{profile.playerPronouns && profile.playerPronouns !== '' && (
+						<span className="ui pronouns eight wide column" style={{ paddingLeft: 0, paddingTop: 0, fontStyle: 'italic', fontWeight: 700 }}>
+							({profile.playerPronouns})
+						</span>
+					)}
 					<div className="ui right aligned six wide column">
 						<span>
 							<strong>
@@ -634,7 +634,7 @@ class ProfileWrapper extends React.Component {
 	render() {
 		const { profile } = this.props;
 
-		const blacklist = this.props?.profile?.blacklist || this.props?.userInfo?.gameSettings?.blacklist;
+		const blacklist = profile._id !== this.props?.userInfo?.userName ? this.props?.profile?.blacklist : this.props?.userInfo?.gameSettings?.blacklist;
 
 		const getTimestamp = ts => {
 			const pad = (n, s = 2) => `${new Array(s).fill(0)}${n}`.slice(-s);
@@ -642,17 +642,19 @@ class ProfileWrapper extends React.Component {
 			return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 		};
 
-		const blacklistInfo = element => {
+		const getBlackListInfo = element => {
 			if (typeof element === 'string') {
-				return <a href={`/game/#/profile/${element}`}>{element}</a>;
+				return {
+					username: element,
+					timestamp: null,
+					reason: null
+				};
 			} else {
-				return (
-					<span>
-						<a href={`/game/#/profile/${element['userName']}`}>{element['userName']}</a>&nbsp;
-						{getTimestamp(element['timestamp'])}
-						{element['reason'] ? `: ${element['reason']}` : ''}
-					</span>
-				);
+				return {
+					username: element.userName,
+					timestamp: getTimestamp(element.timestamp),
+					reason: element.reason
+				};
 			}
 		};
 
@@ -675,37 +677,56 @@ class ProfileWrapper extends React.Component {
 				</a>
 				{children}
 				<div
-					className="ui basic small modal blacklistmodal"
+					className="ui basic modal blacklistmodal"
 					ref={c => {
 						this.blacklistModal = c;
 					}}
 				>
-					<div className="ui header">{this.props?.profile?.blacklist ? "Player's" : 'Your'} blacklist</div>
-					{blacklist &&
-						blacklist.map(playerName => {
-							const userName = playerName?.userName || playerName;
-							return (
-								<div key={userName} className={`blacklist-${userName}`}>
-									{!this.props?.profile?.blacklist && (
-										<i
-											onClick={() => {
-												const { gameSettings } = this.props.userInfo;
-												gameSettings.blacklist.splice(getBlacklistIndex(userName, gameSettings.blacklist), 1);
+					<div className="ui blacklist header">{this.props?.profile?._id !== this.props?.userInfo.userName ? "Player's Blacklist" : 'Your Blacklist'}</div>
+					{blacklist && (
+						<table className="ui single line table">
+							<thead>
+								<tr>
+									<th>Username</th>
+									<th>Blacklist Date</th>
+									<th>Reason</th>
+									{this.props?.profile?._id === this.props?.userInfo?.userName && <th>Delete</th>}
+								</tr>
+							</thead>
+							<tbody>
+								{blacklist.map(playerName => {
+									const userName = playerName?.userName || playerName;
+									const blacklistInfo = getBlackListInfo(playerName);
+									return (
+										<tr key={userName} className={`blacklist-${userName}`}>
+											<td>{blacklistInfo.username}</td>
+											<td>{blacklistInfo.timestamp}</td>
+											<td>{blacklistInfo.reason}</td>
+											{this.props?.profile?._id === this.props?.userInfo?.userName && (
+												<td>
+													<button
+														className="ui blacklist button"
+														onClick={() => {
+															const { gameSettings } = this.props.userInfo;
+															gameSettings.blacklist.splice(getBlacklistIndex(userName, gameSettings.blacklist), 1);
 
-												this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
-												this.props.socket.emit('sendUser', this.props.userInfo); // To force a new playerlist pull
-												setTimeout(() => {
-													this.forceUpdate();
-												}, 500);
-											}}
-											className="large close icon"
-											style={{ cursor: 'pointer' }}
-										/>
-									)}
-									{blacklistInfo(playerName)}
-								</div>
-							);
-						})}
+															this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
+															this.props.socket.emit('requestUserlist'); // To force a new playerlist pull
+															setTimeout(() => {
+																this.forceUpdate();
+															}, 500);
+														}}
+													>
+														<span className="ui blacklist text">Delete</span>
+													</button>
+												</td>
+											)}
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					)}
 				</div>
 			</section>
 		);
