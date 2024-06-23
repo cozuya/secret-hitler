@@ -79,5 +79,38 @@ module.exports.chatReplacements = [
 		aemCooldown: 15,
 		normalCooldown: 180,
 		normalGames: 50
+	},
+	{
+		id: 10,
+		regex: /^avalon.sh$/i,
+		replacement:
+			'ONLY FOR AVALON SH MODE: Avalon SH mode is a custom game mode that adds 3 new roles to the game: Percival, Merlin, and Morgana. Fascists also get a new win condition as after 5 liberal policies are enacted or Hilter is executed they can still try to kill Merlin to win.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 11,
+		regex: /^p.ercival$/i,
+		replacement: 'ONLY FOR AVALON SH MODE: Percival is a liberal role that knows who Merlin and Morgana are, but not which is which.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 12,
+		regex: /^m.erlin$/i,
+		replacement: 'ONLY FOR AVALON SH MODE: Merlin is a liberal role that knows who the fascists are, but not which of them is Hitler.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 13,
+		regex: /^m.organa$/i,
+		replacement: "ONLY FOR AVALON SH MODE: Morgana is a reg fascist role (can't be Hitler) that appears as possible Merlin to Percival.",
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
 	}
 ];
