@@ -13,7 +13,7 @@ const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
-const { DEFAULTTHEMECOLORS } = require('../src/frontend-scripts/node-constants');
+const { DEFAULTTHEMECOLORS, RAINBOWTHRESHHOLD } = require('../src/frontend-scripts/node-constants');
 const { checkBadgesAccount } = require('./socket/badges');
 const moment = require('moment');
 
@@ -191,14 +191,14 @@ module.exports = () => {
 					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor,
 					backgroundColor,
 					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
-						backgroundLightness > 50 ? backgroundLightness - 7 : backgroundLightness + 7
+						backgroundLightness > RAINBOWTHRESHHOLD ? backgroundLightness - 7 : backgroundLightness + 7
 					}%)`,
 					tertiaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
-						backgroundLightness > 50 ? backgroundLightness - 14 : backgroundLightness + 14
+						backgroundLightness > RAINBOWTHRESHHOLD ? backgroundLightness - 14 : backgroundLightness + 14
 					}%)`,
 					textColor,
-					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`,
-					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`
+					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > RAINBOWTHRESHHOLD ? textLightness - 7 : textLightness + 7}%)`,
+					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > RAINBOWTHRESHHOLD ? textLightness - 14 : textLightness + 14}%)`
 				};
 
 				if (process.env.NODE_ENV === 'production') {
@@ -247,13 +247,13 @@ module.exports = () => {
 		const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
 
 		const secondaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
-			backgroundLightness > 50 ? backgroundLightness - 5 : backgroundLightness + 5
+			backgroundLightness > RAINBOWTHRESHHOLD ? backgroundLightness - 5 : backgroundLightness + 5
 		}%)`;
 		const tertiaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
-			backgroundLightness > 50 ? backgroundLightness - 10 : backgroundLightness + 10
+			backgroundLightness > RAINBOWTHRESHHOLD ? backgroundLightness - 10 : backgroundLightness + 10
 		}%)`;
-		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`;
-		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`;
+		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > RAINBOWTHRESHHOLD ? textLightness - 7 : textLightness + 7}%)`;
+		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > RAINBOWTHRESHHOLD ? textLightness - 14 : textLightness + 14}%)`;
 
 		const gameObj = {
 			game: true,

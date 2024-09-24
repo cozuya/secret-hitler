@@ -1,4 +1,5 @@
 const cn = require('classnames');
+import { RAINBOWTHRESHHOLD, RAINBOWTHRESHHOLD } from './node-constants';
 
 export const TOU_CHANGES = [
 	{
@@ -92,7 +93,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		return rainbow
 			? eloDisabled
 				? cn(defaultClass, {
-						experienced1: w + l > 49,
+						experienced1: w + l > RAINBOWTHRESHHOLD - 1,
 						experienced2: w + l > 99,
 						experienced3: w + l > 199,
 						experienced4: w + l > 299,

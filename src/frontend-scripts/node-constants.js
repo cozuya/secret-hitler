@@ -1,5 +1,8 @@
 const cn = require('classnames');
 
+const RAINBOWTHRESHHOLD = 50;
+module.exports.RAINBOWTHRESHHOLD = RAINBOWTHRESHHOLD;
+
 module.exports.TOU_CHANGES = [
 	{
 		changeVer: '1.5',
@@ -92,7 +95,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		return rainbow
 			? eloDisabled
 				? cn(defaultClass, {
-						experienced1: w + l > 49,
+						experienced1: w + l > RAINBOWTHRESHHOLD - 1,
 						experienced2: w + l > 99,
 						experienced3: w + l > 199,
 						experienced4: w + l > 299,
