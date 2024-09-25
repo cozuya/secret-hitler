@@ -238,7 +238,7 @@ Account.find({ 'games.0': { $exists: true } })
 			acc.eloOverall = 1600;
 			acc.xpOverall = preResetGameCount;
 			acc.xpSeason = 0;
-			acc.isRainbowOverall = acc.xpOverall >= 50.0;
+			acc.isRainbowOverall = acc.xpOverall >= 10.0;
 			if (acc.isRainbowOverall) {
 				acc.dateRainbowOverall = new Date();
 			}
