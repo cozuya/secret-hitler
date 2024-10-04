@@ -68,7 +68,9 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			max: user.userName === 'Max' && user.staffRole === 'editor',
 			moira: user.userName === 'moira' && user.staffRole === 'editor',
 			bruno: user.userName === 'Bruno' && user.staffRole === 'editor',
-			anji: user.userName === 'Anji' && user.staffRole === 'editor'
+			anji: user.userName === 'Anji' && user.staffRole === 'editor',
+			carl: user.userName === 'carlgauss' && user.staffRole === 'editor',
+			rose: user.userName === 'Sorrose' && user.staffRole === 'editor'
 		});
 	} else if (
 		user.isContributor &&
