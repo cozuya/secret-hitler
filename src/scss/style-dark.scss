@@ -1115,6 +1115,20 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	box-shadow: 0 0 5px 2px #9073c9 !important;
 }
 
+.carl {
+	color: #726EFF !important;
+}
+.player-small-cardback.carl {
+	box-shadow: 0 0 5px 2px #726EFF !important;
+}
+
+.rose {
+	color: #fe7f9c !important;
+}
+.player-small-cardback.rose {
+	box-shadow: 0 0 5px 2px #fe7f9c !important;
+}
+
 #confetti {
 	position: absolute;
 	top: 0;
