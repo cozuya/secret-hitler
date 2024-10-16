@@ -1,10 +1,10 @@
-import React from 'react';
-import Switch from 'react-switch';
-import Select from 'react-select';
-import { Range } from 'rc-slider';
-import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
+import { Range } from 'rc-slider';
+import React from 'react';
+import Select from 'react-select';
+import Switch from 'react-switch';
 import Swal from 'sweetalert2';
+import blacklistedWords from '../../../../iso/blacklistwords';
 
 export default class Creategame extends React.Component {
 	constructor(props) {
@@ -49,6 +49,7 @@ export default class Creategame extends React.Component {
 			flappyMode: false,
 			flappyOnlyMode: false,
 			privateAnonymousRemakes: false,
+			allowBots: false,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -2320,6 +2321,26 @@ export default class Creategame extends React.Component {
 								value={[this.state.noTopdecking]}
 								marks={{ 0: 'TDing', 1: 'No TDing', 2: 'No Double TDing' }}
 							/>
+						</div>
+						<div className="four wide column">
+							<i class="fa-solid fa-robot"></i>
+							<h4 className="ui header">Allow Bots to join the game</h4>
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({
+											allowBots: checked,
+										});
+									}}
+									checked={this.state.checked}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
 						</div>
 					</div>
 					<div className="row">
