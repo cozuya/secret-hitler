@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import { Range } from 'rc-slider';
 import React from 'react';
-import Select from 'react-select';
 import Switch from 'react-switch';
-import Swal from 'sweetalert2';
+import Select from 'react-select';
+import { Range } from 'rc-slider';
 import blacklistedWords from '../../../../iso/blacklistwords';
+import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 
 export default class Creategame extends React.Component {
 	constructor(props) {
@@ -49,7 +49,7 @@ export default class Creategame extends React.Component {
 			flappyMode: false,
 			flappyOnlyMode: false,
 			privateAnonymousRemakes: false,
-			allowBots: false,
+			allowBots: true,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -600,6 +600,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -641,6 +642,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: true,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -682,6 +684,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -717,6 +720,7 @@ export default class Creategame extends React.Component {
 					isTourny: false,
 					blindMode: false,
 					timedMode: false,
+					allowBots: true,
 					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
@@ -766,6 +770,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -808,6 +813,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -892,6 +898,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -934,6 +941,7 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
+					allowBots: true,
 					customGameSettings: {
 						enabled: false,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
