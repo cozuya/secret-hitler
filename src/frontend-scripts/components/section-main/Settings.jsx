@@ -778,7 +778,7 @@ class Settings extends React.Component {
 			})
 				.then(data => {
 					this.setState({
-						cardbackUploadStatus: data.message,
+						cardbackUploadStatus: data.message ? data.message.toString() : '',
 						isUploaded: data.message === 'Image uploaded successfully.' ? this.state.preview : '',
 						preview: ''
 					});
