@@ -262,11 +262,13 @@ const continueSignup = config => {
 					soundStatus: 'pack2'
 				},
 				verified: true,
-				wins: 0,
-				losses: 0,
+				overall: {
+					wins: 0,
+					losses: 0
+				},
 				created: new Date(),
 				signupIP: signupIP,
-				hasNotDismissedSignupModal: true,
+				dismissedSignupModal: false,
 				verification: {
 					email: type === 'discord' ? profile.email : profile._json.email
 				},
@@ -390,9 +392,9 @@ module.exports.accounts = torIpsParam => {
 			username: req.user.username,
 			verified: req.user.verified,
 			email: req.user.verification ? req.user.verification.email : '',
-			discordUsername: req.user.discordUsername,
-			discordDiscriminator: req.user.discordDiscriminator,
-			githubUsername: req.user.githubUsername
+			discordUsername: req.user.discord.username,
+			discordDiscriminator: req.user.discor.discriminator,
+			githubUsername: req.user.github.username
 		});
 	});
 
@@ -467,7 +469,7 @@ module.exports.accounts = torIpsParam => {
 		const save = {
 			username,
 			isLocal: true,
-			hasNotDismissedSignupModal: true,
+			dismissedSignupModal: false,
 			gameSettings: {
 				soundStatus: 'pack2',
 				isPrivate
@@ -477,8 +479,10 @@ module.exports.accounts = torIpsParam => {
 			},
 			verified: false,
 			games: [],
-			wins: 0,
-			losses: 0,
+			overall: {
+				wins: 0,
+				losses: 0
+			},
 			created: new Date(),
 			signupIP,
 			lastConnectedIP: signupIP

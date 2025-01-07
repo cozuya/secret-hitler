@@ -306,7 +306,7 @@ class Players extends React.Component {
 					(!gameInfo.general.private || isStaff || userInfo.isSeated) &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback.fileExtension}?${player.customCardback.id})`
 						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`

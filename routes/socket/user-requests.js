@@ -203,37 +203,27 @@ module.exports.sendUserGameSettings = socket => {
 					playerPronouns: account.gameSettings.playerPronouns,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
-					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-					staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
-					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-					staffIncognito: account.gameSettings.staffIncognito,
-					wins: account.wins,
-					losses: account.losses,
-					rainbowWins: account.rainbowWins,
-					rainbowLosses: account.rainbowLosses,
+					staffDisableVisibleElo: account.gameSettings.staff.disableVisibleElo,
+					staffDisableVisibleXP: account.gameSettings.staff.disableVisibleXP,
+					staffDisableStaffColor: account.gameSettings.staff.disableStaffColor,
+					staffIncognito: account.gameSettings.staff.incognito,
 					isRainbowOverall: account.isRainbowOverall,
 					isRainbowSeason: account.isRainbowSeason,
 					isPrivate: account.gameSettings.isPrivate,
 					tournyWins: account.gameSettings.tournyWins,
 					blacklist: account.gameSettings.blacklist,
-					customCardback: account.gameSettings.customCardback,
-					customCardbackUid: account.gameSettings.customCardbackUid,
+					customCardback: account.gameSettings.customCardback.fileExtension,
+					customCardbackUid: account.gameSettings.customCardback.id,
 					previousSeasonAward: account.gameSettings.previousSeasonAward,
 					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-					eloOverall: account.eloOverall,
-					xpOverall: account.xpOverall,
-					eloSeason: account.eloSeason,
-					xpSeason: account.xpSeason,
+					overall: account.overall,
+					season: account.seasons ? account.seasons[CURRENTSEASONNUMBER] : {},
 					status: {
 						type: 'none',
 						gameId: null
 					}
 				};
 
-				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 				userList.push(userListInfo);
 				sendUserList();
 			}

@@ -76,13 +76,13 @@ class ProfileWrapper extends React.Component {
 				rows={[
 					[
 						'Elo',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.seasons[this.props.profile.seasons.length - 1].elo || 1600,
+						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.overall.elo || 1600
 					],
 					[
 						'XP',
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 0,
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 0
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.seasons[this.props.profile.seasons.length - 1].xp || 0,
+						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.overall.xp || 0
 					]
 				]}
 			/>
