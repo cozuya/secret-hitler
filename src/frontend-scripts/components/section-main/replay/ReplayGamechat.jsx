@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { loadReplay, updateUser } from '../../../actions/actions';
 import { processEmotes } from '../../../emotes';
-import { PLAYERCOLORS } from '../../../constants';
+import { PLAYER_COLORS } from '../../../constants';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -260,9 +260,9 @@ class ReplayGamechat extends React.Component {
 										? 'chat-user moderatorcolor'
 										: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat)
 										? isMod && !isSeated
-											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											: 'chat-user'
-										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+										: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
 								{isSeated ? (
@@ -277,9 +277,9 @@ class ReplayGamechat extends React.Component {
 											className={
 												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat)
 													? isMod && !isSeated
-														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 														: 'chat-user'
-													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+													: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
 										>
 											(Editor) 🔰

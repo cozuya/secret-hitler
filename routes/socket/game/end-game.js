@@ -10,7 +10,7 @@ const animals = require('../../../utils/animals');
 const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
-const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
+const { CURRENT_SEASON_NUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 const { LineGuess } = require('../util');
 const { checkBadgesELO, checkBadgesXP } = require('../badges');
 
@@ -31,7 +31,7 @@ const generateGameObject = game => {
 			chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
 			hiddenInfoChat: game?.private?.hiddenInfoChat,
 			isVerifiedOnly: game?.general?.isVerifiedOnly,
-			season: CURRENTSEASONNUMBER,
+			season: CURRENT_SEASON_NUMBER,
 			winningPlayers: game?.private?.seatedPlayers
 				?.filter(player => player?.wonGame)
 				?.map(player => ({
@@ -81,7 +81,7 @@ const generateGameObject = game => {
 		playerChats: game?.general?.playerChats,
 		chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
 		isVerifiedOnly: game?.general?.isVerifiedOnly,
-		season: CURRENTSEASONNUMBER,
+		season: CURRENT_SEASON_NUMBER,
 		losingPlayers: game?.publicPlayersState?.map(player => ({
 			userName: player?.userName,
 			team: player?.role && player?.role?.team,
@@ -435,8 +435,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 						player.seasons = {};
 					}
 
-					if (!player.seasons[CURRENTSEASONNUMBER]) {
-						player.seasons[CURRENTSEASONNUMBER] = {};
+					if (!player.seasons[CURRENT_SEASON_NUMBER]) {
+						player.seasons[CURRENT_SEASON_NUMBER] = {};
 					}
 
 					if (winningPlayerNames.includes(player.username)) {
@@ -444,17 +444,17 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 						if (isRainbow) {
 							player.overall.rainbowWins = player.overall.rainbowWins ? player.overall.rainbowWins + 1 : 1;
-							player.seasons[CURRENTSEASONNUMBER].rainbowWins = player.seasons[CURRENTSEASONNUMBER].rainbowWins
-								? player.seasons[CURRENTSEASONNUMBER].rainbowWins + 1
+							player.seasons[CURRENT_SEASON_NUMBER].rainbowWins = player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
+								? player.seasons[CURRENT_SEASON_NUMBER].rainbowWins + 1
 								: 1;
-							player.seasons[CURRENTSEASONNUMBER].rainbowLosses = player.seasons[CURRENTSEASONNUMBER].rainbowLosses
-								? player.seasons[CURRENTSEASONNUMBER].rainbowLosses
+							player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses = player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
+								? player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
 								: 0;
 						}
 
 						player.overall.wins = player.overall.wins ? player.overall.wins + 1 : 1;
-						player.seasons[CURRENTSEASONNUMBER].wins = player.seasons[CURRENTSEASONNUMBER].wins ? player.seasons[CURRENTSEASONNUMBER].wins + 1 : 1;
-						player.seasons[CURRENTSEASONNUMBER].losses = player.seasons[CURRENTSEASONNUMBER].losses ? player.seasons[CURRENTSEASONNUMBER].losses : 0;
+						player.seasons[CURRENT_SEASON_NUMBER].wins = player.seasons[CURRENT_SEASON_NUMBER].wins ? player.seasons[CURRENT_SEASON_NUMBER].wins + 1 : 1;
+						player.seasons[CURRENT_SEASON_NUMBER].losses = player.seasons[CURRENT_SEASON_NUMBER].losses ? player.seasons[CURRENT_SEASON_NUMBER].losses : 0;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
 							player.gameSettings.tournyWins.push(Date.now());
@@ -468,17 +468,17 @@ module.exports.completeGame = (game, winningTeamName) => {
 					} else {
 						if (isRainbow) {
 							player.overall.rainbowLosses = player.overall.rainbowLosses ? player.overall.rainbowLosses + 1 : 1;
-							player.seasons[CURRENTSEASONNUMBER].rainbowLosses = player.seasons[CURRENTSEASONNUMBER].rainbowLosses
-								? player.seasons[CURRENTSEASONNUMBER].rainbowLosses + 1
+							player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses = player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
+								? player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses + 1
 								: 1;
-							player.seasons[CURRENTSEASONNUMBER].rainbowWins = player.seasons[CURRENTSEASONNUMBER].rainbowWins
-								? player.seasons[CURRENTSEASONNUMBER].rainbowWins
+							player.seasons[CURRENT_SEASON_NUMBER].rainbowWins = player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
+								? player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
 								: 0;
 						}
 
 						player.overall.losses = player.overall.losses ? player.overall.losses + 1 : 1;
-						player.seasons[CURRENTSEASONNUMBER].losses = player.seasons[CURRENTSEASONNUMBER].losses ? player.seasons[CURRENTSEASONNUMBER].losses + 1 : 1;
-						player.seasons[CURRENTSEASONNUMBER].wins = player.seasons[CURRENTSEASONNUMBER].wins ? player.seasons[CURRENTSEASONNUMBER].wins : 0;
+						player.seasons[CURRENT_SEASON_NUMBER].losses = player.seasons[CURRENT_SEASON_NUMBER].losses ? player.seasons[CURRENT_SEASON_NUMBER].losses + 1 : 1;
+						player.seasons[CURRENT_SEASON_NUMBER].wins = player.seasons[CURRENT_SEASON_NUMBER].wins ? player.seasons[CURRENT_SEASON_NUMBER].wins : 0;
 					}
 
 					player.games.push(game.general.uid);
@@ -561,8 +561,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.seasons = {};
 				}
 
-				if (!player.seasons[CURRENTSEASONNUMBER]) {
-					player.seasons[CURRENTSEASONNUMBER] = {
+				if (!player.seasons[CURRENT_SEASON_NUMBER]) {
+					player.seasons[CURRENT_SEASON_NUMBER] = {
 						xp: 0,
 						elo: 1600,
 						wins: 0,
@@ -574,10 +574,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				if (winningPlayerNames.includes(player.username)) {
 					player.overall.xp += 2;
-					player.seasons[CURRENTSEASONNUMBER].xp += 2;
+					player.seasons[CURRENT_SEASON_NUMBER].xp += 2;
 				} else {
 					player.overall.xp += 1;
-					player.seasons[CURRENTSEASONNUMBER].xp += 1;
+					player.seasons[CURRENT_SEASON_NUMBER].xp += 1;
 				}
 
 				if (player.overall.xp >= 50.0) {
@@ -585,7 +585,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.dateRainbowOverall = new Date();
 				}
 
-				if (player.seasons[CURRENTSEASONNUMBER].xp >= 50.0) {
+				if (player.seasons[CURRENT_SEASON_NUMBER].xp >= 50.0) {
 					player.isRainbowSeason = true;
 				}
 

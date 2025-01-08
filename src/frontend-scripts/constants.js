@@ -1,4 +1,5 @@
 const cn = require('classnames');
+const moment = require('moment');
 
 export const TOU_CHANGES = [
 	{
@@ -36,7 +37,8 @@ export const TOU_CHANGES = [
 	}
 ];
 
-export const CURRENTSEASONNUMBER = 22;
+export const CURRENT_SEASON_NUMBER = 22 + Math.ceil((moment() - moment('2025-01-01T00:00:00.000Z')) / moment.duration(3, 'months'));
+export const CURRENT_SEASON_END = moment('2025-01-01T00:00:00.000Z') + (CURRENT_SEASON_NUMBER - 22) * moment.duration(3, 'months');
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -44,7 +46,7 @@ const LATIN_EXT_A = [...'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚ�
 
 const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS, ...LATIN_EXT_A];
 
-export const LEGALCHARACTERS = text => {
+export const LEGAL_CHARACTERS = text => {
 	const arr = [...text];
 	const pass = arr.every(c => ALLCHARS.includes(c));
 	return pass;
@@ -57,7 +59,7 @@ export const LEGALCHARACTERS = text => {
  * @param {boolean} eloDisabled - true if elo is off
  * @return {string} list of classes for colors.
  */
-export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
+export const PLAYER_COLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	if (
 		Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') &&
 		!(user.staff && user.staff.disableStaffColor)

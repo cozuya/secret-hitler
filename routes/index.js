@@ -13,7 +13,7 @@ const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
-const { DEFAULTTHEMECOLORS, CURRENTSEASONNUMBER } = require('../src/frontend-scripts/node-constants');
+const { DEFAULT_THEME_COLORS, CURRENT_SEASON_NUMBER } = require('../src/frontend-scripts/node-constants');
 const { checkBadgesAccount } = require('./socket/badges');
 const moment = require('moment');
 
@@ -169,8 +169,8 @@ module.exports = () => {
 				checkBadgesAccount(account);
 				const { blacklist } = account.gameSettings;
 
-				const backgroundColor = account.colors.background || DEFAULTTHEMECOLORS.baseBackgroundColor;
-				const textColor = account.colors.text || DEFAULTTHEMECOLORS.baseTextColor;
+				const backgroundColor = account.colors.background || DEFAULT_THEME_COLORS.baseBackgroundColor;
+				const textColor = account.colors.text || DEFAULT_THEME_COLORS.baseTextColor;
 				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
 				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
 
@@ -188,9 +188,9 @@ module.exports = () => {
 					username,
 					gameSettings: gameSettingsWithoutBlacklist,
 					blacklist,
-					primaryColor: account.colors.primary || DEFAULTTHEMECOLORS.primaryColor,
-					secondaryColor: account.colors.secondary || DEFAULTTHEMECOLORS.secondaryColor,
-					tertiaryColor: account.colors.tertiary || DEFAULTTHEMECOLORS.tertiaryColor,
+					primaryColor: account.colors.primary || DEFAULT_THEME_COLORS.primaryColor,
+					secondaryColor: account.colors.secondary || DEFAULT_THEME_COLORS.secondaryColor,
+					tertiaryColor: account.colors.tertiary || DEFAULT_THEME_COLORS.tertiaryColor,
 					backgroundColor,
 					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
 						backgroundLightness > 50 ? backgroundLightness - 7 : backgroundLightness + 7
@@ -245,8 +245,8 @@ module.exports = () => {
 			return;
 		}
 
-		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
-		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
+		const backgroundColor = DEFAULT_THEME_COLORS.baseBackgroundColor;
+		const textColor = DEFAULT_THEME_COLORS.baseTextColor;
 		const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
 		const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
 
@@ -261,9 +261,9 @@ module.exports = () => {
 
 		const gameObj = {
 			game: true,
-			primaryColor: DEFAULTTHEMECOLORS.primaryColor,
-			secondaryColor: DEFAULTTHEMECOLORS.secondaryColor,
-			tertiaryColor: DEFAULTTHEMECOLORS.tertiaryColor,
+			primaryColor: DEFAULT_THEME_COLORS.primaryColor,
+			secondaryColor: DEFAULT_THEME_COLORS.secondaryColor,
+			tertiaryColor: DEFAULT_THEME_COLORS.tertiaryColor,
 			backgroundColor,
 			secondaryBackgroundColor,
 			tertiaryBackgroundColor,
@@ -367,7 +367,7 @@ module.exports = () => {
 						xp: 0
 					};
 
-					_profile.season = account.seasons ? account.seasons[CURRENTSEASONNUMBER] || defaultSeason : defaultSeason;
+					_profile.season = account.seasons ? account.seasons[CURRENT_SEASON_NUMBER] || defaultSeason : defaultSeason;
 
 					if (account.staffRole) {
 						if (account.gameSettings.staff && account.gameSettings.staff.disableVisibleElo) {

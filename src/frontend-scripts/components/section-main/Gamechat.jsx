@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
+import { PLAYER_COLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import Swal from 'sweetalert2';
 
@@ -857,9 +857,9 @@ class Gamechat extends React.Component {
 										? 'chat-user moderatorcolor'
 										: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 										? isMod && (!isBlind || !isSeated)
-											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											: 'chat-user'
-										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+										: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
 								{isSeated ? (
@@ -878,9 +878,9 @@ class Gamechat extends React.Component {
 											className={
 												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 													? isMod && (!isBlind || !isSeated)
-														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 														: 'chat-user'
-													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+													: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
 										>
 											(Editor) 🔰

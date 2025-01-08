@@ -1,5 +1,5 @@
 import React from 'react';
-import { PLAYERCOLORS, getBadWord } from '../../constants';
+import { PLAYER_COLORS, getBadWord } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -413,7 +413,7 @@ export default class Generalchat extends React.Component {
 				const userClasses =
 					!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
 						? 'chat-user'
-						: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
+						: PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
 
 				if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
 					timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;

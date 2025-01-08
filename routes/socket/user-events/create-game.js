@@ -1,5 +1,5 @@
 const { gameCreationDisabled, limitNewPlayers, userList, games } = require('../models');
-const { LEGALCHARACTERS } = require('../../../src/frontend-scripts/node-constants');
+const { LEGAL_CHARACTERS } = require('../../../src/frontend-scripts/node-constants');
 const { generateCombination } = require('gfycat-style-urls');
 const { chatReplacements } = require('../chatReplacements');
 const Account = require('../../../models/account');
@@ -44,7 +44,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
-	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
+	if (!data.gameName || data.gameName.length > 20 || !LEGAL_CHARACTERS(data.gameName)) {
 		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
 		return;
 	}

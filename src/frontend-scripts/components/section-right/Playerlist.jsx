@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYER_COLORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -279,7 +279,7 @@ class Playerlist extends React.Component {
 					Boolean(user.staffRole && user.staffRole.length) ||
 					user.isContributor
 						? cn(
-								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
+								PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }
@@ -509,7 +509,7 @@ class Playerlist extends React.Component {
 					Boolean(user.staffRole && user.staffRole.length) ||
 					user.isContributor
 						? cn(
-								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
+								PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }

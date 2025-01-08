@@ -1,4 +1,5 @@
 const cn = require('classnames');
+const moment = require('moment');
 
 module.exports.TOU_CHANGES = [
 	{
@@ -36,7 +37,10 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 22;
+const CURRENT_SEASON_NUMBER = 22 + Math.ceil((moment() - moment('2025-01-01T00:00:00.000Z')) / moment.duration(3, 'months'));
+
+module.exports.CURRENT_SEASON_NUMBER = CURRENT_SEASON_NUMBER;
+module.exports.CURRENT_SEASON_END = moment('2025-01-01T00:00:00.000Z') + (CURRENT_SEASON_NUMBER - 22) * moment.duration(3, 'months');
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -44,7 +48,7 @@ const LATIN_EXT_A = [...'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚ�
 
 const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS, ...LATIN_EXT_A];
 
-module.exports.LEGALCHARACTERS = text => {
+module.exports.LEGAL_CHARACTERS = text => {
 	const arr = [...text];
 	const pass = arr.every(c => ALLCHARS.includes(c));
 	return pass;
@@ -57,7 +61,7 @@ module.exports.LEGALCHARACTERS = text => {
  * @param {boolean} eloDisabled - true if elo is off
  * @return {string} list of classes for colors.
  */
-module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
+module.exports.PLAYER_COLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	if (
 		Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') &&
 		!(user.staff && user.staff.disableStaffColor)
@@ -166,7 +170,7 @@ module.exports.getBadWord = text => {
 	return foundWord;
 };
 
-module.exports.DEFAULTTHEMECOLORS = {
+module.exports.DEFAULT_THEME_COLORS = {
 	primaryColor: 'hsl(225, 73%, 57%)',
 	secondaryColor: 'hsl(225, 48%, 57%)',
 	tertiaryColor: 'hsl(265, 73%, 57%)',

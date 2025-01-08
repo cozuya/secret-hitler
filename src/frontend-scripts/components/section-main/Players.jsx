@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import classnames from 'classnames';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
-import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYER_COLORS } from '../../constants';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
@@ -327,7 +327,7 @@ class Players extends React.Component {
 					}
 
 					if (user && !isBlind) {
-						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
+						classes = `${classes} ${PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
 					}
 
 					return classes;

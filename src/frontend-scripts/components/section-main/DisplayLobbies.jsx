@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
+import { PLAYER_COLORS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -376,7 +376,7 @@ const DisplayLobbies = props => {
 		});
 
 		players.forEach(player => {
-			const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
+			const classes = PLAYER_COLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
 
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(

@@ -2,7 +2,7 @@ const { newStaff } = require('./models');
 const util = require('util');
 const { Webhook } = require('discord-webhook-node');
 const tempy = require('tempy');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants.js');
+const { CURRENT_SEASON_NUMBER } = require('../../src/frontend-scripts/node-constants.js');
 
 /**
  * Debugging function to send a game to Discord after it's been identified to be cyclic
@@ -323,12 +323,12 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			account.seasons = {};
 		}
 
-		if (!account.seasons[CURRENTSEASONNUMBER]) {
-			account.seasons[CURRENTSEASONNUMBER] = {};
+		if (!account.seasons[CURRENT_SEASON_NUMBER]) {
+			account.seasons[CURRENT_SEASON_NUMBER] = {};
 		}
 
 		const eloOverall = account.overall.elo ? account.overall.elo : defaultELO;
-		const eloSeason = account.seasons[CURRENTSEASONNUMBER].elo ? account.seasons[CURRENTSEASONNUMBER].elo : defaultELO;
+		const eloSeason = account.seasons[CURRENT_SEASON_NUMBER].elo ? account.seasons[CURRENT_SEASON_NUMBER].elo : defaultELO;
 		// If this player won, use the win factor. If they lost, use the lost factor.
 		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
 		const change = p * factor;
@@ -344,15 +344,15 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			value: account.overall.elo
 		});
 		account.overall.xp = (account.overall.xp || 0) + xpChange;
-		account.seasons[CURRENTSEASONNUMBER].elo = eloSeason + changeSeason;
-		account.seasons[CURRENTSEASONNUMBER].xp = (account.xpSeason || 0) + xpChangeSeason;
+		account.seasons[CURRENT_SEASON_NUMBER].elo = eloSeason + changeSeason;
+		account.seasons[CURRENT_SEASON_NUMBER].xp = (account.xpSeason || 0) + xpChangeSeason;
 
 		if (account.xpOverall >= 50.0) {
 			account.isRainbowOverall = true;
 			account.dateRainbowOverall = new Date();
 		}
 
-		if (account.seasons[CURRENTSEASONNUMBER].xp >= 50.0) {
+		if (account.seasons[CURRENT_SEASON_NUMBER].xp >= 50.0) {
 			account.isRainbowSeason = true;
 		}
 
