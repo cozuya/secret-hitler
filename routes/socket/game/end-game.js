@@ -340,6 +340,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 							}
 						]
 					});
+
 					game.private.replayGameChats.push({
 						gameChat: true,
 						timestamp: new Date(Date.now() + i),
@@ -364,20 +365,21 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				results.forEach(player => {
 					const listUser = userList.find(user => user.userName === player.username);
+
 					if (listUser) {
-						listUser.overall.elo = player.overall.elo;
-						listUser.season.elo = player.season.elo;
-						listUser.overall.xp = player.overall.xp;
-						listUser.season.xp = player.season.xp;
+						listUser.overall = player.overall;
+						listUser.season = player.season;
 						listUser.isRainbowOverall = player.isRainbowOverall;
 						listUser.isRainbowSeason = player.isRainbowSeason;
 					}
 
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
+
 					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange?.change : playerChange?.changeSeason;
 						const activeChangeXP = player.gameSettings.disableSeasonal ? playerChange?.xpChange : playerChange?.xpChangeSeason;
+
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
@@ -399,6 +401,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 									}
 								]
 							});
+
 							seatedPlayer.gameChats.push({
 								gameChat: true,
 								timestamp: new Date(Date.now() + i),
@@ -451,7 +454,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 						player.overall.wins = player.overall.wins ? player.overall.wins + 1 : 1;
 						player.seasons[CURRENTSEASONNUMBER].wins = player.seasons[CURRENTSEASONNUMBER].wins ? player.seasons[CURRENTSEASONNUMBER].wins + 1 : 1;
-						playerplayer.seasons[CURRENTSEASONNUMBER].losses = player.seasons[CURRENTSEASONNUMBER].losses ? player.seasons[CURRENTSEASONNUMBER].losses : 0;
+						player.seasons[CURRENTSEASONNUMBER].losses = player.seasons[CURRENTSEASONNUMBER].losses ? player.seasons[CURRENTSEASONNUMBER].losses : 0;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
 							player.gameSettings.tournyWins.push(Date.now());
@@ -486,16 +489,24 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.save(() => {
 						const userEntry = userList.find(user => user.userName === player.username);
 
-						if (!player.overall) {
-							player.overall = {};
-						}
-
-						if (!player.season) {
-							player.season = {};
-						}
-
 						if (userEntry) {
-							userEntry.season.xp = userEntry.season.xp || 0;
+							if (!userEntry.overall) {
+								userEntry.overall = {};
+							}
+
+							if (!userEntry.season) {
+								userEntry.season = {};
+							}
+
+							if (!player.overall) {
+								player.overall = {};
+							}
+
+							if (!player.season) {
+								player.season = {};
+							}
+
+							userEntry.season.xp = player.season.xp || 0;
 							userEntry.isRainbowSeason = player.isRainbowSeason;
 							userEntry.overall.xp = player.overall.xp || 0;
 							userEntry.isRainbowOverall = player.isRainbowOverall;
@@ -530,6 +541,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 					});
 				});
+
 				sendInProgressGameUpdate(game);
 			})
 			.catch(err => {

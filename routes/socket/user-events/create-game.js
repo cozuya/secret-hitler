@@ -131,9 +131,13 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame =
-		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
-			? true
-			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.noTopdecking > 0) && !customGame;
+		(data.casualGame ||
+			(typeof data.timedMode === 'number' && data.timedMode < 30 && process.env.NODE_ENV === 'production') ||
+			data.gameType === 'casual' ||
+			data.avalonSH ||
+			data.withPercival ||
+			data.noTopdecking > 0) &&
+		!customGame;
 	const practiceGame =
 		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
 		(data.gameType === 'practice' || data.playerChats === 'disabled') &&

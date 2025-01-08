@@ -2,7 +2,7 @@ const { newStaff } = require('./models');
 const util = require('util');
 const { Webhook } = require('discord-webhook-node');
 const tempy = require('tempy');
-const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants.js');
 
 /**
  * Debugging function to send a game to Discord after it's been identified to be cyclic
