@@ -44,10 +44,12 @@ class Settings extends React.Component {
 		isPrivate: '',
 		failedNameChangeMessage: '',
 		soundSelected: 'Pack 1',
-		staffDisableVisibleElo: '',
-		staffDisableVisibleXP: '',
-		staffDisableStaffColor: '',
-		staffIncognito: '',
+		staff: {
+			disableVisibleElo: '',
+			disableVisibleXP: '',
+			disableStaffColor: '',
+			incognito: ''
+		},
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
@@ -92,10 +94,13 @@ class Settings extends React.Component {
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
-			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
-			staffDisableVisibleXP: gameSettings.staffDisableVisibleXP || false,
-			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
-			staffIncognito: gameSettings.staffIncognito || false,
+			staff: {
+				disableVisibleElo: false,
+				disableVisibleXP: false,
+				disableStaffColor: false,
+				incognito: false,
+				...(gameSettings.staff || {})
+			},
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork || false,
 			keyboardShortcuts: gameSettings.keyboardShortcuts || 'disable',
@@ -716,6 +721,7 @@ class Settings extends React.Component {
 			this.setState({
 				cardbackUploadStatus: 'Cropping...'
 			});
+
 			try {
 				const img = new Image();
 				img.onload = () => {
@@ -1083,8 +1089,15 @@ class Settings extends React.Component {
 												<input
 													type="checkbox"
 													name="staffDisableStaffColor"
-													checked={this.state.staffDisableStaffColor}
-													onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+													checked={Boolean(this.state.staff.disableStaffColor)}
+													onChange={() => {
+														const obj = {
+															staff: this.state.staff
+														};
+														obj.staff.disableStaffColor = !obj.staff.disableStaffColor;
+														this.props.socket.emit('updateGameSettings', obj);
+														this.setState(obj);
+													}}
 												/>
 												<label />
 											</div>
@@ -1099,8 +1112,15 @@ class Settings extends React.Component {
 												<input
 													type="checkbox"
 													name="staffDisableVisibleElo"
-													checked={this.state.staffDisableVisibleElo}
-													onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
+													checked={Boolean(this.state.staff.disableVisibleElo)}
+													onChange={() => {
+														const obj = {
+															staff: this.state.staff
+														};
+														obj.staff.disableVisibleElo = !obj.staff.disableVisibleElo;
+														this.props.socket.emit('updateGameSettings', obj);
+														this.setState(obj);
+													}}
 												/>
 												<label />
 											</div>
@@ -1115,8 +1135,15 @@ class Settings extends React.Component {
 												<input
 													type="checkbox"
 													name="staffDisableVisibleXP"
-													checked={this.state.staffDisableVisibleXP}
-													onChange={() => this.toggleGameSettings('staffDisableVisibleXP')}
+													checked={Boolean(this.state.staff.disableVisibleXP)}
+													onChange={() => {
+														const obj = {
+															staff: this.state.staff
+														};
+														obj.staff.disableVisibleXP = !obj.staff.disableVisibleXP;
+														this.props.socket.emit('updateGameSettings', obj);
+														this.setState(obj);
+													}}
 												/>
 												<label />
 											</div>
@@ -1129,7 +1156,19 @@ class Settings extends React.Component {
 													Incognito (hide from userlist)
 												</h4>
 												<div className="ui fitted toggle checkbox">
-													<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
+													<input
+														type="checkbox"
+														name="staffIncognito"
+														checked={Boolean(this.state.staff.incognito)}
+														onChange={() => {
+															const obj = {
+																staff: this.state.staff
+															};
+															obj.staff.incognito = !obj.staff.incognito;
+															this.props.socket.emit('updateGameSettings', obj);
+															this.setState(obj);
+														}}
+													/>
 													<label />
 												</div>
 											</React.Fragment>
@@ -1185,7 +1224,7 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback.fileExtension}?${gameSettings.customCardback.id}) no-repeat`
 													}}
 												/>
 											);

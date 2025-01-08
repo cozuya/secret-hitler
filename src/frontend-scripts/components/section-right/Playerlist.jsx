@@ -338,17 +338,18 @@ class Playerlist extends React.Component {
 						<div className="userlist-username">
 							{renderStatus()}
 							{(() => {
-								const userAdminRole = user.staffIncognito
-									? 'Incognito'
-									: user.staffRole === 'admin'
-									? 'Admin'
-									: user.staffRole === 'editor'
-									? 'Editor'
-									: user.staffRole === 'moderator'
-									? 'Moderator'
-									: user.isContributor
-									? 'Contributor'
-									: null;
+								const userAdminRole =
+									user.staff && user.staff.incognito
+										? 'Incognito'
+										: user.staffRole === 'admin'
+										? 'Admin'
+										: user.staffRole === 'editor'
+										? 'Editor'
+										: user.staffRole === 'moderator'
+										? 'Moderator'
+										: user.isContributor
+										? 'Contributor'
+										: null;
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
@@ -394,7 +395,8 @@ class Playerlist extends React.Component {
 									/>
 								)}
 							{user.staffRole !== 'admin' &&
-								Boolean(!user.staffDisableVisibleElo) &&
+								Boolean(user.staff) &&
+								Boolean(!user.staff.disableVisibleElo) &&
 								(() => {
 									return elo ? (
 										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
@@ -593,17 +595,18 @@ class Playerlist extends React.Component {
 									/>
 								)}
 							{(() => {
-								const userAdminRole = user.staffIncognito
-									? 'Incognito'
-									: user.staffRole === 'admin'
-									? 'Admin'
-									: user.staffRole === 'editor'
-									? 'Editor'
-									: user.staffRole === 'moderator'
-									? 'Moderator'
-									: user.isContributor
-									? 'Contributor'
-									: null;
+								const userAdminRole =
+									user.staff && user.staff.incognito
+										? 'Incognito'
+										: user.staffRole === 'admin'
+										? 'Admin'
+										: user.staffRole === 'editor'
+										? 'Editor'
+										: user.staffRole === 'moderator'
+										? 'Moderator'
+										: user.isContributor
+										? 'Contributor'
+										: null;
 
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
@@ -631,7 +634,8 @@ class Playerlist extends React.Component {
 							{renderStatus()}
 						</div>
 						{user.staffRole !== 'admin' &&
-							Boolean(!user.staffDisableVisibleElo) &&
+							Boolean(user.staff) &&
+							Boolean(!user.staff.disableVisibleElo) &&
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">

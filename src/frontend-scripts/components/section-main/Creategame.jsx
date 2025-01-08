@@ -1772,7 +1772,7 @@ export default class Creategame extends React.Component {
 			// Can happen when refreshing.
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
-			if (player && player.staffIncognito) errs.push(`You're incognito`);
+			if (player && player.staff && player.staff.incognito) errs.push(`You're incognito`);
 			else if (this.state.isEloLimited) {
 				const playerElo = (player && player.eloSeason && Math.min(2100, player.eloSeason)) || 1600;
 				const playerEloNonseason = (player && player.eloOverall && Math.min(2100, player.eloOverall)) || 1600;

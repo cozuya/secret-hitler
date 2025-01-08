@@ -499,7 +499,7 @@ class Players extends React.Component {
 		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
-			if (user && user.staffIncognito) {
+			if (user && user.staff && user.staff.incognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				Swal.fire('Sorry, this service is currently unavailable.');

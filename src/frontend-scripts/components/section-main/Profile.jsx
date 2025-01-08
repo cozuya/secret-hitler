@@ -23,6 +23,7 @@ const mapDispatchToProps = dispatch => ({
 class ProfileWrapper extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			bioStatus: 'displayed',
 			blacklistClicked: false,
@@ -40,6 +41,7 @@ class ProfileWrapper extends React.Component {
 		if (name !== newName) {
 			updatedState = { ...updatedState, profileUser: newName, blacklistClicked: false };
 		}
+
 		return updatedState;
 	}
 
@@ -76,13 +78,13 @@ class ProfileWrapper extends React.Component {
 				rows={[
 					[
 						'Elo',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.seasons[this.props.profile.seasons.length - 1].elo || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.overall.elo || 1600
+						this.props.profile.staff && this.props.profile.staff.disableVisibleElo ? '---' : this.props.profile.season.elo || 1600,
+						this.props.profile.staff && this.props.profile.staff.disableVisibleElo ? '---' : this.props.profile.overall.elo || 1600
 					],
 					[
 						'XP',
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.seasons[this.props.profile.seasons.length - 1].xp || 0,
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.overall.xp || 0
+						this.props.profile.staff && this.props.profile.staff.disableVisibleXP ? '---' : this.props.profile.season.xp || 0,
+						this.props.profile.staff && this.props.profile.staff.disableVisibleXP ? '---' : this.props.profile.overall.xp || 0
 					]
 				]}
 			/>

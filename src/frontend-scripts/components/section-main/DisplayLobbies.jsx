@@ -358,12 +358,16 @@ const DisplayLobbies = props => {
 			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
 
 			if (userStats) {
-				players[index].wins = userStats.wins;
-				players[index].losses = userStats.losses;
-				players[index].winsSeason = userStats.winsSeason;
-				players[index].lossesSeason = userStats.lossesSeason;
-				players[index].eloOverall = userStats.eloOverall;
-				players[index].eloSeason = userStats.eloSeason;
+				players[index].wins = userStats.overall.wins;
+				players[index].losses = userStats.overall.losses;
+				players[index].eloOverall = userStats.overall.elo;
+
+				if (userStats.season) {
+					players[index].winsSeason = userStats.season.wins;
+					players[index].lossesSeason = userStats.season.losses;
+					players[index].eloSeason = userStats.season.elo;
+				}
+
 				players[index].isRainbowOverall = userStats.isRainbowOverall;
 				players[index].isRainbowSeason = userStats.isRainbowSeason;
 				players[index].staffRole = userStats.staffRole;

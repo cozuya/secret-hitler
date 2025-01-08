@@ -118,7 +118,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 
 		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
-		if (AEM && user.staffIncognito) {
+		if (AEM && user.staff && user.staff.incognito) {
 			newChat.hiddenUsername = newChat.userName;
 			newChat.staffRole = 'moderator';
 			newChat.userName = 'Incognito';
@@ -364,7 +364,7 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 			return 'admin';
 		}
 	})();
-	if (AEM && user.staffIncognito) {
+	if (AEM && user.staff && user.staff.incognito) {
 		data.hiddenUsername = data.userName;
 		data.staffRole = 'moderator';
 		data.userName = 'Incognito';

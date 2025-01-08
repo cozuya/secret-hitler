@@ -58,7 +58,10 @@ export const LEGALCHARACTERS = text => {
  * @return {string} list of classes for colors.
  */
 export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') && !user.staffDisableStaffColor) {
+	if (
+		Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') &&
+		!(user.staff && user.staff.disableStaffColor)
+	) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
@@ -70,7 +73,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		});
 	} else if (
 		user.isContributor &&
-		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || user.staffDisableStaffColor)
+		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || (user.staff && user.staff.disableStaffColor))
 	) {
 		return cn(defaultClass, 'contributor');
 	} else {

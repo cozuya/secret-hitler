@@ -9,7 +9,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
 	if (data.aemMember !== passport.user) return;
 
 	const aemMember = userList.find(x => x.userName === data.aemMember);
-	if (aemMember && aemMember.staffIncognito) {
+	if (aemMember && aemMember.staff && aemMember.staff.incognito) {
 		socket.emit('sendAlert', 'You cannot start or join a chat while Incognito.');
 		return;
 	}
