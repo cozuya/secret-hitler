@@ -252,12 +252,11 @@ class ProfileWrapper extends React.Component {
 				<br />
 				<br />
 				{badgesToSort.map(x => (
-					<>
+					<React.Fragment key={x.id}>
 						<img
 							style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
 							src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
 							alt={x.title}
-							key={x.id}
 							height={50}
 							onClick={() =>
 								Swal.fire({
@@ -273,7 +272,7 @@ class ProfileWrapper extends React.Component {
 								{x.id.substring(8)}
 							</p>
 						) : null}
-					</>
+					</React.Fragment>
 				))}
 			</div>
 		);

@@ -384,8 +384,9 @@ module.exports = () => {
 					_profile.isRainbowOverall = account.isRainbowOverall;
 					_profile.isRainbowSeason = account.isRainbowSeason;
 					_profile.staffRole = account.staffRole;
-					_profile.staffDisableVisibleXP = account.gameSettings.staff && account.gameSettings.staff.disableVisibleXP;
-					_profile.staffDisableVisibleElo = account.gameSettings.staff && account.gameSettings.staff.disableVisibleElo;
+					_profile.staff = {};
+					_profile.staff.disableVisibleXP = account.gameSettings.staff && account.gameSettings.staff.disableVisibleXP;
+					_profile.staff.disableVisibleElo = account.gameSettings.staff && account.gameSettings.staff.disableVisibleElo;
 					_profile.playerPronouns = account.gameSettings.playerPronouns || '';
 
 					Account.findOne({ username: authedUser }).then(acc => {
@@ -397,7 +398,7 @@ module.exports = () => {
 						if (
 							acc &&
 							acc.staffRole &&
-							(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
+							(acc.staffRole === 'trialmod' || acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin')
 						) {
 							try {
 								_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);

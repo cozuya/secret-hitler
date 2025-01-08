@@ -71,10 +71,9 @@ module.exports.newStaff = {
 	contributorUserNames: []
 };
 
-const staffList = (module.exportsstaffList = []);
+const staffList = (module.exports.staffList = []);
 
 module.exports.getStaffList = () => {
-	module.exports.staffList = [];
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		accounts.forEach(user => (staffList[user.username] = user.staffRole));
 	});
@@ -168,7 +167,7 @@ module.exports.formattedUserList = isAEM => {
 			isContributor: prune(user.isContributor)
 			// oldData: user
 		}))
-		.filter(user => isAEM || !user.staff || !user.staff.incognito);
+		.filter(user => isAEM || !(user.staff && user.staff.incognito));
 };
 
 const userListEmitter = {
@@ -183,7 +182,7 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			const staffUserList = Object.keys(staffList).filter(
-				name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+				name => staffList[name] === 'trialmod' || staffList[name] === 'moderator' || staffList[name] === 'editor' || staffList[name] === 'admin'
 			);
 			const staffSocketIds = Object.keys(io.sockets.sockets).filter(id => staffUserList.includes(io.sockets.sockets[id].handshake.session.passport?.user));
 			const nonStaffSocketIds = Object.keys(io.sockets.sockets).filter(id => !staffSocketIds.includes(id));

@@ -209,23 +209,15 @@ class Playerlist extends React.Component {
 			const { userInfo } = this.props;
 			const { expandInfo } = this.state;
 			const { gameSettings } = userInfo;
-			const w =
-				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all'
-						? 'wins'
-						: 'rainbowWins'
-					: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
-			const l =
-				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all'
-						? 'losses'
-						: 'rainbowLosses'
-					: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
-			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
+
+			const period = gameSettings && gameSettings.disableSeasonal ? 'overall' : 'season';
+
+			const winType = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
+
+			const lossType = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+
+			const elo = !(gameSettings && gameSettings.disableElo) ? period : null;
+
 			const isStaff = Boolean(
 				Object.keys(userInfo).length &&
 					userInfo.staffRole &&
@@ -271,8 +263,9 @@ class Playerlist extends React.Component {
 			const makeUser = (user, i) => {
 				const popperRef = createRef();
 
-				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
-				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
+				const percent = ((user[period][winType] / (user[period][winType] + user[period][lossType])) * 100).toFixed(0);
+				const percentDisplay = user[period][winType] + user[period][lossType] > 9 ? `${percent}%` : '';
+
 				const disableIfUnclickable = f => {
 					if (this.props.isUserClickable) {
 						return f;
@@ -395,14 +388,14 @@ class Playerlist extends React.Component {
 									/>
 								)}
 							{user.staffRole !== 'admin' &&
-								Boolean(user.staff) &&
-								Boolean(!user.staff.disableVisibleElo) &&
+								!(user.staff && user.staff.disableVisibleElo) &&
 								(() => {
 									return elo ? (
-										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
+										<span className="userlist-stats">{user[period].elo ? user[period].elo : 1600}</span>
 									) : (
 										<span>
-											(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+											(<span className="userlist-stats">{user[period][winType] ? user[period][winType] : '0'}</span> /{' '}
+											<span className="userlist-stats">{user[period][lossType] ? user[period][lossType] : '0'}</span>){' '}
 											<span className="userlist-stats"> {percentDisplay}</span>
 										</span>
 									);
@@ -459,23 +452,14 @@ class Playerlist extends React.Component {
 			const { list } = this.props.userList;
 			const { userInfo } = this.props;
 			const { gameSettings } = userInfo;
-			const w =
-				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all'
-						? 'wins'
-						: 'rainbowWins'
-					: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
-			const l =
-				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all'
-						? 'losses'
-						: 'rainbowLosses'
-					: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
-			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
+
+			const period = gameSettings && gameSettings.disableSeasonal ? 'overall' : 'season';
+
+			const winType = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
+
+			const lossType = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+
+			const elo = !(gameSettings && gameSettings.disableElo) ? period : null;
 			const isStaff = Boolean(
 				Object.keys(userInfo).length &&
 					userInfo.staffRole &&
@@ -509,8 +493,9 @@ class Playerlist extends React.Component {
 
 			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
 				const popperRef = createRef();
-				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
-				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
+				const percent = ((user[period][winType] / (user[period][winType] + user[period][lossType])) * 100).toFixed(0);
+				const percentDisplay = user[period][winType] + user[period][lossType] > 9 ? `${percent}%` : '';
+
 				const disableIfUnclickable = f => {
 					if (this.props.isUserClickable) {
 						return f;
@@ -634,16 +619,16 @@ class Playerlist extends React.Component {
 							{renderStatus()}
 						</div>
 						{user.staffRole !== 'admin' &&
-							Boolean(user.staff) &&
-							Boolean(!user.staff.disableVisibleElo) &&
+							!(user.staff && user.staff.disableVisibleElo) &&
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">
-										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
+										<span className="userlist-stats">{user[period].elo ? user[period].elo : 1600}</span>
 									</div>
 								) : (
 									<div className="userlist-stats-container">
-										(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+										(<span className="userlist-stats">{user[period][winType] ? user[period][winType] : '0'}</span> /{' '}
+										<span className="userlist-stats">{user[period][lossType] ? user[period][lossType] : '0'}</span>){' '}
 										<span className="userlist-stats"> {percentDisplay}</span>
 									</div>
 								);

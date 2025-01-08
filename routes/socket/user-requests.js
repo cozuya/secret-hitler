@@ -33,13 +33,13 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
 		const staffUserList = Object.keys(staffList).filter(
-			name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+			name => staffList[name] === 'trialmod' || staffList[name] === 'moderator' || staffList[name] === 'editor' || staffList[name] === 'admin'
 		);
 
 		if (staffUserList.includes(socket?.handshake?.session?.passport?.user)) {
 			socket.emit('userList', { list: formattedUserList(true) });
 		} else {
-			socket.emit('userList', { list: formattedUserList() });
+			socket.emit('userList', { list: formattedUserList(false) });
 		}
 	} else {
 		userListEmitter.send = true;
@@ -65,6 +65,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					  }
 					: {};
 			});
+
 			list.forEach(user => {
 				if (user.ip && user.ip != '') {
 					try {
@@ -75,6 +76,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					}
 				}
 			});
+
 			actions.forEach(action => {
 				if (action.ip && action.ip != '') {
 					if (action.ip.startsWith('-')) {
@@ -89,7 +91,9 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					}
 				}
 			});
+
 			const gList = [];
+
 			if (games) {
 				Object.values(games).forEach(game => {
 					gList.push({
@@ -103,6 +107,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					});
 				});
 			}
+
 			socket.emit('modInfo', {
 				modReports: actions,
 				accountCreationDisabled,
@@ -312,6 +317,7 @@ module.exports.sendGeneralChats = socket => {
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
+
 	if (user) {
 		user.status = {
 			type:
@@ -328,6 +334,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 					: 'none',
 			gameId: game ? game.general.uid : false
 		};
+
 		sendUserList();
 	}
 });
@@ -349,9 +356,9 @@ module.exports.sendGameInfo = (socket, uid) => {
 				player.connected = true;
 				if (game.general) game.general.timeAbandoned = null;
 				socket.emit('updateSeatForUser', true);
-				updateUserStatus(passport, game);
+				updateUserStatus(socket, game);
 			} else {
-				updateUserStatus(passport, game, 'observing');
+				updateUserStatus(socket, game, 'observing');
 			}
 		}
 

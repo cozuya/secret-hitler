@@ -96,8 +96,6 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						staffRole: account.staffRole || '',
 						isContributor: account.isContributor || false,
 						staff: account.gameSettings.staff,
-						rainbowWins: account.rainbowWins,
-						rainbowLosses: account.rainbowLosses,
 						isRainbowOverall: account.isRainbowOverall,
 						isRainbowSeason: account.isRainbowSeason,
 						isPrivate: account.gameSettings.isPrivate,
