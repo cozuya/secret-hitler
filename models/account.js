@@ -102,7 +102,7 @@ const Account = new Schema({
 	bio: String,
 	games: Array,
 	overall: Stats,
-	seasons: { type: Map, of: Stats },
+	seasons: { type: Map, of: Stats, default: {} },
 	previousDayElo: Number,
 	previousDayXP: Number,
 	created: Date,

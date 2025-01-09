@@ -435,6 +435,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 						player.seasons = {};
 					}
 
+					let currentSeason;
+
 					if (player.seasons.get(CURRENT_SEASON_NUMBER.toString())) {
 						currentSeason = player.seasons.get(CURRENT_SEASON_NUMBER.toString());
 					} else {
@@ -563,6 +565,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 				if (!player.seasons) {
 					player.seasons = {};
 				}
+
+				let currentSeason;
 
 				if (player.seasons.get(CURRENT_SEASON_NUMBER.toString())) {
 					currentSeason = player.seasons.get(CURRENT_SEASON_NUMBER.toString());
