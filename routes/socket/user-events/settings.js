@@ -1,5 +1,5 @@
 const Account = require('../../../models/account');
-const { CURRENT_SEASON_NUMBER } = require('../../src/frontend-scripts/node-constants');
+const { CURRENT_SEASON_NUMBER } = require('../../../src/frontend-scripts/node-constants');
 const { userList } = require('../models');
 const { sendUserList } = require('../user-requests');
 
