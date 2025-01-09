@@ -435,8 +435,17 @@ module.exports.completeGame = (game, winningTeamName) => {
 						player.seasons = {};
 					}
 
-					if (!player.seasons[CURRENT_SEASON_NUMBER]) {
-						player.seasons[CURRENT_SEASON_NUMBER] = {};
+					if (player.seasons.get(CURRENT_SEASON_NUMBER.toString())) {
+						currentSeason = player.seasons.get(CURRENT_SEASON_NUMBER.toString());
+					} else {
+						currentSeason = {
+							xp: 0,
+							elo: 1600,
+							wins: 0,
+							losses: 0,
+							rainbowWins: 0,
+							rainbowLosses: 0
+						};
 					}
 
 					if (winningPlayerNames.includes(player.username)) {
@@ -444,17 +453,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 						if (isRainbow) {
 							player.overall.rainbowWins = player.overall.rainbowWins ? player.overall.rainbowWins + 1 : 1;
-							player.seasons[CURRENT_SEASON_NUMBER].rainbowWins = player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
-								? player.seasons[CURRENT_SEASON_NUMBER].rainbowWins + 1
-								: 1;
-							player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses = player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
-								? player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
-								: 0;
+							currentSeason.rainbowWins = currentSeason.rainbowWins ? currentSeason.rainbowWins + 1 : 1;
+							currentSeason.rainbowLosses = currentSeason.rainbowLosses ? currentSeason.rainbowLosses : 0;
 						}
 
 						player.overall.wins = player.overall.wins ? player.overall.wins + 1 : 1;
-						player.seasons[CURRENT_SEASON_NUMBER].wins = player.seasons[CURRENT_SEASON_NUMBER].wins ? player.seasons[CURRENT_SEASON_NUMBER].wins + 1 : 1;
-						player.seasons[CURRENT_SEASON_NUMBER].losses = player.seasons[CURRENT_SEASON_NUMBER].losses ? player.seasons[CURRENT_SEASON_NUMBER].losses : 0;
+						currentSeason.wins = currentSeason.wins ? currentSeason.wins + 1 : 1;
+						currentSeason.losses = currentSeason.losses ? currentSeason.losses : 0;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
 							player.gameSettings.tournyWins.push(Date.now());
@@ -468,18 +473,16 @@ module.exports.completeGame = (game, winningTeamName) => {
 					} else {
 						if (isRainbow) {
 							player.overall.rainbowLosses = player.overall.rainbowLosses ? player.overall.rainbowLosses + 1 : 1;
-							player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses = player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses
-								? player.seasons[CURRENT_SEASON_NUMBER].rainbowLosses + 1
-								: 1;
-							player.seasons[CURRENT_SEASON_NUMBER].rainbowWins = player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
-								? player.seasons[CURRENT_SEASON_NUMBER].rainbowWins
-								: 0;
+							currentSeason.rainbowLosses = currentSeason.rainbowLosses ? currentSeason.rainbowLosses + 1 : 1;
+							currentSeason.rainbowWins = currentSeason.rainbowWins ? currentSeason.rainbowWins : 0;
 						}
 
 						player.overall.losses = player.overall.losses ? player.overall.losses + 1 : 1;
-						player.seasons[CURRENT_SEASON_NUMBER].losses = player.seasons[CURRENT_SEASON_NUMBER].losses ? player.seasons[CURRENT_SEASON_NUMBER].losses + 1 : 1;
-						player.seasons[CURRENT_SEASON_NUMBER].wins = player.seasons[CURRENT_SEASON_NUMBER].wins ? player.seasons[CURRENT_SEASON_NUMBER].wins : 0;
+						currentSeason.losses = currentSeason.losses ? currentSeason.losses + 1 : 1;
+						currentSeason.wins = currentSeason.wins ? currentSeason.wins : 0;
 					}
+
+					player.seasons.set(CURRENT_SEASON_NUMBER.toString(), currentSeason);
 
 					player.games.push(game.general.uid);
 					player.lastCompletedGame = new Date();
@@ -561,8 +564,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.seasons = {};
 				}
 
-				if (!player.seasons[CURRENT_SEASON_NUMBER]) {
-					player.seasons[CURRENT_SEASON_NUMBER] = {
+				if (player.seasons.get(CURRENT_SEASON_NUMBER.toString())) {
+					currentSeason = player.seasons.get(CURRENT_SEASON_NUMBER.toString());
+				} else {
+					currentSeason = {
 						xp: 0,
 						elo: 1600,
 						wins: 0,
@@ -574,10 +579,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				if (winningPlayerNames.includes(player.username)) {
 					player.overall.xp += 2;
-					player.seasons[CURRENT_SEASON_NUMBER].xp += 2;
+					currentSeason.xp += 2;
 				} else {
 					player.overall.xp += 1;
-					player.seasons[CURRENT_SEASON_NUMBER].xp += 1;
+					currentSeason.xp += 1;
 				}
 
 				if (player.overall.xp >= 50.0) {
@@ -585,9 +590,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 					player.dateRainbowOverall = new Date();
 				}
 
-				if (player.seasons[CURRENT_SEASON_NUMBER].xp >= 50.0) {
+				if (currentSeason.xp >= 50.0) {
 					player.isRainbowSeason = true;
 				}
+
+				player.seasons.set(CURRENT_SEASON_NUMBER.toString(), currentSeason);
 
 				checkBadgesXP(player, game.general.uid);
 				player.save();

@@ -3,76 +3,6 @@ const passportLocalMongoose = require('passport-local-mongoose');
 
 const { Schema } = mongoose;
 
-const GameSettings = new Schema({
-	playerPronouns: String,
-	staff: {
-		disableVisibleElo: Boolean,
-		disableVisibleXP: Boolean,
-		disableStaffColor: Boolean,
-		incognito: Boolean
-	},
-	isRainbow: Boolean,
-	newReport: Boolean,
-	hasUnseenBadge: Boolean,
-	customCardback: {
-		fileExtension: String, // always 'png'
-		saveTime: String,
-		id: String
-	},
-	enableTimestamps: Boolean,
-	enableRightSidebarInGame: Boolean,
-	disablePlayerColorsInChat: Boolean,
-	disablePlayerCardbacks: Boolean,
-	disableHelpMessages: Boolean,
-	disableHelpIcons: Boolean,
-	disableConfetti: Boolean,
-	disableCrowns: Boolean,
-	disableSeasonal: Boolean,
-	disableAggregations: Boolean,
-	disableKillConfirmation: Boolean,
-	soundStatus: String,
-	unbanTime: Date,
-	unTimeoutTime: Date,
-	fontSize: Number,
-	fontFamily: String,
-	isPrivate: Boolean,
-	privateToggleTime: Number,
-	blacklist: Array,
-	tournyWins: Array,
-	hasChangedName: Boolean,
-	previousSeasonAward: String,
-	specialTournamentStatus: String,
-	disableElo: Boolean,
-	fullheight: Boolean,
-	safeForWork: Boolean,
-	keyboardShortcuts: String,
-	notifyForNewLobby: Boolean,
-	gameFilters: {
-		public: Boolean,
-		private: Boolean,
-		unstarted: Boolean,
-		inProgress: Boolean,
-		completed: Boolean,
-		custom: Boolean,
-		casual: Boolean,
-		timedMode: Boolean,
-		standard: Boolean,
-		rainbow: Boolean
-	},
-	blacklist: Array,
-	gameNotes: {
-		top: Number,
-		left: Number,
-		width: Number,
-		height: Number
-	},
-	playerNotes: Array,
-	ignoreIPBans: Boolean,
-	truncatedSize: Number,
-	claimCharacters: String,
-	claimButtons: String
-});
-
 const Stats = new Schema({
 	xp: { type: Number, default: 0 },
 	elo: { type: Number, default: 1600 },
@@ -82,12 +12,6 @@ const Stats = new Schema({
 	rainbowLosses: { type: Number, default: 0 }
 });
 
-const SeasonStats = new Schema({
-	type: Map,
-	of: Stats,
-	default: {}
-});
-
 const Account = new Schema({
 	username: { type: String, required: true, unique: true },
 	password: String,
@@ -95,7 +19,75 @@ const Account = new Schema({
 	staffRole: String,
 	isContributor: Boolean,
 	dismissedSignupModal: Boolean,
-	gameSettings: GameSettings,
+	gameSettings: {
+		playerPronouns: String,
+		staff: {
+			disableVisibleElo: Boolean,
+			disableVisibleXP: Boolean,
+			disableStaffColor: Boolean,
+			incognito: Boolean
+		},
+		isRainbow: Boolean,
+		newReport: Boolean,
+		hasUnseenBadge: Boolean,
+		customCardback: {
+			fileExtension: String, // always 'png'
+			saveTime: String,
+			id: String
+		},
+		enableTimestamps: Boolean,
+		enableRightSidebarInGame: Boolean,
+		disablePlayerColorsInChat: Boolean,
+		disablePlayerCardbacks: Boolean,
+		disableHelpMessages: Boolean,
+		disableHelpIcons: Boolean,
+		disableConfetti: Boolean,
+		disableCrowns: Boolean,
+		disableSeasonal: Boolean,
+		disableAggregations: Boolean,
+		disableKillConfirmation: Boolean,
+		soundStatus: String,
+		unbanTime: Date,
+		unTimeoutTime: Date,
+		fontSize: Number,
+		fontFamily: String,
+		isPrivate: Boolean,
+		privateToggleTime: Number,
+		blacklist: Array,
+		tournyWins: Array,
+		hasChangedName: Boolean,
+		previousSeasonAward: String,
+		specialTournamentStatus: String,
+		disableElo: Boolean,
+		fullheight: Boolean,
+		safeForWork: Boolean,
+		keyboardShortcuts: String,
+		notifyForNewLobby: Boolean,
+		gameFilters: {
+			public: Boolean,
+			private: Boolean,
+			unstarted: Boolean,
+			inProgress: Boolean,
+			completed: Boolean,
+			custom: Boolean,
+			casual: Boolean,
+			timedMode: Boolean,
+			standard: Boolean,
+			rainbow: Boolean
+		},
+		blacklist: Array,
+		gameNotes: {
+			top: Number,
+			left: Number,
+			width: Number,
+			height: Number
+		},
+		playerNotes: Array,
+		ignoreIPBans: Boolean,
+		truncatedSize: Number,
+		claimCharacters: String,
+		claimButtons: String
+	},
 	verification: {
 		email: String
 	},
@@ -110,7 +102,7 @@ const Account = new Schema({
 	bio: String,
 	games: Array,
 	overall: Stats,
-	seasons: SeasonStats,
+	seasons: { type: Map, of: Stats },
 	previousDayElo: Number,
 	previousDayXP: Number,
 	created: Date,

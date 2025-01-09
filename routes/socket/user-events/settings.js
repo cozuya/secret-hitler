@@ -113,7 +113,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						}
 					};
 
-					userListInfo.season = account.seasons ? account.seasons[currentSeasonNumber] : {};
+					userListInfo.season = account.seasons ? account.seasons.get(currentSeasonNumber.toString()) : {};
 					if (userIdx !== -1) userList.splice(userIdx, 1);
 					userList.push(userListInfo);
 					sendUserList();

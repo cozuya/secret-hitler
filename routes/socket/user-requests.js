@@ -219,7 +219,7 @@ module.exports.sendUserGameSettings = socket => {
 					previousSeasonAward: account.gameSettings.previousSeasonAward,
 					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 					overall: account.overall,
-					season: account.seasons ? account.seasons[CURRENT_SEASON_NUMBER] : {},
+					season: account.seasons ? account.seasons.get(CURRENT_SEASON_NUMBER.toString()) : {},
 					status: {
 						type: 'none',
 						gameId: null

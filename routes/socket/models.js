@@ -158,7 +158,7 @@ module.exports.formattedUserList = isAEM => {
 			isRainbowOverall: user.isRainbowOverall,
 			isRainbowSeason: user.isRainbowSeason,
 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-			season: user.seasons ? user.seasons[CURRENT_SEASON_NUMBER] : {},
+			season: user.seasons ? user.seasons.get(CURRENT_SEASON_NUMBER.toString()) : {},
 			previousSeasonAward: user.previousSeasonAward,
 			specialTournamentStatus: user.specialTournamentStatus,
 			timeLastGameCreated: user.timeLastGameCreated,
