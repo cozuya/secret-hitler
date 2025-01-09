@@ -320,7 +320,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		}
 
 		if (!account.seasons) {
-			account.seasons = {};
+			account.seasons = new Map();
 		}
 
 		let currentSeason;

@@ -432,7 +432,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 
 					if (!player.seasons) {
-						player.seasons = {};
+						player.seasons = new Map();
 					}
 
 					let currentSeason;
@@ -563,7 +563,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				}
 
 				if (!player.seasons) {
-					player.seasons = {};
+					player.seasons = new Map();
 				}
 
 				let currentSeason;

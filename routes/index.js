@@ -367,7 +367,7 @@ module.exports = () => {
 						xp: 0
 					};
 
-					_profile.season = account.seasons ? account.seasons[CURRENT_SEASON_NUMBER] || defaultSeason : defaultSeason;
+					_profile.season = account.seasons ? account.seasons.get(CURRENT_SEASON_NUMBER) || defaultSeason : defaultSeason;
 
 					if (account.staffRole) {
 						if (account.gameSettings.staff && account.gameSettings.staff.disableVisibleElo) {
