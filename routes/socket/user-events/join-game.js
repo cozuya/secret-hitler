@@ -50,7 +50,6 @@ const updateSeatedUser = (socket, passport, data) => {
 				connected: true,
 				isDead: false,
 				customCardback: account.gameSettings.customCardback,
-				customCardbackUid: account.gameSettings.customCardbackUid,
 				isPrivate: account.gameSettings.isPrivate,
 				tournyWins: account.gameSettings.tournyWins,
 				previousSeasonAward: account.gameSettings.previousSeasonAward,

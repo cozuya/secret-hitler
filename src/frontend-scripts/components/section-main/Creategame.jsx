@@ -1076,7 +1076,6 @@ export default class Creategame extends React.Component {
 						{
 							userName: userInfo.userName,
 							customCardback: userInfo.gameSettings.customCardback,
-							customCardbackUid: userInfo.gameSettings.customCardbackUid,
 							tournyWins: userInfo.gameSettings.tournyWins,
 							connected: true,
 							cardStatus: {

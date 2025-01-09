@@ -276,7 +276,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 				{
 					userName: user.userName,
 					customCardback: user.customCardback,
-					customCardbackUid: user.customCardbackUid,
 					tournyWins: user.tournyWins,
 					connected: true,
 					cardStatus: {
@@ -293,7 +292,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			{
 				userName: user.userName,
 				customCardback: user.customCardback,
-				customCardbackUid: user.customCardbackUid,
 				previousSeasonAward: user.previousSeasonAward,
 				specialTournamentStatus: user.specialTournamentStatus,
 				tournyWins: user.tournyWins,

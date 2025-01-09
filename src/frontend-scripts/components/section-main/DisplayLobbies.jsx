@@ -353,7 +353,6 @@ const DisplayLobbies = props => {
 
 		game.userNames.forEach(el => players.push({ userName: game.private ? '' : el }));
 		game.customCardback.forEach((el, index) => (players[index].customCardback = el));
-		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
 			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
 

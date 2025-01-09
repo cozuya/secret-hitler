@@ -210,7 +210,6 @@ module.exports.formattedGameList = () => {
 		flag: games[gameName].general.flag,
 		userNames: games[gameName].publicPlayersState.map(val => val.userName),
 		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
-		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
