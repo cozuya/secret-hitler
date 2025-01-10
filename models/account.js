@@ -65,11 +65,11 @@ const Account = new Schema({
 		keyboardShortcuts: String,
 		notifyForNewLobby: Boolean,
 		gameFilters: {
-			public: Boolean,
-			private: Boolean,
 			unstarted: Boolean,
 			inProgress: Boolean,
 			completed: Boolean,
+			pub: Boolean,
+			priv: Boolean,
 			custom: Boolean,
 			casual: Boolean,
 			timedMode: Boolean,

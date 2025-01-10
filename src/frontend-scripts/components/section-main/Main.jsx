@@ -27,13 +27,13 @@ export class Main extends React.Component {
 				priv: false,
 				pub: false,
 				unstarted: false,
-				inprogress: false,
+				inProgress: false,
 				completed: false,
 				timedMode: false,
 				rainbow: false,
 				standard: false,
-				customgame: false,
-				casualgame: false
+				custom: false,
+				casual: false
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
 			newPlayerModalPageIndex: 0,
@@ -58,7 +58,7 @@ export class Main extends React.Component {
 					if (prop === 'creator') continue;
 					if (this.state.gameFilter[prop] || !game[prop]) {
 						new Notification('A new lobby that matches your selections has opened.');
-						// maybe check bl before hand? kinda hard to do without computing the seating of every player server side or sending blacklist to client
+						// TODO: maybe check bl before hand? kinda hard to do without computing the seating of every player server side or sending blacklist to client
 						break;
 					}
 				}
@@ -120,7 +120,7 @@ export class Main extends React.Component {
 				case 3:
 					return 'FAQ';
 				case 4:
-					return "That's it!"; //eslint-disable-line
+					return "That's it!"; // eslint-disable-line
 			}
 		})();
 

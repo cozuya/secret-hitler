@@ -89,9 +89,9 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">Progress</h4>
 					<Checkbox
 						toggle
-						checked={!gameFilter.inprogress}
+						checked={!gameFilter.inProgress}
 						onChange={() => {
-							this.toggleFilter('inprogress');
+							this.toggleFilter('inProgress');
 						}}
 					/>
 				</div>
@@ -109,9 +109,9 @@ export class GamesList extends React.Component {
 					<i title="Filter by casual games" className="handshake icon" />
 					<Checkbox
 						toggle
-						checked={!gameFilter.casualgame}
+						checked={!gameFilter.casual}
 						onChange={() => {
-							this.toggleFilter('casualgame');
+							this.toggleFilter('casual');
 						}}
 					/>
 				</div>
@@ -119,9 +119,9 @@ export class GamesList extends React.Component {
 					<i title="Filter by custom games" className="setting icon" />
 					<Checkbox
 						toggle
-						checked={!gameFilter.customgame}
+						checked={!gameFilter.custom}
 						onChange={() => {
-							this.toggleFilter('customgame');
+							this.toggleFilter('custom');
 						}}
 					/>
 				</div>

@@ -301,7 +301,9 @@ class Players extends React.Component {
 					this.handlePlayerClick(i, player.userName);
 				}}
 				style={
+					// TODO: fix hack
 					player.customCardback &&
+					player.customCardback.fileExtension &&
 					!isBlind &&
 					(!gameInfo.general.private || isStaff || userInfo.isSeated) &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))

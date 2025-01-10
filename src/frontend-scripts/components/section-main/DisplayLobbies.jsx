@@ -377,10 +377,15 @@ const DisplayLobbies = props => {
 		players.forEach(player => {
 			const classes = PLAYER_COLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
 
-			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
+			// TODO: fix hack
+			if (
+				player.customCardback &&
+				player.customCardback.fileExtension &&
+				(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+			) {
 				total.push(
 					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
+						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback.fileExtension}?${player.customCardback.uid}`} />
 					</div>
 				);
 			} else {
