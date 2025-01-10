@@ -30,7 +30,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 				account.gameSettings.customCardback = account.gameSettings.customCardback || {};
 				account.gameSettings.customCardback.fileExtension = 'png';
 				account.gameSettings.customCardback.saveTime = Date.now().toString();
-				account.gameSettings.customCardback.id = Math.random()
+				account.gameSettings.customCardback.uid = Math.random()
 					.toString(36)
 					.substring(2);
 
@@ -40,7 +40,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 					if (user) {
 						user.customCardback = user.customCardback || {};
 						user.customCardback.fileExtension = 'png';
-						user.customCardback.id = account.gameSettings.customCardback.id;
+						user.customCardback.uid = account.gameSettings.customCardback.uid;
 						userListEmitter.send = true;
 					}
 

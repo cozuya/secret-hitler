@@ -13,6 +13,7 @@ const Stats = new Schema({
 });
 
 const Account = new Schema({
+	version: Number,
 	username: { type: String, required: true, unique: true },
 	password: String,
 	isLocal: Boolean,
@@ -33,7 +34,7 @@ const Account = new Schema({
 		customCardback: {
 			fileExtension: String, // always 'png'
 			saveTime: String,
-			id: String
+			uid: String
 		},
 		enableTimestamps: Boolean,
 		enableRightSidebarInGame: Boolean,
@@ -75,7 +76,6 @@ const Account = new Schema({
 			standard: Boolean,
 			rainbow: Boolean
 		},
-		blacklist: Array,
 		gameNotes: {
 			top: Number,
 			left: Number,

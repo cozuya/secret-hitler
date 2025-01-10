@@ -103,7 +103,6 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						tournyWins: account.gameSettings.tournyWins,
 						blacklist: account.gameSettings.blacklist,
 						customCardback: account.gameSettings.customCardback,
-						customCardbackUid: account.gameSettings.customCardbackUid,
 						previousSeasonAward: account.gameSettings.previousSeasonAward,
 						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 						overall: account.overall,
