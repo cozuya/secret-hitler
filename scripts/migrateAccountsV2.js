@@ -237,7 +237,7 @@ const OldAccount = mongoose.model('OldAccount', OldAccountSchema);
 OldAccount.find()
 	.cursor()
 	.eachAsync(acc => {
-		if (acc.version >= 2) {
+		if (acc.version && acc.version >= 2) {
 			return;
 		}
 
