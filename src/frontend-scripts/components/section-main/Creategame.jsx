@@ -48,6 +48,7 @@ export default class Creategame extends React.Component {
 			isXPLimited: false,
 			flappyMode: false,
 			flappyOnlyMode: false,
+			avalonSH: false,
 			privateAnonymousRemakes: false,
 			customGameSettings: {
 				enabled: false,
