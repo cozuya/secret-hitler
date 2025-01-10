@@ -309,6 +309,7 @@ module.exports = () => {
 				};
 
 				_profile = {
+					_id: username,
 					recentGames: [],
 					stats: {
 						actions: {
