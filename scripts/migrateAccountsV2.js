@@ -236,16 +236,16 @@ const OldAccount = mongoose.model('OldAccount', OldAccountSchema);
 
 OldAccount.find()
 	.cursor()
-	.eachAsync(acc => {
-		if (acc.version && acc.version >= 2) {
+	.eachAsync((account, i) => {
+		if (account.version && account.version >= 2) {
 			return;
 		}
 
-		const newAcc = acc.toObject();
+		const newAccount = account.toObject();
 
-		newAcc.dismissedSignupModal = !newAcc.hasNotDismissedSignupModal;
+		newAccount.dismissedSignupModal = !newAccount.hasNotDismissedSignupModal;
 
-		newAcc.gameSettings = newAcc.gameSettings ? newAcc.gameSettings : {};
+		newAccount.gameSettings = newAccount.gameSettings ? newAccount.gameSettings : {};
 
 		const removeUnused = obj =>
 			Object.keys(obj)
@@ -254,113 +254,115 @@ OldAccount.find()
 				? undefined
 				: obj;
 
-		newAcc.gameSettings.staff = removeUnused({
-			disableVisibleElo: newAcc.gameSettings.staffDisableVisibleElo,
-			disableVisibleXP: newAcc.gameSettings.staffDisableVisibleXP,
-			disableStaffColor: newAcc.gameSettings.staffDisableStaffColor,
-			incognito: newAcc.gameSettings.staffIncognito,
-			...newAcc.gameSettings.staff
+		newAccount.gameSettings.staff = removeUnused({
+			disableVisibleElo: newAccount.gameSettings.staffDisableVisibleElo,
+			disableVisibleXP: newAccount.gameSettings.staffDisableVisibleXP,
+			disableStaffColor: newAccount.gameSettings.staffDisableStaffColor,
+			incognito: newAccount.gameSettings.staffIncognito,
+			...newAccount.gameSettings.staff
 		});
 
-		newAcc.customCardback = removeUnused({
-			fileExtension: newAcc.customCardback,
-			saveTime: newAcc.customCardbackSaveTime,
-			uid: newAcc.customCardbackUid,
-			...newAcc.customCardback
+		newAccount.customCardback = removeUnused({
+			fileExtension: newAccount.customCardback,
+			saveTime: newAccount.customCardbackSaveTime,
+			uid: newAccount.customCardbackUid,
+			...newAccount.customCardback
 		});
 
-		newAcc.gameSettings.gameFilters = newAcc.gameSettings.gameFilters ? newAcc.gameSettings.gameFilters : {};
+		newAccount.gameSettings.gameFilters = newAccount.gameSettings.gameFilters ? newAccount.gameSettings.gameFilters : {};
 
-		newAcc.gameSettings.gameFilters = removeUnused({
-			pub: newAcc.gameSettings.gameFilters.pub,
-			priv: newAcc.gameSettings.gameFilters.priv,
-			unstarted: newAcc.gameSettings.gameFilters.unstarted,
-			inProgress: newAcc.gameSettings.gameFilters.inprogress,
-			completed: newAcc.gameSettings.gameFilters.completed,
-			custom: newAcc.gameSettings.gameFilters.customgame,
-			casual: newAcc.gameSettings.gameFilters.casualgame,
-			timedMode: newAcc.gameSettings.gameFilters.timedMode,
-			standard: newAcc.gameSettings.gameFilters.standard,
-			rainbow: newAcc.gameSettings.gameFilters.rainbow,
-			...newAcc.gameSettings.gameFilters
+		newAccount.gameSettings.gameFilters = removeUnused({
+			pub: newAccount.gameSettings.gameFilters.pub,
+			priv: newAccount.gameSettings.gameFilters.priv,
+			unstarted: newAccount.gameSettings.gameFilters.unstarted,
+			inProgress: newAccount.gameSettings.gameFilters.inprogress,
+			completed: newAccount.gameSettings.gameFilters.completed,
+			custom: newAccount.gameSettings.gameFilters.customgame,
+			casual: newAccount.gameSettings.gameFilters.casualgame,
+			timedMode: newAccount.gameSettings.gameFilters.timedMode,
+			standard: newAccount.gameSettings.gameFilters.standard,
+			rainbow: newAccount.gameSettings.gameFilters.rainbow,
+			...newAccount.gameSettings.gameFilters
 		});
 
-		if (!newAcc.gameSettings.gameFilters) {
-			delete newAcc.gameSettings.gameFilters;
+		if (!newAccount.gameSettings.gameFilters) {
+			delete newAccount.gameSettings.gameFilters;
 		}
 
-		newAcc.overall = removeUnused({
-			wins: newAcc.wins,
-			losses: newAcc.losses,
-			rainbowWins: newAcc.rainbowWins,
-			rainbowLosses: newAcc.rainbowLosses,
-			elo: newAcc.eloOverall,
-			xp: newAcc.xpOverall,
-			...newAcc.overall
+		newAccount.overall = removeUnused({
+			wins: newAccount.wins,
+			losses: newAccount.losses,
+			rainbowWins: newAccount.rainbowWins,
+			rainbowLosses: newAccount.rainbowLosses,
+			elo: newAccount.eloOverall,
+			xp: newAccount.xpOverall,
+			...newAccount.overall
 		});
 
-		newAcc.seasons = {
-			...newAcc.seasons
+		newAccount.seasons = {
+			...newAccount.seasons
 		};
 
 		for (let i = 1; i <= 22; i++) {
-			newAcc.seasons[i] = removeUnused({
-				wins: newAcc[`winsSeason${i}`],
-				losses: newAcc[`lossesSeason${i}`],
-				rainbowWins: newAcc[`rainbowWinsSeason${i}`],
-				rainbowLosses: newAcc[`rainbowLossesSeason${i}`],
-				elo: newAcc[`eloSeason${i}`],
-				xp: newAcc[`xpSeason${i}`],
-				...newAcc.seasons[i]
+			newAccount.seasons[i] = removeUnused({
+				wins: newAccount[`winsSeason${i}`],
+				losses: newAccount[`lossesSeason${i}`],
+				rainbowWins: newAccount[`rainbowWinsSeason${i}`],
+				rainbowLosses: newAccount[`rainbowLossesSeason${i}`],
+				elo: newAccount[`eloSeason${i}`],
+				xp: newAccount[`xpSeason${i}`],
+				...newAccount.seasons[i]
 			});
 
-			if (!newAcc.seasons[i]) {
-				delete newAcc.seasons[i];
+			if (!newAccount.seasons[i]) {
+				delete newAccount.seasons[i];
 			}
 		}
 
-		newAcc.discord = removeUnused({
-			username: newAcc.discordUsername,
-			discriminator: newAcc.discordDiscriminator,
-			mfa: newAcc.discordMFA,
-			uid: newAcc.discordUID,
-			...newAcc.discord
+		newAccount.discord = removeUnused({
+			username: newAccount.discordUsername,
+			discriminator: newAccount.discordDiscriminator,
+			mfa: newAccount.discordMFA,
+			uid: newAccount.discordUID,
+			...newAccount.discord
 		});
 
-		newAcc.github = removeUnused({
-			username: newAcc.githubUsername,
-			mfa: newAcc.githubMFA,
-			...newAcc.github
+		newAccount.github = removeUnused({
+			username: newAccount.githubUsername,
+			mfa: newAccount.githubMFA,
+			...newAccount.github
 		});
 
-		newAcc.colors = removeUnused({
-			primary: newAcc.primaryColor,
-			secondary: newAcc.secondaryColor,
-			tertiary: newAcc.tertiaryColor,
-			background: newAcc.backgroundColor,
-			text: newAcc.textColor,
-			...newAcc.colors
+		newAccount.colors = removeUnused({
+			primary: newAccount.primaryColor,
+			secondary: newAccount.secondaryColor,
+			tertiary: newAccount.tertiaryColor,
+			background: newAccount.backgroundColor,
+			text: newAccount.textColor,
+			...newAccount.colors
 		});
 
-		newAcc.version = 2;
+		newAccount.version = 2;
 
-		delete newAcc._id;
+		delete newAccount._id;
 
 		return Account.updateOne(
 			{
-				username: newAcc.username
+				username: newAccount.username
 			},
 			{
-				$set: newAcc
+				$set: newAccount
 			}
 		).then(() => {
-			console.log('Updated:', newAcc.username);
+			if (i % 100 === 0 || i < 10) {
+				console.log(`Migrated ${i + 1} accounts.`);
+			}
 		});
 	})
 	.then(() => {
-		console.log('Done.');
+		console.log('Done migrating accounts.');
 		mongoose.connection.close();
 	})
 	.catch(err => {
-		console.log('Error:', err);
+		console.log('Error migrating accounts:', err);
 	});
