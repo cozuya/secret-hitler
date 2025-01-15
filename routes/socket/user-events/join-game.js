@@ -36,10 +36,13 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
-		const isMeetingXPMinimum = !game.general.xpMinimum || game.general.xpMinimum <= account.xpOverall;
+		const isMeetingEloMinimum =
+			!game.general.eloMinimum ||
+			(account?.seasons && game.general.eloMinimum <= (account.seasons.get(CURRENT_SEASON_NUMBER)?.elo || 1600)) ||
+			game.general.eloMinimum <= (account?.overall?.elo || 1600);
+		const isMeetingXPMinimum = !game.general.xpMinimum || game.general.xpMinimum <= (account?.overall?.xp || 0);
 
-		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
+		if ((account?.overall?.wins || 0) + (account?.overall?.losses || 0) < 3 && limitNewPlayers.status && !game.general.private) {
 			return;
 		}
 

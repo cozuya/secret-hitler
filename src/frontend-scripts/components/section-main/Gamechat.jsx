@@ -24,11 +24,11 @@ const ClaimButton = ({ cards, onClick }) => {
 			{['fascist', 'liberal'].includes(cards) ? (
 				<div className={`card ${cards}`}></div>
 			) : (
-				cards.split('').map(card => {
+				cards.split('').map((card, index) => {
 					if (card === 'r') {
-						return <div className="card fascist"></div>;
+						return <div key={index} className="card fascist"></div>;
 					} else {
-						return <div className="card liberal"></div>;
+						return <div key={index} className="card liberal"></div>;
 					}
 				})
 			)}
