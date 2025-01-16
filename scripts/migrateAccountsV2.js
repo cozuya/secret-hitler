@@ -333,13 +333,13 @@ OldAccount.find()
 			...newAccount.github
 		});
 
-		newAccount.colors = removeUnused({
-			primary: newAccount.primaryColor,
-			secondary: newAccount.secondaryColor,
-			tertiary: newAccount.tertiaryColor,
-			background: newAccount.backgroundColor,
-			text: newAccount.textColor,
-			...newAccount.colors
+		newAccount.theme = removeUnused({
+			primaryColor: newAccount.primaryColor,
+			secondaryColor: newAccount.secondaryColor,
+			tertiaryColor: newAccount.tertiaryColor,
+			backgroundColor: newAccount.backgroundColor,
+			textColor: newAccount.textColor,
+			...newAccount.theme
 		});
 
 		newAccount.version = 2;

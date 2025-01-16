@@ -169,13 +169,12 @@ module.exports = () => {
 				checkBadgesAccount(account);
 				const { blacklist } = account.gameSettings;
 
-				const backgroundColor = account.colors.background || DEFAULT_THEME_COLORS.baseBackgroundColor;
-				const textColor = account.colors.text || DEFAULT_THEME_COLORS.baseTextColor;
+				const backgroundColor = account.theme.backgroundColor || DEFAULT_THEME_COLORS.baseBackgroundColor;
+				const textColor = account.theme.textColor || DEFAULT_THEME_COLORS.baseTextColor;
 				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
 				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
 
 				const gameSettingsWithoutBlacklist = account.gameSettings.toObject();
-
 				delete gameSettingsWithoutBlacklist.blacklist;
 
 				const gameObj = {
@@ -188,9 +187,9 @@ module.exports = () => {
 					username,
 					gameSettings: gameSettingsWithoutBlacklist,
 					blacklist,
-					primaryColor: account.colors.primary || DEFAULT_THEME_COLORS.primaryColor,
-					secondaryColor: account.colors.secondary || DEFAULT_THEME_COLORS.secondaryColor,
-					tertiaryColor: account.colors.tertiary || DEFAULT_THEME_COLORS.tertiaryColor,
+					primaryColor: account.theme.primaryColor || DEFAULT_THEME_COLORS.primaryColor,
+					secondaryColor: account.theme.secondaryColor || DEFAULT_THEME_COLORS.secondaryColor,
+					tertiaryColor: account.theme.tertiaryColor || DEFAULT_THEME_COLORS.tertiaryColor,
 					backgroundColor,
 					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
 						backgroundLightness > 50 ? backgroundLightness - 7 : backgroundLightness + 7

@@ -123,12 +123,12 @@ const Account = new Schema({
 	},
 	warnings: Array, // { text: String, moderator: String, time: Date, acknowledged: Boolean },
 	feedbackSubmissions: Array, // { time: Date, text: String }
-	colors: {
-		primary: String,
-		secondary: String,
-		tertiary: String,
-		background: String,
-		text: String
+	theme: {
+		primaryColor: String,
+		secondaryColor: String,
+		tertiaryColor: String,
+		backgroundColor: String,
+		textColor: String
 	},
 	eloPercentile: {
 		seasonal: Number,
