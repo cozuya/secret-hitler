@@ -349,9 +349,9 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		});
 		account.overall.xp = (account.overall.xp || 0) + xpChange;
 		currentSeason.elo = eloSeason + changeSeason;
-		currentSeason.xp = (account.xpSeason || 0) + xpChangeSeason;
+		currentSeason.xp = (currentSeason.xp || 0) + xpChangeSeason;
 
-		if (account.xpOverall >= 50.0) {
+		if (account.overall?.xp >= 50.0) {
 			account.isRainbowOverall = true;
 			account.dateRainbowOverall = new Date();
 		}
