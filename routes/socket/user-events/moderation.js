@@ -1049,21 +1049,52 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							Account.findOne({ username: data.userName })
 								.then(account => {
 									if (account) {
-										account[setType] = isPlusOrMinus
+										if (!account.overall) {
+											account.overall = {
+												wins: 0,
+												losses: 0,
+												rainbowWins: 0,
+												rainbowLosses: 0,
+												elo: 1600,
+												xp: 0
+											};
+										}
+
+										account.overall[setType] = isPlusOrMinus
 											? number.charAt(0) === '+'
-												? account[setType] + parseInt(number.substr(1, number.length))
-												: account[setType] - parseInt(number.substr(1, number.length))
+												? account.overall[setType] + parseInt(number.substr(1, number.length))
+												: account.overall[setType] - parseInt(number.substr(1, number.length))
 											: parseInt(number);
 
 										if (!data.action.isNonSeason) {
-											account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus
-												? account[`${setType}Season${currentSeasonNumber}`]
+											if (!account.seasons) {
+												account.seasons = new Map();
+											}
+
+											let currentSeason = account.seasons.get(CURRENT_SEASON_NUMBER.toString()); // TODO: NEED TO CHANGE ON OTHER BRANCHES
+
+											if (!currentSeason) {
+												currentSeason = {
+													wins: 0,
+													losses: 0,
+													rainbowWins: 0,
+													rainbowLosses: 0,
+													elo: 1600,
+													xp: 0
+												};
+											}
+
+											currentSeason[setType] = isPlusOrMinus
+												? currentSeason[setType]
 													? number.charAt(0) === '+'
-														? account[`${setType}Season${currentSeasonNumber}`] + parseInt(number.substr(1, number.length))
-														: account[`${setType}Season${currentSeasonNumber}`] - parseInt(number.substr(1, number.length))
+														? currentSeason[setType] + parseInt(number.substr(1, number.length))
+														: currentSeason[setType] - parseInt(number.substr(1, number.length))
 													: parseInt(number.substr(1, number.length))
 												: parseInt(number);
+
+											account.seasons.set(CURRENT_SEASON_NUMBER.toString(), currentSeason); // TODO: NEED TO CHANGE ON OTHER BRANCHES
 										}
+
 										account.save();
 									} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 								})
