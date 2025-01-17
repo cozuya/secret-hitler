@@ -25,6 +25,7 @@ const fs = require('fs');
 const https = require('https');
 const { sendCommandChatsUpdate } = require('../util');
 const { removeBadge, checkBadgesAccount } = require('../badges');
+const { CURRENT_SEASON_NUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 let lagTest = [];
 
 /**
