@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
+import { PLAYER_COLORS, getBadWord, getNumberWithOrdinal } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import Swal from 'sweetalert2';
 
@@ -24,11 +24,11 @@ const ClaimButton = ({ cards, onClick }) => {
 			{['fascist', 'liberal'].includes(cards) ? (
 				<div className={`card ${cards}`}></div>
 			) : (
-				cards.split('').map(card => {
+				cards.split('').map((card, index) => {
 					if (card === 'r') {
-						return <div className="card fascist"></div>;
+						return <div key={index} className="card fascist"></div>;
 					} else {
-						return <div className="card liberal"></div>;
+						return <div key={index} className="card liberal"></div>;
 					}
 				})
 			)}
@@ -857,9 +857,9 @@ class Gamechat extends React.Component {
 										? 'chat-user moderatorcolor'
 										: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 										? isMod && (!isBlind || !isSeated)
-											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											: 'chat-user'
-										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+										: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
 								{isSeated ? (
@@ -878,9 +878,9 @@ class Gamechat extends React.Component {
 											className={
 												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 													? isMod && (!isBlind || !isSeated)
-														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														? PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 														: 'chat-user'
-													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+													: PLAYER_COLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
 										>
 											(Editor) 🔰

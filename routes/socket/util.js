@@ -2,6 +2,7 @@ const { newStaff } = require('./models');
 const util = require('util');
 const { Webhook } = require('discord-webhook-node');
 const tempy = require('tempy');
+const { CURRENT_SEASON_NUMBER } = require('../../src/frontend-scripts/node-constants.js');
 
 /**
  * Debugging function to send a game to Discord after it's been identified to be cyclic
@@ -297,10 +298,10 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const losingAccounts = accounts.filter(account => !winningPlayerNames.includes(account.username));
 	const losingSize = size - winningSize;
 	// Construct some basic statistics for each team
-	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO);
-	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO);
-	const averageRatingLosers = avg(losingAccounts, a => a.eloOverall || defaultELO);
-	const averageRatingLosersSeason = avg(losingAccounts, a => a.eloSeason || defaultELO);
+	const averageRatingWinners = avg(winningAccounts, a => a.overall.elo || defaultELO);
+	const averageRatingWinnersSeason = avg(winningAccounts, a => a.seasons?.get(CURRENT_SEASON_NUMBER.toString())?.elo || defaultELO);
+	const averageRatingLosers = avg(losingAccounts, a => a.overall.elo || defaultELO);
+	const averageRatingLosersSeason = avg(losingAccounts, a => a.seasons?.get(CURRENT_SEASON_NUMBER.toString())?.elo || defaultELO);
 	// Elo Formula
 	const bias = winnerBiasPoints(game);
 	const winFactor = k / winningSize;
@@ -312,9 +313,26 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	// Now we will use our 'supprisedness' p to correct the player rankings
 	const ratingUpdates = {};
 	const date = new Date(); // ensure we use the same date for each player
+
 	accounts.forEach(account => {
-		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
-		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
+		if (!account.overall) {
+			account.overall = {};
+		}
+
+		if (!account.seasons) {
+			account.seasons = new Map();
+		}
+
+		let currentSeason;
+
+		if (account.seasons.get(CURRENT_SEASON_NUMBER.toString())) {
+			currentSeason = account.seasons.get(CURRENT_SEASON_NUMBER.toString());
+		} else {
+			currentSeason = {};
+		}
+
+		const eloOverall = account.overall.elo ? account.overall.elo : defaultELO;
+		const eloSeason = currentSeason.elo ? currentSeason.elo : defaultELO;
 		// If this player won, use the win factor. If they lost, use the lost factor.
 		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
 		const change = p * factor;
@@ -323,24 +341,26 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		const xpChange = change > 0 ? change / 1.5 : 1;
 		const xpChangeSeason = changeSeason > 0 ? changeSeason / 1.5 : 1;
 
-		account.eloOverall = eloOverall + change;
-		account.maxElo = Math.max(account.maxElo, account.eloOverall);
+		account.overall.elo = eloOverall + change;
+		account.maxElo = Math.max(account.maxElo, account.overall.elo);
 		account.pastElo.push({
 			date,
-			value: account.eloOverall
+			value: account.overall.elo
 		});
-		account.xpOverall = (account.xpOverall || 0) + xpChange;
-		account.eloSeason = eloSeason + changeSeason;
-		account.xpSeason = (account.xpSeason || 0) + xpChangeSeason;
+		account.overall.xp = (account.overall.xp || 0) + xpChange;
+		currentSeason.elo = eloSeason + changeSeason;
+		currentSeason.xp = (currentSeason.xp || 0) + xpChangeSeason;
 
-		if (account.xpOverall >= 50.0) {
+		if (account.overall?.xp >= 50.0) {
 			account.isRainbowOverall = true;
 			account.dateRainbowOverall = new Date();
 		}
 
-		if (account.xpSeason >= 50.0) {
+		if (currentSeason.xp >= 50.0) {
 			account.isRainbowSeason = true;
 		}
+
+		account.seasons.set(CURRENT_SEASON_NUMBER.toString(), currentSeason);
 
 		account.save();
 		ratingUpdates[account.username] = { change, changeSeason, xpChange, xpChangeSeason };

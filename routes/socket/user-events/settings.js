@@ -1,5 +1,6 @@
 const Account = require('../../../models/account');
-const { userList, currentSeasonNumber } = require('../models');
+const { CURRENT_SEASON_NUMBER } = require('../../../src/frontend-scripts/node-constants');
+const { userList } = require('../models');
 const { sendUserList } = require('../user-requests');
 
 /**
@@ -85,53 +86,34 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'claimButtons'
 				];
 
-				if (
-					allowedSettings.includes(setting) ||
-					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
-					(setting === 'staffDisableVisibleXP' && (aem || veteran)) ||
-					(setting === 'staffIncognito' && aem) ||
-					(setting === 'staffDisableStaffColor' && (aem || veteran))
-				) {
+				if (allowedSettings.includes(setting) || (setting === 'staff' && (aem || veteran))) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && aem) {
+				if (setting === 'staff' && aem) {
 					const userListInfo = {
 						userName: passport.user,
 						playerPronouns: account.gameSettings.playerPronouns,
 						staffRole: account.staffRole || '',
 						isContributor: account.isContributor || false,
-						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-						staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
-						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-						staffIncognito: account.gameSettings.staffIncognito,
-						wins: account.wins,
-						losses: account.losses,
-						rainbowWins: account.rainbowWins,
-						rainbowLosses: account.rainbowLosses,
+						staff: account.gameSettings.staff,
 						isRainbowOverall: account.isRainbowOverall,
 						isRainbowSeason: account.isRainbowSeason,
 						isPrivate: account.gameSettings.isPrivate,
 						tournyWins: account.gameSettings.tournyWins,
 						blacklist: account.gameSettings.blacklist,
 						customCardback: account.gameSettings.customCardback,
-						customCardbackUid: account.gameSettings.customCardbackUid,
 						previousSeasonAward: account.gameSettings.previousSeasonAward,
 						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-						eloOverall: account.eloOverall,
-						xpOverall: account.xpOverall,
-						eloSeason: account.eloSeason,
-						xpSeason: account.xpSeason,
+						overall: account.overall,
+						season: {},
 						status: {
 							type: 'none',
 							gameId: null
 						}
 					};
 
-					userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+					userListInfo.season = account.seasons ? account.seasons.get(CURRENT_SEASON_NUMBER.toString()) : {};
 					if (userIdx !== -1) userList.splice(userIdx, 1);
 					userList.push(userListInfo);
 					sendUserList();

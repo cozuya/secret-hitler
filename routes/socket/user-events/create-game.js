@@ -1,5 +1,5 @@
 const { gameCreationDisabled, limitNewPlayers, userList, games } = require('../models');
-const { LEGALCHARACTERS } = require('../../../src/frontend-scripts/node-constants');
+const { LEGAL_CHARACTERS } = require('../../../src/frontend-scripts/node-constants');
 const { generateCombination } = require('gfycat-style-urls');
 const { chatReplacements } = require('../chatReplacements');
 const Account = require('../../../models/account');
@@ -44,7 +44,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
-	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
+	if (!data.gameName || data.gameName.length > 20 || !LEGAL_CHARACTERS(data.gameName)) {
 		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
 		return;
 	}
@@ -131,9 +131,13 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame =
-		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
-			? true
-			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.noTopdecking > 0) && !customGame;
+		(data.casualGame ||
+			(typeof data.timedMode === 'number' && data.timedMode < 30 && process.env.NODE_ENV === 'production') ||
+			data.gameType === 'casual' ||
+			data.avalonSH ||
+			data.withPercival ||
+			data.noTopdecking > 0) &&
+		!customGame;
 	const practiceGame =
 		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
 		(data.gameType === 'practice' || data.playerChats === 'disabled') &&
@@ -272,7 +276,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 				{
 					userName: user.userName,
 					customCardback: user.customCardback,
-					customCardbackUid: user.customCardbackUid,
 					tournyWins: user.tournyWins,
 					connected: true,
 					cardStatus: {
@@ -289,7 +292,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			{
 				userName: user.userName,
 				customCardback: user.customCardback,
-				customCardbackUid: user.customCardbackUid,
 				previousSeasonAward: user.previousSeasonAward,
 				specialTournamentStatus: user.specialTournamentStatus,
 				tournyWins: user.tournyWins,

@@ -1,4 +1,4 @@
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
+const { CURRENT_SEASON_NUMBER } = require('../../src/frontend-scripts/node-constants');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
@@ -71,10 +71,9 @@ module.exports.newStaff = {
 	contributorUserNames: []
 };
 
-const staffList = (module.exportsstaffList = []);
+const staffList = (module.exports.staffList = []);
 
 module.exports.getStaffList = () => {
-	module.exports.staffList = [];
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		accounts.forEach(user => (staffList[user.username] = user.staffRole));
 	});
@@ -147,14 +146,7 @@ module.exports.formattedUserList = isAEM => {
 		.map(user => ({
 			userName: user.userName,
 			playerPronouns: user.playerPronouns,
-			wins: prune(user.wins),
-			losses: prune(user.losses),
-			rainbowWins: prune(user.rainbowWins),
-			rainbowLosses: prune(user.rainbowLosses),
 			isPrivate: prune(user.isPrivate),
-			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
-			staffDisableVisibleXP: prune(user.staffDisableVisibleXP),
-			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
 			// Tournaments are disabled, no point sending this.
 			// tournyWins: user.tournyWins,
@@ -162,27 +154,20 @@ module.exports.formattedUserList = isAEM => {
 			// Blacklists are sent in the sendUserGameSettings event.
 			// blacklist: user.blacklist,
 			customCardback: user.customCardback,
-			customCardbackUid: user.customCardbackUid,
-			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
-			xpOverall: user.xpOverall ? Math.floor(user.xpOverall) : undefined,
-			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-			xpSeason: user.xpSeason ? Math.floor(user.xpSeason) : undefined,
+			overall: user.overall,
 			isRainbowOverall: user.isRainbowOverall,
 			isRainbowSeason: user.isRainbowSeason,
 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
+			season: user.seasons ? user.seasons.get(CURRENT_SEASON_NUMBER.toString()) : {},
 			previousSeasonAward: user.previousSeasonAward,
 			specialTournamentStatus: user.specialTournamentStatus,
 			timeLastGameCreated: user.timeLastGameCreated,
 			staffRole: prune(user.staffRole),
-			staffIncognito: prune(user.staffIncognito),
+			staff: user.staff,
 			isContributor: prune(user.isContributor)
 			// oldData: user
 		}))
-		.filter(user => isAEM || !user.staffIncognito);
+		.filter(user => isAEM || !(user.staff && user.staff.incognito));
 };
 
 const userListEmitter = {
@@ -197,7 +182,7 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			const staffUserList = Object.keys(staffList).filter(
-				name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+				name => staffList[name] === 'trialmod' || staffList[name] === 'moderator' || staffList[name] === 'editor' || staffList[name] === 'admin'
 			);
 			const staffSocketIds = Object.keys(io.sockets.sockets).filter(id => staffUserList.includes(io.sockets.sockets[id].handshake.session.passport?.user));
 			const nonStaffSocketIds = Object.keys(io.sockets.sockets).filter(id => !staffSocketIds.includes(id));
@@ -225,7 +210,6 @@ module.exports.formattedGameList = () => {
 		flag: games[gameName].general.flag,
 		userNames: games[gameName].publicPlayersState.map(val => val.userName),
 		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
-		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped

@@ -3,7 +3,7 @@ import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
-import { CURRENTSEASONNUMBER } from '../../constants';
+import { CURRENT_SEASON_NUMBER, CURRENT_SEASON_END } from '../../constants';
 import { Message } from 'semantic-ui-react';
 import { processEmotes } from '../../emotes';
 
@@ -89,9 +89,9 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">Progress</h4>
 					<Checkbox
 						toggle
-						checked={!gameFilter.inprogress}
+						checked={!gameFilter.inProgress}
 						onChange={() => {
-							this.toggleFilter('inprogress');
+							this.toggleFilter('inProgress');
 						}}
 					/>
 				</div>
@@ -109,9 +109,9 @@ export class GamesList extends React.Component {
 					<i title="Filter by casual games" className="handshake icon" />
 					<Checkbox
 						toggle
-						checked={!gameFilter.casualgame}
+						checked={!gameFilter.casual}
 						onChange={() => {
-							this.toggleFilter('casualgame');
+							this.toggleFilter('casual');
 						}}
 					/>
 				</div>
@@ -119,9 +119,9 @@ export class GamesList extends React.Component {
 					<i title="Filter by custom games" className="setting icon" />
 					<Checkbox
 						toggle
-						checked={!gameFilter.customgame}
+						checked={!gameFilter.custom}
 						onChange={() => {
-							this.toggleFilter('customgame');
+							this.toggleFilter('custom');
 						}}
 					/>
 				</div>
@@ -254,9 +254,9 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2023-04-23')
-							? `Season ends ${moment(new Date('2024-01-05T06:00:00.000Z')).fromNow()}.`
-							: `Welcome to season ${CURRENTSEASONNUMBER}!`}
+						{moment(new Date()) > CURRENT_SEASON_END - moment.duration(1, 'month')
+							? `Season ends ${moment(CURRENT_SEASON_END).fromNow()}.`
+							: `Welcome to season ${CURRENT_SEASON_NUMBER}!`}
 					</h5>
 				</a>
 				<h3>Game filters</h3>

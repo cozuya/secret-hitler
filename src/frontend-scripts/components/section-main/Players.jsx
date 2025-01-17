@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import classnames from 'classnames';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
-import { getNumberWithOrdinal, PLAYERCOLORS } from '../../constants';
+import { getNumberWithOrdinal, PLAYER_COLORS } from '../../constants';
 import UserPopup from '../reusable/UserPopup.jsx';
 
 $.fn.dropdown = Dropdown;
@@ -301,12 +301,14 @@ class Players extends React.Component {
 					this.handlePlayerClick(i, player.userName);
 				}}
 				style={
+					// TODO: fix hack
 					player.customCardback &&
+					player.customCardback.fileExtension &&
 					!isBlind &&
 					(!gameInfo.general.private || isStaff || userInfo.isSeated) &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback.fileExtension}?${player.customCardback.uid})`
 						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
@@ -327,7 +329,7 @@ class Players extends React.Component {
 					}
 
 					if (user && !isBlind) {
-						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
+						classes = `${classes} ${PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
 					}
 
 					return classes;
@@ -499,7 +501,7 @@ class Players extends React.Component {
 		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
-			if (user && user.staffIncognito) {
+			if (user && user.staff && user.staff.incognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				Swal.fire('Sorry, this service is currently unavailable.');

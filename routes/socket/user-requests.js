@@ -24,7 +24,7 @@ const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
+const { CURRENT_SEASON_NUMBER } = require('../../src/frontend-scripts/node-constants');
 
 /**
  * @param {object} socket - user socket reference.
@@ -33,13 +33,13 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
 		const staffUserList = Object.keys(staffList).filter(
-			name => staffList[name] === 'moderator' || staffList[name] === 'admin' || staffList[name] === 'trialmod'
+			name => staffList[name] === 'trialmod' || staffList[name] === 'moderator' || staffList[name] === 'editor' || staffList[name] === 'admin'
 		);
 
 		if (staffUserList.includes(socket?.handshake?.session?.passport?.user)) {
 			socket.emit('userList', { list: formattedUserList(true) });
 		} else {
-			socket.emit('userList', { list: formattedUserList() });
+			socket.emit('userList', { list: formattedUserList(false) });
 		}
 	} else {
 		userListEmitter.send = true;
@@ -65,6 +65,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					  }
 					: {};
 			});
+
 			list.forEach(user => {
 				if (user.ip && user.ip != '') {
 					try {
@@ -75,6 +76,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					}
 				}
 			});
+
 			actions.forEach(action => {
 				if (action.ip && action.ip != '') {
 					if (action.ip.startsWith('-')) {
@@ -89,7 +91,9 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					}
 				}
 			});
+
 			const gList = [];
+
 			if (games) {
 				Object.values(games).forEach(game => {
 					gList.push({
@@ -103,6 +107,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) =
 					});
 				});
 			}
+
 			socket.emit('modInfo', {
 				modReports: actions,
 				accountCreationDisabled,
@@ -203,37 +208,23 @@ module.exports.sendUserGameSettings = socket => {
 					playerPronouns: account.gameSettings.playerPronouns,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
-					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-					staffDisableVisibleXP: account.gameSettings.staffDisableVisibleXP,
-					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-					staffIncognito: account.gameSettings.staffIncognito,
-					wins: account.wins,
-					losses: account.losses,
-					rainbowWins: account.rainbowWins,
-					rainbowLosses: account.rainbowLosses,
+					staff: account.gameSettings.staff,
 					isRainbowOverall: account.isRainbowOverall,
 					isRainbowSeason: account.isRainbowSeason,
 					isPrivate: account.gameSettings.isPrivate,
 					tournyWins: account.gameSettings.tournyWins,
 					blacklist: account.gameSettings.blacklist,
 					customCardback: account.gameSettings.customCardback,
-					customCardbackUid: account.gameSettings.customCardbackUid,
 					previousSeasonAward: account.gameSettings.previousSeasonAward,
 					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-					eloOverall: account.eloOverall,
-					xpOverall: account.xpOverall,
-					eloSeason: account.eloSeason,
-					xpSeason: account.xpSeason,
+					overall: account.overall,
+					season: account.seasons ? account.seasons.get(CURRENT_SEASON_NUMBER.toString()) : {},
 					status: {
 						type: 'none',
 						gameId: null
 					}
 				};
 
-				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 				userList.push(userListInfo);
 				sendUserList();
 			}
@@ -325,6 +316,7 @@ module.exports.sendGeneralChats = socket => {
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
+
 	if (user) {
 		user.status = {
 			type:
@@ -341,6 +333,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 					: 'none',
 			gameId: game ? game.general.uid : false
 		};
+
 		sendUserList();
 	}
 });
@@ -362,9 +355,9 @@ module.exports.sendGameInfo = (socket, uid) => {
 				player.connected = true;
 				if (game.general) game.general.timeAbandoned = null;
 				socket.emit('updateSeatForUser', true);
-				updateUserStatus(passport, game);
+				updateUserStatus(socket, game);
 			} else {
-				updateUserStatus(passport, game, 'observing');
+				updateUserStatus(socket, game, 'observing');
 			}
 		}
 

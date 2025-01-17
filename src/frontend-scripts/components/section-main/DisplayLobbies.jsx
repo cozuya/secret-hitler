@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
+import { PLAYER_COLORS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -353,17 +353,20 @@ const DisplayLobbies = props => {
 
 		game.userNames.forEach(el => players.push({ userName: game.private ? '' : el }));
 		game.customCardback.forEach((el, index) => (players[index].customCardback = el));
-		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
 			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
 
 			if (userStats) {
-				players[index].wins = userStats.wins;
-				players[index].losses = userStats.losses;
-				players[index].winsSeason = userStats.winsSeason;
-				players[index].lossesSeason = userStats.lossesSeason;
-				players[index].eloOverall = userStats.eloOverall;
-				players[index].eloSeason = userStats.eloSeason;
+				players[index].wins = userStats.overall.wins;
+				players[index].losses = userStats.overall.losses;
+				players[index].eloOverall = userStats.overall.elo;
+
+				if (userStats.season) {
+					players[index].winsSeason = userStats.season.wins;
+					players[index].lossesSeason = userStats.season.losses;
+					players[index].eloSeason = userStats.season.elo;
+				}
+
 				players[index].isRainbowOverall = userStats.isRainbowOverall;
 				players[index].isRainbowSeason = userStats.isRainbowSeason;
 				players[index].staffRole = userStats.staffRole;
@@ -372,12 +375,17 @@ const DisplayLobbies = props => {
 		});
 
 		players.forEach(player => {
-			const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
+			const classes = PLAYER_COLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
 
-			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
+			// TODO: fix hack
+			if (
+				player.customCardback &&
+				player.customCardback.fileExtension &&
+				(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+			) {
 				total.push(
 					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
+						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback.fileExtension}?${player.customCardback.uid}`} />
 					</div>
 				);
 			} else {

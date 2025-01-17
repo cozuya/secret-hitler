@@ -4,7 +4,7 @@ import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import cn from 'classnames';
-import { PLAYERCOLORS } from '../../constants';
+import { PLAYER_COLORS } from '../../constants';
 import Swal from 'sweetalert2';
 import $ from 'jquery';
 import { Dropdown } from 'semantic-ui-react';
@@ -23,6 +23,7 @@ const mapDispatchToProps = dispatch => ({
 class ProfileWrapper extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			bioStatus: 'displayed',
 			blacklistClicked: false,
@@ -40,6 +41,7 @@ class ProfileWrapper extends React.Component {
 		if (name !== newName) {
 			updatedState = { ...updatedState, profileUser: newName, blacklistClicked: false };
 		}
+
 		return updatedState;
 	}
 
@@ -76,13 +78,13 @@ class ProfileWrapper extends React.Component {
 				rows={[
 					[
 						'Elo',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
+						this.props.profile.staff && this.props.profile.staff.disableVisibleElo ? '---' : this.props.profile.season.elo || 1600,
+						this.props.profile.staff && this.props.profile.staff.disableVisibleElo ? '---' : this.props.profile.overall.elo || 1600
 					],
 					[
 						'XP',
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 0,
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 0
+						this.props.profile.staff && this.props.profile.staff.disableVisibleXP ? '---' : this.props.profile.season.xp || 0,
+						this.props.profile.staff && this.props.profile.staff.disableVisibleXP ? '---' : this.props.profile.overall.xp || 0
 					]
 				]}
 			/>
@@ -250,12 +252,11 @@ class ProfileWrapper extends React.Component {
 				<br />
 				<br />
 				{badgesToSort.map(x => (
-					<>
+					<React.Fragment key={x.id}>
 						<img
 							style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
 							src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
 							alt={x.title}
-							key={x.id}
 							height={50}
 							onClick={() =>
 								Swal.fire({
@@ -271,7 +272,7 @@ class ProfileWrapper extends React.Component {
 								{x.id.substring(8)}
 							</p>
 						) : null}
-					</>
+					</React.Fragment>
 				))}
 			</div>
 		);
@@ -475,7 +476,7 @@ class ProfileWrapper extends React.Component {
 			userClasses =
 				(gameSettings && gameSettings.disableSeasonal ? user.isRainbowOverall : user.isRainbowSeason) || Boolean(user.staffRole) || user.isContributor
 					? cn(
-							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
+							PLAYER_COLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && userInBlacklist(user.userName, gameSettings.blacklist) },
 							{ unclickable: !this.props.isUserClickable },
 							{ clickable: this.props.isUserClickable }
@@ -544,11 +545,11 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div>
-				{profile.customCardback && (
+				{profile.customCardback && profile.customCardback.fileExtension && (
 					<div
 						className={userClasses}
 						style={{
-							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
+							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback.fileExtension}?${this.state.openTime})`
 						}}
 					/>
 				)}
