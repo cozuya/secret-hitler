@@ -255,6 +255,7 @@ module.exports.sendUserGameSettings = socket => {
  * @param {object} data - data about the request
  */
 module.exports.sendPlayerNotes = (socket, data) => {
+	if (data) {
 	PlayerNote.find({ userName: data.userName, notedUser: { $in: data.seatedPlayers } })
 		.then(notes => {
 			if (notes) {
@@ -264,6 +265,7 @@ module.exports.sendPlayerNotes = (socket, data) => {
 		.catch(err => {
 			console.log(err, 'err in getting playernotes');
 		});
+	}
 };
 
 /**
