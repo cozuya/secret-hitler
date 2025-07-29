@@ -1,4 +1,5 @@
 module.exports.handleFlappyEvent = (data, game) => {
+return;
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}

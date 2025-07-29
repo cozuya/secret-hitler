@@ -8,6 +8,9 @@ const { sendUserList } = require('../user-requests');
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
+console.log(data, 'data')
+if (data && typeof data === 'object' && typeof data.field === 'string') {
+	
 	const fields = ['primaryColor', 'secondaryColor', 'tertiaryColor', 'backgroundColor', 'textColor'];
 
 	Account.findOne({ username: passport && passport.user }).then(account => {
@@ -16,11 +19,14 @@ module.exports.handleUpdatedTheme = (socket, passport, data) => {
 		}
 
 		for (const field of fields) {
-			if (data[field]) account[field] = data[field];
+			if (data[field] && typeof data[field] === 'string') account[field] = data[field];
+			else {
+			 console.log("BAD DATA - " + passport.user) }
 		}
 
 		account.save();
 	});
+}
 };
 
 /**

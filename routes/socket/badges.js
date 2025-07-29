@@ -15,7 +15,7 @@ const ELO_BADGES = [
 
 const XP_BADGES = [
 	// XP to badge
-	[50, 'xp50'],
+	[10, 'xp10'],
 	[100, 'xp100'],
 	[500, 'xp500'],
 	[1000, 'xp1000'],

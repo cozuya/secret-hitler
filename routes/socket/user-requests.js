@@ -255,7 +255,8 @@ module.exports.sendUserGameSettings = socket => {
  * @param {object} data - data about the request
  */
 module.exports.sendPlayerNotes = (socket, data) => {
-	PlayerNote.find({ userName: data.userName, notedUser: { $in: data.seatedPlayers } })
+if (data) {
+	PlayerNote.find({ userName: data?.userName, notedUser: { $in: data?.seatedPlayers } })
 		.then(notes => {
 			if (notes) {
 				socket.emit('notesUpdate', notes);
@@ -264,6 +265,7 @@ module.exports.sendPlayerNotes = (socket, data) => {
 		.catch(err => {
 			console.log(err, 'err in getting playernotes');
 		});
+}
 };
 
 /**
@@ -350,7 +352,12 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {string} uid - uid of game.
  */
 module.exports.sendGameInfo = (socket, uid) => {
-	const game = games[uid];
+
+if (typeof uid !== 'string') {
+return;
+}
+
+const game = games[uid];
 	const { passport } = socket.handshake.session;
 
 	if (game && game.publicPlayersState && game.general) {

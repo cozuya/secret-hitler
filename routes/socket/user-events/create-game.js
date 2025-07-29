@@ -29,10 +29,18 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	// Make sure it exists
 	if (!data) return;
 
+	if (data.minPlayersCount && typeof data.minPlayersCount === 'object') {
+		return;
+	}
+
+	if (data.maxPlayersCount && typeof data.maxPlayersCounter === 'object') {
+		return;
+	}
+
 	let a;
 	let playerCounts = [];
-	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
-		if (!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
+	for (a = Math.max(data.minPlayersCount ?? 0, 5); a <= Math.min(10, data.maxPlayersCount ?? 999); a++) {
+		if (data?.excludedPlayerCount && !data.excludedPlayerCount.includes(a)) playerCounts.push(a);
 	}
 	if (playerCounts.length === 0) {
 		// Someone is messing with the data, ignore it
@@ -49,8 +57,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue) {
-		if (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue) {
+	if (data?.eloSliderValue) {
+		if (user?.eloSeason < data?.eloSliderValue || user?.eloOverall < data?.eloSliderValue) {
 			return;
 		}
 
@@ -60,7 +68,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		}
 	}
 
-	if (data.xpSliderValue) {
+	if (data?.xpSliderValue) {
+		if (typeof data.xpSliderValue !== 'string') {
+return;
+}
+
 		if (user.xpOverall < data.xpSliderValue) {
 			return;
 		}
@@ -71,7 +83,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		}
 	}
 
-	if (data.customGameSettings && data.customGameSettings.enabled) {
+	if (data?.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
@@ -81,9 +93,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
 		}
 
-		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
+		if (typeof data.customGameSettings.hitlerZone === 'object' || !(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
 		if (
 			!data.customGameSettings.vetoZone ||
+			typeof data.customGameSettings.vetoZone === 'object' ||
+			typeof data.customGameSettings.trackState.fas === 'object' ||
 			data.customGameSettings.vetoZone <= data.customGameSettings.trackState.fas ||
 			data.customGameSettings.vetoZone > 5
 		) {
@@ -92,8 +106,15 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
-		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
 
+if (typeof data.customGameSettings.fascistCount === 'object') {
+return;
+}
+
+		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
+if (typeof data.customGameSettings.trackState.lib === 'object' || typeof data.customGameSettings.trackState.fas === 'object' || typeof data.customGameSettings.deckState.lib === 'object' || typeof data.customGameSettings.deckState.fax === 'object') {
+return;
+}
 		// Ensure standard victory conditions can be met for both teams.
 		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
 		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 19) return;
@@ -127,7 +148,13 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		const foundGame = await Game.findOne({ uid });
 		if (foundGame) uid = generateCombination(3, '', true);
 		else break;
-	}
+	
+
+}
+
+if (typeof data.noTopdecking === 'object') {
+return;
+}
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame =

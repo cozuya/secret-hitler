@@ -333,12 +333,12 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		account.eloSeason = eloSeason + changeSeason;
 		account.xpSeason = (account.xpSeason || 0) + xpChangeSeason;
 
-		if (account.xpOverall >= 50.0) {
+		if (account.xpOverall >= 10.0) {
 			account.isRainbowOverall = true;
 			account.dateRainbowOverall = new Date();
 		}
 
-		if (account.xpSeason >= 50.0) {
+		if (account.xpSeason >= 10.0) {
 			account.isRainbowSeason = true;
 		}
 

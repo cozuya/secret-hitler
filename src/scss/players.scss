@@ -112,6 +112,14 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		box-shadow: 0 0 5px 2px #ab85ff !important;
 	}
 
+	.player-container.carl {
+		box-shadow: 0 0 5px 2px #726EFF !important;
+	}
+
+	.player-container.rose {
+		box-shadow: 0 0 5px 2px #fe7f9c !important;
+	}
+
 	.player-container {
 		user-select: none;
 		max-width: 70px;

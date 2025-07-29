@@ -140,7 +140,7 @@ const ensureAuthenticated = socket => {
 };
 
 const findGame = data => {
-	if (games && data && data.uid) {
+	if (games && data && data.uid && typeof data.uid === 'string') {
 		return games[data.uid];
 	}
 };
@@ -299,7 +299,6 @@ module.exports.socketRoutes = () => {
 					});
 				} else {
 					socket.emit('sendAlert', `Are you sure you're supposed to be doing that?`);
-					console.log(passport.user, 'tried to receive warnings for', username);
 				}
 			});
 
@@ -322,6 +321,10 @@ module.exports.socketRoutes = () => {
 					socket.emit('feedbackResponse', { status: 'error', message: 'You cannot submit empty feedback.' });
 					return;
 				}
+
+if (typeof data.feedback === 'object') {
+return;
+}
 
 				if (data.feedback.length <= 1900) {
 					Account.findOne({ username: passport.user }).then(account => {
@@ -382,7 +385,7 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('flappyEvent', data => {
-				if (isRestricted) return;
+				return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleFlappyEvent(data, game);
@@ -490,7 +493,11 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('updateTruncateGame', data => {
-				handleUpdatedTruncateGame(data);
+				console.log("BAD DATA")
+				console.log(passport)
+				console.log(data)
+				console.log(socket)
+				//handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
 				const game = findGame(data);
@@ -543,7 +550,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('playerReport', (data, callback) => {
-				if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
+				if (isRestricted || !data || !data.comment || typeof data.comment !== 'string' || data.comment.length > 140) return;
 				if (authenticated) {
 					handlePlayerReport(passport, data, callback);
 				}
@@ -641,13 +648,20 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('modFreezeGame', data => {
-				const uid = data.uid;
-				const game = findGame({ uid });
-				if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
-					if (game && game.private && game.private.seatedPlayers) {
-						handleGameFreeze(socket, passport, game, data.modName);
-					} else {
-						socket.emit('sendAlert', 'Game is missing.');
+				const uid = data?.uid;
+				if (!uid) {
+				  console.log("INVALID DATA ENTRY")
+				  console.log(data)
+				  console.log(socket)
+				  console.log(passport)
+				} else {	
+					const game = findGame({ uid });
+					if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
+						if (game && game.private && game.private.seatedPlayers) {
+							handleGameFreeze(socket, passport, game, data.modName);
+						} else {
+							socket.emit('sendAlert', 'Game is missing.');
+						}
 					}
 				}
 			});

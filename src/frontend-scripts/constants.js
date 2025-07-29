@@ -66,7 +66,9 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			veteran: user.staffRole === 'veteran',
 			moira: user.userName === 'moira' && user.staffRole === 'admin',
 			godhemzelve: user.userName === 'godhemzelve' && user.staffRole === 'admin',
-			vig: user.userName === 'Vig' && user.staffRole === 'admin'
+			vig: user.userName === 'Vig' && user.staffRole === 'admin',
+			carl: user.userName === 'carlgauss' && user.staffRole === 'admin',
+			rose: user.userName === 'Sorrose' && user.staffRole === 'admin'
 		});
 	} else if (
 		user.isContributor &&
