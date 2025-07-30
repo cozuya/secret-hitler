@@ -1830,9 +1830,6 @@ export default class Creategame extends React.Component {
 				<a href="#/">
 					<i className="remove icon" />
 				</a>
-				<div className="ui header">
-					<div className="content">Create a new game</div>
-				</div>
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className={createClass}>
 						Create game
@@ -1953,6 +1950,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div> */}
+<<<<<<< Updated upstream
 					<div className="row flappy">
 						<div className="sixteen wide column">
 							<i className="big plane icon" style={{ color: 'orange' }} />
@@ -1972,31 +1970,9 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 					</div>
+=======
+>>>>>>> Stashed changes
 
-					{this.state.flappyMode && (
-						<div className="row flappy-force">
-							<div className="sixteen wide column">
-								<i className="big plane icon" style={{ color: 'darkred' }} />
-								<h4 className="ui header" style={{ color: 'darkred' }}>
-									Forget the policies, just play a flappy-only game
-								</h4>
-								<Switch
-									className="create-game-switch"
-									onChange={checked => {
-										this.setState({ flappyOnlyMode: checked });
-									}}
-									checked={this.state.flappyOnlyMode}
-									onColor="#627cc8"
-									offColor="#444444"
-									uncheckedIcon={false}
-									checkedIcon={false}
-									height={21}
-									width={48}
-									handleDiameter={21}
-								/>
-							</div>
-						</div>
-					)}
 					{this.state.timedMode && (
 						<div className="row timedmode-slider">
 							<div className="sixteen wide column">
@@ -2012,37 +1988,7 @@ export default class Creategame extends React.Component {
 						</div>
 					)}
 
-					<div className="row timedmode-check">
-						<div className="sixteen wide column">
-							{this.state.timedMode && (
-								<span className="timed-slider-value">
-									{(() => {
-										const timeInSeconds = this.state.timedSliderValue[0];
-
-										return `${Math.floor(timeInSeconds / 60)}: ${timeInSeconds % 60 < 10 ? `0${timeInSeconds % 60}` : timeInSeconds % 60}`;
-									})()}
-								</span>
-							)}
-							<i className="big hourglass half icon" />
-							<h4 className="ui header">
-								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
-							</h4>
-							<Switch
-								className="create-game-switch"
-								onChange={checked => {
-									this.setState({ timedMode: checked });
-								}}
-								checked={this.state.timedMode}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
-						</div>
-					</div>
+					<div className="row timedmode-check"></div>
 					{this.props.userInfo.verified && !this.state.privateonlygame && (
 						<div className="row verified-row">
 							<div className="sixteen wide column">
@@ -2075,27 +2021,7 @@ export default class Creategame extends React.Component {
 							<h4 className="ui header">Player chat - disable to only allow claiming and game messages</h4>
 							{this.renderPlayerChatDropdown()}
 						</div>
-						<div className="four wide column disablegamechat">
-							<i className="big game icon" />
-							<h4 className="ui header">
-								Disable game chats - {/* you're on your own to remember what happened over the course of the game */}
-								<span style={{ fontStyle: 'italic' }}>currently disabled due to multiple issues. </span>
-							</h4>
-							{/* <Switch
-              className="create-game-switch"
-								onChange={checked => {
-									this.setState({ disablegameChat: checked });
-								}}
-								checked={this.state.disablegameChat}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/> */}
-						</div>
+
 						<div className="four wide column experiencedmode">
 							<i className="big fast forward icon" />
 							<h4 className="ui header">Speed mode - most animations and pauses greatly reduced and fewer gamechats</h4>
@@ -2105,6 +2031,36 @@ export default class Creategame extends React.Component {
 									this.setState({ experiencedmode: checked });
 								}}
 								checked={this.state.experiencedmode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
+
+						<div className="four wide column">
+							{this.state.timedMode && (
+								<span className="timed-slider-value">
+									{(() => {
+										const timeInSeconds = this.state.timedSliderValue[0];
+
+										return `${Math.floor(timeInSeconds / 60)}: ${timeInSeconds % 60 < 10 ? `0${timeInSeconds % 60}` : timeInSeconds % 60}`;
+									})()}
+								</span>
+							)}
+							<i className="big hourglass half icon" />
+							<h4 className="ui header">
+								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
+							</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({ timedMode: checked });
+								}}
+								checked={this.state.timedMode}
 								onColor="#627cc8"
 								offColor="#444444"
 								uncheckedIcon={false}
@@ -2314,7 +2270,7 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 					</div>
-					<div className="row">
+					<div className="row" style={{ marginTop: '20px' }}>
 						<div className="sixteen wide column">
 							<i className="big setting icon" />
 							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>

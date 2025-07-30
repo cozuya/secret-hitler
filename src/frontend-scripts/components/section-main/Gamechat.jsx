@@ -625,7 +625,7 @@ class Gamechat extends React.Component {
 
 		return {
 			isDisabled: false,
-			placeholder: 'Send a message'
+			placeholder: ''
 		};
 	};
 

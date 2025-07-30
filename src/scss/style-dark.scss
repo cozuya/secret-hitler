@@ -241,6 +241,7 @@
 	.menu-container {
 		background-color: var(--theme-primary);
 		min-height: 42px;
+
 		a {
 			cursor: pointer;
 			font-weight: bold;
@@ -283,8 +284,6 @@
 		}
 		a:hover {
 			color: var(--theme-text-2);
-		}
-		.center-menu-links {
 		}
 		.button {
 			background: var(--theme-secondary);
@@ -417,11 +416,12 @@
 		}
 
 		.leaderboard {
+			font-family: 'roboto slab', 'germania one', sans-serif;
+			font-style: italic;
+
 			position: absolute;
 			top: 90px;
-			right: 90px;
-			text-decoration: underline;
-			color: var(--theme-tertiary);
+			right: 50px;
 		}
 	}
 
@@ -895,15 +895,12 @@ div {
 	box-shadow: none;
 	overflow: hidden;
 	background-color: var(--theme-primary);
-	margin: auto;
+	margin: 0 auto;
 	width: 95%;
 	max-width: 1920px;
 	> a {
-		max-height: 36px;
-		margin-top: 3px;
-
 		font-family: 'germania one', germania, sans-serif;
-		font-size: 38px;
+		font-size: 36px;
 		text-shadow: 1px 1px 2px var(--theme-background-3);
 		padding: 10px 0 0 0;
 		display: inline-block;
@@ -1100,10 +1097,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .carl {
-	color: #726EFF !important;
+	color: #726eff !important;
 }
 .player-small-cardback.carl {
-	box-shadow: 0 0 5px 2px #726EFF !important;
+	box-shadow: 0 0 5px 2px #726eff !important;
 }
 
 .rose {

@@ -208,53 +208,8 @@ class Menu extends React.Component {
 						<a href="/">{userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork ? 'SH.io' : 'SECRET HITLER.io'}</a>
 						<div className="center-menu-links">
 							<span>
-								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
+								<a style={{ textDecoration: 'none' }} target="_blank" href="/tou">
 									Site Rules
-								</a>{' '}
-								|{' '}
-								<a
-									className={
-										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
-											? 'patch-alert'
-											: null
-									}
-									onClick={this.props.readPatchNotes}
-								>
-									{' '}
-									{`v${this.props.version.current.number}`}{' '}
-								</a>
-								|{' '}
-								<a
-									onClick={() => {
-										if (userInfo.userName) {
-											Swal.fire({
-												allowOutsideClick: false,
-												title: 'Feedback',
-												html:
-													'Please enter your feedback here. Reporting players and other time-sensitive moderation issues should go to #mod-support on our Discord.',
-												input: 'textarea',
-												inputAttributes: {
-													maxlength: 1900
-												},
-												confirmButtonText: 'Submit',
-												showCancelButton: true,
-												cancelButtonText: 'Cancel'
-											}).then(result => {
-												if (result.value) {
-													socket.emit('feedbackForm', {
-														feedback: result.value
-													});
-												}
-											});
-										} else {
-											Swal.fire({
-												icon: 'error',
-												title: 'You must log in to submit feedback!'
-											});
-										}
-									}}
-								>
-									Feedback
 								</a>{' '}
 								|{' '}
 								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
@@ -337,25 +292,9 @@ class Menu extends React.Component {
 					<section className="nav-menu">
 						<div className="center-menu-links">
 							<span>
-								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
+								<a style={{ textDecoration: 'none' }} target="_blank" href="/tou">
 									Site Rules
-								</a>{' '}
-								|{' '}
-								<a
-									className={
-										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
-											? 'patch-alert'
-											: null
-									}
-									onClick={this.props.readPatchNotes}
-								>
-									{' '}
-									{`v${this.props.version.current.number}`}{' '}
 								</a>
-								|{' '}
-								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
-									Feedback
-								</a>{' '}
 								|{' '}
 								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
 									Wiki

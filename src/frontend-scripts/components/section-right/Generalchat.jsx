@@ -149,7 +149,7 @@ export default class Generalchat extends React.Component {
 			if (userName === this.state.modDMs.username || userName === this.state.modDMs.aemMember)
 				return {
 					isDisabled: false,
-					placeholder: 'Send a message'
+					placeholder: ''
 				};
 			return {
 				isDisabled: true,
@@ -183,13 +183,13 @@ export default class Generalchat extends React.Component {
 		if ((user.xpOverall || 0) < 10 && !user.isRainbowOverall) {
 			return {
 				isDisabled: true,
-				placeholder: 'You must have 10 XP to use general chat'
+				placeholder: ''
 			};
 		}
 
 		return {
 			isDisabled: false,
-			placeholder: 'Send a message'
+			placeholder: ''
 		};
 	};
 
