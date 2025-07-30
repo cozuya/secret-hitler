@@ -1951,28 +1951,6 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div> */}
-<<<<<<< Updated upstream
-					<div className="row flappy">
-						<div className="sixteen wide column">
-							<i className="big plane icon" style={{ color: 'orange' }} />
-							<Switch
-								className="create-game-switch"
-								onChange={checked => {
-									this.setState({ flappyMode: checked });
-								}}
-								checked={this.state.flappyMode}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
-						</div>
-					</div>
-=======
->>>>>>> Stashed changes
 
 					{this.state.timedMode && (
 						<div className="row timedmode-slider">
