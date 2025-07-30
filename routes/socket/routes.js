@@ -1,5 +1,4 @@
 const {
-	handleUpdatedTruncateGame,
 	handleUpdatedReportGame,
 	handleAddNewGame,
 	handleAddNewGameChat,
@@ -322,9 +321,9 @@ module.exports.socketRoutes = () => {
 					return;
 				}
 
-if (typeof data.feedback === 'object') {
-return;
-}
+				if (typeof data.feedback === 'object') {
+					return;
+				}
 
 				if (data.feedback.length <= 1900) {
 					Account.findOne({ username: passport.user }).then(account => {
@@ -493,10 +492,10 @@ return;
 				}
 			});
 			socket.on('updateTruncateGame', data => {
-				console.log("BAD DATA")
-				console.log(passport)
-				console.log(data)
-				console.log(socket)
+				console.log('BAD DATA');
+				console.log(passport);
+				console.log(data);
+				console.log(socket);
 				//handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
@@ -650,11 +649,11 @@ return;
 			socket.on('modFreezeGame', data => {
 				const uid = data?.uid;
 				if (!uid) {
-				  console.log("INVALID DATA ENTRY")
-				  console.log(data)
-				  console.log(socket)
-				  console.log(passport)
-				} else {	
+					console.log('INVALID DATA ENTRY');
+					console.log(data);
+					console.log(socket);
+					console.log(passport);
+				} else {
 					const game = findGame({ uid });
 					if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
 						if (game && game.private && game.private.seatedPlayers) {

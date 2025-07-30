@@ -52,7 +52,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
-	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
+	if (!data.gameName || data.gameName.length > 50 || !LEGALCHARACTERS(data.gameName)) {
 		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
 		return;
 	}
@@ -70,8 +70,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 	if (data?.xpSliderValue) {
 		if (typeof data.xpSliderValue !== 'string') {
-return;
-}
+			return;
+		}
 
 		if (user.xpOverall < data.xpSliderValue) {
 			return;
@@ -107,14 +107,19 @@ return;
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
 
-if (typeof data.customGameSettings.fascistCount === 'object') {
-return;
-}
+		if (typeof data.customGameSettings.fascistCount === 'object') {
+			return;
+		}
 
 		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
-if (typeof data.customGameSettings.trackState.lib === 'object' || typeof data.customGameSettings.trackState.fas === 'object' || typeof data.customGameSettings.deckState.lib === 'object' || typeof data.customGameSettings.deckState.fax === 'object') {
-return;
-}
+		if (
+			typeof data.customGameSettings.trackState.lib === 'object' ||
+			typeof data.customGameSettings.trackState.fas === 'object' ||
+			typeof data.customGameSettings.deckState.lib === 'object' ||
+			typeof data.customGameSettings.deckState.fax === 'object'
+		) {
+			return;
+		}
 		// Ensure standard victory conditions can be met for both teams.
 		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
 		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 19) return;
@@ -148,13 +153,11 @@ return;
 		const foundGame = await Game.findOne({ uid });
 		if (foundGame) uid = generateCombination(3, '', true);
 		else break;
-	
+	}
 
-}
-
-if (typeof data.noTopdecking === 'object') {
-return;
-}
+	if (typeof data.noTopdecking === 'object') {
+		return;
+	}
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame =

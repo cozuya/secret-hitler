@@ -1849,7 +1849,7 @@ export default class Creategame extends React.Component {
 							<h4 className="ui header">Game name:</h4>
 							<div className="ui input">
 								<input
-									maxLength="20"
+									maxLength="50"
 									placeholder="New Game"
 									onKeyPress={e => {
 										const { LEGALCHARACTERS } = require('../../constants');
@@ -1956,14 +1956,6 @@ export default class Creategame extends React.Component {
 					<div className="row flappy">
 						<div className="sixteen wide column">
 							<i className="big plane icon" style={{ color: 'orange' }} />
-							<h4 className="ui header" style={{ color: 'orange' }}>
-								<i
-									className="info circle icon"
-									style={{ color: 'red', cursor: 'help' }}
-									title="If active, when players are on the last policy, roles are revealed and a 1 on 1 game of Flappy Hitler commences with control of the 'flappy' passed between team members at intervals."
-								/>
-								COMING SOON: Resolve sudden death games with Flappy Hitler
-							</h4>
 							<Switch
 								className="create-game-switch"
 								onChange={checked => {
