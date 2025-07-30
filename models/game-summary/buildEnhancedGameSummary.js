@@ -59,6 +59,7 @@ function buildEnhancedGameSummary(_summary) {
 			liberal: 'liberal',
 			percival: 'liberal',
 			merlin: 'liberal',
+			monarchist: 'fascist', // Default loyalty
 			morgana: 'fascist',
 			fascist: 'fascist',
 			hitler: 'fascist'

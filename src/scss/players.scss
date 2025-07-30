@@ -233,6 +233,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			.card.percival {
 				background-image: url('../../public/images/cards/percival.png');
 			}
+			.card.monarchist {
+				background-image: url('../../public/images/cards/monarchist.png');
+			}
 			.card.fascist0 {
 				background-image: url('../../public/images/cards/fascist0.png');
 			}
@@ -356,6 +359,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				z-index: 99999 !important;
 				color: var(--theme-background-3);
 				right: -5px !important;
+
 				&:hover {
 					color: var(--theme-background-3);
 				}
@@ -397,6 +401,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.player-name.morgana,
 		.player-number.morgana {
 			color: $morgana;
+		}
+		.player-name.monarchist,
+		.player-number.monarchist {
+			color: $monarchist;
 		}
 		.player-name.merlin_candidate,
 		.player-number.merlin_candidate {

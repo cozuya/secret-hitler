@@ -37,6 +37,7 @@ const Game = new Schema({
 	},
 	timedMode: Number, // timer length
 	blindMode: Boolean,
+	monarchistSH: Boolean,
 	avalonSH: {
 		withPercival: Boolean
 	},

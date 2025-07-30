@@ -1066,6 +1066,7 @@ export default class Creategame extends React.Component {
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined,
 				avalonSH: this.state.avalonSH,
 				withPercival: this.state.avalonSH && this.state.withPercival,
+				monarchistSH: this.state.monarchistSH,
 				noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0
 			};
 
@@ -2251,6 +2252,27 @@ export default class Creategame extends React.Component {
 									handleDiameter={21}
 								/>
 							)}
+						</div>
+						<div className="four wide column">
+							<i className="big chess king icon" />
+							<h4 className="ui header">Monarchist mode - adds a custom fascist role, casual only</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({
+										monarchistSH: checked,
+										gameType: checked ? 'casual' : this.state.privateShowing || this.state.privateonlygame ? 'private' : 'ranked'
+									});
+								}}
+								checked={this.state.monarchistSH}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						<div className="four wide column">
 							<i className="big gavel icon" />
