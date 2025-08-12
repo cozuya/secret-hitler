@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
-const { List, Range } = require('immutable');
-const { some, none, fromNullable } = require('option');
-const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
+import { List, Range } from 'immutable';
+import { some, none, fromNullable } from 'option';
+import { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } from '../../utils/index.esm.js';
 
-module.exports = (
+export default (
 	logs,
 	players,
 	gameSetting = {
@@ -17,13 +17,13 @@ module.exports = (
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
-const buildTurns = (turns, logs, players, gameSetting) => {
+export function buildTurns(turns, logs, players, gameSetting) {
 	if (logs.isEmpty()) return turns;
 
 	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
 
 	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
-};
+}
 
 const initialDeckSize = gameSetting => {
 	if (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) {
@@ -52,7 +52,7 @@ const initialTrack = gameSetting => {
 	};
 };
 
-const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
+export const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 	const prevTurn = prevTurnOpt.valueOrElse({
 		isVotePassed: true,
 		afterDeadPlayers: List(),

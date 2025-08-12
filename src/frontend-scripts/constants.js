@@ -1,4 +1,4 @@
-const cn = require('classnames');
+import cn from 'classnames';
 
 export const TOU_CHANGES = [
 	{

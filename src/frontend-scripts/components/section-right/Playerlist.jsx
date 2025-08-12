@@ -9,7 +9,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import UserPopup from '../reusable/UserPopup.jsx';
-import { userInBlacklist } from '../../../../utils';
+import { userInBlacklist } from '../../../../utils/index.esm.js';
 
 $.fn.modal = Modal;
 

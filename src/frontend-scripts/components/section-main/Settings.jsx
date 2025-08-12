@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { SketchPicker } from 'react-color';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import SweetAlert2 from 'react-sweetalert2';
+// import SweetAlert2 from 'react-sweetalert2';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 
 $.fn.checkbox = Checkbox;
@@ -1220,7 +1220,7 @@ class Settings extends React.Component {
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
-								<SweetAlert2
+								{/* <SweetAlert2
 									{...this.state.cropperSwal}
 									onConfirm={cropCardback}
 									didClose={closeCropperSwal}
@@ -1239,7 +1239,7 @@ class Settings extends React.Component {
 										aspectRatio={70 / 95}
 										onInitialized={onCropperReady}
 									/>
-								</SweetAlert2>
+								</SweetAlert2> */}
 							</div>
 							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>

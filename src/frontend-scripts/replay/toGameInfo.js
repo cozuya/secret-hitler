@@ -1,4 +1,4 @@
-import { mapOpt1 } from '../../../utils';
+import { mapOpt1 } from '../../../utils/index.esm.js';
 
 export default function toGameInfo(snapshot) {
 	const gameState = {

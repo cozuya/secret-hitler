@@ -81,7 +81,9 @@ export class Main extends React.Component {
 				'Staff Status': this.props?.userInfo?.staffRole ? 'Staff' : 'Non-Staff'
 			};
 
-			plausible('Main Load', { props: plausibleProps });
+			if (window.plausible) {
+				window.plausible('Main Load', { props: plausibleProps });
+			}
 		}
 	}
 

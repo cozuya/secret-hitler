@@ -91,7 +91,7 @@ exports.handToPolicy = hand => {
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
-const handToPolicies = (exports.handToPolicies = hand => {
+exports.handToPolicies = hand => {
 	if (hand.hasOwnProperty('reds') && hand.hasOwnProperty('blues')) {
 		const toPolicies = (count, type) => {
 			return Range(0, count)
@@ -106,7 +106,7 @@ const handToPolicies = (exports.handToPolicies = hand => {
 	}
 
 	return hand;
-});
+};
 
 // (policy: Policy) => Hand
 exports.policyToHand = policy => {
@@ -122,7 +122,7 @@ const isComma = (index, list, userInfo) => {
 	return false;
 };
 
-const policyToString = (policy, userInfo) => {
+exports.policyToString = (policy, userInfo) => {
 	const mode = (userInfo && userInfo.gameSettings && userInfo.gameSettings.claimCharacters) || 'short';
 	let liberalChar = 'L';
 	let fascistChar = 'F';
@@ -137,10 +137,7 @@ const policyToString = (policy, userInfo) => {
 	return policy === 'fascist' ? fascistChar : liberalChar;
 };
 
-// (policy: Policy) => String ('R' | 'B')
-exports.policyToString = policyToString;
-
-const text = (exports.text = (type, text, space, comma) => ({ type, text, space, comma }));
+exports.text = (type, text, space, comma) => ({ type, text, space, comma });
 
 // (hand: Hand) => String ('R*B*')
 exports.handToText = (hand, userInfo) => {
@@ -169,7 +166,7 @@ exports.objectContains = (target, subset) => {
 	return Object.keys(subset).reduce((acc, key) => acc && target[key] === subset[key], true);
 };
 
-const getBlacklistIndex = (userName, blacklist) => {
+exports.getBlacklistIndex = (userName, blacklist) => {
 	if (typeof blacklist === 'undefined') {
 		return -1;
 	}
@@ -180,7 +177,7 @@ const getBlacklistIndex = (userName, blacklist) => {
 	}
 	return -1;
 };
-const userInBlacklist = (userName, blacklist) => {
+exports.userInBlacklist = (userName, blacklist) => {
 	if (typeof blacklist === 'undefined') {
 		return false;
 	}
@@ -191,5 +188,3 @@ const userInBlacklist = (userName, blacklist) => {
 	}
 	return false;
 };
-exports.userInBlacklist = userInBlacklist;
-exports.getBlacklistIndex = getBlacklistIndex;

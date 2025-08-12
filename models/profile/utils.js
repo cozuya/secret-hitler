@@ -3,7 +3,7 @@ const Account = require('../account');
 const { profiles } = require('../../routes/socket/models');
 const debug = require('debug')('game:profile');
 const { List } = require('immutable');
-const { flattenListOpts } = require('../../utils');
+const { flattenListOpts } = require('../../utils/index.cjs');
 const { checkBadgesGamesPlayed } = require('../../routes/socket/badges');
 
 // handles all stat computation logic

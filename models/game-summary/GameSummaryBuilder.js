@@ -2,7 +2,7 @@ const GameSummary = require('./index');
 const debug = require('debug')('game:summary');
 const { fromNullable } = require('option');
 const { List } = require('immutable');
-const { objectContains } = require('../../utils');
+const { objectContains } = require('../../utils/index.cjs');
 
 module.exports = class GameSummaryBuilder {
 	constructor(uid, date, gameSetting, customGameSettings, players, libElo, fasElo, logs = List()) {
