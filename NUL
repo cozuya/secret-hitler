@@ -1,0 +1,287 @@
+[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m  ╷[0m
+[34m1 │[0m @import [31m'variables.scss'[0m;
+[34m  │[0m [31m        ^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/style-dark.scss 1:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m  ╷[0m
+[34m2 │[0m @import [31m'creategame.scss'[0m;
+[34m  │[0m [31m        ^^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/style-dark.scss 2:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m  ╷[0m
+[34m3 │[0m @import [31m'game.scss'[0m;
+[34m  │[0m [31m        ^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/style-dark.scss 3:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m  ╷[0m
+[34m4 │[0m @import [31m'players.scss'[0m;
+[34m  │[0m [31m        ^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m  ╷[0m
+[34m5 │[0m @import [31m'settings.scss'[0m;
+[34m  │[0m [31m        ^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/style-dark.scss 5:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m   ╷[0m
+[34m23 │[0m     $low: [31mnth($eloValues, 1)[0m;
+[34m   │[0m [31m          ^^^^^^^^^^^^^^^^^^[0m
+[34m   ╵[0m
+    src/scss/players.scss 23:8    calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m   ╷[0m
+[34m24 │[0m     $high: [31mnth($eloValues, -1)[0m;
+[34m   │[0m [31m           ^^^^^^^^^^^^^^^^^^^[0m
+[34m   ╵[0m
+    src/scss/players.scss 24:9    calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.length instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m   ╷[0m
+[34m25 │[0m     @for $i from 1 through [31mlength($eloValues)[0m {
+[34m   │[0m [31m                           ^^^^^^^^^^^^^^^^^^[0m
+[34m   ╵[0m
+    src/scss/players.scss 25:25   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m   ╷[0m
+[34m26 │[0m         $val: [31mnth($eloValues, $i)[0m;
+[34m   │[0m [31m              ^^^^^^^^^^^^^^^^^^^[0m
+[34m   ╵[0m
+    src/scss/players.scss 26:9    calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use list.nth instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+[34m   ╷[0m
+[34m27 │[0m         $val2: [31mnth($val, 1)[0m;
+[34m   │[0m [31m               ^^^^^^^^^^^^[0m
+[34m   ╵[0m
+    src/scss/players.scss 27:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mfunction-units[0m]: $saturation: Passing a number without unit % (100) is deprecated.
+
+To preserve current behavior: $saturation * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+[34m  ╷[0m
+[34m6 │[0m         @return [31mhsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100)[0m;
+[34m  │[0m [31m                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/players.scss 6:11    lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mfunction-units[0m]: $lightness: Passing a number without unit % (30) is deprecated.
+
+To preserve current behavior: $lightness * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+[34m  ╷[0m
+[34m6 │[0m         @return [31mhsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100)[0m;
+[34m  │[0m [31m                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/players.scss 6:11    lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mslash-div[0m]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($elo - nth($low, 1), $scale) or calc(($elo - nth($low, 1)) / $scale)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+[34m  ╷[0m
+[34m8 │[0m     $lerp: [31m($elo - nth($low, 1)) / $scale[0m;
+[34m  │[0m [31m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/players.scss 8:9     lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mfunction-units[0m]: $saturation: Passing a number without unit % (100) is deprecated.
+
+To preserve current behavior: $saturation * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+[34m   ╷[0m
+[34m15 │[0m       @return [31mhsl([0m
+[34m   │[0m [31m┌[0m[31m─────────────^[0m
+[34m16 │[0m [31m│[0m [31m        ((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,[0m
+[34m17 │[0m [31m│[0m [31m        ((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,[0m
+[34m18 │[0m [31m│[0m [31m        ((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100[0m
+[34m19 │[0m [31m│[0m [31m    )[0m;
+[34m   │[0m [31m└[0m[31m─────^[0m
+[34m   ╵[0m
+    src/scss/players.scss 15:10   lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mfunction-units[0m]: $lightness: Passing a number without unit % (31) is deprecated.
+
+To preserve current behavior: $lightness * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+[34m   ╷[0m
+[34m15 │[0m       @return [31mhsl([0m
+[34m   │[0m [31m┌[0m[31m─────────────^[0m
+[34m16 │[0m [31m│[0m [31m        ((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,[0m
+[34m17 │[0m [31m│[0m [31m        ((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,[0m
+[34m18 │[0m [31m│[0m [31m        ((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100[0m
+[34m19 │[0m [31m│[0m [31m    )[0m;
+[34m   │[0m [31m└[0m[31m─────^[0m
+[34m   ╵[0m
+    src/scss/players.scss 15:10   lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mfunction-units[0m]: $lightness: Passing a number without unit % (32) is deprecated.
+
+To preserve current behavior: $lightness * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+[34m   ╷[0m
+[34m15 │[0m       @return [31mhsl([0m
+[34m   │[0m [31m┌[0m[31m─────────────^[0m
+[34m16 │[0m [31m│[0m [31m        ((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,[0m
+[34m17 │[0m [31m│[0m [31m        ((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,[0m
+[34m18 │[0m [31m│[0m [31m        ((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100[0m
+[34m19 │[0m [31m│[0m [31m    )[0m;
+[34m   │[0m [31m└[0m[31m─────^[0m
+[34m   ╵[0m
+    src/scss/players.scss 15:10   lerp()
+    src/scss/players.scss 39:10   calcEloCol()
+    src/scss/players.scss 69:28   @import
+    src/scss/style-dark.scss 4:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mslash-div[0m]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($elo - nth($low, 1), $scale) or calc(($elo - nth($low, 1)) / $scale)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+[34m  ╷[0m
+[34m8 │[0m     $lerp: [31m($elo - nth($low, 1)) / $scale[0m;
+[34m  │[0m [31m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[34m  ╵[0m
+    src/scss/profile.scss 8:9      lerp()
+    src/scss/profile.scss 39:10    calcEloCol()
+    src/scss/profile.scss 63:28    @import
+    src/scss/style-dark.scss 10:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mmixed-decls[0m]: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+[34m    ╷[0m
+[34m179 │[0m [34m┌[0m                 @media screen and (max-width: 1182px) {
+[34m180 │[0m [34m│[0m                     display: none;
+[34m181 │[0m [34m│[0m                 }
+[34m    │[0m [34m└[0m[34m───[0m[34m nested rule[0m
+[34m182 │[0m                   [31muser-select: none[0m;
+[34m    │[0m   [31m                ^^^^^^^^^^^^^^^^^[0m[31m declaration[0m
+[34m    ╵[0m
+    src/scss/replay.scss 182:5     @import
+    src/scss/style-dark.scss 11:9  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mmixed-decls[0m]: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+[34m    ╷[0m
+[34m328 │[0m [34m┌[0m         @media screen and (max-width: 1079px) {
+[34m329 │[0m [34m│[0m             overflow: auto;
+[34m330 │[0m [34m│[0m         }
+[34m    │[0m [34m└[0m[34m───[0m[34m nested rule[0m
+[34m331 │[0m           [31moverflow: hidden[0m;
+[34m    │[0m   [31m        ^^^^^^^^^^^^^^^^[0m[31m declaration[0m
+[34m    ╵[0m
+    src/scss/style-dark.scss 331:3  root stylesheet
+
+[33m[1mDeprecation Warning[0m [[34mslash-div[0m]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($elo - nth($low, 1), $scale) or calc(($elo - nth($low, 1)) / $scale)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+[34m    ╷[0m
+[34m982 │[0m     $lerp: [31m($elo - nth($low, 1)) / $scale[0m;
+[34m    │[0m [31m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[34m    ╵[0m
+    src/scss/style-dark.scss 982:9    lerp()
+    src/scss/style-dark.scss 1013:10  calcEloCol()
+    src/scss/style-dark.scss 1018:10  root stylesheet
+
+[33m[1mWarning[0m: 368 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
