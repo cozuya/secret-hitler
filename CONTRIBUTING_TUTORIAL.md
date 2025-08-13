@@ -1,5 +1,7 @@
 # Contributing to Secret Hitler
 
+2025 dev note: as this codebase is really racking up the years, I can't recommend actually trying to work on this to make something new on sh.io.
+
 Written by Paladin of Ioun.
 
 Welcome! This is a guide intended for people with none of the required tools installed or have little to no experience with Git and GitHub. This guide has steps for Windows and Linux development (because I don't have a Mac).

@@ -1,10 +1,7 @@
+// webpack.config.prod.js
 const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractSass = new ExtractTextPlugin({
-	filename: '../styles/style-main.css',
-	disable: process.env.NODE_ENV === 'development'
-});
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
 
 process.env.NODE_ENV = 'production';
@@ -12,11 +9,14 @@ process.env.NODE_ENV = 'production';
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {
-		filename: `bundle.js`,
+		filename: 'bundle.js',
 		path: path.resolve(__dirname, '../public/scripts')
 	},
 	plugins: [
-		extractSass,
+		new MiniCssExtractPlugin({
+			// write CSS next to your old location (../styles from scripts/)
+			filename: '../styles/style-main.css'
+		}),
 		new Dotenv({
 			path: path.resolve(__dirname, '..', '.env')
 		})
@@ -34,24 +34,22 @@ module.exports = {
 		]
 	},
 	devtool: 'cheap-module-source-map',
+	// devtool: false,
+
 	module: {
 		rules: [
 			{
 				test: /\.(html)$/,
 				use: {
 					loader: 'html-loader',
-					options: {
-						attrs: [':data-src']
-					}
+					options: { attrs: [':data-src'] }
 				}
 			},
 			{
 				test: /\.(png|svg|jpg|gif)$/,
 				use: {
 					loader: 'file-loader',
-					options: {
-						useRelativePath: true
-					}
+					options: { useRelativePath: true }
 				}
 			},
 			{
@@ -61,22 +59,26 @@ module.exports = {
 			},
 			{
 				test: /\.s?css$/,
-				use: extractSass.extract({
-					use: [
-						{
-							loader: 'css-loader',
-							options: { minimize: true }
-						},
-						{
-							loader: 'sass-loader'
+				use: [
+					MiniCssExtractPlugin.loader,
+					{ loader: 'css-loader', options: { sourceMap: false } },
+					{
+						loader: 'sass-loader',
+						options: {
+							implementation: require('sass'),
+							sourceMap: false,
+							sassOptions: {
+								// match your old include-path behavior if you relied on it
+								includePaths: [path.resolve(__dirname, '../src/scss')]
+							}
 						}
-					],
-					fallback: 'style-loader'
-				})
+					}
+				]
 			}
 		]
 	},
 	resolve: {
+		extensions: ['.js', '.jsx'],
 		alias: {
 			'react-dom$': 'react-dom/profiling',
 			'scheduler/tracing': 'scheduler/tracing-profiling'

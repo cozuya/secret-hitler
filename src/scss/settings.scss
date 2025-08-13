@@ -3,6 +3,10 @@
 	padding: 2%;
 	margin: 10px;
 
+	.column-name + .collapsable {
+		padding-bottom: 0;
+	}
+
 	.content > button {
 		position: absolute;
 		left: 50px;
