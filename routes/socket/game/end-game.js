@@ -63,6 +63,7 @@ const generateGameObject = game => {
 			eloMinimum: game?.general?.eloMinimum,
 			xpMinimum: game?.general?.xpMinimum,
 			avalonSH: game?.general?.avalonSH,
+			monarchistSH: game?.general?.monarchistSH,
 			noTopdecking: game?.general?.noTopdecking,
 			completed: true
 		};
@@ -103,6 +104,7 @@ const generateGameObject = game => {
 		eloMinimum: game?.general?.eloMinimum,
 		xpMinimum: game?.general?.xpMinimum,
 		avalonSH: game?.general?.avalonSH,
+		monarchistSH: game?.general?.monarchistSH,
 		noTopdecking: game.general?.noTopdecking,
 		completed: false
 	};
@@ -309,6 +311,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				seatedPlayers = [
 					...seatedPlayers.filter(e => e.role.cardName === 'hitler'),
 					...seatedPlayers.filter(e => e.role.cardName === 'morgana'),
+					...seatedPlayers.filter(e => e.role.cardName === 'monarchist'),
 					...seatedPlayers.filter(e => e.role.cardName === 'fascist').sort(byUsername),
 					...seatedPlayers.filter(e => e.role.cardName === 'merlin'),
 					...seatedPlayers.filter(e => e.role.cardName === 'percival'),
