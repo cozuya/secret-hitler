@@ -89,7 +89,8 @@ const beginGame = game => {
 						} else if (game.general.avalonSH?.withPercival) {
 							return { cardName: el % 3 === 1 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
 						} else if (game.general.monarchistSH) {
-							return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						} else {
 							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						}
