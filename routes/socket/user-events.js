@@ -666,8 +666,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
 
 		// Ensure standard victory conditions can be met for both teams.
-		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
-		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 19) return;
+		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 11) return;
+		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 20) return;
 
 		// Roundabout way of checking for null/undefined but not 0.
 		if (!(data.customGameSettings.trackState.lib >= 0) || data.customGameSettings.trackState.lib > 4) return;
