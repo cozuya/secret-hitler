@@ -40,7 +40,7 @@ export default class Creategame extends React.Component {
 			blindMode: false,
 			timedMode: false,
 			isVerifiedOnly: props.userInfo.verified && !isRainbow,
-			timedSliderValue: [120],
+			timedSliderValue: [180],
 			customGameSliderValue: [7],
 			eloSliderValue: [1600],
 			xpSliderValue: [0],
