@@ -20,7 +20,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
-	if (!data.chat) return;
+	if (!data.chat || typeof data.chat !== 'string') return;
 	const chat = (data.chat = data.chat.trim());
 	if (data.chat.length > 300 || !data.chat.length || /^(\*|[*~_]{2,4})$/i.exec(data.chat)) return;
 
