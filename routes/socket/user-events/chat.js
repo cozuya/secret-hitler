@@ -145,7 +145,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
  */
 module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
-	if (!game || !game.general || !data.chat) return;
+	if (!game || !game.general || !data.chat || typeof data.chat !== 'string') return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
