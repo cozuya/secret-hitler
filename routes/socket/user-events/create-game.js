@@ -42,7 +42,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	for (a = Math.max(data.minPlayersCount ?? 0, 5); a <= Math.min(10, data.maxPlayersCount ?? 999); a++) {
 		if (data?.excludedPlayerCount && !data.excludedPlayerCount.includes(a)) playerCounts.push(a);
 	}
-	if (playerCounts.length === 0) {
+	if (playerCounts.length === 0 || !Array.isArray(data.excludedPlayerCounts)) {
 		// Someone is messing with the data, ignore it
 		return;
 	}
