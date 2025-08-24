@@ -36,6 +36,10 @@ let lagTest = [];
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
+	if (!data) {
+		return;
+	}
+	
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
