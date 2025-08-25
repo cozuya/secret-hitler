@@ -29,26 +29,45 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	// Make sure it exists
 	if (!data) return;
 
+	// Normalize numeric-ish inputs and bail if they became NaN or are objects
+	const toInt = v => (typeof v === 'string' && v.trim() !== '' ? Number(v) : v);
+	if (typeof data.minPlayersCount === 'object' || typeof data.maxPlayersCount === 'object') return;
+
+	data.minPlayersCount = toInt(data.minPlayersCount);
+	data.maxPlayersCount = toInt(data.maxPlayersCount);
+
+	if ((data.minPlayersCount != null && !Number.isInteger(data.minPlayersCount)) || (data.maxPlayersCount != null && !Number.isInteger(data.maxPlayersCount)))
+		return;
+
+	// Clamp to sane bounds used later
+	data.minPlayersCount = Math.max(5, Math.min(10, data.minPlayersCount ?? 5));
+	data.maxPlayersCount = Math.max(5, Math.min(10, data.maxPlayersCount ?? 10));
+	if (data.minPlayersCount > data.maxPlayersCount) return;
+
 	if (data.minPlayersCount && typeof data.minPlayersCount === 'object') {
 		return;
 	}
 
-	if (data.maxPlayersCount && typeof data.maxPlayersCounter === 'object') {
+	if (data.maxPlayersCount && typeof data.maxPlayersCount === 'object') {
 		return;
 	}
 
 	let a;
 	let playerCounts = [];
 
-	if (data.excludedPlayerCounts && !Array.isArray(data.excludedPlayerCounts)) {
+	if (data && data.excludedPlayerCount && !Array.isArray(data.excludedPlayerCount)) {
 		return;
 	}
-	
+
 	for (a = Math.max(data.minPlayersCount ?? 0, 5); a <= Math.min(10, data.maxPlayersCount ?? 999); a++) {
-		
-		if (data?.excludedPlayerCount && !data.excludedPlayerCount.includes(a)) playerCounts.push(a);
+		// note: server expects excludedPlayerCounts (plural)
+		if (Array.isArray(data?.excludedPlayerCounts)) {
+			if (!data.excludedPlayerCounts.includes(a)) playerCounts.push(a);
+		} else {
+			playerCounts.push(a);
+		}
 	}
-	
+
 	if (playerCounts.length === 0) {
 		// Someone is messing with the data, ignore it
 		return;
@@ -59,7 +78,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
-	if (!data.gameName || data.gameName.length > 50 || !LEGALCHARACTERS(data.gameName)) {
+	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
 		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
 		return;
 	}
@@ -91,6 +110,35 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	}
 
 	if (data?.customGameSettings && data.customGameSettings.enabled) {
+		// Strict shape & numeric guards for custom settings
+		const s = data.customGameSettings;
+		if (!s || typeof s !== 'object') return;
+		if (!s.deckState || !s.trackState || typeof s.deckState !== 'object' || typeof s.trackState !== 'object') return;
+
+		const num = v => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN);
+
+		// NOTE: fix a typo guard from earlier: 'fax' -> 'fas'
+		if (s.deckState.fax != null && s.deckState.fas == null) s.deckState.fas = s.deckState.fax;
+
+		s.deckState.lib = num(s.deckState.lib);
+		s.deckState.fas = num(s.deckState.fas);
+		s.trackState.lib = num(s.trackState.lib);
+		s.trackState.fas = num(s.trackState.fas);
+		s.fascistCount = num(s.fascistCount);
+		s.hitlerZone = num(s.hitlerZone);
+		s.vetoZone = num(s.vetoZone);
+
+		if (
+			!Number.isInteger(s.deckState.lib) ||
+			!Number.isInteger(s.deckState.fas) ||
+			!Number.isInteger(s.trackState.lib) ||
+			!Number.isInteger(s.trackState.fas) ||
+			!Number.isInteger(s.fascistCount) ||
+			!Number.isInteger(s.hitlerZone) ||
+			!Number.isInteger(s.vetoZone)
+		)
+			return;
+
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
@@ -127,9 +175,16 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		) {
 			return;
 		}
+
+		// Hard guard against object injection messing with numeric comparisons
+		const { deckState, trackState } = data.customGameSettings;
+		if (typeof deckState.lib !== 'number' || typeof deckState.fas !== 'number' || typeof trackState.lib !== 'number' || typeof trackState.fas !== 'number') {
+			return;
+		}
+
 		// Ensure standard victory conditions can be met for both teams.
 		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
-		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 19) return;
+		if (!(data.customGameSettings.deckState.fas >= 5) || data.customGameSettings.deckState.fas > 19) return;
 
 		// Roundabout way of checking for null/undefined but not 0.
 		if (!(data.customGameSettings.trackState.lib >= 0) || data.customGameSettings.trackState.lib > 4) return;
@@ -170,7 +225,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	const casualGame =
 		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
 			? true
-			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.monarchistSH || data.noTopdecking > 0) && !customGame;
+			: data.gameType === 'casual' || data.avalonSH || data.withPercival || data.noTopdecking > 0) && !customGame;
 	const practiceGame =
 		!(typeof data.timedMode === 'number' && data.timedMode < 30) &&
 		(data.gameType === 'practice' || data.playerChats === 'disabled') &&
@@ -227,7 +282,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			eloMinimum: data.eloSliderValue,
 			xpMinimum: data.xpSliderValue,
 			avalonSH: data.avalonSH ? { withPercival: Boolean(data.withPercival) } : null,
-			monarchistSH: data.monarchistSH,
 			noTopdecking: data.noTopdecking
 		},
 		customGameSettings: data.customGameSettings,
