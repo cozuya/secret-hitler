@@ -4,6 +4,8 @@ const { sendGameList } = require('../user-requests');
 const { completeGame } = require('./end-game.js');
 const { assassinateMerlin } = require('./assassination');
 
+const selectBurnCard = module.exports.selectBurnCard; // site crashes without this line xd
+
 /**
  * @param {object} game - game to act on.
  */
@@ -553,8 +555,6 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		);
 	}
 };
-
-const selectBurnCard = module.exports.selectBurnCard; // site crashes without this line xd
 
 /**
  * @param {object} game - game to act on.
