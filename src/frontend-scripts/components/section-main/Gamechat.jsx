@@ -19,6 +19,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = ({ notesActive }) => ({ notesActive });
 
 const ClaimButton = ({ cards, onClick }) => {
+	let i = 0;
 	return (
 		<div className="card-container" onClick={onClick}>
 			{['fascist', 'liberal'].includes(cards) ? (
@@ -26,9 +27,9 @@ const ClaimButton = ({ cards, onClick }) => {
 			) : (
 				cards.split('').map(card => {
 					if (card === 'r') {
-						return <div className="card fascist"></div>;
+						return <div className="card fascist" key={i++}></div>;
 					} else {
-						return <div className="card liberal"></div>;
+						return <div className="card liberal" key={i++}></div>;
 					}
 				})
 			)}

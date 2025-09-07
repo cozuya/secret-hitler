@@ -89,8 +89,8 @@ const beginGame = game => {
 						} else if (game.general.avalonSH?.withPercival) {
 							return { cardName: el % 3 === 1 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
 						} else if (game.general.monarchistSH) {
-    						if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
-    						return { cardName: 'fascist', icon: el, team: 'fascist' };
+							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						} else {
 							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						}
@@ -155,7 +155,8 @@ const beginGame = game => {
 					{ text: '.' }
 				]
 			});
-		} if (game.general.monarchistSH) {
+		}
+		if (game.general.monarchistSH) {
 			player.gameChats.push({
 				gameChat: true,
 				timestamp: new Date(),
@@ -757,9 +758,8 @@ const beginGame = game => {
 					fascists.forEach(p => (player.playersState[seatedPlayers.indexOf(p)].nameStatus = 'fascist'));
 				} else if (game.general.avalonSH?.withPercival && cardName === 'percival') {
 					const hasMorgana = seatedPlayers.some(player => player.role.cardName === 'morgana');
-					const candidates = seatedPlayers.filter(player =>
-						player.role.cardName === 'merlin' ||
-						(hasMorgana ? player.role.cardName === 'morgana' : player.role.cardName === 'monarchist')
+					const candidates = seatedPlayers.filter(
+						player => player.role.cardName === 'merlin' || (hasMorgana ? player.role.cardName === 'morgana' : player.role.cardName === 'monarchist')
 					);
 
 					player.gameChats.push({

@@ -14,12 +14,12 @@ const updateSeatedUser = (socket, passport, data) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
 	const game = games[data?.uid];
-	
+
 	if (!data?.uid) {
-	  console.log("BAD DATA")
-	  console.log(data)
-	  console.log(socket)
-	  console.log(passport)
+		console.log('BAD DATA');
+		console.log(data);
+		console.log(socket);
+		console.log(passport);
 	}
 	// prevents race condition between 1) taking a seat and 2) the game starting
 

@@ -39,7 +39,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 	if (!data) {
 		return;
 	}
-	
+
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
