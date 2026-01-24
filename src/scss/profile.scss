@@ -186,6 +186,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	padding-bottom: 7px;
 }
 
+.column-name + .collapsable {
+	margin-bottom: 1rem;
+}
+
 .newbadge {
 	text-shadow: 2px 2px 8px var(--theme-primary);
 }

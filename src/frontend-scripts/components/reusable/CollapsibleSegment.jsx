@@ -26,7 +26,8 @@ const useCollapse = ({ defaultExpanded = false }) => {
 		style: {
 			overflow: 'hidden',
 			transition: 'height 300ms ease',
-			height
+			height,
+			visibility: isExpanded ? 'visible' : 'hidden'
 		}
 	});
 

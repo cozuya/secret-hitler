@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
-import Swal from 'sweetalert2';
-import socket from '../../socket';
 
 const mapStateToProps = ({ version }) => ({ version });
 

@@ -2,8 +2,6 @@ import React from 'react'; // eslint-disable-line
 import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
-import moment from 'moment';
-import { CURRENTSEASONNUMBER } from '../../constants';
 import { Message } from 'semantic-ui-react';
 import { processEmotes } from '../../emotes';
 
