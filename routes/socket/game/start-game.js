@@ -43,6 +43,31 @@ const beginGame = game => {
 	}
 	shufflePolicies(game, true);
 
+	const fascistRolePool = _.shuffle(
+		_.range(18, 21).map(el => {
+			if (game.general.avalonSH?.withPercival && game.general.monarchistSH) {
+				if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' }; // the readability for these roles started to go down so I removed spacing -Shrauger
+				if (el % 3 === 1) return { cardName: 'morgana', icon: el, team: 'fascist' };
+				return { cardName: 'fascist', icon: el, team: 'fascist' };
+			} else if (game.general.avalonSH?.withPercival) {
+				return { cardName: el % 3 === 1 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
+			} else if (game.general.monarchistSH) {
+				if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+				return { cardName: 'fascist', icon: el, team: 'fascist' };
+			}
+			return { cardName: 'fascist', icon: el, team: 'fascist' };
+		})
+	);
+
+	const fascistRoles = fascistRolePool.slice(0, customGameSettings.fascistCount);
+	if (game.general.avalonSH?.withPercival && fascistRoles.length) {
+		const morganaRole = fascistRolePool.find(role => role.cardName === 'morgana');
+		if (morganaRole && !fascistRoles.some(role => role.cardName === 'morgana')) {
+			// Always include morgana if avalonSH with percival is on
+			fascistRoles[0] = morganaRole;
+		}
+	}
+
 	const roles = [
 		{
 			cardName: 'hitler',
@@ -78,26 +103,7 @@ const beginGame = game => {
 					.slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
 			)
 		)
-		.concat(
-			_.shuffle(
-				_.range(18, 21)
-					.map(el => {
-						if (game.general.avalonSH?.withPercival && game.general.monarchistSH) {
-							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' }; // the readability for these roles started to go down so I removed spacing -Shrauger
-							if (el % 3 === 1) return { cardName: 'morgana', icon: el, team: 'fascist' };
-							return { cardName: 'fascist', icon: el, team: 'fascist' };
-						} else if (game.general.avalonSH?.withPercival) {
-							return { cardName: el % 3 === 1 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
-						} else if (game.general.monarchistSH) {
-    						if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
-    						return { cardName: 'fascist', icon: el, team: 'fascist' };
-						} else {
-							return { cardName: 'fascist', icon: el, team: 'fascist' };
-						}
-					})
-					.slice(0, customGameSettings.fascistCount)
-			)
-		);
+		.concat(fascistRoles);
 
 	game.general.status = 'Dealing roles..';
 
