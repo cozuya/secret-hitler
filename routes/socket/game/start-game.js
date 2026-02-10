@@ -83,14 +83,14 @@ const beginGame = game => {
 				_.range(18, 21)
 					.map(el => {
 						if (game.general.avalonSH?.withPercival && game.general.monarchistSH) {
-							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' }; // the readability for these roles started to go down so I removed spacing -Shrauger
-							if (el % 3 === 1) return { cardName: 'morgana', icon: el, team: 'fascist' };
+							if (el % 3 === 0) return { cardName: 'morgana', icon: el, team: 'fascist' };
+							if (el % 3 === 1) return { cardName: 'monarchist', icon: undefined, team: 'fascist' }; // the readability for these roles started to go down so I removed spacing -Shrauger
 							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						} else if (game.general.avalonSH?.withPercival) {
-							return { cardName: el % 3 === 1 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
+							return { cardName: el % 3 === 0 ? 'morgana' : 'fascist', icon: el, team: 'fascist' };
 						} else if (game.general.monarchistSH) {
-    						if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
-    						return { cardName: 'fascist', icon: el, team: 'fascist' };
+							if (el % 3 === 0) return { cardName: 'monarchist', icon: undefined, team: 'fascist' };
+							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						} else {
 							return { cardName: 'fascist', icon: el, team: 'fascist' };
 						}
