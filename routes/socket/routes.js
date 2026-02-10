@@ -496,7 +496,7 @@ module.exports.socketRoutes = () => {
 				console.log(passport);
 				console.log(data);
 				console.log(socket);
-				//handleUpdatedTruncateGame(data);
+				// handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
 				const game = findGame(data);

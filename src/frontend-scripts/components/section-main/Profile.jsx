@@ -93,7 +93,7 @@ class ProfileWrapper extends React.Component {
 		const { matches } = this.props.profile.stats;
 
 		return (
-			<div style={{ marginLeft: '10px' }}>
+			<div>
 				<CollapsibleSegment title={'Standard Matches'} defaultExpanded={true}>
 					<Table
 						uiTable="top attached four column"
