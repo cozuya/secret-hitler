@@ -2,8 +2,6 @@ const Profile = require('./index');
 const Account = require('../account');
 const { profiles } = require('../../routes/socket/models');
 const debug = require('debug')('game:profile');
-const { List } = require('immutable');
-const { flattenListOpts } = require('../../utils');
 const { checkBadgesGamesPlayed } = require('../../routes/socket/badges');
 
 // handles all stat computation logic
@@ -13,22 +11,29 @@ function profileDelta(username, game) {
 	const loyalty = game.loyaltyOf(username).value();
 	const isLiberal = loyalty === 'liberal';
 	const isFascist = !isLiberal;
-	const votes = game.hitlerZone
-		.map(hz =>
-			flattenListOpts(
-				game
-					.votesOf(username)
-					.value()
-					.slice(hz)
-			).filter(v => game.loyaltyOf(v.presidentId).value() === 'fascist' || game.roleOf(v.chancellorId).value() === 'hitler')
-		)
-		.valueOrElse(List());
-	const accurateVotes = votes.filterNot(v => {
-		const { presidentId, chancellorId, ja } = v;
-		const presidentLoyalty = game.loyaltyOf(presidentId).value();
-		const chancellorRole = game.roleOf(chancellorId).value();
+	const customGameSettings = (game.summary && game.summary.customGameSettings) || {};
+	const hitlerZone = Number(customGameSettings.hitlerZone) || 3;
+	const vetoZone = Number(customGameSettings.vetoZone) || 5;
+	const playerId = game.indexOf(username).value();
+	const votes = game.turns.filter(turn => {
+		const vote = turn.votes && turn.votes.get(playerId);
+		if (!vote || !vote.isSome()) {
+			return false;
+		}
 
-		return ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
+		const presidentLoyalty = game.loyaltyOf(turn.presidentId).value();
+		const chancellorLoyalty = game.loyaltyOf(turn.chancellorId).value();
+		const chancellorRole = game.roleOf(turn.chancellorId).value();
+		const reds = turn.beforeTrack.reds;
+
+		const hitlerZoneDangerRule = reds >= hitlerZone && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
+		const vetoZoneDangerRule = reds >= vetoZone && (presidentLoyalty === 'fascist' || chancellorLoyalty === 'fascist');
+
+		return hitlerZoneDangerRule || vetoZoneDangerRule;
+	});
+	const accurateVotes = votes.filterNot(v => {
+		const vote = v.votes.get(playerId);
+		return vote && vote.isSome() && vote.value();
 	});
 	const shots = game.shotsOf(username).value();
 	const accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
