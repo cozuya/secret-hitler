@@ -18,8 +18,8 @@ export default () => {
 			expect(delta.stats.matches.fascist.events).toBe(0);
 			expect(delta.stats.matches.fascist.successes).toBe(0);
 
-			expect(delta.stats.actions.voteAccuracy.events).toBe(2);
-			expect(delta.stats.actions.voteAccuracy.successes).toBe(2);
+			expect(delta.stats.actions.voteAccuracy.events).toBe(3);
+			expect(delta.stats.actions.voteAccuracy.successes).toBe(3);
 
 			expect(delta.stats.actions.shotAccuracy.events).toBe(1);
 			expect(delta.stats.actions.shotAccuracy.successes).toBe(1);
@@ -66,7 +66,7 @@ export default () => {
 			expect(delta.stats.matches.fascist.events).toBe(0);
 			expect(delta.stats.matches.fascist.successes).toBe(0);
 
-			expect(delta.stats.actions.voteAccuracy.events).toBe(2);
+			expect(delta.stats.actions.voteAccuracy.events).toBe(3);
 			expect(delta.stats.actions.voteAccuracy.successes).toBe(0);
 
 			expect(delta.stats.actions.shotAccuracy.events).toBe(0);
@@ -89,6 +89,9 @@ export default () => {
 
 			expect(delta.stats.matches.fascist.events).toBe(0);
 			expect(delta.stats.matches.fascist.successes).toBe(0);
+
+			expect(delta.stats.actions.voteAccuracy.events).toBe(3);
+			expect(delta.stats.actions.voteAccuracy.successes).toBe(2);
 
 			expect(delta.stats.actions.shotAccuracy.events).toBe(1);
 			expect(delta.stats.actions.shotAccuracy.successes).toBe(0);
