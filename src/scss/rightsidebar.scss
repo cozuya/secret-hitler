@@ -47,6 +47,11 @@
 					box-shadow: 0 0 4px 4px #fbbd08;
 				}
 			}
+			.filter-controls {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
 			.all {
 				background: url('../../public/favicon-16x16.png') no-repeat;
 				width: 16px;
@@ -66,6 +71,20 @@
 				border-radius: 50%;
 				box-shadow: 0 0 4px 3px yellow;
 				cursor: pointer;
+			}
+			.seasonal-toggle {
+				font-size: 11px;
+				line-height: 1;
+				padding: 2px 6px;
+				border-radius: 10px;
+				box-shadow: 0 0 8px currentColor;
+				transition: color 120ms linear, box-shadow 120ms linear;
+				cursor: pointer;
+				user-select: none;
+
+				.seasonal-toggle-label {
+					color: var(--theme-text-2) !important;
+				}
 			}
 			.header-name-container,
 			.header-name-container h3 {
