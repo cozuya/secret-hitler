@@ -2076,7 +2076,7 @@ export default class Creategame extends React.Component {
 								return (
 									<div className="four wide column experiencedmode">
 										<img src="../images/rainbow.png" />
-										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
+										<h4 className="ui header">Rainbow game - only fellow 10+ exp veterans can be seated in this game</h4>
 										<Switch
 											className="create-game-switch"
 											onChange={checked => {
@@ -2251,7 +2251,7 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="four wide column">
 							<i className="big chess king icon" />
-							<h4 className="ui header">Monarchist mode - adds a custom fascist role, casual only</h4>
+							<h4 className="ui header">Monarchist mode - adds a custom fascist role that wins on 6 fascist policies or executing hitler, casual only</h4>
 							<Switch
 								className="create-game-switch"
 								onChange={checked => {

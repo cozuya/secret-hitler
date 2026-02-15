@@ -253,7 +253,7 @@ class ProfileWrapper extends React.Component {
 					<>
 						<img
 							style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
-							src={`../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
+							src={x.id === 'xp10' ? '../images/rainbowLarge.png' : `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
 							alt={x.title}
 							key={x.id}
 							height={50}
@@ -261,7 +261,7 @@ class ProfileWrapper extends React.Component {
 								Swal.fire({
 									title: x.title,
 									text: `${x.text || ''} Earned: ${moment(x.dateAwarded).format('MM/DD/YYYY HH:mm')}.`,
-									imageUrl: `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
+									imageUrl: x.id === 'xp10' ? '../images/rainbowLarge.png' : `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`,
 									imageWidth: 100
 								})
 							}

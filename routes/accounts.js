@@ -259,7 +259,8 @@ const continueSignup = config => {
 			const accountObj = {
 				username: username,
 				gameSettings: {
-					soundStatus: 'pack2'
+					soundStatus: 'pack2',
+					disableSeasonal: true
 				},
 				verified: true,
 				wins: 0,
@@ -470,6 +471,7 @@ module.exports.accounts = torIpsParam => {
 			hasNotDismissedSignupModal: true,
 			gameSettings: {
 				soundStatus: 'pack2',
+				disableSeasonal: true,
 				isPrivate
 			},
 			verification: {

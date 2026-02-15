@@ -21,8 +21,9 @@
 }
 .rc-slider-handle {
 	position: absolute;
-	margin-left: -7px;
+	margin-left: 0;
 	margin-top: -5px;
+	transform: translateX(-50%);
 	width: 14px;
 	height: 14px;
 	cursor: pointer;
@@ -56,7 +57,7 @@
 	-webkit-user-select: none;
 }
 .rc-slider-mark-text-active {
-	color: var(--theme-background-3);
+	color: var(--theme-text-3);
 }
 .rc-slider-step {
 	position: absolute;
@@ -68,7 +69,8 @@
 .rc-slider-dot {
 	position: absolute;
 	bottom: -2px;
-	margin-left: -4px;
+	margin-left: 0;
+	transform: translateX(-50%);
 	width: 8px;
 	height: 8px;
 	border: 2px solid var(--theme-text-2);
@@ -78,10 +80,10 @@
 	vertical-align: middle;
 }
 .rc-slider-dot:first-child {
-	margin-left: -4px;
+	margin-left: 0;
 }
 .rc-slider-dot:last-child {
-	margin-left: -4px;
+	margin-left: 0;
 }
 .rc-slider-dot-active {
 	border-color: #e4bcba;
