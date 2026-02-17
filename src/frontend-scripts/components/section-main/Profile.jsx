@@ -70,14 +70,42 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Elo() {
+		const overallRankDisplay = this.props.profile.currentOverallRankDisplay || 'N/A';
+		const seasonalRankDisplay = this.props.profile.currentSeasonalRankDisplay || 'N/A';
+		const peakElo = this.props.profile.maxElo || this.props.profile.eloOverall || 1600;
+
 		return (
 			<Table
 				headers={['Type', 'Seasonal', 'Overall']}
 				rows={[
 					[
 						'Elo',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
+						this.props.profile.staffDisableVisibleElo ? (
+							'---'
+						) : (
+							<Popup
+								inverted
+								position="top center"
+								content={`Rank: ${seasonalRankDisplay}`}
+								trigger={<span style={{ cursor: 'help' }}>{this.props.profile.eloSeason || 1600}</span>}
+							/>
+						),
+						this.props.profile.staffDisableVisibleElo ? (
+							'---'
+						) : (
+							<Popup
+								inverted
+								position="top center"
+								content={
+									<span>
+										Rank: {overallRankDisplay}
+										<br />
+										Peak: {peakElo}
+									</span>
+								}
+								trigger={<span style={{ cursor: 'help' }}>{this.props.profile.eloOverall || 1600}</span>}
+							/>
+						)
 					],
 					[
 						'XP',

@@ -313,45 +313,66 @@ module.exports = () => {
 						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
 						_profile.playerPronouns = account.gameSettings.playerPronouns || '';
 
-						Account.findOne({ username: authedUser }).then(acc => {
-							if (acc && account.username === acc.username) {
-								acc.gameSettings.hasUnseenBadge = false;
-								acc.save();
-							}
-							if (
-								acc &&
-								acc.staffRole &&
-								(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
-							) {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = "Couldn't find IP";
-									console.log(e);
-								}
-								try {
-									_profile.signupIP = '-' + obfIP(account.signupIP);
-								} catch (e) {
-									_profile.signupIP = "Couldn't find IP";
-									console.log(e);
-								}
-								_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
-								_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
-								if (acc.staffRole !== 'trialmod') {
-									_profile.blacklist = account.gameSettings.blacklist;
-								}
-							} else {
-								_profile.lastConnectedIP = undefined;
-								_profile.signupIP = undefined;
+						const getCurrentRankDisplay = (field, value) => {
+							if (account.gameSettings.staffDisableVisibleElo || account.isBanned) {
+								return Promise.resolve(undefined);
 							}
 
-							if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
-								// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
-								res.status(404).send('Profile not found');
-								return;
-							}
+							return Promise.all([
+								Account.countDocuments({ isBanned: { $ne: true }, [field]: { $gt: value } }),
+								Account.countDocuments({ isBanned: { $ne: true }, [field]: value })
+							])
+								.then(([higherCount, sameCount]) => `${sameCount > 1 ? 'T' : ''}${higherCount + 1}`)
+								.catch(() => 'N/A');
+						};
 
-							res.json(_profile);
+						Promise.all([
+							getCurrentRankDisplay('eloOverall', Number.isFinite(account.eloOverall) ? account.eloOverall : 1600),
+							getCurrentRankDisplay('eloSeason', Number.isFinite(account.eloSeason) ? account.eloSeason : 1600)
+						]).then(([overallRankDisplay, seasonalRankDisplay]) => {
+							if (overallRankDisplay) _profile.currentOverallRankDisplay = overallRankDisplay;
+							if (seasonalRankDisplay) _profile.currentSeasonalRankDisplay = seasonalRankDisplay;
+
+							Account.findOne({ username: authedUser }).then(acc => {
+								if (acc && account.username === acc.username) {
+									acc.gameSettings.hasUnseenBadge = false;
+									acc.save();
+								}
+								if (
+									acc &&
+									acc.staffRole &&
+									(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
+								) {
+									try {
+										_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
+									} catch (e) {
+										_profile.lastConnectedIP = "Couldn't find IP";
+										console.log(e);
+									}
+									try {
+										_profile.signupIP = '-' + obfIP(account.signupIP);
+									} catch (e) {
+										_profile.signupIP = "Couldn't find IP";
+										console.log(e);
+									}
+									_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
+									_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
+									if (acc.staffRole !== 'trialmod') {
+										_profile.blacklist = account.gameSettings.blacklist;
+									}
+								} else {
+									_profile.lastConnectedIP = undefined;
+									_profile.signupIP = undefined;
+								}
+
+								if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
+									// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
+									res.status(404).send('Profile not found');
+									return;
+								}
+
+								res.json(_profile);
+							});
 						});
 					}
 				});
