@@ -79,5 +79,38 @@ module.exports.chatReplacements = [
 		aemCooldown: 15,
 		normalCooldown: 180,
 		normalGames: 50
+	},
+	{
+		id: 10,
+		regex: /^a.valon$/i,
+		replacement:
+			'In Avalon SH fascists get a new win condition - after 5 liberal policies are enacted or Hilter is executed, Hitler can try to guess Merlin to win. Lobby creator can also add Percival and Morgana while creating a lobby.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 11,
+		regex: /^p.ercival$/i,
+		replacement: 'Percival is a liberal role that knows who Merlin and Morgana are, but not which is which.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 12,
+		regex: /^m.erlin$/i,
+		replacement: 'Merlin is a liberal role that knows who the fascists are, but does not know their specific roles.',
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
+	},
+	{
+		id: 13,
+		regex: /^m.organa$/i,
+		replacement: "Morgana is a fascist role (can't be Hitler) that appears as possible Merlin candidate to Percival.",
+		aemCooldown: 15,
+		normalCooldown: 180,
+		normalGames: 50
 	}
 ];
