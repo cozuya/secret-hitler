@@ -597,7 +597,7 @@ class Players extends React.Component {
 						this.notRainbowModal = c;
 					}}
 				>
-					<div className="ui header">You do not meet the required amount of XP (50) to play in this game.</div>
+					<div className="ui header">You do not meet the required amount of XP (10) to play in this game.</div>
 				</div>
 
 				<div

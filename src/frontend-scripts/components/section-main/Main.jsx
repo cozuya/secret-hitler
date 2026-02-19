@@ -184,7 +184,7 @@ export class Main extends React.Component {
 									<React.Fragment>
 										<h5>How do you get a cool player color or upload your own personal cardback?</h5>
 										<p>
-											Practice and Ranked games grant players Experience Points (XP). Gain 50 XP to attain "rainbow" status and have a color based off your ELO.
+											Practice and Ranked games grant players Experience Points (XP). Gain 10 XP to attain "rainbow" status and have a color based off your ELO.
 											Click on the info icon next to "Lobby" in the upper right corner to learn more. Games that grant ELO must be ranked (not practice, private
 											or casual). You can check to see where you're at in your profile page - click on your name in the upper right corner.
 										</p>
