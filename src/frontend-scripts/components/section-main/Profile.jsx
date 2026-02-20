@@ -74,6 +74,17 @@ class ProfileWrapper extends React.Component {
 		const overallRankDisplay = this.props.profile.currentOverallRankDisplay || 'N/A';
 		const seasonalRankDisplay = this.props.profile.currentSeasonalRankDisplay || 'N/A';
 		const peakElo = this.props.profile.maxElo || this.props.profile.eloOverall || 1600;
+		const lifetimeAverageElo = (() => {
+			const pastEloValues = Array.isArray(this.props.profile.pastElo)
+				? this.props.profile.pastElo.map(point => Number(point && point.value)).filter(Number.isFinite)
+				: [];
+
+			if (pastEloValues.length) {
+				return Math.round(pastEloValues.reduce((sum, value) => sum + value, 0) / pastEloValues.length);
+			}
+
+			return Number.isFinite(this.props.profile.eloOverall) ? Math.round(this.props.profile.eloOverall) : 1600;
+		})();
 
 		return (
 			<div>
@@ -103,6 +114,8 @@ class ProfileWrapper extends React.Component {
 											Rank: {overallRankDisplay}
 											<br />
 											Peak: {peakElo}
+											<br />
+											Lifetime Avg: {lifetimeAverageElo}
 										</span>
 									}
 									trigger={<span style={{ cursor: 'help' }}>{this.props.profile.eloOverall || 1600}</span>}
