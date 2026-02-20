@@ -11,6 +11,7 @@ import { Dropdown, Popup } from 'semantic-ui-react';
 import moment from 'moment';
 import CollapsibleSegment from '../reusable/CollapsibleSegment.jsx';
 import UserPopup from '../reusable/UserPopup.jsx';
+import ProfileEloGraph from './ProfileEloGraph.jsx';
 import { getBlacklistIndex, userInBlacklist } from '../../../../utils';
 import _ from 'lodash';
 
@@ -70,22 +71,79 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Elo() {
+		const overallRankDisplay = this.props.profile.currentOverallRankDisplay || 'N/A';
+		const seasonalRankDisplay = this.props.profile.currentSeasonalRankDisplay || 'N/A';
+		const peakElo = this.props.profile.maxElo || this.props.profile.eloOverall || 1600;
+		const lifetimeAverageElo = (() => {
+			const pastEloValues = Array.isArray(this.props.profile.pastElo)
+				? this.props.profile.pastElo.map(point => Number(point && point.value)).filter(Number.isFinite)
+				: [];
+
+			if (pastEloValues.length) {
+				return Math.round(pastEloValues.reduce((sum, value) => sum + value, 0) / pastEloValues.length);
+			}
+
+			return Number.isFinite(this.props.profile.eloOverall) ? Math.round(this.props.profile.eloOverall) : 1600;
+		})();
+
 		return (
-			<Table
-				headers={['Type', 'Seasonal', 'Overall']}
-				rows={[
-					[
-						'Elo',
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloSeason || 1600,
-						this.props.profile.staffDisableVisibleElo ? '---' : this.props.profile.eloOverall || 1600
-					],
-					[
-						'XP',
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 0,
-						this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 0
-					]
-				]}
-			/>
+			<div>
+				<Table
+					headers={['Type', 'Seasonal', 'Overall']}
+					rows={[
+						[
+							'Elo',
+							this.props.profile.staffDisableVisibleElo ? (
+								'---'
+							) : (
+								<Popup
+									inverted
+									position="top center"
+									content={`Rank: ${seasonalRankDisplay}`}
+									trigger={<span style={{ cursor: 'help' }}>{this.props.profile.eloSeason || 1600}</span>}
+								/>
+							),
+							this.props.profile.staffDisableVisibleElo ? (
+								'---'
+							) : (
+								<Popup
+									inverted
+									position="top center"
+									content={
+										<span>
+											Rank: {overallRankDisplay}
+											<br />
+											Peak: {peakElo}
+											<br />
+											Lifetime Avg: {lifetimeAverageElo}
+										</span>
+									}
+									trigger={<span style={{ cursor: 'help' }}>{this.props.profile.eloOverall || 1600}</span>}
+								/>
+							)
+						],
+						[
+							'XP',
+							this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpSeason || 0,
+							this.props.profile.staffDisableVisibleXP ? '---' : this.props.profile.xpOverall || 0
+						]
+					]}
+				/>
+				<div className="elo-graph-collapsible">
+					<CollapsibleSegment title={'Elo Graph'}>
+						{({ isExpanded }) => (
+							<ProfileEloGraph
+								key={this.props.profile && this.props.profile._id}
+								profileId={this.props.profile && this.props.profile._id}
+								pastElo={this.props.profile.pastElo}
+								eloOverall={this.props.profile.eloOverall}
+								staffDisableVisibleElo={this.props.profile.staffDisableVisibleElo}
+								isExpanded={isExpanded}
+							/>
+						)}
+					</CollapsibleSegment>
+				</div>
+			</div>
 		);
 	}
 
@@ -261,12 +319,11 @@ class ProfileWrapper extends React.Component {
 				<br />
 				<br />
 				{badgesToSort.map(x => (
-					<>
+					<React.Fragment key={x.id}>
 						<img
 							style={{ padding: '2px', display: 'inline', cursor: 'pointer' }}
 							src={x.id === 'xp10' ? '../images/rainbowLarge.png' : `../images/badges/${x.id.startsWith('eloReset') ? 'eloReset' : x.id}.png`}
 							alt={x.title}
-							key={x.id}
 							height={50}
 							onClick={() =>
 								Swal.fire({
@@ -282,7 +339,7 @@ class ProfileWrapper extends React.Component {
 								{x.id.substring(8)}
 							</p>
 						) : null}
-					</>
+					</React.Fragment>
 				))}
 			</div>
 		);

@@ -50,6 +50,12 @@ export const LEGALCHARACTERS = text => {
 	return pass;
 };
 
+export const getEloBucketIndex = elo => {
+	const parsed = elo === null || elo === undefined ? NaN : Number(elo);
+	const boundedElo = Number.isFinite(parsed) ? Math.min(2100, Math.max(1500, parsed)) : 1600;
+	return Math.round((boundedElo - 1500) / 5);
+};
+
 /**
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.
@@ -80,16 +86,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const l = isSeasonal ? user.lossesSeason : user.losses;
 		const rainbow = isSeasonal ? user.isRainbowSeason : user.isRainbowOverall;
 		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
-		let grade;
-		if (elo < 1500) {
-			grade = 0;
-		} else if (elo > 2100) {
-			grade = 600 / 5;
-		} else {
-			grade = (elo - 1500) / 5;
-		}
 		const gradeObj = {};
-		gradeObj['elo' + grade.toFixed(0)] = true;
+		gradeObj[`elo${getEloBucketIndex(elo)}`] = true;
 
 		return rainbow
 			? eloDisabled
