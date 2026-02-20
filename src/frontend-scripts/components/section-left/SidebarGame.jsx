@@ -82,7 +82,7 @@ const SidebarGame = ({ game, socket }) => {
 					<div
 						className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
 						title={
-							(game.rainbowgame ? 'Rainbow game - only players with 50+ XP can be seated in this game.' : 'Click here to enter this game table.') +
+							(game.rainbowgame ? 'Rainbow game - only players with 10+ XP can be seated in this game.' : 'Click here to enter this game table.') +
 							' Already in game: ' +
 							game.userNames.join(', ')
 						}
