@@ -110,52 +110,22 @@ class ProfileEloGraph extends React.Component {
 		this.eloGraphMemo = null;
 		this.eloGraphHoverRaf = null;
 		this.pendingEloGraphHoverIndex = null;
-		this.graphRootRef = React.createRef();
-		this.graphContainerResizeObserver = null;
-		this.isGraphContainerOpen = false;
 	}
 
-	componentDidMount() {
-		this.bindGraphContainerObserver();
+	componentDidUpdate(prevProps) {
+		if (this.props.isExpanded && !prevProps.isExpanded) {
+			this.setState(prev => ({
+				lineAnimationSeed: prev.lineAnimationSeed + 1,
+				lineAnimationDelayMs: 400
+			}));
+		}
 	}
 
 	componentWillUnmount() {
 		if (this.eloGraphHoverRaf && typeof window !== 'undefined' && window.cancelAnimationFrame) {
 			window.cancelAnimationFrame(this.eloGraphHoverRaf);
 		}
-		if (this.graphContainerResizeObserver) {
-			this.graphContainerResizeObserver.disconnect();
-		}
 	}
-
-	bindGraphContainerObserver = () => {
-		if (typeof ResizeObserver === 'undefined' || !this.graphRootRef.current) {
-			return;
-		}
-
-		const collapsable = this.graphRootRef.current.closest('.collapsable');
-		if (!collapsable) {
-			return;
-		}
-
-		const syncContainerOpenState = () => {
-			const isOpen = collapsable.getBoundingClientRect().height > 1;
-			if (isOpen && !this.isGraphContainerOpen) {
-				this.setState(prev => ({
-					lineAnimationSeed: prev.lineAnimationSeed + 1,
-					lineAnimationDelayMs: 400
-				}));
-			}
-			this.isGraphContainerOpen = isOpen;
-		};
-
-		syncContainerOpenState();
-
-		this.graphContainerResizeObserver = new ResizeObserver(() => {
-			syncContainerOpenState();
-		});
-		this.graphContainerResizeObserver.observe(collapsable);
-	};
 
 	scheduleEloGraphHoverUpdate = nextIndex => {
 		this.pendingEloGraphHoverIndex = nextIndex;
@@ -297,7 +267,7 @@ class ProfileEloGraph extends React.Component {
 		const polylineAnimationKey = `${this.state.eloGraphRange}-${this.state.lineAnimationSeed}`;
 
 		return (
-			<div className="elo-graph" ref={this.graphRootRef}>
+			<div className="elo-graph">
 				<div className="elo-graph-controls">
 					{ELO_GRAPH_RANGES.map(range => (
 						<button
@@ -385,14 +355,16 @@ ProfileEloGraph.defaultProps = {
 	profileId: undefined,
 	pastElo: undefined,
 	eloOverall: undefined,
-	staffDisableVisibleElo: false
+	staffDisableVisibleElo: false,
+	isExpanded: false
 };
 
 ProfileEloGraph.propTypes = {
 	profileId: PropTypes.string,
 	pastElo: PropTypes.array,
 	eloOverall: PropTypes.number,
-	staffDisableVisibleElo: PropTypes.bool
+	staffDisableVisibleElo: PropTypes.bool,
+	isExpanded: PropTypes.bool
 };
 
 export default ProfileEloGraph;

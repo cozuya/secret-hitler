@@ -131,13 +131,16 @@ class ProfileWrapper extends React.Component {
 				/>
 				<div className="elo-graph-collapsible">
 					<CollapsibleSegment title={'Elo Graph'}>
-						<ProfileEloGraph
-							key={this.props.profile && this.props.profile._id}
-							profileId={this.props.profile && this.props.profile._id}
-							pastElo={this.props.profile.pastElo}
-							eloOverall={this.props.profile.eloOverall}
-							staffDisableVisibleElo={this.props.profile.staffDisableVisibleElo}
-						/>
+						{({ isExpanded }) => (
+							<ProfileEloGraph
+								key={this.props.profile && this.props.profile._id}
+								profileId={this.props.profile && this.props.profile._id}
+								pastElo={this.props.profile.pastElo}
+								eloOverall={this.props.profile.eloOverall}
+								staffDisableVisibleElo={this.props.profile.staffDisableVisibleElo}
+								isExpanded={isExpanded}
+							/>
+						)}
 					</CollapsibleSegment>
 				</div>
 			</div>

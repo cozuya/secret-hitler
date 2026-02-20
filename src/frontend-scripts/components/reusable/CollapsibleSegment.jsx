@@ -70,7 +70,7 @@ const CollapsibleSegment = props => {
 			</div>
 			<div className="collapsable" {...getCollapseProps()}>
 				<div ref={contentInnerRef} style={{ display: 'flow-root' }}>
-					{props.children}
+					{typeof props.children === 'function' ? props.children({ isExpanded }) : props.children}
 				</div>
 			</div>
 		</div>
