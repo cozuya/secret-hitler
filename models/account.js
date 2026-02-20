@@ -225,7 +225,7 @@ const Account = new Schema({
 
 Account.plugin(passportLocalMongoose);
 
-Account.index({ eloOverall: 1 });
-Account.index({ eloSeason: 1 });
+Account.index({ eloOverall: 1, isBanned: 1 });
+Account.index({ eloSeason: 1, isBanned: 1 });
 
 module.exports = mongoose.model('Account', Account);

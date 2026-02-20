@@ -328,52 +328,51 @@ module.exports = () => {
 
 						Promise.all([
 							getCurrentRankDisplay('eloOverall', Number.isFinite(account.eloOverall) ? account.eloOverall : 1600),
-							getCurrentRankDisplay('eloSeason', Number.isFinite(account.eloSeason) ? account.eloSeason : 1600)
+							getCurrentRankDisplay('eloSeason', Number.isFinite(account.eloSeason) ? account.eloSeason : 1600),
+							Account.findOne({ username: authedUser })
 						])
-							.then(([overallRankDisplay, seasonalRankDisplay]) => {
+							.then(([overallRankDisplay, seasonalRankDisplay, acc]) => {
 								if (overallRankDisplay) _profile.currentOverallRankDisplay = overallRankDisplay;
 								if (seasonalRankDisplay) _profile.currentSeasonalRankDisplay = seasonalRankDisplay;
 
-								return Account.findOne({ username: authedUser }).then(acc => {
-									if (acc && account.username === acc.username) {
-										acc.gameSettings.hasUnseenBadge = false;
-										acc.save();
+								if (acc && account.username === acc.username) {
+									acc.gameSettings.hasUnseenBadge = false;
+									acc.save();
+								}
+								if (
+									acc &&
+									acc.staffRole &&
+									(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
+								) {
+									try {
+										_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
+									} catch (e) {
+										_profile.lastConnectedIP = "Couldn't find IP";
+										console.log(e);
 									}
-									if (
-										acc &&
-										acc.staffRole &&
-										(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
-									) {
-										try {
-											_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
-										} catch (e) {
-											_profile.lastConnectedIP = "Couldn't find IP";
-											console.log(e);
-										}
-										try {
-											_profile.signupIP = '-' + obfIP(account.signupIP);
-										} catch (e) {
-											_profile.signupIP = "Couldn't find IP";
-											console.log(e);
-										}
-										_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
-										_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
-										if (acc.staffRole !== 'trialmod') {
-											_profile.blacklist = account.gameSettings.blacklist;
-										}
-									} else {
-										_profile.lastConnectedIP = undefined;
-										_profile.signupIP = undefined;
+									try {
+										_profile.signupIP = '-' + obfIP(account.signupIP);
+									} catch (e) {
+										_profile.signupIP = "Couldn't find IP";
+										console.log(e);
 									}
+									_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
+									_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
+									if (acc.staffRole !== 'trialmod') {
+										_profile.blacklist = account.gameSettings.blacklist;
+									}
+								} else {
+									_profile.lastConnectedIP = undefined;
+									_profile.signupIP = undefined;
+								}
 
-									if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
-										// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
-										res.status(404).send('Profile not found');
-										return;
-									}
+								if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
+									// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
+									res.status(404).send('Profile not found');
+									return;
+								}
 
-									res.json(_profile);
-								});
+								res.json(_profile);
 							})
 							.catch(err => {
 								console.log(err, 'profile load err');
