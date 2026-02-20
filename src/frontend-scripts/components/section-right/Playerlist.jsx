@@ -119,10 +119,25 @@ class Playerlist extends React.Component {
 				userListFilter: this.state.userListFilter === 'all' ? 'rainbow' : 'all'
 			});
 		};
+		const disableSeasonal = Boolean(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableSeasonal);
+		const userList = this.props.userList && Array.isArray(this.props.userList.list) ? this.props.userList.list : [];
+		const currentUser = userList.find(user => user.userName === this.props.userInfo.userName);
+		const elo = Number(disableSeasonal ? currentUser?.eloOverall : currentUser?.eloSeason) || 1600;
+		const eloClass = `elo${Math.round((Math.max(1500, Math.min(2100, elo)) - 1500) / 5)}`;
+		const seasonalClick = () => this.props.socket?.emit?.('updateGameSettings', { disableSeasonal: !disableSeasonal });
 
 		return (
-			<span className="filter-container" title="Click this to toggle the userlist filter between regular and rainbow games">
-				<span className={this.state.userListFilter} onClick={filterClick} />
+			<span className="filter-controls">
+				<span className="filter-container" title="Click this to toggle the userlist filter between regular and rainbow games">
+					<span className={this.state.userListFilter} onClick={filterClick} />
+				</span>
+				<span
+					className={classnames('seasonal-toggle', eloClass)}
+					title="Click this to toggle userlist stats between seasonal and overall."
+					onClick={seasonalClick}
+				>
+					<span className="seasonal-toggle-label">{disableSeasonal ? 'Overall' : 'Seasonal'}</span>
+				</span>
 			</span>
 		);
 	}

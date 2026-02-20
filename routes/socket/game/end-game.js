@@ -110,6 +110,11 @@ const generateGameObject = game => {
 	};
 };
 
+const formatSignedDelta = value => {
+	const safeValue = Number(value) || 0;
+	return `${safeValue >= 0 ? '+' : '-'}${Math.abs(safeValue).toFixed(1)}`;
+};
+
 /**
  * @param {object} game - game to act on.
  */
@@ -321,7 +326,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 				seatedPlayers.forEach((eachPlayer, i) => {
 					const playerChange = eloAdjustments[eachPlayer.userName];
 					const activeChange = playerChange?.change;
+					const secondaryChange = playerChange?.changeSeason;
 					const activeChangeXP = playerChange?.xpChange;
+					const secondaryChangeXP = playerChange?.xpChangeSeason;
 
 					game.private.replayGameChats.push({
 						gameChat: true,
@@ -335,11 +342,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 								text: `'s Elo: `
 							},
 							{
-								text: ` ${activeChange > 0 ? '+' : '-'}`
+								text: ` ${formatSignedDelta(activeChange)}`,
+								type: 'player'
 							},
 							{
-								text: Math.abs(activeChange).toFixed(1),
-								type: 'player'
+								text: ` (${formatSignedDelta(secondaryChange)})`
 							}
 						]
 					});
@@ -355,11 +362,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 								text: `'s XP: `
 							},
 							{
-								text: ` ${activeChangeXP > 0 ? '+' : '-'}`
+								text: ` ${formatSignedDelta(activeChangeXP)}`,
+								type: 'player'
 							},
 							{
-								text: Math.abs(activeChangeXP).toFixed(1),
-								type: 'player'
+								text: ` (${formatSignedDelta(secondaryChangeXP)})`
 							}
 						]
 					});
@@ -379,8 +386,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
 					seatedPlayers.forEach((eachPlayer, i) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
-						const activeChange = player.gameSettings.disableSeasonal ? playerChange?.change : playerChange?.changeSeason;
-						const activeChangeXP = player.gameSettings.disableSeasonal ? playerChange?.xpChange : playerChange?.xpChangeSeason;
+						const showingOverall = Boolean(player.gameSettings.disableSeasonal);
+						const activeChange = showingOverall ? playerChange?.change : playerChange?.changeSeason;
+						const secondaryChange = showingOverall ? playerChange?.changeSeason : playerChange?.change;
+						const activeChangeXP = showingOverall ? playerChange?.xpChange : playerChange?.xpChangeSeason;
+						const secondaryChangeXP = showingOverall ? playerChange?.xpChangeSeason : playerChange?.xpChange;
 						if (!player.gameSettings.disableElo) {
 							seatedPlayer.gameChats.push({
 								gameChat: true,
@@ -394,11 +404,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 										text: `'s Elo: `
 									},
 									{
-										text: ` ${activeChange > 0 ? '+' : '-'}`
+										text: ` ${formatSignedDelta(activeChange)}`,
+										type: 'player'
 									},
 									{
-										text: Math.abs(activeChange).toFixed(1),
-										type: 'player'
+										text: ` (${formatSignedDelta(secondaryChange)})`
 									}
 								]
 							});
@@ -414,11 +424,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 										text: `'s XP: `
 									},
 									{
-										text: ` ${activeChangeXP > 0 ? '+' : '-'}`
+										text: ` ${formatSignedDelta(activeChangeXP)}`,
+										type: 'player'
 									},
 									{
-										text: Math.abs(activeChangeXP).toFixed(1),
-										type: 'player'
+										text: ` (${formatSignedDelta(secondaryChangeXP)})`
 									}
 								]
 							});
