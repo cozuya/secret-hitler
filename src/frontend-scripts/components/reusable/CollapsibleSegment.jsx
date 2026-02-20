@@ -3,16 +3,38 @@ import React, { useState, useRef, useEffect } from 'react';
 const useCollapse = ({ defaultExpanded = false }) => {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 	const contentRef = useRef(null);
+	const contentInnerRef = useRef(null);
 	const [height, setHeight] = useState(defaultExpanded ? 'auto' : '0px');
 
 	useEffect(() => {
-		if (isExpanded && contentRef.current) {
-			const content = contentRef.current;
-			const scrollHeight = content.scrollHeight;
-			setHeight(scrollHeight + 'px');
-		} else {
+		const content = contentRef.current;
+		const contentInner = contentInnerRef.current;
+
+		if (!isExpanded || !content || !contentInner) {
 			setHeight('0px');
+			return;
 		}
+
+		const syncHeight = () => setHeight(contentInner.offsetHeight + 'px');
+		syncHeight();
+
+		let resizeObserver;
+		if (typeof ResizeObserver !== 'undefined') {
+			resizeObserver = new ResizeObserver(() => {
+				syncHeight();
+			});
+			resizeObserver.observe(contentInner);
+		} else {
+			window.addEventListener('resize', syncHeight);
+		}
+
+		return () => {
+			if (resizeObserver) {
+				resizeObserver.disconnect();
+			} else {
+				window.removeEventListener('resize', syncHeight);
+			}
+		};
 	}, [isExpanded]);
 
 	const getToggleProps = () => ({
@@ -31,11 +53,11 @@ const useCollapse = ({ defaultExpanded = false }) => {
 		}
 	});
 
-	return { getToggleProps, getCollapseProps, isExpanded };
+	return { getToggleProps, getCollapseProps, isExpanded, contentInnerRef };
 };
 
 const CollapsibleSegment = props => {
-	const { getCollapseProps, getToggleProps, isExpanded } = useCollapse({
+	const { getCollapseProps, getToggleProps, isExpanded, contentInnerRef } = useCollapse({
 		defaultExpanded: props.defaultExpanded || false
 	});
 
@@ -47,7 +69,9 @@ const CollapsibleSegment = props => {
 				</h2>
 			</div>
 			<div className="collapsable" {...getCollapseProps()}>
-				{props.children}
+				<div ref={contentInnerRef} style={{ display: 'flow-root' }}>
+					{props.children}
+				</div>
 			</div>
 		</div>
 	);
