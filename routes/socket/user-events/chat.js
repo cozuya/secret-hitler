@@ -284,6 +284,19 @@ module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUs
 	// Prevents spamming commands
 	user.lastMessage = { timestamp: Date.now() };
 
+	if (game.general.slowChatMode && !AEM) {
+		if (!user.gameLastMessages) user.gameLastMessages = {};
+		const lastGameMessageTime = user.gameLastMessages[game.general.uid];
+		if (lastGameMessageTime && Date.now() - lastGameMessageTime < game.general.slowChatMode * 1000) {
+			socket.emit(
+				'sendAlert',
+				`Slow chat mode is on - you can send a message again in ${((lastGameMessageTime + game.general.slowChatMode * 1000 - Date.now()) / 1000).toFixed(1)} seconds.`
+			);
+			return;
+		}
+		user.gameLastMessages[game.general.uid] = Date.now();
+	}
+
 	if (chat[0] === '/') return runCommand(socket, passport, user, game, chat, AEM || (isTourneyMod && game.general.unlistedGame), Boolean(player));
 
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);

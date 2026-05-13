@@ -221,6 +221,14 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		return;
 	}
 
+	if (typeof data.slowChatMode === 'object') {
+		return;
+	}
+
+	if (typeof data.slowChatMode === 'number' && (data.slowChatMode < 2 || data.slowChatMode > 15)) {
+		return;
+	}
+
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
 	const casualGame =
 		(data.casualGame || (typeof data.timedMode === 'number' && data.timedMode < 30)
@@ -283,7 +291,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			xpMinimum: data.xpSliderValue,
 			avalonSH: data.avalonSH ? { withPercival: Boolean(data.withPercival) } : null,
 			monarchistSH: Boolean(data.monarchistSH),
-			noTopdecking: data.noTopdecking
+			noTopdecking: data.noTopdecking,
+			slowChatMode: typeof data.slowChatMode === 'number' && data.slowChatMode >= 2 && data.slowChatMode <= 15 ? data.slowChatMode : false
 		},
 		customGameSettings: data.customGameSettings,
 		publicPlayersState: [],

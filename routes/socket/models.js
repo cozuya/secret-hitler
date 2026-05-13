@@ -273,7 +273,8 @@ module.exports.formattedGameList = () => {
 		isUnlisted: games[gameName].general.unlistedGame || undefined,
 		avalonSH: games[gameName].general.avalonSH || undefined,
 		monarchistSH: games[gameName].general.monarchistSH || undefined,
-		noTopdecking: games[gameName].general.noTopdecking || undefined
+		noTopdecking: games[gameName].general.noTopdecking || undefined,
+		slowChatMode: games[gameName].general.slowChatMode || undefined
 	}));
 };
 

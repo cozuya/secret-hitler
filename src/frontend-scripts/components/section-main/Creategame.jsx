@@ -52,6 +52,8 @@ export default class Creategame extends React.Component {
 			avalonSH: false,
 			withPercival: false,
 			monarchistSH: false,
+			slowChatMode: false,
+			slowChatSliderValue: [3],
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -602,20 +604,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: false,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: [null, null, null, null, null], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: false,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: [null, null, null, null, null], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'High ELO':
 				this.setState({
 					gameName: 'High ELO',
@@ -643,20 +647,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: true,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: false,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: [null, null, null, null, null], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: false,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: [null, null, null, null, null], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'Gun Game':
 				this.setState({
 					gameName: 'Gun Game',
@@ -684,20 +690,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: true,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
-						hitlerZone: 4, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 13 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: true,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
+							hitlerZone: 4, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 13 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case '2R1H':
 				this.setState({
 					gameName: '2 Rooms 1 Hitler',
@@ -726,20 +734,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: false,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: [null, null, null, null, null], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: false,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: [null, null, null, null, null], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'Silent Game':
 				this.setState({
 					gameName: 'Silent Game',
@@ -768,20 +778,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: false,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: [null, null, null, null, null], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: false,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: [null, null, null, null, null], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'Tourney Game':
 				this.setState({
 					gameName: 'Tourney Game ',
@@ -852,20 +864,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: true,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: ['investigate', 'reverseinv', 'investigate', 'reverseinv', 'investigate'], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 2, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: true,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: ['investigate', 'reverseinv', 'investigate', 'reverseinv', 'investigate'], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 2, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'Trivia Mode':
 				this.setState({
 					gameName: 'Trivia Mode',
@@ -894,20 +908,22 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: true,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
-						hitlerZone: 4, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 2, // 1-3, does not include hit
-						hitKnowsFas: true,
-						fasCanShootHit: true,
-						deckState: { lib: 6, fas: 19 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
-				break;
+						customGameSettings: {
+							enabled: true,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
+							hitlerZone: 4, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 2, // 1-3, does not include hit
+							hitKnowsFas: true,
+							fasCanShootHit: true,
+							deckState: { lib: 6, fas: 19 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
+					break;
 			case 'Reset':
 				this.setState({
 					gameName: '',
@@ -936,19 +952,21 @@ export default class Creategame extends React.Component {
 					isEloLimited: false,
 					xpSliderValue: [0],
 					isXPLimited: false,
-					customGameSettings: {
-						enabled: false,
-						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: [null, null, null, null, null], // last "power" is always a fas victory
-						hitlerZone: 3, // 1-5
-						vetoZone: 5, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
-						hitKnowsFas: false,
-						fasCanShootHit: false,
-						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-						trackState: { lib: 0, fas: 0 }
-					}
-				});
+						customGameSettings: {
+							enabled: false,
+							// Valid powers: investigate, deckpeek, election, bullet; null for no power
+							powers: [null, null, null, null, null], // last "power" is always a fas victory
+							hitlerZone: 3, // 1-5
+							vetoZone: 5, // 1-5, must be larger than fas track state
+							fascistCount: 1, // 1-3, does not include hit
+							hitKnowsFas: false,
+							fasCanShootHit: false,
+							deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+							trackState: { lib: 0, fas: 0 }
+						},
+						slowChatMode: false,
+						slowChatSliderValue: [3]
+					});
 		}
 	}
 
@@ -1077,7 +1095,8 @@ export default class Creategame extends React.Component {
 				avalonSH: this.state.avalonSH,
 				withPercival: this.state.avalonSH && this.state.withPercival,
 				monarchistSH: this.state.monarchistSH,
-				noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0
+				noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0,
+				slowChatMode: this.state.slowChatMode ? this.state.slowChatSliderValue[0] : false
 			};
 
 			if (this.state.isTourny) {
@@ -1230,6 +1249,10 @@ export default class Creategame extends React.Component {
 
 	xpSliderChange = xpSliderValue => {
 		this.setState({ xpSliderValue });
+	};
+
+	slowChatSliderChange = slowChatSliderValue => {
+		this.setState({ slowChatSliderValue });
 	};
 
 	renderEloSlider() {
@@ -1981,6 +2004,21 @@ export default class Creategame extends React.Component {
 						</div>
 					)}
 
+					{this.state.slowChatMode && (
+						<div className="row slowchat-slider">
+							<div className="sixteen wide column">
+								<Range
+									onChange={this.slowChatSliderChange}
+									defaultValue={[3]}
+									value={this.state.slowChatSliderValue}
+									min={2}
+									max={15}
+									marks={{ 2: '2s', 3: '', 4: '', 5: '5s', 6: '', 7: '', 8: '', 9: '', 10: '10s', 11: '', 12: '', 13: '', 14: '', 15: '15s' }}
+								/>
+							</div>
+						</div>
+					)}
+
 					<div className="row timedmode-check"></div>
 					{this.props.userInfo.verified && !this.state.privateonlygame && (
 						<div className="row verified-row">
@@ -2054,6 +2092,27 @@ export default class Creategame extends React.Component {
 									this.setState({ timedMode: checked });
 								}}
 								checked={this.state.timedMode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
+						<div className="four wide column">
+							{this.state.slowChatMode && (
+								<span className="timed-slider-value">{this.state.slowChatSliderValue[0]}s</span>
+							)}
+							<i className="big snail icon" />
+							<h4 className="ui header">Slow chat mode - limits how often players can send chat messages.</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({ slowChatMode: checked });
+								}}
+								checked={this.state.slowChatMode}
 								onColor="#627cc8"
 								offColor="#444444"
 								uncheckedIcon={false}
