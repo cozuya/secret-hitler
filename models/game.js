@@ -42,6 +42,7 @@ const Game = new Schema({
 		withPercival: Boolean
 	},
 	noTopdecking: Number,
+	slowChatMode: Number,
 	completed: Boolean
 });
 

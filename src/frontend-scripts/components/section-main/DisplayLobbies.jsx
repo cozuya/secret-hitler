@@ -83,6 +83,8 @@ const DisplayLobbies = props => {
 		let monarchistSHTooltip;
 		let noTopdecking;
 		let noTopdeckingTooltip;
+		let slowChatMode;
+		let slowChatModeTooltip;
 		let timedMode;
 		let timedModeTooltip;
 		let isVerifiedOnly;
@@ -203,6 +205,16 @@ const DisplayLobbies = props => {
 			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
 		}
 
+		if (game.slowChatMode) {
+			slowChatMode = (
+				<span style={{ color: 'lightblue' }}>
+					<i className="comments outline icon" />
+					{game.slowChatMode}s
+				</span>
+			);
+			slowChatModeTooltip = `Slow Chat Mode - players can only send a message every ${game.slowChatMode} seconds`;
+		}
+
 		if (game.timedMode) {
 			timedMode = (
 				<span style={{ color: 'peru' }}>
@@ -308,6 +320,11 @@ const DisplayLobbies = props => {
 				{noTopdecking && (
 					<span data-tooltip={noTopdeckingTooltip} data-inverted="">
 						{noTopdecking}
+					</span>
+				)}
+				{slowChatMode && (
+					<span data-tooltip={slowChatModeTooltip} data-inverted="">
+						{slowChatMode}
 					</span>
 				)}
 				{rainbowgame && (
