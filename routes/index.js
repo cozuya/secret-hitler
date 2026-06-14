@@ -279,84 +279,91 @@ module.exports = () => {
 		const authedUser = req.session && req.session.passport && req.session.passport.user;
 		const username = req.query.username;
 
-		getProfile(username).then(profile => {
-			if (!profile) {
-				res.status(404).send('Profile not found');
-			} else {
-				Account.findOne({ username }, (err, account) => {
-					const _profile = profile.toObject();
+		if (typeof username !== 'string') {
+			res.status(400).send('Invalid username');
+			return;
+		}
 
-					if (err) {
-						return new Error(err);
-					}
-					if (account) {
-						_profile.created = moment(account.created).format('MM/DD/YYYY');
-						_profile.customCardback = account.gameSettings.customCardback;
-						_profile.bio = account.bio;
-						_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('MM/DD/YYYY') : '';
-						_profile.badges = account.badges || [];
-						_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
-						_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(Number.parseFloat(account.maxElo || 1600));
-						_profile.pastElo = account.gameSettings.staffDisableVisibleElo
-							? undefined
-							: account.pastElo.toObject().length
-							? account.pastElo.toObject()
-							: [{ date: new Date(), value: Math.round(Number.parseFloat(account.eloOverall || 1600)) }];
-						_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpOverall || 0);
-						_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloOverall || 1600);
-						_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpSeason || 0);
-						_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloSeason || 1600);
-						_profile.isRainbowOverall = account.isRainbowOverall;
-						_profile.isRainbowSeason = account.isRainbowSeason;
-						_profile.staffRole = account.staffRole;
-						_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
-						_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
-						_profile.playerPronouns = account.gameSettings.playerPronouns || '';
+		getProfile(username)
+			.then(profile => {
+				if (!profile) {
+					res.status(404).send('Profile not found');
+				} else {
+					Account.findOne({ username }, (err, account) => {
+						const _profile = profile.toObject();
 
-						Account.findOne({ username: authedUser }).then(acc => {
-							if (acc && account.username === acc.username) {
-								acc.gameSettings.hasUnseenBadge = false;
-								acc.save();
-							}
-							if (
-								acc &&
-								acc.staffRole &&
-								(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
-							) {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = "Couldn't find IP";
-									console.log(e);
+						if (err) {
+							return new Error(err);
+						}
+						if (account) {
+							_profile.created = moment(account.created).format('MM/DD/YYYY');
+							_profile.customCardback = account.gameSettings.customCardback;
+							_profile.bio = account.bio;
+							_profile.lastConnected = !!account.lastConnected ? moment(account.lastConnected).format('MM/DD/YYYY') : '';
+							_profile.badges = account.badges || [];
+							_profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
+							_profile.maxElo = account.gameSettings.staffDisableVisibleElo ? undefined : Math.round(Number.parseFloat(account.maxElo || 1600));
+							_profile.pastElo = account.gameSettings.staffDisableVisibleElo
+								? undefined
+								: account.pastElo.toObject().length
+								? account.pastElo.toObject()
+								: [{ date: new Date(), value: Math.round(Number.parseFloat(account.eloOverall || 1600)) }];
+							_profile.xpOverall = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpOverall || 0);
+							_profile.eloOverall = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloOverall || 1600);
+							_profile.xpSeason = account.gameSettings.staffDisableVisibleXP ? undefined : Math.floor(account.xpSeason || 0);
+							_profile.eloSeason = account.gameSettings.staffDisableVisibleElo ? undefined : Math.floor(account.eloSeason || 1600);
+							_profile.isRainbowOverall = account.isRainbowOverall;
+							_profile.isRainbowSeason = account.isRainbowSeason;
+							_profile.staffRole = account.staffRole;
+							_profile.staffDisableVisibleXP = account.gameSettings.staffDisableVisibleXP;
+							_profile.staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo;
+							_profile.playerPronouns = account.gameSettings.playerPronouns || '';
+
+							Account.findOne({ username: authedUser }).then(acc => {
+								if (acc && account.username === acc.username) {
+									acc.gameSettings.hasUnseenBadge = false;
+									acc.save();
 								}
-								try {
-									_profile.signupIP = '-' + obfIP(account.signupIP);
-								} catch (e) {
-									_profile.signupIP = "Couldn't find IP";
-									console.log(e);
+								if (
+									acc &&
+									acc.staffRole &&
+									(acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')
+								) {
+									try {
+										_profile.lastConnectedIP = '-' + obfIP(account.lastConnectedIP);
+									} catch (e) {
+										_profile.lastConnectedIP = "Couldn't find IP";
+										console.log(e);
+									}
+									try {
+										_profile.signupIP = '-' + obfIP(account.signupIP);
+									} catch (e) {
+										_profile.signupIP = "Couldn't find IP";
+										console.log(e);
+									}
+									_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
+									_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
+									if (acc.staffRole !== 'trialmod') {
+										_profile.blacklist = account.gameSettings.blacklist;
+									}
+								} else {
+									_profile.lastConnectedIP = undefined;
+									_profile.signupIP = undefined;
 								}
-								_profile.lastConnected = moment(account.lastConnected).format('MM/DD/YYYY h:mm');
-								_profile.created = moment(account.created).format('MM/DD/YYYY h:mm');
-								if (acc.staffRole !== 'trialmod') {
-									_profile.blacklist = account.gameSettings.blacklist;
+
+								if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
+									// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
+									res.status(404).send('Profile not found');
+									return;
 								}
-							} else {
-								_profile.lastConnectedIP = undefined;
-								_profile.signupIP = undefined;
-							}
 
-							if (account.gameSettings.isPrivate && !_profile.lastConnectedIP) {
-								// They are private and lastConnectedIP is set to undefined (ie. requester is not AEM)
-								res.status(404).send('Profile not found');
-								return;
-							}
-
-							res.json(_profile);
-						});
-					}
-				});
-			}
-		});
+								res.json(_profile);
+							});
+						}
+					});
+				}
+			})
+			.catch(e => console.error(e, 'err in profile'));
 	});
 
 	app.get('/gameSummary', (req, res) => {
