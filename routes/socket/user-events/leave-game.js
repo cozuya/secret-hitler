@@ -8,6 +8,7 @@ const _ = require('lodash');
 const adjectives = require('../../../utils/adjectives');
 const animals = require('../../../utils/animals');
 const startGame = require('../game/start-game.js');
+const { leaveGameSchema } = require('./leave-game.schema');
 
 /**
  * @param {object} game - game to act on.
@@ -303,6 +304,9 @@ const playerLeavePretourny = (game, playerName) => {
 const handleUserLeaveGame = (socket, game, data, passport) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
+	const parsed = leaveGameSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
 
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 

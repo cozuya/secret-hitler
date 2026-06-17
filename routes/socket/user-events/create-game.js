@@ -1,11 +1,11 @@
 const { gameCreationDisabled, limitNewPlayers, userList, games } = require('../models');
-const { LEGALCHARACTERS } = require('../../../src/frontend-scripts/node-constants');
 const { generateCombination } = require('gfycat-style-urls');
 const { chatReplacements } = require('../chatReplacements');
 const Account = require('../../../models/account');
 const Game = require('../../../models/game');
 const { updateUserStatus, sendGameList } = require('../user-requests');
 const { secureGame } = require('../util.js');
+const { createGameSchema, customGameSettingsSchema, updateWhitelistSchema } = require('./create-game.schema');
 
 /**
  * @param {object} socket - user socket reference.
@@ -14,6 +14,10 @@ const { secureGame } = require('../util.js');
  */
 module.exports.handleAddNewGame = async (socket, passport, data) => {
 	// Authentication Assured in routes.js
+	const parsed = createGameSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data; // counts coerced to int|null, gameName/sliders/arrays type-checked
+
 	if (gameCreationDisabled.status || (!data.privatePassword && limitNewPlayers.status)) {
 		return;
 	}
@@ -26,42 +30,17 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		return;
 	}
 
-	// Make sure it exists
-	if (!data) return;
-
-	// Normalize numeric-ish inputs and bail if they became NaN or are objects
-	const toInt = v => (typeof v === 'string' && v.trim() !== '' ? Number(v) : v);
-	if (typeof data.minPlayersCount === 'object' || typeof data.maxPlayersCount === 'object') return;
-
-	data.minPlayersCount = toInt(data.minPlayersCount);
-	data.maxPlayersCount = toInt(data.maxPlayersCount);
-
-	if ((data.minPlayersCount != null && !Number.isInteger(data.minPlayersCount)) || (data.maxPlayersCount != null && !Number.isInteger(data.maxPlayersCount)))
-		return;
-
-	// Clamp to sane bounds used later
+	// Clamp player counts to sane bounds (schema guaranteed integer | null | undefined).
 	data.minPlayersCount = Math.max(5, Math.min(10, data.minPlayersCount ?? 5));
 	data.maxPlayersCount = Math.max(5, Math.min(10, data.maxPlayersCount ?? 10));
 	if (data.minPlayersCount > data.maxPlayersCount) return;
 
-	if (data.minPlayersCount && typeof data.minPlayersCount === 'object') {
-		return;
-	}
-
-	if (data.maxPlayersCount && typeof data.maxPlayersCount === 'object') {
-		return;
-	}
-
 	let a;
 	let playerCounts = [];
 
-	if (data && data.excludedPlayerCount && !Array.isArray(data.excludedPlayerCount)) {
-		return;
-	}
-
-	for (a = Math.max(data.minPlayersCount ?? 0, 5); a <= Math.min(10, data.maxPlayersCount ?? 999); a++) {
+	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
 		// note: server expects excludedPlayerCounts (plural)
-		if (Array.isArray(data?.excludedPlayerCounts)) {
+		if (Array.isArray(data.excludedPlayerCounts)) {
 			if (!data.excludedPlayerCounts.includes(a)) playerCounts.push(a);
 		} else {
 			playerCounts.push(a);
@@ -78,13 +57,10 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
-	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
-		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
-		return;
-	}
+	// gameName validated by createGameSchema (presence, length <= 20, legal characters).
 
-	if (data?.eloSliderValue) {
-		if (user?.eloSeason < data?.eloSliderValue || user?.eloOverall < data?.eloSliderValue) {
+	if (data.eloSliderValue) {
+		if (user?.eloSeason < data.eloSliderValue || user?.eloOverall < data.eloSliderValue) {
 			return;
 		}
 
@@ -94,11 +70,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		}
 	}
 
-	if (data?.xpSliderValue) {
-		if (typeof data.xpSliderValue !== 'string') {
-			return;
-		}
-
+	if (data.xpSliderValue) {
+		// xpSliderValue is typed as a string by the schema
 		if (user.xpOverall < data.xpSliderValue) {
 			return;
 		}
@@ -109,98 +82,16 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		}
 	}
 
-	if (data?.customGameSettings && data.customGameSettings.enabled) {
-		// Strict shape & numeric guards for custom settings
-		const s = data.customGameSettings;
-		if (!s || typeof s !== 'object') return;
-		if (!s.deckState || !s.trackState || typeof s.deckState !== 'object' || typeof s.trackState !== 'object') return;
+	if (data.customGameSettings && data.customGameSettings.enabled) {
+		// Shape, numeric coercion and per-field ranges (incl. fax->fas fallback, powers
+		// enum, vetoZone>trackState.fas, >=13 card deck) are all validated by the schema.
+		const parsedSettings = customGameSettingsSchema.safeParse(data.customGameSettings);
+		if (!parsedSettings.success) return;
+		data.customGameSettings = parsedSettings.data;
 
-		const num = v => (typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN);
-
-		// NOTE: fix a typo guard from earlier: 'fax' -> 'fas'
-		if (s.deckState.fax != null && s.deckState.fas == null) s.deckState.fas = s.deckState.fax;
-
-		s.deckState.lib = num(s.deckState.lib);
-		s.deckState.fas = num(s.deckState.fas);
-		s.trackState.lib = num(s.trackState.lib);
-		s.trackState.fas = num(s.trackState.fas);
-		s.fascistCount = num(s.fascistCount);
-		s.hitlerZone = num(s.hitlerZone);
-		s.vetoZone = num(s.vetoZone);
-
-		if (
-			!Number.isInteger(s.deckState.lib) ||
-			!Number.isInteger(s.deckState.fas) ||
-			!Number.isInteger(s.trackState.lib) ||
-			!Number.isInteger(s.trackState.fas) ||
-			!Number.isInteger(s.fascistCount) ||
-			!Number.isInteger(s.hitlerZone) ||
-			!Number.isInteger(s.vetoZone)
-		)
-			return;
-
-		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
-
-		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
-		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
-		for (let a = 0; a < 5; a++) {
-			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
-			else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
-		}
-
-		if (typeof data.customGameSettings.hitlerZone === 'object' || !(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
-		if (
-			!data.customGameSettings.vetoZone ||
-			typeof data.customGameSettings.vetoZone === 'object' ||
-			typeof data.customGameSettings.trackState.fas === 'object' ||
-			data.customGameSettings.vetoZone <= data.customGameSettings.trackState.fas ||
-			data.customGameSettings.vetoZone > 5
-		) {
-			return;
-		}
-
-		// Ensure that there is never a fas majority at the start.
-		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
-
-		if (typeof data.customGameSettings.fascistCount === 'object') {
-			return;
-		}
-
-		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
-		if (
-			typeof data.customGameSettings.trackState.lib === 'object' ||
-			typeof data.customGameSettings.trackState.fas === 'object' ||
-			typeof data.customGameSettings.deckState.lib === 'object' ||
-			typeof data.customGameSettings.deckState.fax === 'object'
-		) {
-			return;
-		}
-
-		// Hard guard against object injection messing with numeric comparisons
-		const { deckState, trackState } = data.customGameSettings;
-		if (typeof deckState.lib !== 'number' || typeof deckState.fas !== 'number' || typeof trackState.lib !== 'number' || typeof trackState.fas !== 'number') {
-			return;
-		}
-
-		// Ensure standard victory conditions can be met for both teams.
-		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
-		if (!(data.customGameSettings.deckState.fas >= 5) || data.customGameSettings.deckState.fas > 19) return;
-
-		// Roundabout way of checking for null/undefined but not 0.
-		if (!(data.customGameSettings.trackState.lib >= 0) || data.customGameSettings.trackState.lib > 4) return;
-		if (!(data.customGameSettings.trackState.fas >= 0) || data.customGameSettings.trackState.fas > 5) return;
-
-		// Need at least 13 cards (11 on track plus two left-overs) to ensure that the deck does not run out.
-		if (data.customGameSettings.deckState.lib + data.customGameSettings.deckState.fas < 13) return;
-
-		if (
-			!(data.customGameSettings.trackState.lib >= 0) ||
-			data.customGameSettings.trackState.lib > 4 ||
-			!(data.customGameSettings.trackState.fas >= 0) ||
-			data.customGameSettings.trackState.fas > 5
-		) {
-			return;
-		}
+		// Ensure there is never a fascist majority at the start. This depends on the
+		// locked player count, so it stays here rather than in the schema.
+		if (data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
 
 		data.casualGame = true; // Force this on if everything looks ok.
 		playerCounts = [playerCounts[0]]; // Lock the game to a specific player count. Eventually there should be one set of settings per size.
@@ -215,10 +106,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		const foundGame = await Game.findOne({ uid });
 		if (foundGame) uid = generateCombination(3, '', true);
 		else break;
-	}
-
-	if (typeof data.noTopdecking === 'object') {
-		return;
 	}
 
 	const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
@@ -412,7 +299,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 					type: 'player'
 				},
 				{
-					text: ` (${data.general.tournyInfo.queuedPlayers.length}/${data.general.maxPlayersCount}) has entered the tournament queue.`
+					text: ` (${newGame.general.tournyInfo.queuedPlayers.length}/${newGame.general.maxPlayersCount}) has entered the tournament queue.`
 				}
 			]
 		});
@@ -472,6 +359,10 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdateWhitelist = (passport, game, data) => {
+	const parsed = updateWhitelistSchema.safeParse(data);
+	if (!parsed.success) return; // whitelistPlayers must be a string[] — prevents a delayed crash on the next joiner
+	data = parsed.data;
+
 	const isPrivateSafe =
 		!game.general.private ||
 		(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));

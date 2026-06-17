@@ -1,4 +1,5 @@
 const { sendInProgressGameUpdate } = require('../util.js');
+const { claimSchema } = require('./claim.schema');
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
@@ -7,6 +8,10 @@ const { sendInProgressGameUpdate } = require('../util.js');
  * @return {bool} - Success of adding claim
  */
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
+	const parsed = claimSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
+
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (

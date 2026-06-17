@@ -25,6 +25,7 @@ const fs = require('fs');
 const https = require('https');
 const { sendCommandChatsUpdate } = require('../util');
 const { removeBadge, checkBadgesAccount } = require('../badges');
+const { moderationActionSchema } = require('./moderation.schema');
 let lagTest = [];
 
 /**
@@ -36,10 +37,19 @@ let lagTest = [];
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
-	if (!data) {
-		return;
+	// Validate the wire payload once on the real entry. The internal recursive
+	// re-calls (below) pass skipCheck=true with already-parsed data, so we don't
+	// re-validate them. safeParse + early return guarantees no TypeError escapes
+	// into socket.io's un-try/caught listener and crashes the process.
+	if (!skipCheck) {
+		const parsed = moderationActionSchema.safeParse(data);
+		if (!parsed.success) {
+			console.log(parsed.error.issues, 'invalid moderation payload');
+			return;
+		}
+		data = parsed.data; // normalized: userName/ip/comment guaranteed to be strings
 	}
-	
+
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -149,7 +159,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				userActedOn: data.userName,
 				modNotes: data.comment,
 				ip: data.ip,
-				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+				actionTaken: typeof data.action === 'string' ? data.action : data.action?.type
 			});
 
 			/**
@@ -1031,7 +1041,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
-					} else if (isSuperMod && data.action.type) {
+					} else if (isSuperMod && data.action && data.action.type) {
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action.type)

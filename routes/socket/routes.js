@@ -549,7 +549,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('playerReport', (data, callback) => {
-				if (isRestricted || !data || !data.comment || typeof data.comment !== 'string' || data.comment.length > 140) return;
+				if (isRestricted) return; // payload shape (comment length, reason, etc.) validated in handlePlayerReport via zod
 				if (authenticated) {
 					handlePlayerReport(passport, data, callback);
 				}

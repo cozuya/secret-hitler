@@ -1,6 +1,7 @@
 // const Account = require('../../../models/account');
 const { userList, games } = require('../models');
 const PlayerReport = require('../../../models/playerReport');
+const { playerReportSchema } = require('./player-reports.schema');
 const https = require('https');
 
 /**
@@ -9,18 +10,22 @@ const https = require('https');
  * @param {object} callback - response function.
  */
 module.exports.handlePlayerReport = (passport, data, callback) => {
+	const parsed = playerReportSchema.safeParse(data);
+	if (!parsed.success) {
+		console.log(parsed.error.issues, 'invalid player report payload');
+		if (typeof callback === 'function') callback({ success: false, error: 'Invalid report.' });
+		return;
+	}
+	data = parsed.data;
+
 	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || (user.wins + user.losses < 2 && !user.isRainbowOverall)) && process.env.NODE_ENV === 'production') {
 		return;
 	}
 
+	// reason is validated against the canonical enum by playerReportSchema
 	let reason = data.reason;
-
-	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(reason)) {
-		callback({ success: false, error: 'Invalid report reason.' });
-		return;
-	}
 
 	switch (reason) {
 		case 'afk/leaving game':

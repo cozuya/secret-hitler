@@ -7,6 +7,7 @@ const { sendGameList, sendGameInfo } = require('../user-requests');
 
 const { updateSeatedUser } = require('./join-game');
 const { checkStartConditions } = require('./leave-game');
+const { remakeSchema } = require('./remake-game.schema');
 
 /**
  * @param {object} passport - socket authentication.
@@ -15,6 +16,10 @@ const { checkStartConditions } = require('./leave-game');
  * @param {object} socket - socket
  */
 module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
+	const parsed = remakeSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
+
 	if (game.general.isRemade) {
 		return; // Games can only be remade once.
 	}

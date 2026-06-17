@@ -3,8 +3,13 @@ const { handleAEMMessages, getStaffRole, sendInProgressModDMUpdate } = require('
 const { generateCombination } = require('gfycat-style-urls');
 const https = require('https');
 const ModThread = require('../../../models/modThread');
+const { openChatSchema, modDMChatSchema } = require('./mod-dms.schema');
 
 module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, adminUserNames) => {
+	const parsed = openChatSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
+
 	const passport = socket.handshake.session.passport;
 	if (data.aemMember !== passport.user) return;
 
@@ -196,6 +201,10 @@ module.exports.handleUnsubscribeChat = (socket, data, modUserNames, editorUserNa
 };
 
 module.exports.handleAddNewModDMChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	const parsed = modDMChatSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
+
 	const receivingPlayer = Object.keys(modDMs).find(x => modDMs[x].username === passport.user || modDMs[x].aemMember === socket.handshake.session.passport.user);
 	if (receivingPlayer) {
 		// add a new chat and push it to AEM chat and player chat

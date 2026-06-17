@@ -1,6 +1,7 @@
 const Account = require('../../../models/account');
 const { userList, currentSeasonNumber } = require('../models');
 const { sendUserList } = require('../user-requests');
+const { themeSchema, gameSettingsSchema, blacklistSchema, bioSchema, THEME_COLOR_FIELDS } = require('./settings.schema');
 
 /**
  * @param {object} socket - user socket reference.
@@ -8,25 +9,21 @@ const { sendUserList } = require('../user-requests');
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
-console.log(data, 'data')
-if (data && typeof data === 'object' && typeof data.field === 'string') {
-	
-	const fields = ['primaryColor', 'secondaryColor', 'tertiaryColor', 'backgroundColor', 'textColor'];
+	const parsed = themeSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data; // field + colour fields guaranteed to be strings when present
 
 	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;
 		}
 
-		for (const field of fields) {
-			if (data[field] && typeof data[field] === 'string') account[field] = data[field];
-			else {
-			 console.log("BAD DATA - " + passport.user) }
+		for (const field of THEME_COLOR_FIELDS) {
+			if (data[field]) account[field] = data[field];
 		}
 
 		account.save();
 	});
-}
 };
 
 /**
@@ -36,6 +33,9 @@ if (data && typeof data === 'object' && typeof data.field === 'string') {
  */
 module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 	// Authentication Assured in routes.js
+	const parsed = gameSettingsSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data;
 
 	Account.findOne({ username: passport.user })
 		.then(account => {
@@ -47,18 +47,11 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			for (const setting in data) {
 				if (setting == 'blacklist') {
-					const blacklist = data[setting].slice(-30);
-					if (
-						typeof blacklist === 'object' &&
-						typeof blacklist.length === 'number' &&
-						blacklist.length <= 30 &&
-						blacklist.every(
-							entry =>
-								typeof entry === 'object' && typeof entry.userName === 'string' && typeof entry.reason === 'string' && typeof entry.timestamp === 'number'
-						)
-					) {
-						account.gameSettings.blacklist = blacklist;
-						if (user) user.blacklist = blacklist;
+					const candidate = Array.isArray(data.blacklist) ? data.blacklist.slice(-30) : data.blacklist;
+					const parsedBlacklist = blacklistSchema.safeParse(candidate);
+					if (parsedBlacklist.success) {
+						account.gameSettings.blacklist = parsedBlacklist.data;
+						if (user) user.blacklist = parsedBlacklist.data;
 					}
 				}
 
@@ -177,9 +170,11 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
  */
 module.exports.handleUpdatedBio = (socket, passport, data) => {
 	// Authentication Assured in routes.js
-	if (typeof data !== 'string') return; // otherwise the server will crash if you forge the request
+	const parsed = bioSchema.safeParse(data);
+	if (!parsed.success) return; // otherwise the server will crash if you forge the request
+	const bio = parsed.data;
 	Account.findOne({ username: passport.user }).then(account => {
-		account.bio = data;
+		account.bio = bio;
 		account.save();
 	});
 };

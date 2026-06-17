@@ -5,6 +5,7 @@ const { runCommand } = require('../commands');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('../util.js');
 const { emoteList, getPrivateChatTruncate } = require('../models');
 const { sendCommandChatsUpdate } = require('../util');
+const { generalChatSchema, gameChatSchema } = require('./chat.schema');
 
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
 
@@ -17,10 +18,13 @@ const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
  * @param {array} adminUserNames - list of admins
  */
 module.exports.handleNewGeneralChat = async (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	const parsed = generalChatSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data; // data.chat guaranteed to be a string
+
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
-	if (!data.chat || typeof data.chat !== 'string') return;
 	const chat = (data.chat = data.chat.trim());
 	if (data.chat.length > 300 || !data.chat.length || /^(\*|[*~_]{2,4})$/i.exec(data.chat)) return;
 
@@ -145,7 +149,11 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
  */
 module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim, isTourneyMod) => {
 	// Authentication Assured in routes.js
-	if (!game || !game.general || !data.chat || typeof data.chat !== 'string') return;
+	const parsed = gameChatSchema.safeParse(data);
+	if (!parsed.success) return;
+	data = parsed.data; // data.chat guaranteed to be a string
+
+	if (!game || !game.general) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);

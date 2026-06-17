@@ -14,7 +14,7 @@
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
 	"engines": {
-		"node": "^22.14.0"
+		"node": ">=22.14.0"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.4.4",
@@ -85,7 +85,8 @@
 		"socket.io-client": "2.5.0",
 		"sweetalert2": "9.10.9",
 		"tempy": "^1.0.1",
-		"yamljs": "^0.3.0"
+		"yamljs": "^0.3.0",
+		"zod": "^4.0.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.2.2",
