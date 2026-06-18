@@ -17,8 +17,6 @@ test("parseLineGuess", (done) => {
   for (const [input, expected] of data) {
     const x = LineGuess.parse(input);
 
-    console.log(x, expected);
-
     if (x !== expected && !x.equals(expected)) {
       done.fail(`Unexpected`);
     }
