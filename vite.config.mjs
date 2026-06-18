@@ -10,6 +10,12 @@ export default defineConfig({
   // Many client files are .js but contain JSX (the old webpack ran babel on .js too),
   // so widen the plugin's transform to cover .js, not just .jsx.
   plugins: [react({ jsxRuntime: "classic", include: /\.(js|jsx)$/ })],
+  // outDir (below) is public/, which is also Vite's default publicDir — left on, Vite copies public/
+  // onto itself during build and dies on runtime-uploaded files the deploy user doesn't own
+  // (e.g. public/images/custom-cardbacks/*.png → EACCES). The committed assets are already served
+  // straight from public/ by express.static, so disable the copy; the build only needs to emit
+  // scripts/bundle.js + styles/style-main.css into public/.
+  publicDir: false,
   define: {
     "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "production"),
   },

@@ -187,6 +187,14 @@ module.exports.socketRoutes = () => {
   gatherStaffUsernames();
 
   io.on("connection", (socket) => {
+    // Without a socket-level 'error' listener, any throw from a socket handler is re-emitted by
+    // socket.io as an unhandled 'error' event → ERR_UNHANDLED_ERROR → the global handler exits the
+    // whole process, killing every live game over one bad payload. Log the real stack (socket.io
+    // otherwise swallows it) and keep the process alive — the thrown handler still aborted its own
+    // action, but everyone else's game survives.
+    socket.on("error", (err) => {
+      console.error("SOCKET HANDLER ERROR:", (err && err.stack) || err);
+    });
     checkUserStatus(socket, () => {
       socket.emit("version", { current: version });
 
