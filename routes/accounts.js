@@ -1025,11 +1025,6 @@ module.exports.accounts = (torIpsParam) => {
               unbanTime
             )}`,
           });
-        } else if (banType === "new") {
-          res.status(403).json({
-            message:
-              "You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.",
-          });
         } else {
           console.log(`Unhandled IP ban type: ${banType}`);
           res.status(403).json({

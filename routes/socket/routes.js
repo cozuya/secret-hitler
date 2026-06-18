@@ -411,6 +411,7 @@ module.exports.socketRoutes = () => {
 
       socket.on("flappyEvent", (data) => {
         return;
+        // biome-ignore lint/correctness/noUnreachable: Flappy Hitler is a half-built, intentionally-disabled WIP feature; kept until it ships.
         const game = findGame(data);
         if (authenticated && ensureInGame(passport, game)) {
           handleFlappyEvent(data, game);

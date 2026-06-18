@@ -80,7 +80,6 @@ GameSummary.find({
       const folder = path.join(tmpFolder, dumpDateFrom);
       fs.mkdir(folder, (err) => {
         for (const summary of summaries) {
-          debugger;
           fs.writeFileSync(path.join(folder, summary._id), JSON.stringify(summary));
         }
 

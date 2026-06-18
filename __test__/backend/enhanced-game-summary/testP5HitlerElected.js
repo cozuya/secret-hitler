@@ -9,13 +9,10 @@ export default () => {
     const game = buildEnhancedGameSummary(p5HitlerElected);
     const { turns } = game;
 
-    if (
-      ("turn 3 should be a top deck",
-      () => {
-        expect(turns.get(3).isElectionTrackerMaxed).toBe(true);
-        expect(turns.get(4).isElectionTrackerMaxed).toBe(false);
-      })
-    );
+    it("turn 3 should be a top deck", () => {
+      expect(turns.get(3).isElectionTrackerMaxed).toBe(true);
+      expect(turns.get(4).isElectionTrackerMaxed).toBe(false);
+    });
 
     it("last turn should have hitler elected", () => {
       expect(turns.last().isHitlerElected).toBe(true);

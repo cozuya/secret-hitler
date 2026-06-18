@@ -182,6 +182,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
           ];
           return text;
         }
+        return;
       case "didPolicyPeek":
         switch (data.claimState) {
           case "rrr":

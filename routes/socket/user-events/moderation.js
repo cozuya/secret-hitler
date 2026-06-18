@@ -134,26 +134,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
         });
     } else if (data.action === "getFilteredData") {
       return;
-      let queryObj;
-
-      if (data.comment && (data.comment.split(".").length > 1 || data.comment.split(":").length > 1)) {
-        queryObj = {
-          ip: new RegExp(`^${obfIP(data.comment.substring(1))}`),
-        };
-      } else {
-        queryObj = {
-          userActedOn: data.comment,
-        };
-      }
-      const userNames = userList.map((user) => user.userName);
-
-      Account.find({ username: userNames, "gameSettings.isPrivate": { $ne: true } })
-        .then((users) => {
-          getModInfo(users, socket, queryObj);
-        })
-        .catch((err) => {
-          console.log(err, "err in sending mod info");
-        });
     } else {
       const modaction = new ModAction({
         date: new Date(),
