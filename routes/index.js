@@ -16,6 +16,7 @@ const prodCacheBustToken = require("./prodCacheBustToken");
 const { DEFAULTTHEMECOLORS } = require("../src/frontend-scripts/node-constants");
 const { checkBadgesAccount } = require("./socket/badges");
 const moment = require("moment");
+const { idQuerySchema, usernameQuerySchema, cardbackBodySchema } = require("./index.schema");
 
 /**
  * @param {object} req - express request object.
@@ -264,8 +265,13 @@ module.exports = () => {
   });
 
   app.get("/profile", (req, res) => {
+    const parsed = usernameQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(404).send("Profile not found");
+      return;
+    }
     const authedUser = req.session && req.session.passport && req.session.passport.user;
-    const username = req.query.username;
+    const username = parsed.data.username;
 
     getProfile(username).then((profile) => {
       if (!profile) {
@@ -361,7 +367,12 @@ module.exports = () => {
   });
 
   app.get("/gameSummary", (req, res) => {
-    const id = req.query.id;
+    const parsed = idQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(404).send("Game summary not found");
+      return;
+    }
+    const id = parsed.data.id;
 
     GameSummary.findById(id)
       .lean()
@@ -373,15 +384,24 @@ module.exports = () => {
           res.json(gs);
         }
       })
-      .catch((err) => debug(err));
+      .catch((err) => {
+        // malformed id (e.g. ?id=abc) → findById CastError; respond instead of hanging the request
+        console.debug(err);
+        res.status(404).send("Game summary not found");
+      });
   });
 
   app.get("/modThread", (req, res) => {
-    const id = req.query.id;
-
     if (!req.session.passport) {
       return;
     }
+
+    const parsed = idQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(404).send("Mod thread not found");
+      return;
+    }
+    const id = parsed.data.id;
 
     const username = req.session.passport.user;
 
@@ -393,70 +413,100 @@ module.exports = () => {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
 
-    Account.findOne({ username }).then((account) => {
-      if (
-        account.staffRole === "moderator" ||
-        account.staffRole === "editor" ||
-        account.staffRole === "admin" ||
-        account.staffRole === "trialmod"
-      ) {
-        ModThread.findById(id)
-          .lean()
-          .exec()
-          .then((dm) => {
-            if (!dm) {
-              res.status(404).send("Mod thread not found");
-            } else {
-              const chatLog = [];
+    Account.findOne({ username })
+      .then((account) => {
+        if (!account) {
+          res.status(401).send("You cannot access this resource. Ensure you are logged in.");
+          return;
+        }
+        if (
+          account.staffRole === "moderator" ||
+          account.staffRole === "editor" ||
+          account.staffRole === "admin" ||
+          account.staffRole === "trialmod"
+        ) {
+          ModThread.findById(id)
+            .lean()
+            .exec()
+            .then((dm) => {
+              if (!dm) {
+                res.status(404).send("Mod thread not found");
+              } else {
+                const chatLog = [];
 
-              for (const message of dm.messages) {
-                chatLog.push(
-                  `${message.userName}${message.userName ? (message.type === "leave" || message.type === "join" ? " " : ": ") : ""}${mangle(message.chat)}`
-                );
+                for (const message of dm.messages) {
+                  chatLog.push(
+                    `${message.userName}${message.userName ? (message.type === "leave" || message.type === "join" ? " " : ": ") : ""}${mangle(message.chat)}`
+                  );
+                }
+
+                res.send(chatLog.join("<br>"));
               }
-
-              res.send(chatLog.join("<br>"));
-            }
-          })
-          .catch((err) => console.debug(err));
-      } else {
+            })
+            .catch((err) => {
+              // malformed id → findById CastError; respond instead of hanging the request
+              console.debug(err);
+              res.status(404).send("Mod thread not found");
+            });
+        } else {
+          res.status(401).send("You cannot access this resource. Ensure you are logged in.");
+        }
+      })
+      .catch((err) => {
+        console.debug(err);
         res.status(401).send("You cannot access this resource. Ensure you are logged in.");
-      }
-    });
+      });
   });
 
   app.get("/gameJSON", (req, res) => {
-    const id = req.query.id;
-
     if (!req.session.passport) {
       return;
     }
 
+    const parsed = idQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(404).send("Game not found");
+      return;
+    }
+    const id = parsed.data.id;
+
     const username = req.session.passport.user;
 
-    Account.findOne({ username }).then((account) => {
-      if (
-        account.staffRole === "moderator" ||
-        account.staffRole === "editor" ||
-        account.staffRole === "admin" ||
-        account.staffRole === "trialmod"
-      ) {
-        Game.findOne({ uid: id })
-          .lean()
-          .exec()
-          .then((game) => {
-            if (!game) {
+    Account.findOne({ username })
+      .then((account) => {
+        if (!account) {
+          res.status(401).send("You cannot access this resource. Ensure you are logged in.");
+          return;
+        }
+        if (
+          account.staffRole === "moderator" ||
+          account.staffRole === "editor" ||
+          account.staffRole === "admin" ||
+          account.staffRole === "trialmod"
+        ) {
+          Game.findOne({ uid: id })
+            .lean()
+            .exec()
+            .then((game) => {
+              if (!game) {
+                res.status(404).send("Game not found");
+              } else {
+                res.header("Content-Type", "application/json");
+                res.send(game);
+              }
+            })
+            .catch((err) => {
+              console.debug(err);
               res.status(404).send("Game not found");
-            } else {
-              res.header("Content-Type", "application/json");
-              res.send(game);
-            }
-          })
-          .catch((err) => console.debug(err));
-      } else {
+            });
+        } else {
+          res.status(401).send("You cannot access this resource. Ensure you are logged in.");
+        }
+      })
+      .catch((err) => {
+        console.debug(err);
         res.status(401).send("You cannot access this resource. Ensure you are logged in.");
-      }
-    });
+      });
   });
 
   app.get("/online-playercount", (req, res) => {
@@ -479,8 +529,12 @@ module.exports = () => {
         return;
       }
 
-      const { image } = req.body;
-      const raw = image.split(",")[1];
+      const parsed = cardbackBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.json({ message: "Invalid image data." });
+        return;
+      }
+      const raw = parsed.data.image.split(",")[1];
       const username = req.session.passport.user;
 
       Account.findOne({ username })
@@ -506,7 +560,7 @@ module.exports = () => {
           console.log(err, "account err in cardbacks");
         });
     } catch (error) {
-      console.log(err, "upload cardback crash error");
+      console.log(error, "upload cardback crash error");
     }
   });
 };

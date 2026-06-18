@@ -18,6 +18,7 @@ const _ = require("lodash");
 const { makeReport } = require("../report.js");
 const { assassinateMerlin } = require("./assassination");
 const { completeGame } = require("./end-game");
+const { voteSchema, policySelectionSchema } = require("./election.schema");
 
 const powerMapping = {
   investigate: [investigateLoyalty, "The president must investigate the party membership of another player."],
@@ -377,6 +378,10 @@ const enactPolicy = (game, team, socket) => {
  * @param {object} socket - socket
  */
 const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
+  const parsed = voteSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { experiencedMode } = game.general;
   const president = game.private.seatedPlayers[game.gameState.presidentIndex];
   const chancellorIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === "isChancellor");
@@ -563,6 +568,10 @@ module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
  * @param {object} socket - socket
  */
 const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
+  const parsed = voteSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { experiencedMode } = game.general;
   const president = game.private.seatedPlayers[game.gameState.presidentIndex];
   const chancellorIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === "isChancellor");
@@ -777,6 +786,10 @@ module.exports.selectChancellorVoteOnVeto = selectChancellorVoteOnVeto;
  * @param {object} socket - socket
  */
 const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
+  const parsed = policySelectionSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { experiencedMode } = game.general;
   const presidentIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === "isPresident");
   const president = game.private.seatedPlayers[presidentIndex];
@@ -1039,6 +1052,10 @@ module.exports.selectChancellorPolicy = selectChancellorPolicy;
  * @param {object} socket - socket
  */
 const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
+  const parsed = policySelectionSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { presidentIndex } = game.gameState;
   const president = game.private.seatedPlayers[presidentIndex];
   const chancellorIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === "isChancellor");
@@ -1424,6 +1441,10 @@ module.exports.selectPresidentPolicy = selectPresidentPolicy;
  * @param {bool} force - if action was forced
  */
 module.exports.selectVoting = (passport, game, data, socket, force = false) => {
+  const parsed = voteSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { seatedPlayers } = game.private;
   const { experiencedMode } = game.general;
   const player = seatedPlayers.find((player) => player.userName === passport.user);

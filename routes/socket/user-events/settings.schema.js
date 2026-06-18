@@ -1,11 +1,11 @@
 const { z } = require("zod");
 
-// Theme update: a marker `field` plus any of the five colour fields (all strings).
+// Theme update: any subset of the five colour fields (all strings). The client sends only the
+// changed field(s) and never a `field` key, so requiring one here dropped every theme update.
 const THEME_COLOR_FIELDS = ["primaryColor", "secondaryColor", "tertiaryColor", "backgroundColor", "textColor"];
 
 const themeSchema = z
   .object({
-    field: z.string(),
     primaryColor: z.string().optional(),
     secondaryColor: z.string().optional(),
     tertiaryColor: z.string().optional(),

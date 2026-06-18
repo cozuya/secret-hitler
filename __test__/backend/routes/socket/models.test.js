@@ -5,7 +5,6 @@ import {
   accountCreationDisabled,
   ipbansNotEnforced,
   gameCreationDisabled,
-  profiles,
   formattedUserList,
   userListEmitter,
 } from "../../../../routes/socket/models";
@@ -33,10 +32,6 @@ describe("models", () => {
 
   it("has a gameCreationDisabled object", () => {
     expect(typeof gameCreationDisabled).toBe("object");
-  });
-
-  it("has a profiles object", () => {
-    expect(typeof profiles).toBe("object");
   });
 
   it("has a formattedUserList function", () => {

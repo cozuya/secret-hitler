@@ -1,6 +1,5 @@
 const Profile = require("./index");
 const Account = require("../account");
-const { profiles } = require("../../routes/socket/models");
 const debug = require("debug")("game:profile");
 const { checkBadgesGamesPlayed } = require("../../routes/socket/badges");
 
@@ -149,9 +148,9 @@ function profileDeltaWithMatchType(username, game, gameSummary) {
   };
 }
 
-// username: String, game: enhancedGameSummary, options: { version: String, cache: Boolean }
+// username: String, game: enhancedGameSummary, options: { version: String }
 function updateProfile(username, game, gameSummary, options = {}) {
-  const { version, cache } = options;
+  const { version } = options;
   const { delta, matchType, playerCountToLog } = profileDeltaWithMatchType(username, game, gameSummary);
 
   let $inc;
@@ -235,43 +234,44 @@ function updateProfile(username, game, gameSummary, options = {}) {
       })
       .then((profile) => {
         if (!profile) return null;
-        Account.findOne({ username }).then((account) => {
-          checkBadgesGamesPlayed(
-            account,
-            profile.stats.matches.greyMatches.liberal.events +
-              profile.stats.matches.greyMatches.fascist.events +
-              profile.stats.matches.rainbowMatches.liberal.events +
-              profile.stats.matches.rainbowMatches.fascist.events +
-              profile.stats.matches.practiceMatches.liberal.events +
-              profile.stats.matches.practiceMatches.fascist.events +
-              profile.stats.matches.silentMatches.liberal.events +
-              profile.stats.matches.silentMatches.fascist.events,
-            profile.stats.matches.greyMatches.liberal.successes +
-              profile.stats.matches.greyMatches.fascist.successes +
-              profile.stats.matches.rainbowMatches.liberal.successes +
-              profile.stats.matches.rainbowMatches.fascist.successes +
-              profile.stats.matches.practiceMatches.liberal.successes +
-              profile.stats.matches.practiceMatches.fascist.successes +
-              profile.stats.matches.silentMatches.liberal.successes +
-              profile.stats.matches.silentMatches.fascist.successes,
-            profile.stats.matches.customMatches.liberal.events + profile.stats.matches.customMatches.fascist.events,
-            profile.stats.matches.silentMatches.liberal.events + profile.stats.matches.silentMatches.fascist.events,
-            profile.stats.matches.emoteMatches.liberal.events + profile.stats.matches.emoteMatches.fascist.events,
-            gameSummary.id
-          );
-          account.save();
-        });
-      })
-      .then((profile) => {
-        if (!profile) return null;
-        else if (cache) return profiles.push(profile);
-        else return profile;
+        Account.findOne({ username })
+          .then((account) => {
+            if (!account) return; // account may have been deleted/renamed since the profile was written
+            checkBadgesGamesPlayed(
+              account,
+              profile.stats.matches.greyMatches.liberal.events +
+                profile.stats.matches.greyMatches.fascist.events +
+                profile.stats.matches.rainbowMatches.liberal.events +
+                profile.stats.matches.rainbowMatches.fascist.events +
+                profile.stats.matches.practiceMatches.liberal.events +
+                profile.stats.matches.practiceMatches.fascist.events +
+                profile.stats.matches.silentMatches.liberal.events +
+                profile.stats.matches.silentMatches.fascist.events,
+              profile.stats.matches.greyMatches.liberal.successes +
+                profile.stats.matches.greyMatches.fascist.successes +
+                profile.stats.matches.rainbowMatches.liberal.successes +
+                profile.stats.matches.rainbowMatches.fascist.successes +
+                profile.stats.matches.practiceMatches.liberal.successes +
+                profile.stats.matches.practiceMatches.fascist.successes +
+                profile.stats.matches.silentMatches.liberal.successes +
+                profile.stats.matches.silentMatches.fascist.successes,
+              profile.stats.matches.customMatches.liberal.events + profile.stats.matches.customMatches.fascist.events,
+              profile.stats.matches.silentMatches.liberal.events + profile.stats.matches.silentMatches.fascist.events,
+              profile.stats.matches.emoteMatches.liberal.events + profile.stats.matches.emoteMatches.fascist.events,
+              gameSummary.id
+            );
+            account.save();
+          })
+          .catch((err) => debug(err));
+        // the badge update above is intentionally fire-and-forget (it has its own .catch); pass the
+        // profile through so updateProfile resolves it instead of a dead undefined.
+        return profile;
       })
       .catch((err) => debug(err))
   );
 }
 
-// game: enhancedGameSummary, options: { version: String, cache: Boolean }
+// game: enhancedGameSummary, options: { version: String }
 function updateProfiles(game, gameSummary, options = {}) {
   debug("Updating profiles for: %s", gameSummary.id);
 
@@ -280,7 +280,6 @@ function updateProfiles(game, gameSummary, options = {}) {
   );
 }
 
-// side effect: caches profile
 function getProfile(username) {
   return Profile.findById(username).exec();
 }

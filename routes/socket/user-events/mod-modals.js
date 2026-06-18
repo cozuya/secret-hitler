@@ -258,15 +258,16 @@ module.exports.handleModPeekRemakes = (socket, passport, game, modUserName) => {
         output += "Roles not Dealt";
       }
 
-      const playerRemakeData = game.remakeData.find((d) => d.userName === player.userName);
+      // remakeData may be absent, or not contain this seat — guard every deref so a peek can't crash.
+      const playerRemakeData = game.remakeData?.find((d) => d.userName === player.userName);
       output +=
         "<td>" +
-        (playerRemakeData.remakeTime
+        (playerRemakeData?.remakeTime
           ? moment.duration(new Date() - new Date(playerRemakeData.remakeTime)).humanize()
           : "-") +
         "</td>";
-      output += "<td>" + (playerRemakeData.isRemaking ? "Yes" : "No") + "</td>";
-      output += "<td>" + playerRemakeData.timesVoted + "</td>";
+      output += "<td>" + (playerRemakeData?.isRemaking ? "Yes" : "No") + "</td>";
+      output += "<td>" + (playerRemakeData?.timesVoted ?? "-") + "</td>";
       output += "</tr>";
     });
   }

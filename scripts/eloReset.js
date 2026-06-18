@@ -212,7 +212,9 @@ Account.find({ "games.0": { $exists: true } })
   .cursor()
   .eachAsync((acc) => {
     // == QUERY PROFILE ==
-    Profile.findOne({ _id: acc.username }).then((profile) => {
+    // Return the promise chain so eachAsync awaits each account's saves before advancing
+    // the cursor — otherwise the trailing .then() closes the connection mid-flight.
+    return Profile.findOne({ _id: acc.username }).then((profile) => {
       // == DATA TO SAVE ==
       const preResetElo = acc.eloOverall;
       const preResetGameCount = acc.games.length;
@@ -267,16 +269,17 @@ Account.find({ "games.0": { $exists: true } })
         };
 
         // == WE ARE DONE ==
-        profile.save(() => {
-          acc.save(() => {
+        return profile
+          .save()
+          .then(() => acc.save())
+          .then(() => {
             count++;
             if (Number.isInteger(count / 100)) {
               console.log("processed account " + count);
             }
           });
-        });
       } else {
-        acc.save(() => {
+        return acc.save().then(() => {
           count++;
           if (Number.isInteger(count / 100)) {
             console.log("processed account " + count);

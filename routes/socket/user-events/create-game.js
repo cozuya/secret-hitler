@@ -39,9 +39,9 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
   let playerCounts = [];
 
   for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
-    // note: server expects excludedPlayerCounts (plural)
-    if (Array.isArray(data.excludedPlayerCounts)) {
-      if (!data.excludedPlayerCounts.includes(a)) playerCounts.push(a);
+    // client sends excludedPlayerCount (singular) — see Creategame.jsx / App.jsx
+    if (Array.isArray(data.excludedPlayerCount)) {
+      if (!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
     } else {
       playerCounts.push(a);
     }
@@ -71,7 +71,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
   }
 
   if (data.xpSliderValue) {
-    // xpSliderValue is typed as a string by the schema
+    // xpSliderValue is a string (typed box) or number (slider); null when the XP limit is off
     if (user.xpOverall < data.xpSliderValue) {
       return;
     }

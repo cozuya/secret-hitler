@@ -12,6 +12,12 @@ const bannedEmails = require("../utils/disposableEmails");
 const { expandAndSimplify, obfIP, doesIPMatchCIDR } = require("./socket/ip-obf");
 const prodCacheBustToken = require("./prodCacheBustToken");
 const { handleDefaultIPv6Range } = require("./socket/util");
+const {
+  signupBodySchema,
+  changePasswordBodySchema,
+  emailBodySchema,
+  usernameBodySchema,
+} = require("./accounts.schema");
 
 /**
  * @param {object} req - express request object.
@@ -434,7 +440,12 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/account/change-password", ensureAuthenticated, (req, res, next) => {
-    const { newPassword, newPasswordConfirm } = req.body;
+    const parsed = changePasswordBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).send();
+      return;
+    }
+    const { newPassword, newPasswordConfirm } = parsed.data;
     const { user } = req;
 
     if (newPassword !== newPasswordConfirm) {
@@ -482,12 +493,15 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/account/signup", (req, res, next) => {
-    const { username, password, password2, email, isPrivate } = req.body;
-    if (!username || !password || !password2) {
+    const parsed = signupBodySchema.safeParse(req.body);
+    if (!parsed.success) {
       res.status(401).json({ message: "Your username or password cannot be empty." });
       return;
     }
-    let { bypassKey, bypass } = req.body;
+    const { username, password, password2, email, isPrivate } = parsed.data;
+    // from parsed.data (not req.body) so the schema's string/null typing governs these —
+    // a forged object can't reach bypassKey.trim() below.
+    let { bypassKey, bypass } = parsed.data;
     bypassKey = bypass || bypassKey;
     let hasBypass = false;
     if (bypassKey) {
@@ -735,7 +749,11 @@ module.exports.accounts = (torIpsParam) => {
   );
 
   app.post("/account/add-email", ensureAuthenticated, (req, res, next) => {
-    const { email } = req.body;
+    const parsed = emailBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(); // intentional: mirrors this route's existing absent-email fall-through (not an explicit status)
+    }
+    const { email } = parsed.data;
     const { username } = req.user;
 
     if (!email) {
@@ -778,7 +796,11 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/account/change-email", ensureAuthenticated, (req, res, next) => {
-    const { email } = req.body;
+    const parsed = emailBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(); // intentional: mirrors this route's existing absent-email fall-through (not an explicit status)
+    }
+    const { email } = parsed.data;
     const { username } = req.user;
 
     if (
@@ -990,7 +1012,12 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/oauth-select-username", (req, res, next) => {
-    const { username } = req.body;
+    const parsed = usernameBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(401).send();
+      return;
+    }
+    const { username } = parsed.data;
     const { oauthProfile, oauthType } = req.session;
 
     if (

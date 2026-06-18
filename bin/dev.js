@@ -3,6 +3,21 @@
 const http = require("http");
 const express = require("express");
 require("dotenv").config();
+
+// Crash-with-context. Every socket/game handler is now zod-typed, so a surviving unhandled
+// rejection or uncaught exception means genuine corruption — log it loudly so it's diagnosable,
+// then let the process die. Continuing on half-mutated game state is worse than a clean restart
+// (the process manager brings us back up). Registering these handlers overrides Node's default
+// crash, so we MUST exit here; this logs, it never swallows.
+process.on("uncaughtException", (err) => {
+  console.error("FATAL uncaughtException — exiting:", (err && err.stack) || err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("FATAL unhandledRejection — exiting:", (reason && reason.stack) || reason);
+  process.exit(1);
+});
+
 const port = (() => {
   const val = process.env.PORT || "8080";
   const port = parseInt(val, 10);

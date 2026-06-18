@@ -31,11 +31,11 @@ game-action guards are superseded by this zod track.
 | ------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `moderation.js`           | handleModerationAction                                          | userName, ip, comment, action, …                                                                                             | AEM                                                | **DONE**   | Pilot landed                                                                                                                                                                                                                                                                                                             |
 | `chat.js` (364)           | handleNewGeneralChat, handleAddNewGameChat (both `async`)       | chat (only true wire inputs: `chat`, + `uid` for game chat; userName/timestamp/staffRole/hiddenUsername are set server-side) | authenticated (+ `!isRestricted`)                  | **DONE**   | Type guards (`typeof data.chat`) folded into `generalChatSchema`/`gameChatSchema`. Length/empty/anti-spam-regex content rules left in the handlers (trim semantics differ between the two).                                                                                                                              |
-| `create-game.js` (432)    | handleAddNewGame (`async`), handleUpdateWhitelist               | ~60 fields: counts, sliders, customGameSettings, gameName, flags, whitelistPlayers                                           | authenticated (+ `!isRestricted`)                  | **DONE ⚠️**   | `createGameSchema` (counts/gameName/sliders/arrays) + `customGameSettingsSchema` (nested numeric shape) + `updateWhitelistSchema`. Fixed the two live crashes: tourny `data.general` (now `newGame.general`) and unchecked `whitelistPlayers`. `fascistCount`-vs-playerCount stays in the handler (needs derived state). **⚠️ REGRESSED — `xpSliderValue` is typed `z.string().optional()` but the client sends `null` by default, so the schema rejects the normal payload and game creation breaks site-wide on deploy. See `REGRESSION_BUG_TRIAGE_JUN17-1.md`.** |
+| `create-game.js` (432)    | handleAddNewGame (`async`), handleUpdateWhitelist               | ~60 fields: counts, sliders, customGameSettings, gameName, flags, whitelistPlayers                                           | authenticated (+ `!isRestricted`)                  | **DONE**   | `createGameSchema` (counts/gameName/sliders/arrays) + `customGameSettingsSchema` (nested numeric shape) + `updateWhitelistSchema`. Fixed the two live crashes: tourny `data.general` (now `newGame.general`) and unchecked `whitelistPlayers`. `fascistCount`-vs-playerCount stays in the handler (needs derived state). `xpSliderValue` regression fixed (now `z.union([z.string(), z.number()]).nullable().optional()`); the singular-vs-plural `excludedPlayerCount` regression fixed too. |
 | `player-reports.js` (131) | handlePlayerReport                                              | reason, comment, uid, reportedPlayer, userName                                                                               | authenticated, ≥2 games                            | **DONE**   | Schema folds in the `routes.js:552` comment guard + the in-handler `reason` regex; `reportedPlayer` now required (kills the `.split(' ')` crash).                                                                                                                                                                        |
 | `mod-dms.js` (187)        | handleOpenChat, handleAddNewModDMChat                           | aemMember, userName, chat                                                                                                    | AEM (but `modDMsAddChat` is **any authenticated**) | **DONE**   | `openChatSchema` (aemMember/userName strings) + `modDMChatSchema` (chat string). `handleCloseChat`/`handleUnsubscribeChat` read nothing off the wire (passport from `socket.handshake`) — no schema needed.                                                                                                              |
 | `join-game.js` (100)      | updateSeatedUser                                                | uid, password                                                                                                                | authenticated + in-game                            | **DONE**   | Schema requires `uid` string, `password` optional string; replaced the `BAD DATA` log-guard.                                                                                                                                                                                                                             |
-| `settings.js` (171)       | handleUpdatedTheme, handleUpdatedGameSettings, handleUpdatedBio | field, isPrivate, theme, bio, blacklist                                                                                      | authenticated                                      | **DONE ⚠️**   | `themeSchema` (replaced inline guards + removed debug logs), `bioSchema` (replaced `typeof` guard), `gameSettingsSchema` object-gate + `blacklistSchema` (replaced manual blacklist typeof checks). **⚠️ REGRESSED — `themeSchema` requires a `field` key the client never sends (and the handler never reads), so every theme update fails validation and is silently dropped. See `REGRESSION_BUG_TRIAGE_JUN17-1.md`.**                                                                                                                      |
+| `settings.js` (171)       | handleUpdatedTheme, handleUpdatedGameSettings, handleUpdatedBio | field, isPrivate, theme, bio, blacklist                                                                                      | authenticated                                      | **DONE**   | `themeSchema` (replaced inline guards + removed debug logs), `bioSchema` (replaced `typeof` guard), `gameSettingsSchema` object-gate + `blacklistSchema` (replaced manual blacklist typeof checks). `themeSchema` regression fixed — the bogus required `field` key was removed; it now validates the five `THEME_COLOR_FIELDS`.                                                                                                                      |
 | `claim.js` (358)          | handleAddNewClaim                                               | claim, claimState                                                                                                            | authenticated + in-game                            | **DONE**   | `claimSchema` (optional strings) parsed at top. Return contract (`true`/`false`/undefined) preserved for the chat.js caller.                                                                                                                                                                                             |
 | `remake-game.js` (353)    | handleUpdatedRemakeGame                                         | remakeStatus                                                                                                                 | authenticated + in-game                            | **DONE**   | `remakeSchema` object-gate; `remakeStatus` left permissive so a forged value can't block a vote.                                                                                                                                                                                                                         |
 | `leave-game.js` (348)     | handleUserLeaveGame                                             | isRemake                                                                                                                     | authenticated + in-game                            | **DONE**   | `leaveGameSchema` object-gate; `isRemake` unconstrained so a forged value can't block a leave.                                                                                                                                                                                                                           |
@@ -56,15 +56,59 @@ game-action guards are superseded by this zod track.
 | 6 ✓   | settings.js, claim.js, remake-game.js, leave-game.js      | Done — schemas added; inline type guards (bio, theme, blacklist) replaced.                                                                                                              |
 | —     | mod-modals.js, flappy-hitler.js, player-notes.js, util.js | Skip (no `data` param / dead / broken / no payload).                                                                                                                                    |
 
-**All payload-bearing `user-events` handlers are now zod-guarded** — but two landed with **regressions** caught in review (`create-game.js` `xpSliderValue`, `settings.js` `themeSchema` `field`); both are deploy-blockers, see `REGRESSION_BUG_TRIAGE_JUN17-1.md`. Remaining work is the cross-cutting follow-ups below (unhandledRejection logger, `.passthrough()` → `.strict()` tightening, player-notes wiring) **plus the still-un-zod'd `routes/socket/game/` handlers** — e.g. the `assassination.js` forged-`playerIndex` process crash in the triage doc.
+**All payload-bearing `user-events` handlers are now zod-guarded.** Two landed with **regressions** caught in review (`create-game.js` `xpSliderValue`, `settings.js` `themeSchema` `field`) — **both fixed** (2026-06-18), see `REGRESSION_BUG_TRIAGE_JUN17-1.md`. Remaining work is the cross-cutting follow-ups below (unhandledRejection logger, `.passthrough()` → `.strict()` tightening, player-notes wiring).
+
+## `routes/socket/game/` handlers — DONE
+
+The gameplay handlers receive `data` straight from the wire (guarded only by `findGame`/
+`ensureInGame` in `routes.js`); the wire fields themselves were untyped, so a forged value
+could crash the whole process. Each handler file now has a sibling `*.schema.js` and a
+`safeParse` at handler entry (same pattern as `user-events`). The client always emits a
+numeric index/selection or boolean vote plus `uid`, so the schemas don't reject real play.
+
+| File | Schema fields | Handlers guarded | Extra existence guards added |
+| ---- | ------------- | ---------------- | ---------------------------- |
+| `assassination.js` | `playerIndex` int | selectPlayerToAssassinate | `if (!target) return` (fixes the documented forged-`playerIndex` crash) |
+| `election-util.js` | `chancellorIndex` int | selectChancellor | none — integer typing makes the existing `>= playerCount`/`< 0` bounds hold |
+| `election.js` | `vote` bool, `selection` int | selectVoting, selectPresidentVoteOnVeto, selectChancellorVoteOnVeto, selectPresidentPolicy, selectChancellorPolicy | none |
+| `policy-powers.js` | `playerIndex` int, `vote` bool | selectPartyMembershipInvestigate, selectPartyMembershipInvestigateReverse, selectSpecialElection, selectPlayerToExecute, selectBurnCard | `if (!seatedPlayers[playerIndex]) return` **before locking the phase** (reverse-investigate + special-election); `selectPlayerToExecute` relies on its existing `!selectedPlayer` bounds guard, `selectPartyMembershipInvestigate` on its existing top-of-handler seat check |
+
+The no-`data` powers (`policyPeek`, `policyPeekAndDrop`, `investigateLoyalty`,
+`showPlayerLoyalty`, `specialElection`, `executePlayer`, `selectPolicies`, `selectOnePolicy`)
+read nothing off the wire — no schema needed. Schema typing kills type-confusion crashes;
+out-of-range-but-integer indices are still the handler's job (the existence guards above).
+Tests: `__test__/backend/routes/socket/game-schemas.schema.test.js`.
+
+## Express XHR routes — DONE
+
+Lower-severity than sockets (Express turns a synchronous throw in a handler into a 500, not a
+process crash), but the GET-by-id/username routes fed `req.query`/`req.body` straight into a
+Mongoose query, where Express/qs hands an object/array for `?id[$ne]=`-style input — NoSQL
+operator injection (and a `findById` CastError). Each input-reading handler now `safeParse`s
+the relevant `req` part against a schema in `routes/index.schema.js` / `routes/accounts.schema.js`;
+on failure it returns the route's existing not-found / error response. Happy paths unchanged
+(schemas only reject malformed *types*; `.passthrough()` keeps unknown flags).
+
+- `routes/index.js`: `/profile` (username), `/gameSummary` · `/modThread` · `/gameJSON` (id),
+  `/upload-cardback` (image).
+- `routes/accounts.js`: `/account/signup`, `/account/change-password`, `/account/add-email`,
+  `/account/change-email`, `/oauth-select-username`. (`/account/reset-password` and
+  `verification.js` already had `typeof` string guards — left as-is.)
+- Two latent bugs fixed in passing: `/gameSummary` `.catch((err) => debug(err))` (undefined
+  `debug` → unhandledRejection) → `console.debug`; `/upload-cardback` catch logged `err`
+  instead of the caught `error`.
+
+Tests: `__test__/backend/routes/express-schemas.schema.test.js`.
 
 ## Cross-cutting follow-ups (separate tickets)
 
-- **Add an `unhandledRejection` _logger_** (log only, do not swallow) in the server bootstrap.
-  The `async` handlers (chat, create-game) are the reason a typed layer matters; a logger
-  makes any residual one diagnosable.
-- **Tighten `.passthrough()` → `.strict()`** across all schemas once each has run in prod.
-- **Fix `player-notes.js` wiring** or delete it + the dead frontend emit.
+- ✅ **`unhandledRejection` / `uncaughtException` logger** — **DONE (2026-06-18)** in `bin/dev.js`:
+  log-and-exit (registering the handlers overrides Node's default crash, so it exits to avoid
+  continuing on half-mutated state; it never swallows).
+- ✅ **`player-notes.js`** — **DONE (2026-06-18)**: deleted the broken-wiring handler, its barrel
+  + `routes.js` registration, and the fully-commented `Playernotes.jsx` (the dead emit lived there).
+  The read path (`getPlayerNotes`/`sendPlayerNotes`) is left intact.
+- **Tighten `.passthrough()` → `.strict()`** across all schemas once each has run in prod. *(open)*
 - **As each file lands,** delete its inline guards (in-handler ad-hoc checks and the matching
   `routes.js` boundary checks) — but only once the schema covers the same rule. Done so far for
   `playerReport` (the `routes.js` comment guard) and `updateSeatedUser` (the `BAD DATA` block).

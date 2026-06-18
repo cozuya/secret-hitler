@@ -71,13 +71,18 @@ module.exports.newStaff = {
   contributorUserNames: [],
 };
 
-const staffList = (module.exportsstaffList = []);
+const staffList = (module.exports.staffList = []);
 
 module.exports.getStaffList = () => {
-  module.exports.staffList = [];
-  Account.find({ staffRole: { $exists: true } }).then((accounts) => {
-    accounts.forEach((user) => (staffList[user.username] = user.staffRole));
-  });
+  Account.find({ staffRole: { $exists: true } })
+    .then((accounts) => {
+      // Mutate the existing array in place — user-requests.js destructures this reference at
+      // require time, so reassigning module.exports.staffList here would leave consumers stale
+      // (and the old typo `module.exportsstaffList` never populated the exported array at all).
+      for (const key of Object.keys(staffList)) delete staffList[key];
+      accounts.forEach((user) => (staffList[user.username] = user.staffRole));
+    })
+    .catch((err) => console.log(err, "err in getStaffList"));
 };
 
 module.exports.getStaffList();
@@ -113,29 +118,6 @@ module.exports.getPowerFromUser = (user) => {
   if (module.exports.newStaff.contributorUserNames.includes(user.userName)) return getPowerFromRole("contributor");
   return getPowerFromRole(user.staffRole);
 };
-
-// set of profiles, no duplicate usernames
-/**
- * @return // todo
- */
-module.exports.profiles = (() => {
-  const profiles = [];
-  const MAX_SIZE = 100;
-  const get = (username) => profiles.find((p) => p._id === username);
-  const remove = (username) => {
-    const i = profiles.findIndex((p) => p._id === username);
-    if (i > -1) return profiles.splice(i, 1)[0];
-  };
-  const push = (profile) => {
-    if (!profile) return profile;
-    remove(profile._id);
-    profiles.unshift(profile);
-    profiles.splice(MAX_SIZE);
-    return profile;
-  };
-
-  return { get, push };
-})();
 
 module.exports.formattedUserList = (isAEM) => {
   const prune = (value) => {

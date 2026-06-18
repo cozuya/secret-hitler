@@ -1,4 +1,5 @@
 const { sendInProgressGameUpdate } = require("../util");
+const { selectChancellorSchema } = require("./election-util.schema");
 
 /**
  * @param {object} socket - socket reference.
@@ -8,6 +9,10 @@ const { sendInProgressGameUpdate } = require("../util");
  * @param {bool} force - whether or not this action was forced.
  */
 module.exports.selectChancellor = (socket, passport, game, data, force = false) => {
+  const parsed = selectChancellorSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   if (
     (game.general.isTourny && game.general.tournyInfo.isCancelled) ||
     data.chancellorIndex >= game.general.playerCount ||

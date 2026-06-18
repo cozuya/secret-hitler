@@ -1,5 +1,4 @@
 import {
-  handleUpdatedPlayerNote,
   updateSeatedUser,
   handleUpdatedBio,
   handleAddNewGame,
@@ -18,20 +17,12 @@ import {
 } from "../../../../routes/socket/user-events";
 
 describe("user events", () => {
-  it("has an handleUpdatedPlayerNote function", () => {
-    expect(typeof handleUpdatedPlayerNote).toBe("function");
-  });
-
   it("has an updateSeatedUser function", () => {
     expect(typeof updateSeatedUser).toBe("function");
   });
 
   it("has an handleUpdatedBio function", () => {
     expect(typeof handleUpdatedBio).toBe("function");
-  });
-
-  it("has an handleUpdatedPlayerNote function", () => {
-    expect(typeof handleUpdatedPlayerNote).toBe("function");
   });
 
   it("has an handleAddNewGame function", () => {

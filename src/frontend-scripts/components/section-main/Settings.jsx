@@ -516,6 +516,12 @@ class Settings extends React.Component {
       const saturation = parseInt(primaryColor.split(",")[1].trim().split("%")[0], 10);
       const lightness = parseInt(primaryColor.split(",")[2].trim().split("%)")[0], 10);
 
+      // primaryColor isn't a parseable hsl() string (e.g. a legacy/hex value) — don't emit
+      // hsl(NaN...); fall back to the default theme's secondary/tertiary.
+      if (Number.isNaN(hue) || Number.isNaN(saturation) || Number.isNaN(lightness)) {
+        return { secondaryColor: "hsl(225, 48%, 57%)", tertiaryColor: "hsl(265, 73%, 57%)" };
+      }
+
       const secondarySaturation = saturation >= 25 ? saturation - 25 : 0;
       const tertiaryHue = hue > 320 ? hue - 320 : hue + 40;
 

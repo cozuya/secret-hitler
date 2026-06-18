@@ -8,7 +8,6 @@ const leaveGame = require("./user-events/leave-game");
 const modDms = require("./user-events/mod-dms");
 const modModals = require("./user-events/mod-modals");
 const moderation = require("./user-events/moderation");
-const playerNotes = require("./user-events/player-notes");
 const playerReports = require("./user-events/player-reports");
 const remakeGame = require("./user-events/remake-game");
 const settings = require("./user-events/settings");
@@ -25,7 +24,6 @@ module.exports = Object.assign(
   modDms,
   modModals,
   moderation,
-  playerNotes,
   playerReports,
   remakeGame,
   settings,

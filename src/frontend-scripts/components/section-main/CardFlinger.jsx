@@ -99,14 +99,19 @@ class CardFlinger extends React.Component {
     }
   }
 
+  // Bind once so add/removeEventListener share the same reference — `.bind(this)` per call
+  // created a new function each time, so the unmount removal never matched and listeners leaked.
+  boundOnKeyDown = (e) => this.onKeyDown(e);
+  boundOnKeyUp = (e) => this.onKeyUp(e);
+
   componentDidMount() {
-    document.addEventListener("keydown", this.onKeyDown.bind(this));
-    document.addEventListener("keyup", this.onKeyUp.bind(this));
+    document.addEventListener("keydown", this.boundOnKeyDown);
+    document.addEventListener("keyup", this.boundOnKeyUp);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.onKeyDown.bind(this));
-    document.removeEventListener("keyup", this.onKeyUp.bind(this));
+    document.removeEventListener("keydown", this.boundOnKeyDown);
+    document.removeEventListener("keyup", this.boundOnKeyUp);
   }
 
   handleCardClick = (index) => {

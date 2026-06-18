@@ -3,6 +3,7 @@ const { startElection, shufflePolicies } = require("./common.js");
 const { sendGameList } = require("../user-requests");
 const { completeGame } = require("./end-game.js");
 const { assassinateMerlin } = require("./assassination");
+const { playerIndexSchema, voteSchema } = require("./policy-powers.schema");
 
 /**
  * @param {object} game - game to act on.
@@ -455,6 +456,10 @@ module.exports.selectOnePolicy = (passport, game) => {
  * @param {object} socket - socket
  */
 module.exports.selectBurnCard = (passport, game, data, socket) => {
+  const parsed = voteSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   if (game.general.timedMode && game.private.timerId) {
     clearTimeout(game.private.timerId);
     game.private.timerId = null;
@@ -640,6 +645,10 @@ module.exports.investigateLoyalty = (game) => {
  * @param {object} socket - socket
  */
 module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket) => {
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   if (game.general.timedMode && game.private.timerId) {
     clearTimeout(game.private.timerId);
     game.private.timerId = null;
@@ -871,6 +880,10 @@ module.exports.showPlayerLoyalty = (game) => {
  * @param {object} socket - socket
  */
 module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   if (game.general.timedMode && game.private.timerId) {
     clearTimeout(game.private.timerId);
     game.private.timerId = null;
@@ -900,6 +913,10 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 
   if (playerIndex === presidentIndex) {
     return;
+  }
+
+  if (!seatedPlayers[playerIndex]) {
+    return; // out-of-range (but integer) seat — guard before locking the phase below
   }
 
   if (!president || president.userName !== passport.user) {
@@ -1120,6 +1137,10 @@ module.exports.specialElection = (game) => {
  * @param {object} socket - socket
  */
 module.exports.selectSpecialElection = (passport, game, data, socket) => {
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { playerIndex } = data;
   const { presidentIndex } = game.gameState;
   const gameChat = {
@@ -1149,6 +1170,10 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 
   if (playerIndex === presidentIndex) {
     return;
+  }
+
+  if (!seatedPlayers[playerIndex]) {
+    return; // out-of-range (but integer) seat — the chat builders below deref it
   }
 
   if (game.gameState.phase !== "specialElection") {
@@ -1294,6 +1319,10 @@ module.exports.executePlayer = (game) => {
  * @param {object} socket - socket
  */
 module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { playerIndex } = data;
   const { presidentIndex } = game.gameState;
   const { seatedPlayers } = game.private;

@@ -16,7 +16,12 @@ const validCustom = () => ({
 
 describe("createGameSchema", () => {
   it("accepts a minimal valid payload and passes through unknown flags", () => {
-    const res = createGameSchema.safeParse({ gameName: "testgame", isTourny: true, blindMode: false });
+    const res = createGameSchema.safeParse({
+      gameName: "testgame",
+      xpSliderValue: null,
+      isTourny: true,
+      blindMode: false,
+    });
     expect(res.success).toBe(true);
     expect(res.data.isTourny).toBe(true);
   });
@@ -46,8 +51,14 @@ describe("createGameSchema", () => {
     expect(createGameSchema.safeParse({ gameName: "g", maxPlayersCount: "abc" }).success).toBe(false);
   });
 
-  it("rejects a non-string xpSliderValue and an object noTopdecking", () => {
-    expect(createGameSchema.safeParse({ gameName: "g", xpSliderValue: 50 }).success).toBe(false);
+  it("accepts string/number/null xpSliderValue (the real client payloads) but rejects objects", () => {
+    expect(createGameSchema.safeParse({ gameName: "g", xpSliderValue: null }).success).toBe(true); // default: XP limit off
+    expect(createGameSchema.safeParse({ gameName: "g", xpSliderValue: 50 }).success).toBe(true); // from the slider
+    expect(createGameSchema.safeParse({ gameName: "g", xpSliderValue: "50" }).success).toBe(true); // from the typed box
+    expect(createGameSchema.safeParse({ gameName: "g", xpSliderValue: {} }).success).toBe(false); // junk
+  });
+
+  it("rejects an object noTopdecking", () => {
     expect(createGameSchema.safeParse({ gameName: "g", noTopdecking: {} }).success).toBe(false);
     expect(createGameSchema.safeParse({ gameName: "g", noTopdecking: 1 }).success).toBe(true);
   });

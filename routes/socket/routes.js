@@ -15,7 +15,6 @@ const {
   handlePlayerReportDismiss,
   handleUpdatedBio,
   handleUpdatedRemakeGame,
-  handleUpdatedPlayerNote,
   handleSubscribeModChat,
   handleModPeekVotes,
   handleModPeekRemakes,
@@ -491,10 +490,6 @@ module.exports.socketRoutes = () => {
             acc.save(() => (isRestricted = checkRestriction(acc)));
           });
         }
-      });
-
-      socket.on("handleUpdatedPlayerNote", (data) => {
-        handleUpdatedPlayerNote(socket, passport, data);
       });
 
       socket.on("handleUpdatedTheme", (data) => {

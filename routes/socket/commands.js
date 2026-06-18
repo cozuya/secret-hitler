@@ -614,7 +614,9 @@ module.exports.commands.getCommand("forceskip").run = (socket, passport, user, g
   }
   currentPlayers[affectedPlayerIndex] = false;
   let counter = affectedPlayerIndex + 1;
-  while (chancellor === -1) {
+  // Bounded to a single full pass around the table: if no eligible chancellor exists, abort
+  // rather than spinning forever (which would block the single-threaded event loop for every game).
+  for (let checked = 0; chancellor === -1 && checked < currentPlayers.length; checked++) {
     if (counter >= currentPlayers.length) {
       counter = 0;
     }
@@ -622,6 +624,10 @@ module.exports.commands.getCommand("forceskip").run = (socket, passport, user, g
       chancellor = counter;
     }
     counter++;
+  }
+  if (chancellor === -1) {
+    sendMessage(game, user, "There is no eligible player to force a chancellor pick to.");
+    return;
   }
 
   game.chats.push({

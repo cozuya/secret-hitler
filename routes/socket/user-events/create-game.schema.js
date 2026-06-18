@@ -62,14 +62,17 @@ const createGameSchema = z
   .object({
     minPlayersCount: optionalNullableInt,
     maxPlayersCount: optionalNullableInt,
+    // singular — the client (Creategame.jsx / App.jsx) emits `excludedPlayerCount`; there is no
+    // plural `excludedPlayerCounts` (that mismatch was the regression fixed in create-game.js).
     excludedPlayerCount: z.array(z.any()).optional(),
-    excludedPlayerCounts: z.array(z.any()).optional(),
     gameName: z
       .string()
       .min(1)
       .max(20)
       .refine((name) => LEGALCHARACTERS(name), { message: "illegal characters in game name" }),
-    xpSliderValue: z.string().optional(),
+    // Client sends null by default (XP limit off), a number from the slider, or a string from the
+    // typed XP box; the handler parseInts it. Accept all three so a normal create-game isn't rejected.
+    xpSliderValue: z.union([z.string(), z.number()]).nullable().optional(),
     noTopdecking: notObject.optional(),
     privatePassword: z.string().optional(),
     // presence/enabled handled here; the strict shape is validated by

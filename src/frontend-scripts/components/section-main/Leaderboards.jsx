@@ -36,12 +36,20 @@ class Leaderboard extends React.Component {
   }
 
   render() {
+    // Show the boards if ANY of them has data — early in a season seasonalLeaderboardElo can be
+    // empty while the daily/XP/rainbow boards are populated (master guarded on the combined set).
+    const hasLeaderboardData =
+      this.state.seasonalLeaderboardElo.length ||
+      this.state.seasonalLeaderboardXP.length ||
+      this.state.dailyLeaderboardElo.length ||
+      this.state.dailyLeaderboardXP.length ||
+      this.state.rainbowLeaderboard.length;
     return (
       <section className="leaderboards">
         <a href="#/">
           <i className="remove icon" style={{ marginTop: "30px" }} />
         </a>
-        {this.state.seasonalLeaderboardElo.length && !this.state.errored ? (
+        {hasLeaderboardData && !this.state.errored ? (
           <>
             <div className="ui grid">
               <div className="eight wide column">

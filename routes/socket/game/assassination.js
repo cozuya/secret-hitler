@@ -1,5 +1,6 @@
 const { sendInProgressGameUpdate } = require("../util.js");
 const { completeGame } = require("./end-game.js");
+const { assassinateSchema } = require("./assassination.schema");
 
 module.exports.assassinateMerlin = (game) => {
   const { seatedPlayers } = game.private;
@@ -85,8 +86,13 @@ module.exports.assassinateMerlin = (game) => {
 };
 
 module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
+  const parsed = assassinateSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
   const { seatedPlayers } = game.private;
   const target = seatedPlayers[data.playerIndex];
+  if (!target) return; // out-of-range (but integer) seat — guard the undefined deref below
   const publicTarget = game.publicPlayersState[data.playerIndex];
   const merlinIndex = seatedPlayers.findIndex((p) => p.role.cardName === "merlin");
   const merlin = seatedPlayers[merlinIndex];
@@ -123,7 +129,6 @@ module.exports.selectPlayerToAssassinate = (passport, game, data, socket) => {
   game.private.summary = game.private.summary.updateLog({
     assassination: data.playerIndex,
   });
-  console.log(game.private.summary.logs);
 
   game.publicPlayersState[hitlerIndex].isLoader = false;
   game.gameState.clickActionInfo[1] = [];

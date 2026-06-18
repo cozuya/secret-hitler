@@ -21,7 +21,8 @@ Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
     });
     data.dailyLeaderboardXP.push({
       userName: account.username,
-      dailyXPDifference: account.xpSeason - (account.previousDayXP || 1600),
+      // XP baseline is 0 — the 1600 used for ELO above is an ELO rating baseline, not XP.
+      dailyXPDifference: account.xpSeason - (account.previousDayXP || 0),
     });
   })
   .then(() => {

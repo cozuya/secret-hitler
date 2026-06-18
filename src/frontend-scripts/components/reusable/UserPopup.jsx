@@ -51,7 +51,7 @@ const Report = ({ socket, userInfo, gameInfo, reportedPlayer, userList }) => {
         if (response.success) {
           setSuccessMessage("Report submitted successfully.");
         } else {
-          setErrorMessage(reponse.error);
+          setErrorMessage(response.error);
         }
         setSubmittingReport(false);
       }

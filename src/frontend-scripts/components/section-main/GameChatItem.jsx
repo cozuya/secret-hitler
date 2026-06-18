@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { getNumberWithOrdinal, PLAYERCOLORS } from "../../constants";
 import { processEmotes } from "../../emotes";
 
-const GameChatItem = ({ chat, playerListPlayer, seatedUserNames, gameSettings, allEmotes, gameInfo }) => {
+const GameChatItem = ({ chat, playerListPlayer, seatedUserNames, gameSettings, allEmotes, gameInfo, userInfo }) => {
   const timestamp = (
     <span className="chat-timestamp">{`${`0${new Date(chat.timestamp).getHours()}`.slice(-2)}:${`0${new Date(chat.timestamp).getMinutes()}`.slice(
       -2
@@ -11,6 +11,15 @@ const GameChatItem = ({ chat, playerListPlayer, seatedUserNames, gameSettings, a
   const isMod =
     playerListPlayer?.staffRole &&
     (playerListPlayer.staffRole === "admin" || playerListPlayer.staffRole === "moderator");
+  // Whether the viewer (userInfo) is staff allowed to see Incognito chat authors. Mirrors the
+  // computation in Gamechat.jsx; the extraction dropped it, leaving the references below undefined.
+  // NOTE: this component isn't rendered anywhere yet — whoever wires it in must pass `userInfo`.
+  const canSeeIncognito =
+    userInfo &&
+    userInfo.staffRole &&
+    userInfo.staffRole !== "" &&
+    userInfo.staffRole !== "altmod" &&
+    userInfo.staffRole !== "veteran";
   const getChatContents = () => processEmotes(chat.chat, isMod, allEmotes);
   const chatContents = useMemo(getChatContents, [chat, isMod]);
   const isSeated = seatedUserNames.includes(chat.userName);
@@ -259,7 +268,7 @@ const GameChatItem = ({ chat, playerListPlayer, seatedUserNames, gameSettings, a
         <span className={isGreenText ? "greentext" : ""}>{chatContents}</span>{" "}
       </div>
     );
-  }, [chatContents, timestamp, playerColorsClasses, isSeated, gameSettings, playerListPlayer, isMod]);
+  }, [chatContents, timestamp, playerColorsClasses, isSeated, gameSettings, playerListPlayer, isMod, canSeeIncognito]);
 
   return result;
 };
