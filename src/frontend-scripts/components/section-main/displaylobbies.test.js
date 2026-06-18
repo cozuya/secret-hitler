@@ -1,11 +1,13 @@
-import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
-import DisplayLobbies from './DisplayLobbies';
+import React from "react"; // eslint-disable-line
+import { shallow } from "enzyme";
+import DisplayLobbies from "./DisplayLobbies";
 
-describe('DisplayLobbies', () => {
-	it('should initialize correctly', () => {
-		const component = shallow(<DisplayLobbies game={{ userNames: [], customCardback: [], customCardbackUid: [], excludedPlayerCount: [] }} />);
+describe("DisplayLobbies", () => {
+  it("should initialize correctly", () => {
+    const component = shallow(
+      <DisplayLobbies game={{ userNames: [], customCardback: [], customCardbackUid: [], excludedPlayerCount: [] }} />
+    );
 
-		expect(component).toHaveLength(1);
-	});
+    expect(component).toHaveLength(1);
+  });
 });

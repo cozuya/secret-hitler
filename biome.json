@@ -1,0 +1,96 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "files": {
+    "includes": ["**", "!public", "!data", "!coverage", "!**/*.scss"]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "useButtonType": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off",
+        "useKeyWithMouseEvents": "off",
+        "useValidAnchor": "off",
+        "noLabelWithoutControl": "off",
+        "useAltText": "off",
+        "noAutofocus": "off"
+      },
+      "complexity": {
+        "useOptionalChain": "off",
+        "useArrowFunction": "off",
+        "useDateNow": "off",
+        "noExtraBooleanCast": "off",
+        "noCommaOperator": "off",
+        "noArguments": "off",
+        "useLiteralKeys": "off",
+        "noUselessFragments": "off",
+        "noUselessConstructor": "off",
+        "noUselessTernary": "off",
+        "useFlatMap": "off",
+        "useIndexOf": "off",
+        "noUselessEscapeInRegex": "info"
+      },
+      "style": {
+        "useTemplate": "off",
+        "useNodejsImportProtocol": "off",
+        "useConst": "off",
+        "useExponentiationOperator": "off"
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "off",
+        "noUnusedImports": "off",
+        "noUnusedVariables": "off",
+        "useExhaustiveDependencies": "off",
+        "useParseIntRadix": "off",
+        "noInnerDeclarations": "off",
+        "noSwitchDeclarations": "info",
+        "noUnreachable": "info",
+        "noConstantCondition": "info"
+      },
+      "suspicious": {
+        "noDoubleEquals": "off",
+        "noArrayIndexKey": "off",
+        "noAssignInExpressions": "off",
+        "useIterableCallbackReturn": "off",
+        "noPrototypeBuiltins": "off",
+        "noGlobalIsNan": "off",
+        "noShadowRestrictedNames": "off",
+        "noRedundantUseStrict": "off",
+        "noDebugger": "info",
+        "noUselessEscapeInString": "info",
+        "noDuplicateElseIf": "info",
+        "noFallthroughSwitchClause": "info"
+      },
+      "security": {
+        "noBlankTarget": "off"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    }
+  }
+}

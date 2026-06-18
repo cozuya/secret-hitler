@@ -1,273 +1,286 @@
 /* eslint-disable no-use-before-define */
-const { List, Range } = require('immutable');
-const { some, none, fromNullable } = require('option');
-const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
+const { List, Range } = require("immutable");
+const { some, none, fromNullable } = require("option");
+const {
+  filterOpt,
+  flattenListOpts,
+  pushOpt,
+  mapOpt1,
+  mapOpt2,
+  handDiff,
+  policyToHand,
+  handToPolicy,
+} = require("../../utils");
 
 module.exports = (
-	logs,
-	players,
-	gameSetting = {
-		rebalance6p: false,
-		rebalance7p: false,
-		rebalance9p: false,
-		rerebalance9p: false,
-		monarchistSH: null,
-		avalonSH: null,
-		noTopdecking: 0
-	}
+  logs,
+  players,
+  gameSetting = {
+    rebalance6p: false,
+    rebalance7p: false,
+    rebalance9p: false,
+    rerebalance9p: false,
+    monarchistSH: null,
+    avalonSH: null,
+    noTopdecking: 0,
+  }
 ) => buildTurns(List(), logs, players, gameSetting);
 
 const buildTurns = (turns, logs, players, gameSetting) => {
-	if (logs.isEmpty()) return turns;
+  if (logs.isEmpty()) return turns;
 
-	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
+  const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
 
-	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
+  return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
 };
 
-const initialDeckSize = gameSetting => {
-	if (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) {
-		return 16;
-	} else if (gameSetting.rebalance9p2f) {
-		return 15;
-	}
-	return 17;
+const initialDeckSize = (gameSetting) => {
+  if (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) {
+    return 16;
+  } else if (gameSetting.rebalance9p2f) {
+    return 15;
+  }
+  return 17;
 };
 
-const initialTrack = gameSetting => {
-	if (gameSetting.rebalance6p) {
-		return {
-			reds: 1,
-			blues: 0
-		};
-	} else if (gameSetting.rebalance9p) {
-		return {
-			reds: 0,
-			blues: 1
-		};
-	}
-	return {
-		reds: 0,
-		blues: 0
-	};
+const initialTrack = (gameSetting) => {
+  if (gameSetting.rebalance6p) {
+    return {
+      reds: 1,
+      blues: 0,
+    };
+  } else if (gameSetting.rebalance9p) {
+    return {
+      reds: 0,
+      blues: 1,
+    };
+  }
+  return {
+    reds: 0,
+    blues: 0,
+  };
 };
 
 const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
-	const prevTurn = prevTurnOpt.valueOrElse({
-		isVotePassed: true,
-		afterDeadPlayers: List(),
-		execution: none,
-		assassination: none,
-		afterDeckSize: initialDeckSize(gameSetting),
-		afterTrack: initialTrack(gameSetting),
-		afterElectionTracker: 0,
-		consecutiveTopdecks: 0,
-		enactedPolicy: none
-	});
+  const prevTurn = prevTurnOpt.valueOrElse({
+    isVotePassed: true,
+    afterDeadPlayers: List(),
+    execution: none,
+    assassination: none,
+    afterDeckSize: initialDeckSize(gameSetting),
+    afterTrack: initialTrack(gameSetting),
+    afterElectionTracker: 0,
+    consecutiveTopdecks: 0,
+    enactedPolicy: none,
+  });
 
-	// List[Int]
-	const beforeDeadPlayers = prevTurn.afterDeadPlayers;
+  // List[Int]
+  const beforeDeadPlayers = prevTurn.afterDeadPlayers;
 
-	// List[Int]
-	const afterDeadPlayers = pushOpt(beforeDeadPlayers, log.execution);
+  // List[Int]
+  const afterDeadPlayers = pushOpt(beforeDeadPlayers, log.execution);
 
-	// List[Int]
-	const { beforePlayers, afterPlayers } = (() => {
-		const p = deadPlayers => players.map((p, i) => Object.assign({}, p, { isDead: deadPlayers.includes(i) }));
+  // List[Int]
+  const { beforePlayers, afterPlayers } = (() => {
+    const p = (deadPlayers) => players.map((p, i) => Object.assign({}, p, { isDead: deadPlayers.includes(i) }));
 
-		return {
-			beforePlayers: p(beforeDeadPlayers),
-			afterPlayers: p(afterDeadPlayers)
-		};
-	})();
+    return {
+      beforePlayers: p(beforeDeadPlayers),
+      afterPlayers: p(afterDeadPlayers),
+    };
+  })();
 
-	// List[Int]
-	const alivePlayers = Range(0, players.size)
-		.filterNot(i => beforeDeadPlayers.includes(i))
-		.toList();
+  // List[Int]
+  const alivePlayers = Range(0, players.size)
+    .filterNot((i) => beforeDeadPlayers.includes(i))
+    .toList();
 
-	// List[Option[Boolean]]
-	const votes = log.votes.map((v, i) => (beforeDeadPlayers.includes(i) ? none : some(v)));
+  // List[Option[Boolean]]
+  const votes = log.votes.map((v, i) => (beforeDeadPlayers.includes(i) ? none : some(v)));
 
-	// Int
-	const jas = flattenListOpts(votes).count(v => v);
+  // Int
+  const jas = flattenListOpts(votes).count((v) => v);
 
-	// Int
-	const neins = players.size - jas - beforeDeadPlayers.size;
+  // Int
+  const neins = players.size - jas - beforeDeadPlayers.size;
 
-	// Boolean
-	const isVotePassed = jas > neins;
+  // Boolean
+  const isVotePassed = jas > neins;
 
-	// Boolean
-	const isVoteFailed = !isVotePassed;
+  // Boolean
+  const isVoteFailed = !isVotePassed;
 
-	// Boolean
-	const isExecution = log.execution.isSome();
+  // Boolean
+  const isExecution = log.execution.isSome();
 
-	// Boolean
-	const isAssassination = log.assassination.isSome();
+  // Boolean
+  const isAssassination = log.assassination.isSome();
 
-	// Boolean
-	const isInvestigation = log.investigationId.isSome();
+  // Boolean
+  const isInvestigation = log.investigationId.isSome();
 
-	// Boolean
-	const isPolicyPeek = log.policyPeek.isSome();
+  // Boolean
+  const isPolicyPeek = log.policyPeek.isSome();
 
-	// Boolean
-	const isSpecialElection = log.specialElection.isSome();
+  // Boolean
+  const isSpecialElection = log.specialElection.isSome();
 
-	// Boolean
-	const poorMansVeto = isVotePassed && log.enactedPolicy.isNone(); // backwards compatability before veto was tracked
+  // Boolean
+  const poorMansVeto = isVotePassed && log.enactedPolicy.isNone(); // backwards compatability before veto was tracked
 
-	// Option[Boolean]
-	const presidentVeto = poorMansVeto ? some(true) : log.presidentVeto;
+  // Option[Boolean]
+  const presidentVeto = poorMansVeto ? some(true) : log.presidentVeto;
 
-	// Option[Boolean]
-	const chancellorVeto = poorMansVeto ? some(true) : log.chancellorVeto;
+  // Option[Boolean]
+  const chancellorVeto = poorMansVeto ? some(true) : log.chancellorVeto;
 
-	// Boolean
-	const isVeto = chancellorVeto.isSome();
+  // Boolean
+  const isVeto = chancellorVeto.isSome();
 
-	// Boolean
-	const isVetoSuccessful = chancellorVeto.valueOrElse(false) && presidentVeto.valueOrElse(false);
+  // Boolean
+  const isVetoSuccessful = chancellorVeto.valueOrElse(false) && presidentVeto.valueOrElse(false);
 
-	// Int
-	const { beforeElectionTracker, afterElectionTracker } = (() => {
-		const beforeElectionTracker = prevTurn.afterElectionTracker === 3 ? 0 : prevTurn.afterElectionTracker;
+  // Int
+  const { beforeElectionTracker, afterElectionTracker } = (() => {
+    const beforeElectionTracker = prevTurn.afterElectionTracker === 3 ? 0 : prevTurn.afterElectionTracker;
 
-		const afterElectionTracker = isVotePassed && !isVetoSuccessful ? 0 : beforeElectionTracker + 1;
+    const afterElectionTracker = isVotePassed && !isVetoSuccessful ? 0 : beforeElectionTracker + 1;
 
-		return { beforeElectionTracker, afterElectionTracker };
-	})();
+    return { beforeElectionTracker, afterElectionTracker };
+  })();
 
-	// Boolean
-	const isElectionTrackerMaxed = afterElectionTracker === 3;
+  // Boolean
+  const isElectionTrackerMaxed = afterElectionTracker === 3;
 
-	// Number
-	const consecutiveTopdecks = prevTurn.isVotePassed ? 0 : gameSetting.noTopdecking === 2 && prevTurn.isElectionTrackerMaxed ? 1 : prevTurn.consecutiveTopdecks;
+  // Number
+  const consecutiveTopdecks = prevTurn.isVotePassed
+    ? 0
+    : gameSetting.noTopdecking === 2 && prevTurn.isElectionTrackerMaxed
+      ? 1
+      : prevTurn.consecutiveTopdecks;
 
-	// { reds: Int, blues: Int }
-	const { beforeTrack, afterTrack } = (() => {
-		const f = (count, policy, type) => {
-			const inc = filterOpt(policy, x => x === type)
-				.map(x => 1)
-				.valueOrElse(0);
+  // { reds: Int, blues: Int }
+  const { beforeTrack, afterTrack } = (() => {
+    const f = (count, policy, type) => {
+      const inc = filterOpt(policy, (x) => x === type)
+        .map((x) => 1)
+        .valueOrElse(0);
 
-			return count + inc;
-		};
+      return count + inc;
+    };
 
-		const beforeTrack = prevTurn.afterTrack;
-		const afterTrack = {
-			reds: f(beforeTrack.reds, log.enactedPolicy, 'fascist'),
-			blues: f(beforeTrack.blues, log.enactedPolicy, 'liberal')
-		};
+    const beforeTrack = prevTurn.afterTrack;
+    const afterTrack = {
+      reds: f(beforeTrack.reds, log.enactedPolicy, "fascist"),
+      blues: f(beforeTrack.blues, log.enactedPolicy, "liberal"),
+    };
 
-		return { beforeTrack, afterTrack };
-	})();
+    return { beforeTrack, afterTrack };
+  })();
 
-	// Boolean
-	const isGameEndingPolicyEnacted = afterTrack.reds === 6 || afterTrack.blues === 5;
+  // Boolean
+  const isGameEndingPolicyEnacted = afterTrack.reds === 6 || afterTrack.blues === 5;
 
-	// Boolean
-	const isHitlerElected = (() => {
-		const hitlerIndex = players.findIndex(p => p.role === 'hitler');
+  // Boolean
+  const isHitlerElected = (() => {
+    const hitlerIndex = players.findIndex((p) => p.role === "hitler");
 
-		return beforeTrack.reds >= 3 && log.chancellorId === hitlerIndex && isVotePassed;
-	})();
+    return beforeTrack.reds >= 3 && log.chancellorId === hitlerIndex && isVotePassed;
+  })();
 
-	// Boolean
-	const isHitlerKilled = (() => {
-		const hitlerIndex = players.findIndex(p => p.role === 'hitler');
+  // Boolean
+  const isHitlerKilled = (() => {
+    const hitlerIndex = players.findIndex((p) => p.role === "hitler");
 
-		return log.execution.map(e => e === hitlerIndex).valueOrElse(false);
-	})();
+    return log.execution.map((e) => e === hitlerIndex).valueOrElse(false);
+  })();
 
-	// Boolean
-	const isMerlinShot =
-		gameSetting.avalonSH &&
-		(() => {
-			const merlinIndex = players.findIndex(p => p.role === 'merlin');
+  // Boolean
+  const isMerlinShot =
+    gameSetting.avalonSH &&
+    (() => {
+      const merlinIndex = players.findIndex((p) => p.role === "merlin");
 
-			return log.assassination.map(e => e === merlinIndex).valueOrElse(false);
-		})();
+      return log.assassination.map((e) => e === merlinIndex).valueOrElse(false);
+    })();
 
-	// Option[String]
-	const { presidentDiscard, chancellorDiscard } = (() => {
-		const handDiffOpt = mapOpt2(handDiff);
-		const policyToHandOpt = mapOpt1(policyToHand);
-		const handToPolicyOpt = mapOpt1(handToPolicy);
+  // Option[String]
+  const { presidentDiscard, chancellorDiscard } = (() => {
+    const handDiffOpt = mapOpt2(handDiff);
+    const policyToHandOpt = mapOpt1(policyToHand);
+    const handToPolicyOpt = mapOpt1(handToPolicy);
 
-		const presidentDiscard = handToPolicyOpt(handDiffOpt(log.presidentHand, log.chancellorHand));
+    const presidentDiscard = handToPolicyOpt(handDiffOpt(log.presidentHand, log.chancellorHand));
 
-		const chancellorDiscard = handToPolicyOpt(handDiffOpt(log.chancellorHand, policyToHandOpt(log.enactedPolicy)));
+    const chancellorDiscard = handToPolicyOpt(handDiffOpt(log.chancellorHand, policyToHandOpt(log.enactedPolicy)));
 
-		return { presidentDiscard, chancellorDiscard };
-	})();
+    return { presidentDiscard, chancellorDiscard };
+  })();
 
-	// Int
-	const { beforeDeckSize, afterDeckSize } = (() => {
-		const numPoliciesInGame = 17;
+  // Int
+  const { beforeDeckSize, afterDeckSize } = (() => {
+    const numPoliciesInGame = 17;
 
-		const beforeDeckSize = (() => {
-			if (prevTurn.afterDeckSize < 3) {
-				const numPoliciesOnTrack = beforeTrack.reds + beforeTrack.blues;
-				return numPoliciesInGame - numPoliciesOnTrack;
-			} else {
-				return prevTurn.afterDeckSize;
-			}
-		})();
+    const beforeDeckSize = (() => {
+      if (prevTurn.afterDeckSize < 3) {
+        const numPoliciesOnTrack = beforeTrack.reds + beforeTrack.blues;
+        return numPoliciesInGame - numPoliciesOnTrack;
+      } else {
+        return prevTurn.afterDeckSize;
+      }
+    })();
 
-		const afterDeckSize = (() => {
-			if (isVotePassed) {
-				return beforeDeckSize - 3;
-			} else if (isElectionTrackerMaxed) {
-				return beforeDeckSize - 1;
-			} else {
-				return beforeDeckSize;
-			}
-		})();
+    const afterDeckSize = (() => {
+      if (isVotePassed) {
+        return beforeDeckSize - 3;
+      } else if (isElectionTrackerMaxed) {
+        return beforeDeckSize - 1;
+      } else {
+        return beforeDeckSize;
+      }
+    })();
 
-		return { beforeDeckSize, afterDeckSize };
-	})();
+    return { beforeDeckSize, afterDeckSize };
+  })();
 
-	// deck state
-	const deckState = log.deckState;
+  // deck state
+  const deckState = log.deckState;
 
-	return Object.assign({}, log, {
-		beforeTrack,
-		afterTrack,
-		beforeDeckSize,
-		afterDeckSize,
-		isGameEndingPolicyEnacted,
-		beforeDeadPlayers,
-		afterDeadPlayers,
-		beforePlayers,
-		afterPlayers,
-		players: null,
-		alivePlayers,
-		votes,
-		jas,
-		neins,
-		isVotePassed,
-		isVoteFailed,
-		beforeElectionTracker,
-		afterElectionTracker,
-		isElectionTrackerMaxed,
-		consecutiveTopdecks,
-		isInvestigation,
-		isExecution,
-		isAssassination,
-		isHitlerKilled,
-		isHitlerElected,
-		isMerlinShot,
-		presidentDiscard,
-		chancellorDiscard,
-		isSpecialElection,
-		isPolicyPeek,
-		isVeto,
-		isVetoSuccessful,
-		presidentVeto,
-		chancellorVeto,
-		deckState
-	});
+  return Object.assign({}, log, {
+    beforeTrack,
+    afterTrack,
+    beforeDeckSize,
+    afterDeckSize,
+    isGameEndingPolicyEnacted,
+    beforeDeadPlayers,
+    afterDeadPlayers,
+    beforePlayers,
+    afterPlayers,
+    players: null,
+    alivePlayers,
+    votes,
+    jas,
+    neins,
+    isVotePassed,
+    isVoteFailed,
+    beforeElectionTracker,
+    afterElectionTracker,
+    isElectionTrackerMaxed,
+    consecutiveTopdecks,
+    isInvestigation,
+    isExecution,
+    isAssassination,
+    isHitlerKilled,
+    isHitlerElected,
+    isMerlinShot,
+    presidentDiscard,
+    chancellorDiscard,
+    isSpecialElection,
+    isPolicyPeek,
+    isVeto,
+    isVetoSuccessful,
+    presidentVeto,
+    chancellorVeto,
+    deckState,
+  });
 };

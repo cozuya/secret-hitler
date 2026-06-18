@@ -1,4 +1,4 @@
-const { z } = require('zod');
+const { z } = require("zod");
 
 // Only `data.isRemake` is read (a truthy check). The schema just guarantees `data` is an
 // object so that access can't throw; `isRemake` is intentionally left unconstrained so a

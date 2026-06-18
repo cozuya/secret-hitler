@@ -1,4 +1,4 @@
-const { z } = require('zod');
+const { z } = require("zod");
 
 /**
  * Schema for the `updateModAction` socket payload consumed by
@@ -16,29 +16,32 @@ const { z } = require('zod');
  */
 
 // `data.action` is `string | { type, isNonSeason? }` — see moderation.js:152, 1034, 1062.
-const actionSchema = z.union([z.string(), z.object({ type: z.string(), isNonSeason: z.boolean().optional() }).passthrough()]);
+const actionSchema = z.union([
+  z.string(),
+  z.object({ type: z.string(), isNonSeason: z.boolean().optional() }).passthrough(),
+]);
 
 const moderationActionSchema = z
-	.object({
-		userName: z.string().default(''), // guarantees .substr/.startsWith/.trim never throw
-		username: z.string().optional(), // legacy lowercase, used only at moderation.js:458
-		ip: z.string().default(''),
-		comment: z.string().default(''), // guarantees .length/.trim never throw
-		action: actionSchema.optional(),
-		isReportResolveChange: z.boolean().optional(),
-		_id: z.string().optional(),
-		uid: z.string().optional(),
-		modName: z.string().optional(),
-		winningTeamName: z.string().optional(),
-		frontEndTime: z.number().optional(),
-		isSticky: z.boolean().optional()
-	})
-	.passthrough()
-	// Every real client payload carries a string `action` except the report-resolve path
-	// (which sends isReportResolveChange + _id). Rejecting an actionless non-report payload
-	// here stops a forged one from reaching `data.action.type` in the handler.
-	.refine(data => Boolean(data.isReportResolveChange) || data.action !== undefined, {
-		message: 'action is required unless isReportResolveChange is set'
-	});
+  .object({
+    userName: z.string().default(""), // guarantees .substr/.startsWith/.trim never throw
+    username: z.string().optional(), // legacy lowercase, used only at moderation.js:458
+    ip: z.string().default(""),
+    comment: z.string().default(""), // guarantees .length/.trim never throw
+    action: actionSchema.optional(),
+    isReportResolveChange: z.boolean().optional(),
+    _id: z.string().optional(),
+    uid: z.string().optional(),
+    modName: z.string().optional(),
+    winningTeamName: z.string().optional(),
+    frontEndTime: z.number().optional(),
+    isSticky: z.boolean().optional(),
+  })
+  .passthrough()
+  // Every real client payload carries a string `action` except the report-resolve path
+  // (which sends isReportResolveChange + _id). Rejecting an actionless non-report payload
+  // here stops a forged one from reaching `data.action.type` in the handler.
+  .refine((data) => Boolean(data.isReportResolveChange) || data.action !== undefined, {
+    message: "action is required unless isReportResolveChange is set",
+  });
 
 module.exports = { moderationActionSchema };

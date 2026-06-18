@@ -1,11 +1,11 @@
-import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
-import Policies from './Policies';
+import React from "react"; // eslint-disable-line
+import { shallow } from "enzyme";
+import Policies from "./Policies";
 
-describe('Policies', () => {
-	it('should initialize correctly', () => {
-		const component = shallow(<Policies gameInfo={{ gameState: {}, trackState: {} }} />);
+describe("Policies", () => {
+  it("should initialize correctly", () => {
+    const component = shallow(<Policies gameInfo={{ gameState: {}, trackState: {} }} />);
 
-		expect(component).toHaveLength(1);
-	});
+    expect(component).toHaveLength(1);
+  });
 });

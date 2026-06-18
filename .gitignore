@@ -25,9 +25,10 @@ public/scripts/bundle.js
 public/scripts/bundle.js.map
 npm-debug.log.*
 npm-debug.log
-yarn-error.log
+pnpm-debug.log
 .vscode/
 package-lock.json
+yarn.lock
 public/images/Thumbs.db
 public/images/custom-cardbacks
 public/Thumbs.db

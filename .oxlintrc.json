@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react"],
+  "categories": {
+    "correctness": "off"
+  },
+  "ignorePatterns": ["**/node_modules/**", "public/**", "data/**", "**/coverage/**"],
+  "rules": {
+    "no-duplicate-imports": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.jsx"],
+      "rules": {
+        "react/rules-of-hooks": "error"
+      }
+    }
+  ]
+}

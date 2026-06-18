@@ -1,772 +1,810 @@
-import React from 'react';
-import CardFlinger from './CardFlinger.jsx';
-import EnactedPolicies from './EnactedPolicies.jsx';
-import PropTypes from 'prop-types';
-import { Popup } from 'semantic-ui-react';
-import playSound from '../reusable/playSound.js';
-import moment from 'moment';
-import * as Swal from 'sweetalert2';
+import React from "react";
+import CardFlinger from "./CardFlinger.jsx";
+import EnactedPolicies from "./EnactedPolicies.jsx";
+import PropTypes from "prop-types";
+import { Popup } from "semantic-ui-react";
+import playSound from "../reusable/playSound.js";
+import moment from "moment";
+import * as Swal from "sweetalert2";
 
 class Tracks extends React.Component {
-	constructor() {
-		super();
-		this.state = {
-			remakeStatus: false,
-			minutes: 0,
-			seconds: 0,
-			timedMode: false,
-			showTimer: false
-		};
-	}
+  constructor() {
+    super();
+    this.state = {
+      remakeStatus: false,
+      minutes: 0,
+      seconds: 0,
+      timedMode: false,
+      showTimer: false,
+    };
+  }
 
-	componentDidMount() {
-		const { Notification } = window;
+  componentDidMount() {
+    const { Notification } = window;
 
-		this._ismounted = true;
+    this._ismounted = true;
 
-		if (Notification && Notification.permission === 'granted' && this.props.socket) {
-			this.props.socket.on('pingPlayer', data => {
-				new Notification(data);
-			});
-		}
+    if (Notification && Notification.permission === "granted" && this.props.socket) {
+      this.props.socket.on("pingPlayer", (data) => {
+        new Notification(data);
+      });
+    }
 
-		if (this.props.socket) {
-			this.props.socket.on('updateRemakeVoting', status => {
-				this.setState({
-					remakeStatus: status
-				});
-			});
-		}
-	}
+    if (this.props.socket) {
+      this.props.socket.on("updateRemakeVoting", (status) => {
+        this.setState({
+          remakeStatus: status,
+        });
+      });
+    }
+  }
 
-	componentWillUnmount() {
-		const { Notification } = window;
+  componentWillUnmount() {
+    const { Notification } = window;
 
-		this._ismounted = false;
-		window.clearInterval(this.intervalId);
+    this._ismounted = false;
+    window.clearInterval(this.intervalId);
 
-		if (Notification && Notification.permission === 'granted' && this.props.socket) {
-			this.props.socket.off('pingPlayer');
-		}
-	}
+    if (Notification && Notification.permission === "granted" && this.props.socket) {
+      this.props.socket.off("pingPlayer");
+    }
+  }
 
-	toggleTimer = () => {
-		this.setState({
-			showTimer: !this.state.showTimer
-		});
-	};
+  toggleTimer = () => {
+    this.setState({
+      showTimer: !this.state.showTimer,
+    });
+  };
 
-	componentWillReceiveProps(nextProps) {
-		const { gameInfo, userInfo } = this.props;
+  componentWillReceiveProps(nextProps) {
+    const { gameInfo, userInfo } = this.props;
 
-		if (!gameInfo.gameState.isStarted) {
-			this.setState({
-				remakeStatus: false
-			});
-		}
+    if (!gameInfo.gameState.isStarted) {
+      this.setState({
+        remakeStatus: false,
+      });
+    }
 
-		if (
-			gameInfo.general.timedMode &&
-			gameInfo.gameState &&
-			nextProps.gameInfo.gameState &&
-			!gameInfo.gameState.timedModeEnabled &&
-			nextProps.gameInfo.gameState.timedModeEnabled
-		) {
-			let minutes = Math.floor(gameInfo.general.timedMode / 60);
-			let seconds = gameInfo.general.timedMode % 60;
-			this.intervalId = window.setInterval(() => {
-				if (!seconds) {
-					if (minutes) {
-						minutes--;
-					}
-					seconds = 59;
-				} else {
-					seconds--;
-				}
-				if (!minutes && seconds <= 15) {
-					if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
-						playSound('clockTick', 'pack1', 500);
-					}
-				}
+    if (
+      gameInfo.general.timedMode &&
+      gameInfo.gameState &&
+      nextProps.gameInfo.gameState &&
+      !gameInfo.gameState.timedModeEnabled &&
+      nextProps.gameInfo.gameState.timedModeEnabled
+    ) {
+      let minutes = Math.floor(gameInfo.general.timedMode / 60);
+      let seconds = gameInfo.general.timedMode % 60;
+      this.intervalId = window.setInterval(() => {
+        if (!seconds) {
+          if (minutes) {
+            minutes--;
+          }
+          seconds = 59;
+        } else {
+          seconds--;
+        }
+        if (!minutes && seconds <= 15) {
+          if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== "Off") || !userInfo.gameSettings) {
+            playSound("clockTick", "pack1", 500);
+          }
+        }
 
-				if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
-					this.setState({ timedMode: false, minutes: 0, seconds: 0 }, () => {
-						window.clearInterval(this.intervalId);
-					});
-				} else {
-					this.setState({
-						timedMode: true,
-						minutes,
-						seconds
-					});
-				}
-			}, 1000);
-		}
+        if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
+          this.setState({ timedMode: false, minutes: 0, seconds: 0 }, () => {
+            window.clearInterval(this.intervalId);
+          });
+        } else {
+          this.setState({
+            timedMode: true,
+            minutes,
+            seconds,
+          });
+        }
+      }, 1000);
+    }
 
-		if (gameInfo.gameState && gameInfo.gameState.timedModeEnabled && nextProps.gameInfo.gameState && !nextProps.gameInfo.gameState.timedModeEnabled) {
-			window.clearInterval(this.intervalId);
-			this.setState({
-				timedMode: false
-			});
-		}
-	}
+    if (
+      gameInfo.gameState &&
+      gameInfo.gameState.timedModeEnabled &&
+      nextProps.gameInfo.gameState &&
+      !nextProps.gameInfo.gameState.timedModeEnabled
+    ) {
+      window.clearInterval(this.intervalId);
+      this.setState({
+        timedMode: false,
+      });
+    }
+  }
 
-	optionIcons(gameInfo) {
-		const game = gameInfo.general;
+  optionIcons(gameInfo) {
+    const game = gameInfo.general;
 
-		let rebalance69p;
-		let rebalance69pTooltip;
-		let playerChats;
-		let playerChatsTooltip;
-		let disableGamechat;
-		let disableGamechatTooltip;
-		let experiencedMode;
-		let experiencedModeTooltip;
-		let privateOnly;
-		let privateOnlyTooltip;
-		let priv;
-		let privTooltip;
-		let rainbowgame;
-		let rainbowgameTooltip;
-		let blind;
-		let blindTooltip;
-		let casualgame;
-		let casualgameTooltip;
-		let practiceGame;
-		let practiceGameTooltip;
-		let avalonSH;
-		let avalonSHTooltip;
-		let monarchistSH;
-		let monarchistSHTooltip;
-		let noTopdecking;
-		let noTopdeckingTooltip;
-		let timedMode;
-		let timedModeTooltip;
-		let isVerifiedOnly;
-		let isVerifiedOnlyTooltip;
-		let eloMinimum;
-		let xpMinimum;
-		let eloMinimumTooltip;
-		let xpMinimumTooltip;
-		let customgameactive;
-		let flappyMode;
-		let flappyModeTooltip;
-		let flappyOnlyMode;
-		let flappyOnlyModeTooltip;
-		let unlistedGame;
-		let unlistedGameTooltip;
-		const customgameactiveTooltip = 'Custom Game';
+    let rebalance69p;
+    let rebalance69pTooltip;
+    let playerChats;
+    let playerChatsTooltip;
+    let disableGamechat;
+    let disableGamechatTooltip;
+    let experiencedMode;
+    let experiencedModeTooltip;
+    let privateOnly;
+    let privateOnlyTooltip;
+    let priv;
+    let privTooltip;
+    let rainbowgame;
+    let rainbowgameTooltip;
+    let blind;
+    let blindTooltip;
+    let casualgame;
+    let casualgameTooltip;
+    let practiceGame;
+    let practiceGameTooltip;
+    let avalonSH;
+    let avalonSHTooltip;
+    let monarchistSH;
+    let monarchistSHTooltip;
+    let noTopdecking;
+    let noTopdeckingTooltip;
+    let timedMode;
+    let timedModeTooltip;
+    let isVerifiedOnly;
+    let isVerifiedOnlyTooltip;
+    let eloMinimum;
+    let xpMinimum;
+    let eloMinimumTooltip;
+    let xpMinimumTooltip;
+    let customgameactive;
+    let flappyMode;
+    let flappyModeTooltip;
+    let flappyOnlyMode;
+    let flappyOnlyModeTooltip;
+    let unlistedGame;
+    let unlistedGameTooltip;
+    const customgameactiveTooltip = "Custom Game";
 
-		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
-			customgameactive = <i className="setting icon" />;
-		} else {
-			const hasPlayerCount = count => game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
+    if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+      customgameactive = <i className="setting icon" />;
+    } else {
+      const hasPlayerCount = (count) =>
+        game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
 
-			const hasR6 = game.rebalance6p && hasPlayerCount(6);
-			const hasR7 = game.rebalance7p && hasPlayerCount(7);
-			const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
+      const hasR6 = game.rebalance6p && hasPlayerCount(6);
+      const hasR7 = game.rebalance7p && hasPlayerCount(7);
+      const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
 
-			hasR6 && hasR7 && hasR9
-				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
-				: hasR6 && hasR7
-				? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
-				: hasR6 && hasR9
-				? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
-				: hasR7 && hasR9
-				? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
-				: hasR6
-				? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
-				: hasR7
-				? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-				: hasR9
-				? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'))
-				: null;
-		}
+      hasR6 && hasR7 && hasR9
+        ? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = "Rebalanced 6, 7, & 9 player games"))
+        : hasR6 && hasR7
+          ? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = "Rebalanced 6 & 7 player games"))
+          : hasR6 && hasR9
+            ? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = "Rebalanced 6 & 9 player games"))
+            : hasR7 && hasR9
+              ? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = "Rebalanced 7 & 9 player games"))
+              : hasR6
+                ? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = "Rebalanced 6 player games"))
+                : hasR7
+                  ? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = "Rebalanced 7 player games"))
+                  : hasR9
+                    ? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = "Rebalanced 9 player games"))
+                    : null;
+    }
 
-		if (game.playerChats === 'disabled') {
-			playerChats = <i className="mute icon" />;
-			playerChatsTooltip = 'Player Chat Disabled';
-		} else if (game.playerChats === 'emotes') {
-			playerChats = <i className="smile icon" />;
-			playerChatsTooltip = 'Emotes Only';
-		}
+    if (game.playerChats === "disabled") {
+      playerChats = <i className="mute icon" />;
+      playerChatsTooltip = "Player Chat Disabled";
+    } else if (game.playerChats === "emotes") {
+      playerChats = <i className="smile icon" />;
+      playerChatsTooltip = "Emotes Only";
+    }
 
-		if (game.isVerifiedOnly) {
-			isVerifiedOnly = <i className="thumbs up icon" />;
-			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
-		}
+    if (game.isVerifiedOnly) {
+      isVerifiedOnly = <i className="thumbs up icon" />;
+      isVerifiedOnlyTooltip = "Only email-verified players can sit in this game.";
+    }
 
-		if (game.privateOnly) {
-			priv = <i className="spy icon" />;
-			privTooltip = 'Private game only - only anonymous players.';
-		}
+    if (game.privateOnly) {
+      priv = <i className="spy icon" />;
+      privTooltip = "Private game only - only anonymous players.";
+    }
 
-		if (!game.privateOnly && game.private) {
-			priv = <i className="lock icon" />;
-			privTooltip = 'Private game.';
-		}
+    if (!game.privateOnly && game.private) {
+      priv = <i className="lock icon" />;
+      privTooltip = "Private game.";
+    }
 
-		if (game.blindMode) {
-			blind = <i className="hide icon" />;
-			blindTooltip = 'Blind mode - players are anonymized';
-		}
+    if (game.blindMode) {
+      blind = <i className="hide icon" />;
+      blindTooltip = "Blind mode - players are anonymized";
+    }
 
-		if (game.disableGamechat) {
-			disableGamechat = (
-				<i className="icons">
-					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
-				</i>
-			);
-			disableGamechatTooltip = 'Game Chat Disabled';
-		}
+    if (game.disableGamechat) {
+      disableGamechat = (
+        <i className="icons">
+          <i className="game icon" />
+          <i className="large remove icon" style={{ opacity: "0.6", color: "var(--theme-primary)" }} />
+        </i>
+      );
+      disableGamechatTooltip = "Game Chat Disabled";
+    }
 
-		if (game.experiencedMode) {
-			experiencedMode = <i className="fast forward icon" />;
-			experiencedModeTooltip = 'Speed Mode';
-		}
+    if (game.experiencedMode) {
+      experiencedMode = <i className="fast forward icon" />;
+      experiencedModeTooltip = "Speed Mode";
+    }
 
-		if (game.rainbowgame || game.isRainbow) {
-			// check both active and saved variables
-			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
-			rainbowgameTooltip = 'Experienced Game';
-		}
+    if (game.rainbowgame || game.isRainbow) {
+      // check both active and saved variables
+      rainbowgame = <img style={{ maxHeight: "14px", marginBottom: "-2px" }} src="../images/rainbow.png" />;
+      rainbowgameTooltip = "Experienced Game";
+    }
 
-		if (game.casualGame) {
-			casualgame = <i className="handshake icon" />;
-			casualgameTooltip = 'Casual game - results do not count towards wins and losses, gameplay rules are not enforced';
-		}
+    if (game.casualGame) {
+      casualgame = <i className="handshake icon" />;
+      casualgameTooltip = "Casual game - results do not count towards wins and losses, gameplay rules are not enforced";
+    }
 
-		if (game.practiceGame) {
-			practiceGame = <i className="chess icon" />;
-			practiceGameTooltip = 'Practice game - results do not count for Elo, gameplay rules are enforced';
-		}
+    if (game.practiceGame) {
+      practiceGame = <i className="chess icon" />;
+      practiceGameTooltip = "Practice game - results do not count for Elo, gameplay rules are enforced";
+    }
 
-		if (game.avalonSH) {
-			avalonSH = <i className="shield icon" />;
-			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
-		}
+    if (game.avalonSH) {
+      avalonSH = <i className="shield icon" />;
+      avalonSHTooltip = game.avalonSH.withPercival ? "Avalon SH with Percival & Morgana" : "Avalon SH";
+    }
 
-		if (game.monarchistSH) {
-			monarchistSH = <i className="chess king icon" />;
-			monarchistSHTooltip = 'Monarchist SH';
-		}
+    if (game.monarchistSH) {
+      monarchistSH = <i className="chess king icon" />;
+      monarchistSHTooltip = "Monarchist SH";
+    }
 
-		if (game.noTopdecking) {
-			noTopdecking = <i className="gavel icon" />;
-			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
-		}
+    if (game.noTopdecking) {
+      noTopdecking = <i className="gavel icon" />;
+      noTopdeckingTooltip = game.noTopdecking === 2 ? "No Double Topdecking" : "No Topdecking";
+    }
 
-		if (game.timedMode) {
-			timedMode = (
-				<span>
-					<i className="hourglass half icon" />
-					<span style={{ color: 'peru' }}>
-						{`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
-					</span>
-				</span>
-			);
-			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
-		}
+    if (game.timedMode) {
+      timedMode = (
+        <span>
+          <i className="hourglass half icon" />
+          <span style={{ color: "peru" }}>
+            {`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
+          </span>
+        </span>
+      );
+      timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
+    }
 
-		if (game.eloMinimum) {
-			eloMinimum = (
-				<span>
-					<span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>
-				</span>
-			);
-			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
-		}
+    if (game.eloMinimum) {
+      eloMinimum = (
+        <span>
+          <span style={{ color: "yellow" }}>Elo min: {game.eloMinimum}</span>
+        </span>
+      );
+      eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+    }
 
-		if (game.xpMinimum) {
-			xpMinimum = (
-				<span>
-					<span style={{ color: 'yellow' }}>XP min: {game.xpMinimum}</span>
-				</span>
-			);
-			xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
-		}
+    if (game.xpMinimum) {
+      xpMinimum = (
+        <span>
+          <span style={{ color: "yellow" }}>XP min: {game.xpMinimum}</span>
+        </span>
+      );
+      xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
+    }
 
-		if (game.flappyMode) {
-			flappyMode = <i className="plane icon" />;
-			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
-		}
+    if (game.flappyMode) {
+      flappyMode = <i className="plane icon" />;
+      flappyModeTooltip = "COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
+    }
 
-		if (game.flappyOnlyMode) {
-			flappyOnlyMode = <i className="plane icon flappyonly" />;
-			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
-		}
+    if (game.flappyOnlyMode) {
+      flappyOnlyMode = <i className="plane icon flappyonly" />;
+      flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
+    }
 
-		if (game.unlistedGame) {
-			unlistedGame = <i className="lock icon green" />;
-			unlistedGameTooltip = 'Unlisted Game - Not Visible in Game List';
-		}
+    if (game.unlistedGame) {
+      unlistedGame = <i className="lock icon green" />;
+      unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
+    }
 
-		return (
-			<div className="options-icons-container">
-				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
-					<span className="customgame">
-						<Popup style={{ zIndex: 999999 }} inverted trigger={customgameactive} content={customgameactiveTooltip} />
-					</span>
-				)}
-				{rebalance69p && (
-					<span className="rebalanced">
-						<Popup style={{ zIndex: 999999 }} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
-					</span>
-				)}
-				{playerChats && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={playerChats} content={playerChatsTooltip} />
-					</span>
-				)}
-				{disableGamechat && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={disableGamechat} content={disableGamechatTooltip} />
-					</span>
-				)}
-				{experiencedMode && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiencedModeTooltip} />
-					</span>
-				)}
-				{privateOnly && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={privateOnly} content={privateOnlyTooltip} />
-					</span>
-				)}
-				{priv && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={priv} content={privTooltip} />
-					</span>
-				)}
-				{blind && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
-					</span>
-				)}
-				{avalonSH && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
-					</span>
-				)}
-				{monarchistSH && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={monarchistSH} content={monarchistSHTooltip} />
-					</span>
-				)}
-				{noTopdecking && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
-					</span>
-				)}
-				{rainbowgame && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
-					</span>
-				)}
-				{casualgame && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
-					</span>
-				)}
-				{practiceGame && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={practiceGame} content={practiceGameTooltip} />
-					</span>
-				)}
-				{timedMode && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
-					</span>
-				)}
-				{isVerifiedOnly && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
-					</span>
-				)}
-				{eloMinimum && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
-					</span>
-				)}
-				{xpMinimum && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={xpMinimum} content={xpMinimumTooltip} />
-					</span>
-				)}
-				{flappyMode && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyMode} content={flappyModeTooltip} />
-					</span>
-				)}
-				{flappyOnlyMode && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
-					</span>
-				)}
-				{unlistedGame && (
-					<span>
-						<Popup style={{ zIndex: 999999 }} inverted trigger={unlistedGame} content={unlistedGameTooltip} />
-					</span>
-				)}
-			</div>
-		);
-	}
+    return (
+      <div className="options-icons-container">
+        {gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
+          <span className="customgame">
+            <Popup style={{ zIndex: 999999 }} inverted trigger={customgameactive} content={customgameactiveTooltip} />
+          </span>
+        )}
+        {rebalance69p && (
+          <span className="rebalanced">
+            <Popup style={{ zIndex: 999999 }} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+          </span>
+        )}
+        {playerChats && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={playerChats} content={playerChatsTooltip} />
+          </span>
+        )}
+        {disableGamechat && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+          </span>
+        )}
+        {experiencedMode && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiencedModeTooltip} />
+          </span>
+        )}
+        {privateOnly && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={privateOnly} content={privateOnlyTooltip} />
+          </span>
+        )}
+        {priv && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={priv} content={privTooltip} />
+          </span>
+        )}
+        {blind && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={blind} content={blindTooltip} />
+          </span>
+        )}
+        {avalonSH && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={avalonSH} content={avalonSHTooltip} />
+          </span>
+        )}
+        {monarchistSH && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={monarchistSH} content={monarchistSHTooltip} />
+          </span>
+        )}
+        {noTopdecking && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={noTopdecking} content={noTopdeckingTooltip} />
+          </span>
+        )}
+        {rainbowgame && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+          </span>
+        )}
+        {casualgame && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
+          </span>
+        )}
+        {practiceGame && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={practiceGame} content={practiceGameTooltip} />
+          </span>
+        )}
+        {timedMode && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
+          </span>
+        )}
+        {isVerifiedOnly && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+          </span>
+        )}
+        {eloMinimum && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+          </span>
+        )}
+        {xpMinimum && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={xpMinimum} content={xpMinimumTooltip} />
+          </span>
+        )}
+        {flappyMode && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={flappyMode} content={flappyModeTooltip} />
+          </span>
+        )}
+        {flappyOnlyMode && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
+          </span>
+        )}
+        {unlistedGame && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={unlistedGame} content={unlistedGameTooltip} />
+          </span>
+        )}
+      </div>
+    );
+  }
 
-	render() {
-		const { gameInfo, userInfo, socket } = this.props;
-		const { showTimer, timedMode, minutes, seconds } = this.state;
-		/**
-		 * @return {jsx}
-		 */
-		const renderElectionTracker = () => {
-			let classes = 'electiontracker';
+  render() {
+    const { gameInfo, userInfo, socket } = this.props;
+    const { showTimer, timedMode, minutes, seconds } = this.state;
+    /**
+     * @return {jsx}
+     */
+    const renderElectionTracker = () => {
+      let classes = "electiontracker";
 
-			if (gameInfo.trackState.electionTrackerCount === 1) {
-				classes += ' fail1';
-			} else if (gameInfo.trackState.electionTrackerCount === 2) {
-				classes += ' fail2';
-			} else if (gameInfo.trackState.electionTrackerCount === 3) {
-				classes += ' fail3';
-			}
+      if (gameInfo.trackState.electionTrackerCount === 1) {
+        classes += " fail1";
+      } else if (gameInfo.trackState.electionTrackerCount === 2) {
+        classes += " fail2";
+      } else if (gameInfo.trackState.electionTrackerCount === 3) {
+        classes += " fail3";
+      }
 
-			if (gameInfo.gameState.isTracksFlipped && gameInfo.trackState && !gameInfo.trackState.isHidden) {
-				return <div className={classes} />;
-			}
-		};
+      if (gameInfo.gameState.isTracksFlipped && gameInfo.trackState && !gameInfo.trackState.isHidden) {
+        return <div className={classes} />;
+      }
+    };
 
-		const updateRemake = () => {
-			this.props.socket.emit('updateRemake', {
-				remakeStatus: !this.state.remakeStatus,
-				uid: gameInfo.general.uid
-			});
-		};
+    const updateRemake = () => {
+      this.props.socket.emit("updateRemake", {
+        remakeStatus: !this.state.remakeStatus,
+        uid: gameInfo.general.uid,
+      });
+    };
 
-		const renderFasTrack = () => {
-			if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
-				const offX = -8;
-				const offY = -8;
+    const renderFasTrack = () => {
+      if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+        const offX = -8;
+        const offY = -8;
 
-				let powers = [];
-				let numFas = 0;
-				let hzStart = 3;
-				let vzPoint = 5;
-				let hitKnowsFas = false;
+        let powers = [];
+        let numFas = 0;
+        let hzStart = 3;
+        let vzPoint = 5;
+        let hitKnowsFas = false;
 
-				if (gameInfo.customGameSettings.powers) {
-					// Only need to detect one property, either they're all there or none are.
-					powers = gameInfo.customGameSettings.powers.map(p => {
-						if (p == null) return 'None';
-						if (p == 'investigate') return 'Inv';
-						if (p == 'deckpeek') return 'Peek';
-						if (p == 'election') return 'Elect';
-						if (p == 'bullet') return 'Gun';
-						if (p == 'reverseinv') return 'ReverseInv';
-						if (p == 'peekdrop') return 'PeekDrop';
+        if (gameInfo.customGameSettings.powers) {
+          // Only need to detect one property, either they're all there or none are.
+          powers = gameInfo.customGameSettings.powers.map((p) => {
+            if (p == null) return "None";
+            if (p == "investigate") return "Inv";
+            if (p == "deckpeek") return "Peek";
+            if (p == "election") return "Elect";
+            if (p == "bullet") return "Gun";
+            if (p == "reverseinv") return "ReverseInv";
+            if (p == "peekdrop") return "PeekDrop";
 
-						console.log(`Unknown power: ${p}`);
-						return null;
-					});
-					numFas = gameInfo.customGameSettings.fascistCount;
-					hzStart = gameInfo.customGameSettings.hitlerZone;
-					vzPoint = gameInfo.customGameSettings.vetoZone;
-					hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
-				} else {
-					// Should only happen before a game starts, but as a precaution typical settings are used.
-					if (gameInfo.general.playerCount < 7) {
-						powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
-						numFas = 1;
-						hitKnowsFas = true;
-					} else if (gameInfo.general.playerCount < 9) {
-						powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
-						numFas = 2;
-					} else {
-						powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
-						numFas = 3;
-					}
-				}
+            console.log(`Unknown power: ${p}`);
+            return null;
+          });
+          numFas = gameInfo.customGameSettings.fascistCount;
+          hzStart = gameInfo.customGameSettings.hitlerZone;
+          vzPoint = gameInfo.customGameSettings.vetoZone;
+          hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
+        } else {
+          // Should only happen before a game starts, but as a precaution typical settings are used.
+          if (gameInfo.general.playerCount < 7) {
+            powers = ["None", "None", "Peek", "Gun", "Gun"];
+            numFas = 1;
+            hitKnowsFas = true;
+          } else if (gameInfo.general.playerCount < 9) {
+            powers = ["None", "Inv", "Elect", "Gun", "Gun"];
+            numFas = 2;
+          } else {
+            powers = ["Inv", "Inv", "Elect", "Gun", "Gun"];
+            numFas = 3;
+          }
+        }
 
-				const getHZ = pos => {
-					if (pos < hzStart) return 'Off';
-					if (pos > hzStart) return 'On';
-					return 'Start';
-				};
+        const getHZ = (pos) => {
+          if (pos < hzStart) return "Off";
+          if (pos > hzStart) return "On";
+          return "Start";
+        };
 
-				return (
-					<div className="track bottom-track-back custom-fastrack-base">
-						<span
-							style={{
-								width: '92px',
-								height: '120px',
-								left: `${offX + 137}px`,
-								top: `${offY + 58}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`
-							}}
-						/>
-						<span
-							style={{
-								width: '92px',
-								height: '120px',
-								left: `${offX + 229}px`,
-								top: `${offY + 58}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`
-							}}
-						/>
-						<span
-							style={{
-								width: '92px',
-								height: '120px',
-								left: `${offX + 321}px`,
-								top: `${offY + 58}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`
-							}}
-						/>
-						<span
-							style={{
-								width: '92px',
-								height: '120px',
-								left: `${offX + 413}px`,
-								top: `${offY + 58}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`
-							}}
-						/>
-						<span
-							style={{
-								width: '92px',
-								height: '120px',
-								left: `${offX + 505}px`,
-								top: `${offY + 58}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`
-							}}
-						/>
+        return (
+          <div className="track bottom-track-back custom-fastrack-base">
+            <span
+              style={{
+                width: "92px",
+                height: "120px",
+                left: `${offX + 137}px`,
+                top: `${offY + 58}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`,
+              }}
+            />
+            <span
+              style={{
+                width: "92px",
+                height: "120px",
+                left: `${offX + 229}px`,
+                top: `${offY + 58}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`,
+              }}
+            />
+            <span
+              style={{
+                width: "92px",
+                height: "120px",
+                left: `${offX + 321}px`,
+                top: `${offY + 58}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`,
+              }}
+            />
+            <span
+              style={{
+                width: "92px",
+                height: "120px",
+                left: `${offX + 413}px`,
+                top: `${offY + 58}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`,
+              }}
+            />
+            <span
+              style={{
+                width: "92px",
+                height: "120px",
+                left: `${offX + 505}px`,
+                top: `${offY + 58}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`,
+              }}
+            />
 
-						<span
-							className="custom-fastrack-powerslot"
-							style={{
-								left: `${offX + 58}px`,
-								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`
-							}}
-						>
-							{vzPoint == 1 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-							)}
-						</span>
-						<span
-							className="custom-fastrack-powerslot"
-							style={{
-								left: `${offX + 150}px`,
-								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`
-							}}
-						>
-							{vzPoint == 2 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-							)}
-						</span>
-						<span
-							className="custom-fastrack-powerslot"
-							style={{
-								left: `${offX + 242}px`,
-								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`
-							}}
-						>
-							{vzPoint == 3 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-							)}
-						</span>
-						<span
-							className="custom-fastrack-powerslot"
-							style={{
-								left: `${offX + 334}px`,
-								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`
-							}}
-						>
-							{vzPoint == 4 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-							)}
-						</span>
-						<span
-							className="custom-fastrack-powerslot"
-							style={{
-								left: `${offX + 426}px`,
-								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`
-							}}
-						>
-							{vzPoint == 5 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-							)}
-						</span>
-						<span
-							className="custom-fastrack-powerslot"
-							style={{ left: `${offX + 518}px`, top: `${offY + 58}px`, backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)' }}
-						/>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 58}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? "Light" : ""}.png)`,
+              }}
+            >
+              {vzPoint == 1 && (
+                <span
+                  className={
+                    "custom-fastrack-powerslot " +
+                    (hzStart <= 0 ? "custom-fastrack-vetozone-light" : "custom-fastrack-vetozone")
+                  }
+                />
+              )}
+            </span>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 150}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? "Light" : ""}.png)`,
+              }}
+            >
+              {vzPoint == 2 && (
+                <span
+                  className={
+                    "custom-fastrack-powerslot " +
+                    (hzStart <= 1 ? "custom-fastrack-vetozone-light" : "custom-fastrack-vetozone")
+                  }
+                />
+              )}
+            </span>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 242}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? "Light" : ""}.png)`,
+              }}
+            >
+              {vzPoint == 3 && (
+                <span
+                  className={
+                    "custom-fastrack-powerslot " +
+                    (hzStart <= 2 ? "custom-fastrack-vetozone-light" : "custom-fastrack-vetozone")
+                  }
+                />
+              )}
+            </span>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 334}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? "Light" : ""}.png)`,
+              }}
+            >
+              {vzPoint == 4 && (
+                <span
+                  className={
+                    "custom-fastrack-powerslot " +
+                    (hzStart <= 3 ? "custom-fastrack-vetozone-light" : "custom-fastrack-vetozone")
+                  }
+                />
+              )}
+            </span>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 426}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? "Light" : ""}.png)`,
+              }}
+            >
+              {vzPoint == 5 && (
+                <span
+                  className={
+                    "custom-fastrack-powerslot " +
+                    (hzStart <= 4 ? "custom-fastrack-vetozone-light" : "custom-fastrack-vetozone")
+                  }
+                />
+              )}
+            </span>
+            <span
+              className="custom-fastrack-powerslot"
+              style={{
+                left: `${offX + 518}px`,
+                top: `${offY + 58}px`,
+                backgroundImage: "url(../images/customtracks/fasPowerEndGame.png)",
+              }}
+            />
 
-						<span
-							style={{
-								width: '268px',
-								height: '15px',
-								left: `${offX + 336}px`,
-								top: `${offY + 60}px`,
-								position: 'absolute',
-								backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)'
-							}}
-						/>
+            <span
+              style={{
+                width: "268px",
+                height: "15px",
+                left: `${offX + 336}px`,
+                top: `${offY + 60}px`,
+                position: "absolute",
+                backgroundImage: "url(../images/customtracks/fasTrackHZText.png)",
+              }}
+            />
 
-						<span
-							style={{
-								width: '227px',
-								height: '11px',
-								left: `${offX + 220}px`,
-								top: `${offY + 186}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`
-							}}
-						/>
-						<span
-							style={{
-								width: '227px',
-								height: '11px',
-								left: `${offX + 220}px`,
-								top: `${offY + 196}px`,
-								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? 'Multi' : 'Single'}${hitKnowsFas ? 'Known' : 'Unknown'}.png)`
-							}}
-						/>
-					</div>
-				);
-			} else {
-				return (
-					<div
-						className={(() => {
-							let classes = 'track bottom-track-back';
+            <span
+              style={{
+                width: "227px",
+                height: "11px",
+                left: `${offX + 220}px`,
+                top: `${offY + 186}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`,
+              }}
+            />
+            <span
+              style={{
+                width: "227px",
+                height: "11px",
+                left: `${offX + 220}px`,
+                top: `${offY + 196}px`,
+                position: "absolute",
+                backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? "Multi" : "Single"}${hitKnowsFas ? "Known" : "Unknown"}.png)`,
+              }}
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div
+            className={(() => {
+              let classes = "track bottom-track-back";
 
-							if (gameInfo.general.playerCount < 7) {
-								classes += ' track0';
-							} else if (gameInfo.general.playerCount < 9) {
-								classes += ' track1';
-							} else {
-								classes += ' track2';
-							}
+              if (gameInfo.general.playerCount < 7) {
+                classes += " track0";
+              } else if (gameInfo.general.playerCount < 9) {
+                classes += " track1";
+              } else {
+                classes += " track2";
+              }
 
-							return classes;
-						})()}
-					/>
-				);
-			}
-		};
+              return classes;
+            })()}
+          />
+        );
+      }
+    };
 
-		const showDate = () => {
-			if (gameInfo && gameInfo.general && gameInfo.general.date) {
-				// field only exists in replays
-				Swal.fire(`This game was played on ${moment(gameInfo.general.date)}`);
-			}
-		};
+    const showDate = () => {
+      if (gameInfo && gameInfo.general && gameInfo.general.date) {
+        // field only exists in replays
+        Swal.fire(`This game was played on ${moment(gameInfo.general.date)}`);
+      }
+    };
 
-		return (
-			<section className="tracks-container">
-				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
-				<EnactedPolicies gameInfo={gameInfo} />
-				<div>
-					<div className="game-name" onClick={showDate}>
-						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
-						<span>{gameInfo.general.name}</span>
-					</div>
-					<div className="option-icons">{this.optionIcons(gameInfo)}</div>
-					<div className="player-count">
-						Players: <span>{gameInfo.publicPlayersState.length}</span>
-					</div>
-					{userInfo.userName &&
-						userInfo.isSeated &&
-						gameInfo.gameState.isTracksFlipped &&
-						!gameInfo.general.isRemade &&
-						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
-							<i
-								className={
-									gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1
-										? `remove icon ${this.state.remakeStatus ? 'enabled' : ''}`
-										: `icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`
-								}
-								onClick={updateRemake}
-								title={
-									gameInfo.general.isTourny
-										? 'Enable this button to show that you would like to cancel this tournament'
-										: 'Enable this button to show that you would like to remake this game'
-								}
-							/>
-						)}
-					{!showTimer && (minutes || seconds >= 15) && timedMode ? (
-						<i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
-					) : timedMode ? (
-						<div title="Click to hide until the last 15s." onClick={this.toggleTimer} className="timed-mode-counter">
-							Action forced in {minutes}:{seconds > 9 ? seconds : `0${seconds}`}
-						</div>
-					) : null}
-				</div>
-				<section
-					className={(() => {
-						let classes = 'tracks';
+    return (
+      <section className="tracks-container">
+        <CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+        <EnactedPolicies gameInfo={gameInfo} />
+        <div>
+          <div className="game-name" onClick={showDate}>
+            {gameInfo.general.flag !== "none" && <i className={`ui flag ${gameInfo.general.flag}`} />}
+            <span>{gameInfo.general.name}</span>
+          </div>
+          <div className="option-icons">{this.optionIcons(gameInfo)}</div>
+          <div className="player-count">
+            Players: <span>{gameInfo.publicPlayersState.length}</span>
+          </div>
+          {userInfo.userName &&
+            userInfo.isSeated &&
+            gameInfo.gameState.isTracksFlipped &&
+            !gameInfo.general.isRemade &&
+            !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
+              <i
+                className={
+                  gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1
+                    ? `remove icon ${this.state.remakeStatus ? "enabled" : ""}`
+                    : `icon repeat ${this.state.remakeStatus ? "enabled" : ""}`
+                }
+                onClick={updateRemake}
+                title={
+                  gameInfo.general.isTourny
+                    ? "Enable this button to show that you would like to cancel this tournament"
+                    : "Enable this button to show that you would like to remake this game"
+                }
+              />
+            )}
+          {!showTimer && (minutes || seconds >= 15) && timedMode ? (
+            <i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
+          ) : timedMode ? (
+            <div title="Click to hide until the last 15s." onClick={this.toggleTimer} className="timed-mode-counter">
+              Action forced in {minutes}:{seconds > 9 ? seconds : `0${seconds}`}
+            </div>
+          ) : null}
+        </div>
+        <section
+          className={(() => {
+            let classes = "tracks";
 
-						if (gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
-							classes += ' blurred';
-						}
+            if (gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+              classes += " blurred";
+            }
 
-						return classes;
-					})()}
-				>
-					<div
-						className={(() => {
-							let classes = 'track-flipper track-flipper-top';
+            return classes;
+          })()}
+        >
+          <div
+            className={(() => {
+              let classes = "track-flipper track-flipper-top";
 
-							if (gameInfo.gameState.isTracksFlipped) {
-								classes += ' flipped';
-							}
+              if (gameInfo.gameState.isTracksFlipped) {
+                classes += " flipped";
+              }
 
-							return classes;
-						})()}
-					>
-						<div className="track top-track-front" />
-						<div className="track top-track-back" />
-					</div>
-					<div
-						className={(() => {
-							let classes = 'track-flipper track-flipper-bottom';
+              return classes;
+            })()}
+          >
+            <div className="track top-track-front" />
+            <div className="track top-track-back" />
+          </div>
+          <div
+            className={(() => {
+              let classes = "track-flipper track-flipper-bottom";
 
-							if (gameInfo.gameState.isTracksFlipped || (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)) {
-								classes += ' flipped';
-							}
+              if (
+                gameInfo.gameState.isTracksFlipped ||
+                (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)
+              ) {
+                classes += " flipped";
+              }
 
-							return classes;
-						})()}
-					>
-						<div className="track bottom-track-front" />
-						{renderFasTrack()}
-					</div>
-					{renderElectionTracker()}
-				</section>
-			</section>
-		);
-	}
+              return classes;
+            })()}
+          >
+            <div className="track bottom-track-front" />
+            {renderFasTrack()}
+          </div>
+          {renderElectionTracker()}
+        </section>
+      </section>
+    );
+  }
 }
 
 Tracks.defaultProps = {
-	gameInfo: {},
-	userInfo: {}
+  gameInfo: {},
+  userInfo: {},
 };
 
 Tracks.propTypes = {
-	onSeatingUser: PropTypes.func,
-	userInfo: PropTypes.object,
-	gameInfo: PropTypes.object,
-	socket: PropTypes.object
+  onSeatingUser: PropTypes.func,
+  userInfo: PropTypes.object,
+  gameInfo: PropTypes.object,
+  socket: PropTypes.object,
 };
 
 export default Tracks;

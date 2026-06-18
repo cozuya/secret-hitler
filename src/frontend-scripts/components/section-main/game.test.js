@@ -1,11 +1,11 @@
-import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
-import Game from './Game';
+import React from "react"; // eslint-disable-line
+import { shallow } from "enzyme";
+import Game from "./Game";
 
-describe('Game', () => {
-	it('should initialize correctly', () => {
-		const component = shallow(<Game socket={{ on: () => {}, emit: () => {} }} />);
+describe("Game", () => {
+  it("should initialize correctly", () => {
+    const component = shallow(<Game socket={{ on: () => {}, emit: () => {} }} />);
 
-		expect(component).toHaveLength(1);
-	});
+    expect(component).toHaveLength(1);
+  });
 });

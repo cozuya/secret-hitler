@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Bias = new Schema({
-	nickname: {
-		type: String,
-		required: true,
-		unique: true
-	},
-	eloLiberal: Number,
-	eloFascist: Number
+  nickname: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  eloLiberal: Number,
+  eloFascist: Number,
 });
 
-module.exports = mongoose.model('Account', Bias);
+module.exports = mongoose.model("Account", Bias);

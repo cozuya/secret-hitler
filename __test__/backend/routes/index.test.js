@@ -1,7 +1,7 @@
-import index from '../../../routes/index';
+import index from "../../../routes/index";
 
-describe('index', () => {
-	it('is a function', () => {
-		expect(typeof index).toBe('function');
-	});
+describe("index", () => {
+  it("is a function", () => {
+    expect(typeof index).toBe("function");
+  });
 });

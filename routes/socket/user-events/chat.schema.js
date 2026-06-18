@@ -1,4 +1,4 @@
-const { z } = require('zod');
+const { z } = require("zod");
 
 // Schemas for the two chat socket events. These handlers are `async`, so a non-string
 // `data.chat` reaching `.trim()`/`.toLowerCase()`/`.split()` becomes an unhandled
