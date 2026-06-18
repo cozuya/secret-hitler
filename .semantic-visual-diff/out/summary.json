@@ -1,0 +1,93 @@
+[
+  {
+    "name": "buttons",
+    "changedPx": 3713,
+    "totalPx": 206400,
+    "pct": "1.80",
+    "sizeDelta": ""
+  },
+  {
+    "name": "headers",
+    "changedPx": 4485,
+    "totalPx": 416400,
+    "pct": "1.08",
+    "sizeDelta": ""
+  },
+  {
+    "name": "modal",
+    "changedPx": 3077,
+    "totalPx": 397200,
+    "pct": "0.77",
+    "sizeDelta": ""
+  },
+  {
+    "name": "input-dropdown",
+    "changedPx": 871,
+    "totalPx": 130800,
+    "pct": "0.67",
+    "sizeDelta": ""
+  },
+  {
+    "name": "menu",
+    "changedPx": 558,
+    "totalPx": 135600,
+    "pct": "0.41",
+    "sizeDelta": ""
+  },
+  {
+    "name": "segment-list",
+    "changedPx": 737,
+    "totalPx": 210000,
+    "pct": "0.35",
+    "sizeDelta": ""
+  },
+  {
+    "name": "steps-label",
+    "changedPx": 576,
+    "totalPx": 218400,
+    "pct": "0.26",
+    "sizeDelta": ""
+  },
+  {
+    "name": "message",
+    "changedPx": 490,
+    "totalPx": 246000,
+    "pct": "0.20",
+    "sizeDelta": ""
+  },
+  {
+    "name": "loader-dimmer",
+    "changedPx": 157,
+    "totalPx": 397200,
+    "pct": "0.04",
+    "sizeDelta": ""
+  },
+  {
+    "name": "checkboxes",
+    "changedPx": 0,
+    "totalPx": 110400,
+    "pct": "0.00",
+    "sizeDelta": ""
+  },
+  {
+    "name": "dividers",
+    "changedPx": 0,
+    "totalPx": 243600,
+    "pct": "0.00",
+    "sizeDelta": ""
+  },
+  {
+    "name": "table",
+    "changedPx": 0,
+    "totalPx": 388800,
+    "pct": "0.00",
+    "sizeDelta": ""
+  },
+  {
+    "name": "grid",
+    "changedPx": 0,
+    "totalPx": 234000,
+    "pct": "0.00",
+    "sizeDelta": ""
+  }
+]

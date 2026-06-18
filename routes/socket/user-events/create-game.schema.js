@@ -74,7 +74,10 @@ const createGameSchema = z
     // typed XP box; the handler parseInts it. Accept all three so a normal create-game isn't rejected.
     xpSliderValue: z.union([z.string(), z.number()]).nullable().optional(),
     noTopdecking: notObject.optional(),
-    privatePassword: z.string().optional(),
+    // Client sends the password string for private games, or the literal `false` sentinel for
+    // public/unlisted games (Creategame.jsx / App.jsx). Both must pass; the handler treats
+    // `false` as "not private" in boolean/sentinel contexts downstream.
+    privatePassword: z.union([z.string(), z.literal(false)]).optional(),
     // presence/enabled handled here; the strict shape is validated by
     // customGameSettingsSchema in the handler (it needs playerCounts context).
     customGameSettings: z.object({}).passthrough().optional(),

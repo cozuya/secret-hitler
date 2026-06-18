@@ -4,7 +4,7 @@
   "categories": {
     "correctness": "off"
   },
-  "ignorePatterns": ["**/node_modules/**", "public/**", "data/**", "**/coverage/**"],
+  "ignorePatterns": ["**/node_modules/**", "public/**", "data/**", "**/coverage/**", ".semantic-visual-diff/**"],
   "rules": {
     "no-duplicate-imports": "error"
   },

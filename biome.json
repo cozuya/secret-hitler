@@ -12,7 +12,7 @@
     "lineWidth": 120
   },
   "files": {
-    "includes": ["**", "!public", "!data", "!coverage", "!**/*.scss"]
+    "includes": ["**", "!public", "!data", "!coverage", "!.semantic-visual-diff", "!**/*.scss"]
   },
   "linter": {
     "enabled": true,

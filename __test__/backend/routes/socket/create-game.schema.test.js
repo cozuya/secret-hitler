@@ -67,6 +67,13 @@ describe("createGameSchema", () => {
     expect(createGameSchema.safeParse({ gameName: "g", excludedPlayerCount: 5 }).success).toBe(false);
     expect(createGameSchema.safeParse({ gameName: "g", excludedPlayerCount: [6, 7] }).success).toBe(true);
   });
+
+  it("accepts privatePassword as a string or the false sentinel (the real client payloads)", () => {
+    expect(createGameSchema.safeParse({ gameName: "g", privatePassword: false }).success).toBe(true); // public/unlisted game
+    expect(createGameSchema.safeParse({ gameName: "g", privatePassword: "secret" }).success).toBe(true); // private game
+    expect(createGameSchema.safeParse({ gameName: "g", privatePassword: true }).success).toBe(false); // junk
+    expect(createGameSchema.safeParse({ gameName: "g", privatePassword: {} }).success).toBe(false); // junk
+  });
 });
 
 describe("customGameSettingsSchema", () => {

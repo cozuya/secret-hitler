@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1200, initial-scale=1" />
+  <!-- The active Semantic/Fomantic stylesheet is chosen at runtime via ?css=semantic|fomantic.
+       Font @font-face urls are relative to the CSS file, so each variant uses its own glyphs. -->
+  <link id="sem" rel="stylesheet" href="" />
+  <title>Semantic vs Fomantic gallery</title>
+  <style>
+    /* Harness-only chrome. Deliberately minimal so it doesn't mask library deltas. */
+    body { margin: 0; background: #ffffff; color: #222; font-family: 'Inter', system-ui, sans-serif; }
+    .variant-tag { position: fixed; top: 8px; right: 8px; z-index: 9999; font: 12px monospace;
+                   background: #000; color: #0f0; padding: 4px 8px; border-radius: 4px; }
+    section[data-shot] { padding: 20px 28px; border-bottom: 1px solid #eee; }
+    section[data-shot] > h2.sec { font: 600 13px monospace; color: #999; margin: 0 0 14px; text-transform: uppercase; letter-spacing: .08em; }
+    .row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+    /* Lay modal/dimmer out inline so they screenshot in-flow instead of fixed-overlay. */
+    .inline-overlay { position: static !important; display: block !important; transform: none !important;
+                      margin: 0 !important; left: auto !important; top: auto !important; }
+    .dimmer-box { position: relative; width: 520px; height: 260px; }
+  </style>
+</head>
+<body>
+  <div class="variant-tag" id="tag">?</div>
+
+  <section data-shot="headers">
+    <h2 class="sec">headers (ui header — most used class in app)</h2>
+    <h1 class="ui header">H1 Page Header</h1>
+    <h2 class="ui header">H2 Block Header <div class="sub header">with a sub header line</div></h2>
+    <h3 class="ui icon center aligned header"><i class="snowflake icon"></i> Icon centered header</h3>
+    <div class="ui horizontal divider header">Horizontal divider header</div>
+  </section>
+
+  <section data-shot="buttons">
+    <h2 class="sec">buttons</h2>
+    <div class="row">
+      <button class="ui button">Default</button>
+      <button class="ui primary button">Primary</button>
+      <button class="ui basic button">Basic</button>
+      <button class="ui red button">Red</button>
+      <button class="ui blue button">Blue</button>
+      <button class="ui disabled button">Disabled</button>
+      <button class="ui small button">Small</button>
+      <button class="ui huge button">Huge</button>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <div class="ui buttons">
+        <button class="ui button">One</button>
+        <button class="ui button">Two</button>
+        <button class="ui button">Three</button>
+      </div>
+      <div class="ui primary buttons">
+        <button class="ui button">A</button>
+        <div class="or"></div>
+        <button class="ui button">B</button>
+      </div>
+    </div>
+  </section>
+
+  <section data-shot="checkboxes">
+    <h2 class="sec">checkboxes (toggle / radio / fitted — settings screen)</h2>
+    <div class="row">
+      <div class="ui toggle checkbox"><input type="checkbox" checked /><label>Toggle on</label></div>
+      <div class="ui toggle checkbox"><input type="checkbox" /><label>Toggle off</label></div>
+      <div class="ui radio checkbox"><input type="radio" checked /><label>Radio on</label></div>
+      <div class="ui radio checkbox"><input type="radio" /><label>Radio off</label></div>
+      <div class="ui fitted toggle checkbox"><input type="checkbox" checked /><label></label></div>
+      <div class="ui checkbox"><input type="checkbox" checked /><label>Standard</label></div>
+    </div>
+  </section>
+
+  <section data-shot="dividers">
+    <h2 class="sec">dividers</h2>
+    <div>Above</div>
+    <div class="ui divider"></div>
+    <div>Between</div>
+    <div class="ui horizontal divider">OR</div>
+    <div>Below</div>
+  </section>
+
+  <section data-shot="table">
+    <h2 class="sec">tables (ui celled table — userlist)</h2>
+    <table class="ui celled table">
+      <thead><tr><th>Name</th><th>Wins</th><th>Losses</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>player_one</td><td>12</td><td>5</td><td><span class="ui green label">active</span></td></tr>
+        <tr class="positive"><td>player_two</td><td>30</td><td>9</td><td><span class="ui label">idle</span></td></tr>
+        <tr><td>player_three</td><td>3</td><td>14</td><td><span class="ui red label">banned</span></td></tr>
+      </tbody>
+    </table>
+    <table class="ui single line table" style="margin-top:12px">
+      <tbody><tr><td>single line</td><td>row</td><td>variant</td></tr></tbody>
+    </table>
+  </section>
+
+  <section data-shot="menu">
+    <h2 class="sec">menus (ui pointing menu)</h2>
+    <div class="ui pointing menu">
+      <a class="active item">Game</a>
+      <a class="item">Profile</a>
+      <a class="item">Settings</a>
+      <div class="right menu"><a class="item">Logout</a></div>
+    </div>
+  </section>
+
+  <section data-shot="segment-list">
+    <h2 class="sec">segment + list</h2>
+    <div class="row">
+      <div class="ui segment" style="width:300px">
+        <div class="ui list">
+          <div class="item"><i class="users icon"></i><div class="content">Item one</div></div>
+          <div class="item"><i class="marker icon"></i><div class="content">Item two</div></div>
+          <div class="item"><i class="mail icon"></i><div class="content">Item three</div></div>
+        </div>
+      </div>
+      <div class="ui raised segment" style="width:300px">Raised segment</div>
+    </div>
+  </section>
+
+  <section data-shot="grid">
+    <h2 class="sec">grid (ui grid — heavily used)</h2>
+    <div class="ui three column grid" style="max-width:760px">
+      <div class="column"><div class="ui segment">col 1</div></div>
+      <div class="column"><div class="ui segment">col 2</div></div>
+      <div class="column"><div class="ui segment">col 3</div></div>
+    </div>
+    <div class="ui two column centered grid" style="max-width:760px;margin-top:10px">
+      <div class="column"><div class="ui segment">centered a</div></div>
+      <div class="column"><div class="ui segment">centered b</div></div>
+    </div>
+  </section>
+
+  <section data-shot="input-dropdown">
+    <h2 class="sec">input + dropdown</h2>
+    <div class="row">
+      <div class="ui input"><input type="text" placeholder="Search..." /></div>
+      <div class="ui icon input"><input type="text" placeholder="Icon input" /><i class="search icon"></i></div>
+      <div class="ui selection dropdown">
+        <input type="hidden" /><i class="dropdown icon"></i>
+        <div class="default text">Select option</div>
+        <div class="menu"><div class="item">First</div><div class="item">Second</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-shot="steps-label">
+    <h2 class="sec">steps + labels</h2>
+    <div class="ui three tiny steps">
+      <div class="completed step"><div class="content"><div class="title">Shipping</div></div></div>
+      <div class="active step"><div class="content"><div class="title">Billing</div></div></div>
+      <div class="disabled step"><div class="content"><div class="title">Confirm</div></div></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <a class="ui label">Plain</a>
+      <a class="ui blue label">Blue</a>
+      <a class="ui tag label">Tag</a>
+      <a class="ui circular label">3</a>
+    </div>
+  </section>
+
+  <section data-shot="message">
+    <h2 class="sec">message</h2>
+    <div class="ui message" style="max-width:520px">
+      <div class="header">Notice header</div>
+      <p>Body copy inside a standard message component.</p>
+    </div>
+    <div class="ui warning message" style="max-width:520px;margin-top:8px">Warning message</div>
+  </section>
+
+  <section data-shot="modal">
+    <h2 class="sec">modal (basic small modal — laid out inline)</h2>
+    <div class="dimmer-box">
+      <div class="ui dimmer active inline-overlay" style="position:absolute">
+        <div class="ui basic small modal active inline-overlay" style="position:relative">
+          <div class="header">Confirm action</div>
+          <div class="content"><p>Are you sure you want to do this?</p></div>
+          <div class="actions">
+            <button class="ui red basic button">Cancel</button>
+            <button class="ui green ok inverted button">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-shot="loader-dimmer">
+    <h2 class="sec">loader + dimmer</h2>
+    <div class="dimmer-box ui segment">
+      <div class="ui active dimmer"><div class="ui huge text loader">Loading game…</div></div>
+      <p>content behind the dimmer</p><p>more content</p>
+    </div>
+  </section>
+
+  <script>
+    const which = new URLSearchParams(location.search).get('css') || 'semantic';
+    const map = {
+      semantic: 'css/semantic/semantic.min.css',
+      fomantic: 'css/fomantic/semantic.min.css',
+    };
+    document.getElementById('sem').href = map[which];
+    const tag = document.getElementById('tag');
+    tag.textContent = which + (which === 'semantic' ? ' 2.4.1' : ' 2.9.4');
+  </script>
+</body>
+</html>
