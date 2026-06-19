@@ -187,13 +187,13 @@ module.exports.socketRoutes = () => {
   gatherStaffUsernames();
 
   io.on("connection", (socket) => {
-    // Without a socket-level 'error' listener, any throw from a socket handler is re-emitted by
-    // socket.io as an unhandled 'error' event → ERR_UNHANDLED_ERROR → the global handler exits the
-    // whole process, killing every live game over one bad payload. Log the real stack (socket.io
-    // otherwise swallows it) and keep the process alive — the thrown handler still aborted its own
-    // action, but everyone else's game survives.
+    // A throw from a socket handler reaches here as socket.io's 'error' event carrying the ORIGINAL
+    // error (real stack). Log it so we get the actual file:line — socket.io otherwise buries it in an
+    // opaque ERR_UNHANDLED_ERROR — then crash so pm2 restarts clean. We do NOT swallow: a half-mutated
+    // game must not keep running, and continuing leaks the aborted handler's timers/state (per CLAUDE.md).
     socket.on("error", (err) => {
-      console.error("SOCKET HANDLER ERROR:", (err && err.stack) || err);
+      console.error("SOCKET HANDLER ERROR — crashing:", (err && err.stack) || err);
+      process.exit(1);
     });
     checkUserStatus(socket, () => {
       socket.emit("version", { current: version });

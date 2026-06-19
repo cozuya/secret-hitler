@@ -26,6 +26,9 @@ public/scripts/bundle.js.map
 npm-debug.log.*
 npm-debug.log
 pnpm-debug.log
+# pnpm puts its content-addressable store in-project when home is on another filesystem
+.pnpm-store/
+yarn-error.log
 .vscode/
 package-lock.json
 yarn.lock

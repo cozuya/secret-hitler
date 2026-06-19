@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=1200, initial-scale=1" />
-  <!-- The active Semantic/Fomantic stylesheet is chosen at runtime via ?css=semantic|fomantic.
+  <!-- The active stylesheet(s) are injected at runtime via ?css=semantic|fomantic|refresh.
        Font @font-face urls are relative to the CSS file, so each variant uses its own glyphs. -->
-  <link id="sem" rel="stylesheet" href="" />
+  <link href="//fonts.googleapis.com/css?family=Inter" rel="stylesheet" type="text/css" />
   <title>Semantic vs Fomantic gallery</title>
   <style>
     /* Harness-only chrome. Deliberately minimal so it doesn't mask library deltas. */
@@ -195,12 +195,18 @@
   <script>
     const which = new URLSearchParams(location.search).get('css') || 'semantic';
     const map = {
-      semantic: 'css/semantic/semantic.min.css',
-      fomantic: 'css/fomantic/semantic.min.css',
+      semantic: ['css/semantic/semantic.min.css'],
+      fomantic: ['css/fomantic/semantic.min.css'],
+      refresh: ['css/fomantic/semantic.min.css', 'css/refresh/skin.css'],
     };
-    document.getElementById('sem').href = map[which];
-    const tag = document.getElementById('tag');
-    tag.textContent = which + (which === 'semantic' ? ' 2.4.1' : ' 2.9.4');
+    for (const href of map[which]) {
+      const l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = href;
+      document.head.appendChild(l);
+    }
+    const labels = { semantic: 'CURRENT (Semantic 2.4.1)', fomantic: 'Fomantic 2.9.4', refresh: 'REFRESH (Fomantic + skin)' };
+    document.getElementById('tag').textContent = labels[which];
   </script>
 </body>
 </html>

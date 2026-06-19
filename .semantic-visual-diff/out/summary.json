@@ -1,93 +1,93 @@
 [
   {
-    "name": "buttons",
-    "changedPx": 3713,
-    "totalPx": 206400,
-    "pct": "1.80",
+    "name": "checkboxes",
+    "changedPx": 1712,
+    "totalPx": 110400,
+    "pct": "1.55",
     "sizeDelta": ""
   },
   {
     "name": "headers",
-    "changedPx": 4485,
+    "changedPx": 4587,
     "totalPx": 416400,
-    "pct": "1.08",
-    "sizeDelta": ""
-  },
-  {
-    "name": "modal",
-    "changedPx": 3077,
-    "totalPx": 397200,
-    "pct": "0.77",
-    "sizeDelta": ""
-  },
-  {
-    "name": "input-dropdown",
-    "changedPx": 871,
-    "totalPx": 130800,
-    "pct": "0.67",
-    "sizeDelta": ""
-  },
-  {
-    "name": "menu",
-    "changedPx": 558,
-    "totalPx": 135600,
-    "pct": "0.41",
-    "sizeDelta": ""
-  },
-  {
-    "name": "segment-list",
-    "changedPx": 737,
-    "totalPx": 210000,
-    "pct": "0.35",
-    "sizeDelta": ""
-  },
-  {
-    "name": "steps-label",
-    "changedPx": 576,
-    "totalPx": 218400,
-    "pct": "0.26",
+    "pct": "1.10",
     "sizeDelta": ""
   },
   {
     "name": "message",
-    "changedPx": 490,
+    "changedPx": 2108,
     "totalPx": 246000,
-    "pct": "0.20",
+    "pct": "0.86",
     "sizeDelta": ""
   },
   {
-    "name": "loader-dimmer",
-    "changedPx": 157,
+    "name": "modal",
+    "changedPx": 3341,
     "totalPx": 397200,
-    "pct": "0.04",
+    "pct": "0.84",
     "sizeDelta": ""
   },
   {
-    "name": "checkboxes",
-    "changedPx": 0,
-    "totalPx": 110400,
-    "pct": "0.00",
-    "sizeDelta": ""
-  },
-  {
-    "name": "dividers",
-    "changedPx": 0,
-    "totalPx": 243600,
-    "pct": "0.00",
+    "name": "buttons",
+    "changedPx": 1634,
+    "totalPx": 206400,
+    "pct": "0.79",
     "sizeDelta": ""
   },
   {
     "name": "table",
-    "changedPx": 0,
+    "changedPx": 2902,
     "totalPx": 388800,
-    "pct": "0.00",
+    "pct": "0.75",
+    "sizeDelta": ""
+  },
+  {
+    "name": "input-dropdown",
+    "changedPx": 831,
+    "totalPx": 130800,
+    "pct": "0.64",
+    "sizeDelta": ""
+  },
+  {
+    "name": "segment-list",
+    "changedPx": 1196,
+    "totalPx": 210000,
+    "pct": "0.57",
+    "sizeDelta": ""
+  },
+  {
+    "name": "menu",
+    "changedPx": 596,
+    "totalPx": 135600,
+    "pct": "0.44",
+    "sizeDelta": ""
+  },
+  {
+    "name": "steps-label",
+    "changedPx": 958,
+    "totalPx": 218400,
+    "pct": "0.44",
+    "sizeDelta": ""
+  },
+  {
+    "name": "loader-dimmer",
+    "changedPx": 1267,
+    "totalPx": 397200,
+    "pct": "0.32",
+    "sizeDelta": ""
+  },
+  {
+    "name": "dividers",
+    "changedPx": 450,
+    "totalPx": 243600,
+    "pct": "0.18",
     "sizeDelta": ""
   },
   {
     "name": "grid",
-    "changedPx": 0,
+    "changedPx": 410,
     "totalPx": 234000,
-    "pct": "0.00",
+    "pct": "0.18",
     "sizeDelta": ""
   }
 ]

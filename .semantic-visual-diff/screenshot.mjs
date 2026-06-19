@@ -17,7 +17,9 @@ mkdirSync(outDir, { recursive: true });
 const galleryUrl = (variant) =>
   `${pathToFileURL(join(here, "gallery.html")).href}?css=${variant}`;
 
-const VARIANTS = ["semantic", "fomantic"];
+// Compare today's look (baseline) against the proposed refresh (candidate).
+const BASELINE = "semantic"; // current production look
+const CANDIDATE = "refresh"; // Fomantic base + subtle-modernization skin
 const VIEWPORT = { width: 1200, height: 900 };
 
 async function captureSections(page, variant) {
@@ -53,8 +55,8 @@ function diffPair(name, aBuf, bBuf) {
     alpha: 0.5,
     diffColor: [255, 0, 255],
   });
-  writeFileSync(join(outDir, `${name}__semantic.png`), aBuf);
-  writeFileSync(join(outDir, `${name}__fomantic.png`), bBuf);
+  writeFileSync(join(outDir, `${name}__current.png`), aBuf);
+  writeFileSync(join(outDir, `${name}__refresh.png`), bBuf);
   writeFileSync(join(outDir, `${name}__diff.png`), PNG.sync.write(diff));
   const total = width * height;
   return {
@@ -72,15 +74,15 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
 
 const perVariant = {};
-for (const v of VARIANTS) perVariant[v] = await captureSections(page, v);
+for (const v of [BASELINE, CANDIDATE]) perVariant[v] = await captureSections(page, v);
 await browser.close();
 
-const names = Object.keys(perVariant.semantic);
-const rows = names.map((n) => diffPair(n, perVariant.semantic[n], perVariant.fomantic[n]));
+const names = Object.keys(perVariant[BASELINE]);
+const rows = names.map((n) => diffPair(n, perVariant[BASELINE][n], perVariant[CANDIDATE][n]));
 rows.sort((x, y) => Number(y.pct) - Number(x.pct));
 
 const pad = (s, n) => String(s).padEnd(n);
-console.log("\n  Semantic 2.4.1  ->  Fomantic 2.9.4   (per-section pixel delta)\n");
+console.log("\n  CURRENT (Semantic 2.4.1)  ->  REFRESH (Fomantic + skin)   (per-section pixel delta)\n");
 console.log(`  ${pad("section", 16)} ${pad("changed%", 10)} ${pad("size shift", 24)}`);
 console.log("  " + "-".repeat(50));
 for (const r of rows) {
