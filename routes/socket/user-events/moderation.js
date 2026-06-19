@@ -366,6 +366,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
         case "deleteUser":
           if (isSuperMod) {
             Account.findOne({ username: data.userName }).then((acc) => {
+              if (!acc) return;
               acc.delete();
               Profile.findOne({ _id: data.userName }).then((prof) => {
                 if (!prof) return;

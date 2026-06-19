@@ -172,6 +172,66 @@ const ensureInGame = (passport, game) => {
   }
 };
 
+const getSocketPacketContext = (socket, packet) => {
+  const eventName = packet && packet[0];
+  const data = packet && packet[1];
+  const uid = data && data.uid;
+  const game = findGame(data);
+  const passport = socket && socket.handshake && socket.handshake.session && socket.handshake.session.passport;
+  const dataKeys =
+    data && typeof data === "object" && !Array.isArray(data) ? Object.keys(data).slice(0, 20) : undefined;
+
+  return {
+    event: typeof eventName === "string" ? eventName : undefined,
+    uid: typeof uid === "string" ? uid : undefined,
+    user: passport && passport.user,
+    dataType: data === null ? "null" : Array.isArray(data) ? "array" : typeof data,
+    dataKeys,
+    hasGame: Boolean(game),
+    hasPrivate: Boolean(game && game.private),
+    hasSeatedPlayers: Boolean(game && game.private && Array.isArray(game.private.seatedPlayers)),
+    publicPlayerCount: game && game.publicPlayersState && game.publicPlayersState.length,
+    privatePlayerCount: game && game.private && game.private.seatedPlayers && game.private.seatedPlayers.length,
+    phase: game && game.gameState && game.gameState.phase,
+    isStarted: game && game.gameState && game.gameState.isStarted,
+    isTracksFlipped: game && game.gameState && game.gameState.isTracksFlipped,
+    isCompleted: game && game.gameState && game.gameState.isCompleted,
+    status: game && game.general && game.general.status,
+    presidentIndex: game && game.gameState && game.gameState.presidentIndex,
+  };
+};
+
+const getSocketUserContext = (socket) => {
+  const passport = socket && socket.handshake && socket.handshake.session && socket.handshake.session.passport;
+  const user = passport && passport.user;
+  const gameName =
+    user &&
+    Object.keys(games).find(
+      (gameName) =>
+        games[gameName] &&
+        games[gameName].publicPlayersState &&
+        games[gameName].publicPlayersState.find((player) => player.userName === user && !player.leftGame)
+    );
+  const game = gameName && games[gameName];
+
+  return {
+    source: "socket-user",
+    user,
+    uid: game && game.general && game.general.uid,
+    hasGame: Boolean(game),
+    hasPrivate: Boolean(game && game.private),
+    hasSeatedPlayers: Boolean(game && game.private && Array.isArray(game.private.seatedPlayers)),
+    publicPlayerCount: game && game.publicPlayersState && game.publicPlayersState.length,
+    privatePlayerCount: game && game.private && game.private.seatedPlayers && game.private.seatedPlayers.length,
+    phase: game && game.gameState && game.gameState.phase,
+    isStarted: game && game.gameState && game.gameState.isStarted,
+    isTracksFlipped: game && game.gameState && game.gameState.isTracksFlipped,
+    isCompleted: game && game.gameState && game.gameState.isCompleted,
+    status: game && game.general && game.general.status,
+    presidentIndex: game && game.gameState && game.gameState.presidentIndex,
+  };
+};
+
 const gatherStaffUsernames = () => {
   Account.find({ staffRole: { $exists: true } })
     .then((accounts) => {
@@ -195,7 +255,10 @@ module.exports.socketRoutes = () => {
     // opaque ERR_UNHANDLED_ERROR — then crash so pm2 restarts clean. We do NOT swallow: a half-mutated
     // game must not keep running, and continuing leaks the aborted handler's timers/state (per CLAUDE.md).
     socket.on("error", (err) => {
-      console.error("SOCKET HANDLER ERROR — crashing:", (err && err.stack) || err);
+      const context = socket._lastPacketContext || getSocketUserContext(socket);
+      console.error(
+        `SOCKET HANDLER ERROR — crashing: context=${JSON.stringify(context)} error=${(err && err.stack) || err}`
+      );
       process.exit(1);
     });
     checkUserStatus(socket, () => {
@@ -203,6 +266,7 @@ module.exports.socketRoutes = () => {
 
       // defensively check if game exists
       socket.use((packet, next) => {
+        socket._lastPacketContext = getSocketPacketContext(socket, packet);
         const data = packet[1];
         const uid = data && data.uid;
         const isGameFound = uid && findGame(data);
