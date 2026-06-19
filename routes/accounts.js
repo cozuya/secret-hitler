@@ -950,7 +950,7 @@ module.exports.accounts = (torIpsParam) => {
                         } else if (/88$/i.test(profile.username)) {
                           const new88 = new EightEightCounter({
                             date: new Date(),
-                            username,
+                            username: profile.username,
                           });
                           new88.save(() => {
                             req.session.oauthProfile = profile;

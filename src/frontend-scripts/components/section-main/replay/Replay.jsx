@@ -1,5 +1,6 @@
 /* eslint-disable spaced-comment */
 import React from "react"; // eslint-disable-line no-unused-vars
+import _ from "lodash";
 import { connect } from "react-redux";
 import toGameInfo from "../../../replay/toGameInfo";
 import toDescription from "../../../replay/toDescription";

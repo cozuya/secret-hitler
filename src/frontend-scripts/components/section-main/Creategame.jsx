@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import Switch from "react-switch";
 import Select from "react-select";
 import { Range } from "rc-slider";
@@ -1117,27 +1118,9 @@ export default class Creategame extends React.Component {
         noTopdecking: this.state.noTopdecking ? this.state.noTopdecking[0] : 0,
       };
 
-      if (this.state.isTourny) {
-        game.general.tournyInfo = {
-          round: 0,
-          queuedPlayers: [
-            {
-              userName: userInfo.userName,
-              customCardback: userInfo.gameSettings.customCardback,
-              customCardbackUid: userInfo.gameSettings.customCardbackUid,
-              tournyWins: userInfo.gameSettings.tournyWins,
-              connected: true,
-              cardStatus: {
-                cardDisplayed: false,
-                isFlipped: false,
-                cardFront: "secretrole",
-                cardBack: {},
-              },
-            },
-          ],
-        };
-      }
-
+      // tournyInfo is built server-side in create-game.js from data.isTourny; the old client-side
+      // assignment here wrote to an undeclared `game` (and data has no `.general`), so it was dead
+      // code that also threw on tourny creation. The server reconstructs it, so just send `data`.
       this.props.socket.emit("addNewGame", data);
     }
   };

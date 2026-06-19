@@ -1533,7 +1533,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
         {
           player: "A Player",
           seat: presidentIndex + 1,
-          role: president.role.cardName,
+          role: seatedPlayers[presidentIndex].role.cardName,
           situation: `has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`,
           election: game.general.electionCount,
           title: game.general.name,

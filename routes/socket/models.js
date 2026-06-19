@@ -87,7 +87,9 @@ module.exports.getStaffList = () => {
 
 module.exports.getStaffList();
 
-module.exports.getPowerFromRole = (role) => {
+// Bound to a local const as well as the export so the bare getPowerFromRole(...) calls in
+// getPowerFromName/getPowerFromUser below resolve (mirrors the staffList pattern above).
+const getPowerFromRole = (module.exports.getPowerFromRole = (role) => {
   if (role === "admin") return 3;
   if (role === "editor") return 2;
   if (role === "moderator") return 1;
@@ -95,7 +97,7 @@ module.exports.getPowerFromRole = (role) => {
   if (role === "trialmod") return 0;
   if (role === "contributor") return -1;
   return -1;
-};
+});
 
 module.exports.getPowerFromName = (name) => {
   if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole("editor");

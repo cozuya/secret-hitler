@@ -58,6 +58,7 @@ async function rate(game) {
     }
 
     const win = winningPlayerNames.includes(account.username);
+    let change, changeSeason;
     if (win) {
       const p = 1 / (1 + Math.pow(10, (eloOverall - averageRatingLosers) / 400));
       const pSeason = 1 / (1 + Math.pow(10, (eloSeason - averageRatingLosersSeason) / 400));

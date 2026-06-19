@@ -13,12 +13,12 @@ const libAdjust = {
   10: -31.539,
 };
 
-ja = async (votes) => votes.toArray().filter((b) => b).length;
-nein = async (votes) => votes.toArray().filter((b) => !b).length;
-passed = async (votes) => (await ja(votes)) > (await nein(votes));
+const ja = async (votes) => votes.toArray().filter((b) => b).length;
+const nein = async (votes) => votes.toArray().filter((b) => !b).length;
+const passed = async (votes) => (await ja(votes)) > (await nein(votes));
 
-softmax = (arr) => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
-avg = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
+const softmax = (arr) => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
+const avg = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
 
 // This function approximates the degree to wich each player may have influenced the end game result.
 // Players will be considered more influential when:
@@ -29,7 +29,7 @@ async function influence(game) {
   const weighting = new Array(game.playerSize).fill(0.0);
   let red = 0;
   for (const turn of game.summary.logs) {
-    p = passed(turn.votes);
+    const p = passed(turn.votes);
     if (Math.abs((await ja(turn.votes)) - (await nein(turn.votes))) === 1) {
       for (const v of turn.votes) {
         if (turn.votes[v] === (await p)) {
@@ -116,6 +116,7 @@ async function rate(summary) {
     }
     const influence = playerInfluence[playerNames.indexOf(account.username)];
     const win = winningPlayerNames.includes(account.username);
+    let change, changeSeason;
     if (win) {
       change = p * winFactor * influence;
       changeSeason = pSeason * winFactor * influence;

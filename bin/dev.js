@@ -38,7 +38,14 @@ global.app = express();
 const debug = require("debug")("app:server");
 const server = http.createServer(app);
 
-global.io = require("socket.io")(server);
+// socket.io was bumped 2.0.3 -> 2.4.1 in the Node-24 migration; the engine.io 3.x it pulls in
+// turns message compression (websocket permessage-deflate + HTTP/polling gzip) ON by default.
+// Compressing every message for every client pegs the event loop (the deflate/crc32 cost was the
+// hot path in profiling) — main never paid this. Disable both to restore the prior behavior.
+global.io = require("socket.io")(server, {
+  perMessageDeflate: false,
+  httpCompression: false,
+});
 global.notify = require("node-notifier");
 
 app.set("port", port);

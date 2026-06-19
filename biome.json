@@ -58,7 +58,8 @@
         "noInnerDeclarations": "off",
         "noSwitchDeclarations": "info",
         "noUnreachable": "info",
-        "noConstantCondition": "info"
+        "noConstantCondition": "info",
+        "noUndeclaredVariables": "error"
       },
       "suspicious": {
         "noDoubleEquals": "off",
@@ -87,10 +88,32 @@
     }
   },
   "javascript": {
+    "globals": ["io", "app", "crashServer", "plausible"],
     "formatter": {
       "quoteStyle": "double",
       "trailingCommas": "es5",
       "semicolons": "always"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["__test__/**", "**/*.test.js", "**/*.test.jsx", "**/*.spec.js"],
+      "javascript": {
+        "globals": [
+          "io",
+          "app",
+          "crashServer",
+          "describe",
+          "it",
+          "test",
+          "expect",
+          "beforeAll",
+          "afterAll",
+          "beforeEach",
+          "afterEach",
+          "jest"
+        ]
+      }
+    }
+  ]
 }

@@ -227,8 +227,9 @@ module.exports.policyPeekAndDrop = (game) => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
+ * @param {object} socket - socket
  */
-module.exports.selectOnePolicy = (passport, game) => {
+module.exports.selectOnePolicy = (passport, game, socket) => {
   const { presidentIndex } = game.gameState;
   const { experiencedMode } = game.general;
   const { seatedPlayers } = game.private;
@@ -1298,7 +1299,7 @@ module.exports.executePlayer = (game) => {
             ((!game.customGameSettings.fasCanShootHit &&
               !(president.role.cardName === "fascist" && seatedPlayers[i].role.cardName === "hitler")) ||
               (!game.customGameSettings.fasCanShootHit &&
-                !(president.role.cardName === "morgana" && seatedPlayers[index].role.cardName === "hitler")) ||
+                !(president.role.cardName === "morgana" && seatedPlayers[i].role.cardName === "hitler")) ||
               (game.customGameSettings.fasCanShootHit &&
                 !(president.role.team === "fascist" && seatedPlayers[i].role.cardName === "hitler")) ||
               (game.customGameSettings.fasCanShootHit &&

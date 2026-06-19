@@ -64,12 +64,12 @@ GameSummary.find(JSON.parse(process.argv[4]) || {})
         // console.log(JSON.stringify(summary));
         delete summary._id;
         delete summary.__v;
-        for (i = 0; i < summary.players.length; i++) {
+        for (let i = 0; i < summary.players.length; i++) {
           delete summary.players[i]._id;
           delete summary.players[i].username;
           summary.players[i].seat = i;
         }
-        for (i = 0; i < summary.logs.length; i++) {
+        for (let i = 0; i < summary.logs.length; i++) {
           delete summary.logs[i]._id;
         }
         // summaries.push(summary);
@@ -85,7 +85,7 @@ GameSummary.find(JSON.parse(process.argv[4]) || {})
   .then(() => {
     console.log("\nCompressing...");
     const filename = "apiDump";
-    output_file = `${path.join(OUTPUT_DIR, `${filename}`)}.tar.gz`;
+    const output_file = `${path.join(OUTPUT_DIR, `${filename}`)}.tar.gz`;
     child_process.execSync(`tar -zcf ${output_file} ${SUMMARY_DIR}`);
     console.log("Cleaning Up...");
     child_process.execSync(`rm -rf ${SUMMARY_DIR}`);

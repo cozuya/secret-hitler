@@ -206,6 +206,7 @@ export default class Confetti extends React.Component {
         canvas.height = H;
         (function animloop() {
           if (animationComplete) return null;
+          // biome-ignore lint/correctness/noUndeclaredVariables: polyfilled onto window below (window.requestAnimFrame)
           animationHandler = requestAnimFrame(animloop);
           return Draw();
         })();

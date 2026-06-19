@@ -90,6 +90,6 @@ Game.find()
   .then(() => {
     console.log("all done");
     mongoose.connection.close();
-    output_file = `${path.join(OUTPUT_DIR, `games${process.argv[3]}`)}.tar.gz`;
+    const output_file = `${path.join(OUTPUT_DIR, `games${process.argv[3]}`)}.tar.gz`;
     child_process.execSync(`tar czf ${output_file} .`, { cwd: GAMES_DIR });
   });

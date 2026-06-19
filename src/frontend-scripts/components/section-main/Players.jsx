@@ -137,7 +137,7 @@ class Players extends React.Component {
 
     if (phase === "assassination" && userInfo.userName) {
       if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-        if (!gameSettings.disableKillConfirmation) {
+        if (!userInfo.gameSettings.disableKillConfirmation) {
           Swal.fire({
             title: `Are you sure you want to assassinate {${index + 1}} ${name}?`,
             showCancelButton: true,

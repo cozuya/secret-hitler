@@ -157,7 +157,10 @@ const ensureAuthenticated = (socket) => {
 
 const findGame = (data) => {
   if (games && data && data.uid && typeof data.uid === "string") {
-    return games[data.uid];
+    // Own-property guard: games is a plain object, so a forged uid like "constructor"/"__proto__"
+    // would otherwise resolve to an Object.prototype member (truthy) and slip past the downstream
+    // "game found" checks, crashing on a later game.private deref. Match own keys only.
+    return Object.prototype.hasOwnProperty.call(games, data.uid) ? games[data.uid] : undefined;
   }
 };
 
@@ -776,7 +779,7 @@ module.exports.socketRoutes = () => {
         if (isRestricted) return;
         const game = findGame(data);
         if (authenticated && ensureInGame(passport, game)) {
-          if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
+          if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game, socket);
           else selectPolicies(passport, game, socket);
         }
       });

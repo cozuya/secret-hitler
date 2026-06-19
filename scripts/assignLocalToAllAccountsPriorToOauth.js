@@ -18,7 +18,7 @@ Account.findOne({})
   })
   .then(() => {
     console.log("done");
-    monogoose.connection.close();
+    mongoose.connection.close();
   })
   .catch((err) => {
     console.log(err, "caught err");

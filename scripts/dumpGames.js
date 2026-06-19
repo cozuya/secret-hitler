@@ -23,6 +23,7 @@ if (process.argv.length >= 4) {
   console.log(`Usage: ${process.argv[0]} ${process.argv[1]} [--all] [date (e.g. "2017-01-31")]`);
   process.exit(1);
 }
+let startDate, endDate;
 if (process.argv.length == 3) {
   // ... dump all dates if requested
   if (process.argv[2] == "--all") {
@@ -32,7 +33,7 @@ if (process.argv.length == 3) {
     // ... else, get the date the user requested
   } else {
     if (isNaN(Date.parse(process.argv[2]))) {
-      console.log(`Invalid date: "${date}".  Expected format: "YYYY-MM-DD".`);
+      console.log(`Invalid date: "${process.argv[2]}".  Expected format: "YYYY-MM-DD".`);
       process.exit(1);
     }
     startDate = new Date(process.argv[2]);
@@ -44,8 +45,8 @@ if (process.argv.length == 2) {
   endDate = new Date();
   startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
 }
-dumpDateFrom = `${startDate.getFullYear()}-${startDate.getMonth() + 1}-${startDate.getDate()}`;
-dumpDateTo = `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDate()}`;
+const dumpDateFrom = `${startDate.getFullYear()}-${startDate.getMonth() + 1}-${startDate.getDate()}`;
+const dumpDateTo = `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDate()}`;
 
 // Connect to mongo
 mongoose.Promise = global.Promise;
@@ -60,7 +61,7 @@ GameSummary.find({
   .cursor()
   .eachAsync((summary) => {
     // ... strip personally identifiable information
-    for (i = 0; i < summary.players.length; i++) {
+    for (let i = 0; i < summary.players.length; i++) {
       delete summary.players[i]._id;
       delete summary.players[i].username;
     }
@@ -84,6 +85,7 @@ GameSummary.find({
         }
 
         // ... determine output filename
+        let output_file;
         if (process.argv.length == 3 && process.argv[2] == "--all") {
           output_file = `${path.join(OUTPUT_DIR, "all")}.tar.gz`;
         } else {

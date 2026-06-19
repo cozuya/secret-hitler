@@ -95,7 +95,10 @@ const sessionSettings = {
 
 io.use(
   socketSession(session(sessionSettings), {
-    autoSave: true,
+    // Socket handlers only read passport data from the handshake session; they do not mutate
+    // session state. autoSave hashes the full session twice per incoming socket event, which
+    // turns into heavy JSON.stringify/crc32 CPU and GC churn under production traffic.
+    autoSave: false,
   })
 );
 

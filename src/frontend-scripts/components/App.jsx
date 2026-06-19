@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { connect } from "react-redux";
 import Main from "./section-main/Main.jsx";
 import Gamenotes from "./Gamenotes.jsx";
