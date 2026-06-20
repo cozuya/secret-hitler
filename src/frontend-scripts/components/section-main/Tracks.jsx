@@ -59,6 +59,11 @@ class Tracks extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { gameInfo, userInfo } = this.props;
 
+    // Guards the gameState/general reads below against a partial payload reaching this lifecycle method.
+    if (!gameInfo.gameState || !gameInfo.general) {
+      return;
+    }
+
     if (!gameInfo.gameState.isStarted) {
       this.setState({
         remakeStatus: false,
@@ -421,6 +426,18 @@ class Tracks extends React.Component {
 
   render() {
     const { gameInfo, userInfo, socket } = this.props;
+
+    // Tracks reads general/gameState/publicPlayersState/trackState/cardFlingerState throughout render;
+    // bail on a partial payload instead of crashing the whole UI via the top-level error boundary.
+    if (
+      !gameInfo.general ||
+      !gameInfo.gameState ||
+      !Array.isArray(gameInfo.publicPlayersState) ||
+      !gameInfo.trackState ||
+      !gameInfo.cardFlingerState
+    ) {
+      return null;
+    }
     const { showTimer, timedMode, minutes, seconds } = this.state;
     /**
      * @return {jsx}

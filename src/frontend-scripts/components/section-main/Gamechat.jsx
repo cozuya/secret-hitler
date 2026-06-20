@@ -124,22 +124,31 @@ class Gamechat extends React.Component {
     const { userInfo, gameInfo } = this.props;
     this.scrollChats();
 
+    // Each chain dereferences publicPlayersState / gameState on the current and previous gameInfo, and the
+    // seat lookup can miss (observer, or a seated player absent during a remake) — the bare `.find(...).isDead`
+    // would then throw out of this lifecycle method into the top-level error boundary. The added existence
+    // guards and `?.` short-circuit to "no-op" on a partial payload; full payloads evaluate exactly as before.
     if (
       (prevProps &&
         userInfo.userName &&
         userInfo.isSeated &&
+        prevProps.gameInfo.publicPlayersState &&
+        gameInfo.publicPlayersState &&
         prevProps.gameInfo.publicPlayersState.filter((player) => player.isDead).length !==
           gameInfo.publicPlayersState.filter((player) => player.isDead).length &&
-        gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName).isDead) ||
+        gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName)?.isDead) ||
       (prevProps &&
         userInfo.userName &&
+        gameInfo.gameState &&
         gameInfo.gameState.phase === "presidentSelectingPolicy" &&
+        gameInfo.publicPlayersState &&
         ((gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName) &&
           gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName).governmentStatus ===
             "isPresident") ||
           (gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName) &&
             gameInfo.publicPlayersState.find((player) => userInfo.userName === player.userName).governmentStatus ===
               "isChancellor")) &&
+        prevProps.gameInfo.gameState &&
         prevProps.gameInfo.gameState.phase !== "presidentSelectingPolicy")
     ) {
       this.setState({ inputValue: "" });
@@ -158,7 +167,7 @@ class Gamechat extends React.Component {
         prevProps.gameInfo.chats &&
         gameInfo.chats &&
         prevProps.gameInfo.chats.length < gameInfo.chats.length) ||
-      (!this.state.processedChats && !gameInfo.general.private)
+      (!this.state.processedChats && gameInfo.general && !gameInfo.general.private)
     ) {
       this.setState(
         {

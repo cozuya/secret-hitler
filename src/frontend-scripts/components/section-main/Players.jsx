@@ -30,7 +30,7 @@ class Players extends React.Component {
         this.setState({ playerNotes: notes });
       });
 
-      const seatedPlayers = gameInfo.publicPlayersState
+      const seatedPlayers = (gameInfo.publicPlayersState || [])
         .filter((player) => player.userName !== userInfo.userName)
         .map((player) => player.userName);
 
@@ -227,6 +227,11 @@ class Players extends React.Component {
     const { gameInfo, userInfo, userList, hideRoles, isReplay } = this.props;
     const { gameSettings } = userInfo;
     const { playersState, gameState, publicPlayersState } = gameInfo;
+    // renderPlayers reads gameInfo.general/gameState and maps publicPlayersState throughout; on a partial
+    // payload, render nothing rather than throwing into the top-level error boundary.
+    if (!gameInfo.general || !gameState || !Array.isArray(publicPlayersState)) {
+      return null;
+    }
     const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
     const isStaff = userInfo.staffRole && userInfo.staffRole !== "veteran" && userInfo.staffRole !== "altmod";
 
@@ -484,7 +489,8 @@ class Players extends React.Component {
               return classes;
             })()}
           />
-          {userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName) && (
+          {/* blacklist can be absent on a partial/older gameSettings — guard it like the userInBlacklist call sites do */}
+          {userInfo.gameSettings && userInfo.gameSettings.blacklist?.includes(player.userName) && (
             <i title="This player is on your blacklist" className={"large file icon blacklist"} />
           )}
           <div
@@ -627,6 +633,18 @@ class Players extends React.Component {
   };
 
   render() {
+    // renderTakeSeat()/renderPlayers() below dereference gameInfo.gameState/publicPlayersState/general; on a
+    // partial payload (mid-remake, or an observer's first update) render nothing rather than throwing into the
+    // top-level error boundary. Mirrors the guard at the top of CardFlinger/Tracks render().
+    if (
+      !this.props.gameInfo ||
+      !this.props.gameInfo.gameState ||
+      !this.props.gameInfo.general ||
+      !Array.isArray(this.props.gameInfo.publicPlayersState)
+    ) {
+      return null;
+    }
+
     const { isReplay } = this.props;
     const handlePasswordInputChange = (e) => {
       this.setState({ passwordValue: `${e.target.value}` });
@@ -637,7 +655,7 @@ class Players extends React.Component {
         reportTextValue: `${e.target.value}`,
       });
     };
-    const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
+    const isBlind = this.props.gameInfo.general?.blindMode && !this.props.gameInfo.gameState?.isCompleted;
 
     return (
       <section className="players">

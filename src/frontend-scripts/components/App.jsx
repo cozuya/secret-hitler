@@ -397,7 +397,7 @@ export class App extends React.Component {
   makeQuickDefault() {
     const data = {
       flag: "none",
-      name: "New Game",
+      gameName: "New Game",
       minPlayersCount: 5,
       excludedPlayerCount: [6],
       maxPlayersCount: 5,

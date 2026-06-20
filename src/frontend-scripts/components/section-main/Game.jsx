@@ -13,6 +13,20 @@ export default class Game extends React.Component {
   componentDidUpdate(prevProps) {
     const { userInfo, gameInfo } = this.props;
 
+    // Every branch below reads gameInfo.general / gameInfo.gameState / gameInfo.publicPlayersState on the
+    // current props (and general/gameState on prevProps) — audio cues, the tourny checks, the "all players
+    // left" redirect. A partial or out-of-order gameInfo payload would throw out of this lifecycle method
+    // into the top-level error boundary. Bail until both snapshots are shaped.
+    if (
+      !gameInfo.general ||
+      !gameInfo.gameState ||
+      !gameInfo.publicPlayersState ||
+      !prevProps.gameInfo.general ||
+      !prevProps.gameInfo.gameState
+    ) {
+      return;
+    }
+
     if (
       (userInfo.isSeated &&
         gameInfo.gameState &&
@@ -114,10 +128,10 @@ export default class Game extends React.Component {
     // All players have left the game, so we will return the observer to the main screen.
     if (
       (!gameInfo.publicPlayersState.length &&
-        !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+        !(gameInfo.general.isTourny && gameInfo.general.tournyInfo?.round === 0)) ||
       (gameInfo.general.isTourny &&
-        gameInfo.general.tournyInfo.round === 0 &&
-        !gameInfo.general.tournyInfo.queuedPlayers.length)
+        gameInfo.general.tournyInfo?.round === 0 &&
+        !gameInfo.general.tournyInfo?.queuedPlayers?.length)
     ) {
       window.location.hash = "#/";
     }

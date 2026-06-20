@@ -10,11 +10,21 @@ require("dotenv").config();
 // (the process manager brings us back up). Registering these handlers overrides Node's default
 // crash, so we MUST exit here; this logs, it never swallows.
 process.on("uncaughtException", (err) => {
-  console.error("FATAL uncaughtException — exiting:", (err && err.stack) || err);
+  const context = global.lastSocketPacketContext;
+  console.error(
+    "FATAL uncaughtException — exiting:",
+    (err && err.stack) || err,
+    context ? `\nlast socket packet (may be related): ${JSON.stringify(context)}` : ""
+  );
   process.exit(1);
 });
 process.on("unhandledRejection", (reason) => {
-  console.error("FATAL unhandledRejection — exiting:", (reason && reason.stack) || reason);
+  const context = global.lastSocketPacketContext;
+  console.error(
+    "FATAL unhandledRejection — exiting:",
+    (reason && reason.stack) || reason,
+    context ? `\nlast socket packet (may be related): ${JSON.stringify(context)}` : ""
+  );
   process.exit(1);
 });
 

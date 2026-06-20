@@ -164,6 +164,19 @@ class CardFlinger extends React.Component {
 
   render() {
     const { cardFlingerState } = this.props.gameInfo;
+
+    // render() maps over cardFlingerState and renderHelpMessage destructures gameState/general/
+    // publicPlayersState unconditionally; on a partial gameInfo payload, render nothing instead of
+    // throwing into the top-level error boundary.
+    if (
+      !this.props.gameInfo.gameState ||
+      !this.props.gameInfo.general ||
+      !Array.isArray(this.props.gameInfo.publicPlayersState) ||
+      !cardFlingerState
+    ) {
+      return null;
+    }
+
     const renderHelpMessage = () => {
       const { gameInfo, userInfo } = this.props;
       const { gameState, publicPlayersState, cardFlingerState, general } = gameInfo;

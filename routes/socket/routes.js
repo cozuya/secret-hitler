@@ -155,6 +155,23 @@ const ensureAuthenticated = (socket) => {
   }
 };
 
+// socket.io 2.x (unlike v3+) does not stop clients from emitting events that reuse socket.io /
+// EventEmitter reserved names. An inbound "error" would otherwise reach our socket.on("error")
+// listener, and "disconnect"/"disconnecting" could spoof the real lifecycle handlers. The client never
+// legitimately emits any of these (verified: no frontend emit() uses these names), so the socket.use
+// middleware drops them before dispatch — belt-and-suspenders with the non-fatal socket.on("error").
+const RESERVED_INBOUND_EVENTS = new Set([
+  "error",
+  "connect",
+  "connecting",
+  "disconnect",
+  "disconnecting",
+  "connect_error",
+  "connect_timeout",
+  "newListener",
+  "removeListener",
+]);
+
 const findGame = (data) => {
   if (games && data && data.uid && typeof data.uid === "string") {
     // Own-property guard: games is a plain object, so a forged uid like "constructor"/"__proto__"
@@ -201,37 +218,6 @@ const getSocketPacketContext = (socket, packet) => {
   };
 };
 
-const getSocketUserContext = (socket) => {
-  const passport = socket && socket.handshake && socket.handshake.session && socket.handshake.session.passport;
-  const user = passport && passport.user;
-  const gameName =
-    user &&
-    Object.keys(games).find(
-      (gameName) =>
-        games[gameName] &&
-        games[gameName].publicPlayersState &&
-        games[gameName].publicPlayersState.find((player) => player.userName === user && !player.leftGame)
-    );
-  const game = gameName && games[gameName];
-
-  return {
-    source: "socket-user",
-    user,
-    uid: game && game.general && game.general.uid,
-    hasGame: Boolean(game),
-    hasPrivate: Boolean(game && game.private),
-    hasSeatedPlayers: Boolean(game && game.private && Array.isArray(game.private.seatedPlayers)),
-    publicPlayerCount: game && game.publicPlayersState && game.publicPlayersState.length,
-    privatePlayerCount: game && game.private && game.private.seatedPlayers && game.private.seatedPlayers.length,
-    phase: game && game.gameState && game.gameState.phase,
-    isStarted: game && game.gameState && game.gameState.isStarted,
-    isTracksFlipped: game && game.gameState && game.gameState.isTracksFlipped,
-    isCompleted: game && game.gameState && game.gameState.isCompleted,
-    status: game && game.general && game.general.status,
-    presidentIndex: game && game.gameState && game.gameState.presidentIndex,
-  };
-};
-
 const gatherStaffUsernames = () => {
   Account.find({ staffRole: { $exists: true } })
     .then((accounts) => {
@@ -250,23 +236,33 @@ module.exports.socketRoutes = () => {
   gatherStaffUsernames();
 
   io.on("connection", (socket) => {
-    // A throw from a socket handler reaches here as socket.io's 'error' event carrying the ORIGINAL
-    // error (real stack). Log it so we get the actual file:line — socket.io otherwise buries it in an
-    // opaque ERR_UNHANDLED_ERROR — then crash so pm2 restarts clean. We do NOT swallow: a half-mutated
-    // game must not keep running, and continuing leaks the aborted handler's timers/state (per CLAUDE.md).
+    // This 'error' listener MUST NOT exit or do anything destructive. socket.io 2.4.1 does not reserve
+    // "error" on the receiving side, so a CLIENT can trigger it directly — `socket.emit("error", <anything>)`
+    // is dispatched straight here. A prior version called process.exit(1), which turned this into a remote
+    // kill switch: any browser console could crash the whole site, and the (client-supplied) payload was
+    // logged verbatim — an attacker sent a fake "...reading 'seatedPlayers'" string to spoof a real crash.
+    // Genuine handler throws do NOT arrive here; they escape to the uncaughtException handler in bin/dev.js
+    // (which logs global.lastSocketPacketContext). So: log real server-side Error objects only (transport
+    // noise), ignore client-supplied payloads, never exit.
     socket.on("error", (err) => {
-      const context = socket._lastPacketContext || getSocketUserContext(socket);
-      console.error(
-        `SOCKET HANDLER ERROR — crashing: context=${JSON.stringify(context)} error=${(err && err.stack) || err}`
-      );
-      process.exit(1);
+      if (err instanceof Error) {
+        console.error(`socket transport error: ${err.stack || err.message}`);
+      }
     });
     checkUserStatus(socket, () => {
       socket.emit("version", { current: version });
 
       // defensively check if game exists
       socket.use((packet, next) => {
-        socket._lastPacketContext = getSocketPacketContext(socket, packet);
+        // Drop client packets that reuse a reserved event name before they can reach any listener
+        // (see RESERVED_INBOUND_EVENTS). Not calling next() ends dispatch without firing the handler.
+        if (Array.isArray(packet) && RESERVED_INBOUND_EVENTS.has(packet[0])) return;
+
+        const context = getSocketPacketContext(socket, packet);
+        // Mirror onto a process global so bin/dev.js's uncaughtException/unhandledRejection handlers can
+        // log the crashing packet's context: a handler throw lands there (not socket's 'error' event),
+        // and this middleware runs before the handler, so it holds the right packet at crash time.
+        global.lastSocketPacketContext = { ...context, socketId: socket.id, at: Date.now() };
         const data = packet[1];
         const uid = data && data.uid;
         const isGameFound = uid && findGame(data);
