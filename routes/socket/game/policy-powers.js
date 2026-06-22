@@ -1,29 +1,30 @@
-const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util.js');
-const { startElection, shufflePolicies } = require('./common.js');
-const { sendGameList } = require('../user-requests');
-const { completeGame } = require('./end-game.js');
-const { assassinateMerlin } = require('./assassination');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require("../util.js");
+const { startElection, shufflePolicies } = require("./common.js");
+const { sendGameList } = require("../user-requests");
+const { completeGame } = require("./end-game.js");
+const { assassinateMerlin } = require("./assassination");
+const { playerIndexSchema, voteSchema } = require("./policy-powers.schema");
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeek = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.policyPeek = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.policyPeek && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.policyPeek = true;
+  if (!game.private.lock.policyPeek && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.policyPeek = true;
 
-		if (game.gameState.undrawnPolicyCount < 3) {
-			shufflePolicies(game);
-		}
+    if (game.gameState.undrawnPolicyCount < 3) {
+      shufflePolicies(game);
+    }
 
-		game.general.status = 'President to peek at policies.';
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		president.playersState[presidentIndex].policyNotification = true;
-		sendInProgressGameUpdate(game, true);
-	}
+    game.general.status = "President to peek at policies.";
+    game.publicPlayersState[presidentIndex].isLoader = true;
+    president.playersState[presidentIndex].policyNotification = true;
+    sendInProgressGameUpdate(game, true);
+  }
 };
 
 /**
@@ -32,408 +33,421 @@ module.exports.policyPeek = game => {
  * @param {object} socket - socket
  */
 module.exports.selectPolicies = (passport, game, socket) => {
-	const { presidentIndex } = game.gameState;
-	const { experiencedMode } = game.general;
-	const { seatedPlayers } = game.private;
-	const president = seatedPlayers[presidentIndex];
+  const { presidentIndex } = game.gameState;
+  const { experiencedMode } = game.general;
+  const { seatedPlayers } = game.private;
+  const president = seatedPlayers[presidentIndex];
 
-	if (game.gameState.isGameFrozen) {
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    return;
+  }
 
-	if (game.general.isRemade) {
-		return;
-	}
+  if (game.general.isRemade) {
+    return;
+  }
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-	if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectPolicies = true;
-		game.publicPlayersState[presidentIndex].isLoader = false;
+  if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.selectPolicies = true;
+    game.publicPlayersState[presidentIndex].isLoader = false;
 
-		if (game.private.policies.length < 3) {
-			shufflePolicies(game);
-		}
+    if (game.private.policies.length < 3) {
+      shufflePolicies(game);
+    }
 
-		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3)
-		});
+    game.private.summary = game.private.summary.updateLog({
+      policyPeek: game.private.policies.slice(0, 3),
+    });
 
-		president.cardFlingerState = [
-			{
-				position: 'middle-far-left',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.policies[0]}p`
-				}
-			},
-			{
-				position: 'middle-center',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.policies[1]}p`
-				}
-			},
-			{
-				position: 'middle-far-right',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.policies[2]}p`
-				}
-			}
-		];
+    president.cardFlingerState = [
+      {
+        position: "middle-far-left",
+        action: "active",
+        cardStatus: {
+          isFlipped: false,
+          cardFront: "policy",
+          cardBack: `${game.private.policies[0]}p`,
+        },
+      },
+      {
+        position: "middle-center",
+        action: "active",
+        cardStatus: {
+          isFlipped: false,
+          cardFront: "policy",
+          cardBack: `${game.private.policies[1]}p`,
+        },
+      },
+      {
+        position: "middle-far-right",
+        action: "active",
+        cardStatus: {
+          isFlipped: false,
+          cardFront: "policy",
+          cardBack: `${game.private.policies[2]}p`,
+        },
+      },
+    ];
 
-		game.gameState.audioCue = 'policyPeek';
-		president.playersState[presidentIndex].policyNotification = false;
-		sendInProgressGameUpdate(game, true);
+    game.gameState.audioCue = "policyPeek";
+    president.playersState[presidentIndex].policyNotification = false;
+    sendInProgressGameUpdate(game, true);
 
-		setTimeout(
-			() => {
-				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
-				sendInProgressGameUpdate(game, true);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
-		);
+    setTimeout(
+      () => {
+        president.cardFlingerState[0].cardStatus.isFlipped =
+          president.cardFlingerState[1].cardStatus.isFlipped =
+          president.cardFlingerState[2].cardStatus.isFlipped =
+            true;
+        sendInProgressGameUpdate(game, true);
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 500 : 2000
+    );
 
-		setTimeout(
-			() => {
-				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
-				president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
-				sendInProgressGameUpdate(game, true);
-				game.gameState.audioCue = '';
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000
-		);
+    setTimeout(
+      () => {
+        president.cardFlingerState[0].cardStatus.isFlipped =
+          president.cardFlingerState[1].cardStatus.isFlipped =
+          president.cardFlingerState[2].cardStatus.isFlipped =
+            false;
+        president.cardFlingerState[0].action =
+          president.cardFlingerState[1].action =
+          president.cardFlingerState[2].action =
+            "";
+        sendInProgressGameUpdate(game, true);
+        game.gameState.audioCue = "";
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 3500 : 6000
+    );
 
-		setTimeout(
-			() => {
-				president.cardFlingerState = [];
+    setTimeout(
+      () => {
+        president.cardFlingerState = [];
 
-				const modOnlyChat = {
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: 'President '
-						},
-						{
-							text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' peeks and sees '
-						},
-						{
-							text: game.private.policies[0] === 'liberal' ? 'B' : 'R',
-							type: game.private.policies[0]
-						},
-						{
-							text: game.private.policies[1] === 'liberal' ? 'B' : 'R',
-							type: game.private.policies[1]
-						},
-						{
-							text: game.private.policies[2] === 'liberal' ? 'B' : 'R',
-							type: game.private.policies[2]
-						},
-						{
-							text: '.'
-						}
-					]
-				};
-				game.private.hiddenInfoChat.push(modOnlyChat);
-				sendInProgressModChatUpdate(game, modOnlyChat);
+        const modOnlyChat = {
+          timestamp: new Date(),
+          gameChat: true,
+          chat: [
+            {
+              text: "President ",
+            },
+            {
+              text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+              type: "player",
+            },
+            {
+              text: " peeks and sees ",
+            },
+            {
+              text: game.private.policies[0] === "liberal" ? "B" : "R",
+              type: game.private.policies[0],
+            },
+            {
+              text: game.private.policies[1] === "liberal" ? "B" : "R",
+              type: game.private.policies[1],
+            },
+            {
+              text: game.private.policies[2] === "liberal" ? "B" : "R",
+              type: game.private.policies[2],
+            },
+            {
+              text: ".",
+            },
+          ],
+        };
+        game.private.hiddenInfoChat.push(modOnlyChat);
+        sendInProgressModChatUpdate(game, modOnlyChat);
 
-				if (!game.general.disableGamechat) {
-					president.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{ text: 'You peek at the top 3 policies and see that they are a ' },
-							{
-								text: game.private.policies[0],
-								type: game.private.policies[0]
-							},
-							{ text: ', a ' },
-							{
-								text: game.private.policies[1],
-								type: game.private.policies[1]
-							},
-							{ text: ', and a ' },
-							{
-								text: game.private.policies[2],
-								type: game.private.policies[2]
-							},
-							{ text: ' policy.' }
-						]
-					});
-				}
+        if (!game.general.disableGamechat) {
+          president.gameChats.push({
+            gameChat: true,
+            timestamp: new Date(),
+            chat: [
+              { text: "You peek at the top 3 policies and see that they are a " },
+              {
+                text: game.private.policies[0],
+                type: game.private.policies[0],
+              },
+              { text: ", a " },
+              {
+                text: game.private.policies[1],
+                type: game.private.policies[1],
+              },
+              { text: ", and a " },
+              {
+                text: game.private.policies[2],
+                type: game.private.policies[2],
+              },
+              { text: " policy." },
+            ],
+          });
+        }
 
-				sendInProgressGameUpdate(game);
-				game.trackState.electionTrackerCount = 0;
-				president.playersState[presidentIndex].claim = 'didPolicyPeek';
-				startElection(game);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
-		);
-	}
+        sendInProgressGameUpdate(game);
+        game.trackState.electionTrackerCount = 0;
+        president.playersState[presidentIndex].claim = "didPolicyPeek";
+        startElection(game);
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4500 : 7000
+    );
+  }
 };
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeekAndDrop = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.policyPeekAndDrop = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.policyPeekAndDrop && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.policyPeekAndDrop = true;
+  if (!game.private.lock.policyPeekAndDrop && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.policyPeekAndDrop = true;
 
-		if (game.gameState.undrawnPolicyCount < 3) {
-			shufflePolicies(game);
-		}
+    if (game.gameState.undrawnPolicyCount < 3) {
+      shufflePolicies(game);
+    }
 
-		game.general.status = 'President to peek at one policy.';
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		president.playersState[presidentIndex].policyNotification = true;
-		sendInProgressGameUpdate(game, true);
-	}
+    game.general.status = "President to peek at one policy.";
+    game.publicPlayersState[presidentIndex].isLoader = true;
+    president.playersState[presidentIndex].policyNotification = true;
+    sendInProgressGameUpdate(game, true);
+  }
 };
 
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
+ * @param {object} socket - socket
  */
-module.exports.selectOnePolicy = (passport, game) => {
-	const { presidentIndex } = game.gameState;
-	const { experiencedMode } = game.general;
-	const { seatedPlayers } = game.private;
-	const president = seatedPlayers[presidentIndex];
+module.exports.selectOnePolicy = (passport, game, socket) => {
+  const { presidentIndex } = game.gameState;
+  const { experiencedMode } = game.general;
+  const { seatedPlayers } = game.private;
+  const president = seatedPlayers[presidentIndex];
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-	if (!game.private.lock.selectOnePolicy && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectOnePolicy = true;
-		game.publicPlayersState[presidentIndex].isLoader = false;
+  if (!game.private.lock.selectOnePolicy && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.selectOnePolicy = true;
+    game.publicPlayersState[presidentIndex].isLoader = false;
 
-		if (game.private.policies.length < 3) {
-			shufflePolicies(game);
-		}
+    if (game.private.policies.length < 3) {
+      shufflePolicies(game);
+    }
 
-		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 1)
-		});
+    game.private.summary = game.private.summary.updateLog({
+      policyPeek: game.private.policies.slice(0, 1),
+    });
 
-		const policy = game.private.policies[0];
-		president.cardFlingerState = [
-			{
-				position: 'middle-center',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${policy}p`
-				}
-			}
-		];
+    const policy = game.private.policies[0];
+    president.cardFlingerState = [
+      {
+        position: "middle-center",
+        action: "active",
+        cardStatus: {
+          isFlipped: false,
+          cardFront: "policy",
+          cardBack: `${policy}p`,
+        },
+      },
+    ];
 
-		game.gameState.audioCue = 'policyPeek';
-		president.playersState[presidentIndex].policyNotification = false;
-		sendInProgressGameUpdate(game, true);
+    game.gameState.audioCue = "policyPeek";
+    president.playersState[presidentIndex].policyNotification = false;
+    sendInProgressGameUpdate(game, true);
 
-		setTimeout(
-			() => {
-				president.cardFlingerState[0].cardStatus.isFlipped = true;
-				sendInProgressGameUpdate(game, true);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
-		);
+    setTimeout(
+      () => {
+        president.cardFlingerState[0].cardStatus.isFlipped = true;
+        sendInProgressGameUpdate(game, true);
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 500 : 2000
+    );
 
-		setTimeout(
-			() => {
-				president.cardFlingerState[0].cardStatus.isFlipped = false;
-				president.cardFlingerState[0].action = '';
-				sendInProgressGameUpdate(game, true);
-				game.gameState.audioCue = '';
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000
-		);
+    setTimeout(
+      () => {
+        president.cardFlingerState[0].cardStatus.isFlipped = false;
+        president.cardFlingerState[0].action = "";
+        sendInProgressGameUpdate(game, true);
+        game.gameState.audioCue = "";
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 3500 : 6000
+    );
 
-		setTimeout(
-			() => {
-				president.cardFlingerState = [];
+    setTimeout(
+      () => {
+        president.cardFlingerState = [];
 
-				const modOnlyChat = {
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: 'President '
-						},
-						{
-							text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' peeks and sees '
-						},
-						{
-							text: game.private.policies[0] === 'liberal' ? 'B' : 'R',
-							type: game.private.policies[0]
-						},
-						{
-							text: '.'
-						}
-					]
-				};
-				game.private.hiddenInfoChat.push(modOnlyChat);
-				sendInProgressModChatUpdate(game, modOnlyChat);
+        const modOnlyChat = {
+          timestamp: new Date(),
+          gameChat: true,
+          chat: [
+            {
+              text: "President ",
+            },
+            {
+              text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+              type: "player",
+            },
+            {
+              text: " peeks and sees ",
+            },
+            {
+              text: game.private.policies[0] === "liberal" ? "B" : "R",
+              type: game.private.policies[0],
+            },
+            {
+              text: ".",
+            },
+          ],
+        };
+        game.private.hiddenInfoChat.push(modOnlyChat);
+        sendInProgressModChatUpdate(game, modOnlyChat);
 
-				if (!game.general.disableGamechat) {
-					president.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{ text: 'You peek at the top policy and see that it is a ' },
-							{
-								text: policy,
-								type: policy
-							},
-							{ text: ' policy.' }
-						]
-					});
-				}
+        if (!game.general.disableGamechat) {
+          president.gameChats.push({
+            gameChat: true,
+            timestamp: new Date(),
+            chat: [
+              { text: "You peek at the top policy and see that it is a " },
+              {
+                text: policy,
+                type: policy,
+              },
+              { text: " policy." },
+            ],
+          });
+        }
 
-				sendInProgressGameUpdate(game);
-				game.trackState.electionTrackerCount = 0;
-				president.playersState[presidentIndex].claim = 'didSinglePolicyPeek';
-				setTimeout(
-					() => {
-						const chat = {
-							gameChat: true,
-							timestamp: new Date(),
-							chat: [
-								{
-									text:
-										'You must vote whether or not to discard this policy.  Select Ja to discard the peeked policy or select Nein to put it back on the deck.'
-								}
-							]
-						};
+        sendInProgressGameUpdate(game);
+        game.trackState.electionTrackerCount = 0;
+        president.playersState[presidentIndex].claim = "didSinglePolicyPeek";
+        setTimeout(
+          () => {
+            const chat = {
+              gameChat: true,
+              timestamp: new Date(),
+              chat: [
+                {
+                  text: "You must vote whether or not to discard this policy.  Select Ja to discard the peeked policy or select Nein to put it back on the deck.",
+                },
+              ],
+            };
 
-						game.publicPlayersState[presidentIndex].isLoader = true;
+            game.publicPlayersState[presidentIndex].isLoader = true;
 
-						president.cardFlingerState = [
-							{
-								position: 'middle-left',
-								notificationStatus: '',
-								action: 'active',
-								cardStatus: {
-									isFlipped: false,
-									cardFront: 'ballot',
-									cardBack: 'ja'
-								}
-							},
-							{
-								position: 'middle-right',
-								action: 'active',
-								notificationStatus: '',
-								cardStatus: {
-									isFlipped: false,
-									cardFront: 'ballot',
-									cardBack: 'nein'
-								}
-							}
-						];
+            president.cardFlingerState = [
+              {
+                position: "middle-left",
+                notificationStatus: "",
+                action: "active",
+                cardStatus: {
+                  isFlipped: false,
+                  cardFront: "ballot",
+                  cardBack: "ja",
+                },
+              },
+              {
+                position: "middle-right",
+                action: "active",
+                notificationStatus: "",
+                cardStatus: {
+                  isFlipped: false,
+                  cardFront: "ballot",
+                  cardBack: "nein",
+                },
+              },
+            ];
 
-						if (!game.general.disableGamechat) {
-							president.gameChats.push(chat);
-						}
+            if (!game.general.disableGamechat) {
+              president.gameChats.push(chat);
+            }
 
-						sendInProgressGameUpdate(game);
+            sendInProgressGameUpdate(game);
 
-						setTimeout(
-							() => {
-								president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
-								president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = 'notification';
-								game.gameState.phase = 'presidentVoteOnBurn';
+            setTimeout(
+              () => {
+                president.cardFlingerState[0].cardStatus.isFlipped =
+                  president.cardFlingerState[1].cardStatus.isFlipped = true;
+                president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus =
+                  "notification";
+                game.gameState.phase = "presidentVoteOnBurn";
 
-								if (game.general.timedMode) {
-									if (game.private.timerId) {
-										clearTimeout(game.private.timerId);
-										game.private.timerId = null;
-									}
-									game.gameState.timedModeEnabled = true;
-									game.private.timerId = setTimeout(
-										() => {
-											if (game.gameState.timedModeEnabled) {
-												game.gameState.timedModeEnabled = false;
-												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
-												game.private.replayGameChats.push({
-													gameChat: true,
-													timestamp: new Date(),
-													chat: [
-														{
-															text: president.userName,
-															type: 'player'
-														},
-														{
-															text: ' was forced by the timer to randomly select whether to discard the top policy.'
-														}
-													]
-												});
-											}
-										},
-										process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-									)[Symbol.toPrimitive]();
-								}
+                if (game.general.timedMode) {
+                  if (game.private.timerId) {
+                    clearTimeout(game.private.timerId);
+                    game.private.timerId = null;
+                  }
+                  game.gameState.timedModeEnabled = true;
+                  game.private.timerId = setTimeout(
+                    () => {
+                      if (game.gameState.timedModeEnabled) {
+                        game.gameState.timedModeEnabled = false;
+                        selectBurnCard({ user: president.userName }, game, {
+                          vote: Boolean(Math.floor(Math.random() * 2)),
+                        });
+                        game.private.replayGameChats.push({
+                          gameChat: true,
+                          timestamp: new Date(),
+                          chat: [
+                            {
+                              text: president.userName,
+                              type: "player",
+                            },
+                            {
+                              text: " was forced by the timer to randomly select whether to discard the top policy.",
+                            },
+                          ],
+                        });
+                      }
+                    },
+                    process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
+                  )[Symbol.toPrimitive]();
+                }
 
-								sendInProgressGameUpdate(game);
-							},
-							process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000
-						);
-					},
-					process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 2000
-				);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
-		);
-	}
+                sendInProgressGameUpdate(game);
+              },
+              process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 500 : 1000
+            );
+          },
+          process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 1000 : 2000
+        );
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4500 : 7000
+    );
+  }
 };
 
 /**
@@ -443,115 +457,119 @@ module.exports.selectOnePolicy = (passport, game) => {
  * @param {object} socket - socket
  */
 module.exports.selectBurnCard = (passport, game, data, socket) => {
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-	}
+  const parsed = voteSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+  }
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	const { experiencedMode } = game.general;
-	const { presidentIndex } = game.gameState;
-	const { seatedPlayers } = game.private;
-	const president = seatedPlayers[presidentIndex];
-	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  const { experiencedMode } = game.general;
+  const { presidentIndex } = game.gameState;
+  const { seatedPlayers } = game.private;
+  const president = seatedPlayers[presidentIndex];
+  const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
 
-	if (game.gameState.phase !== 'presidentVoteOnBurn') {
-		return;
-	}
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectBurnCard = true;
+  if (game.gameState.phase !== "presidentVoteOnBurn") {
+    return;
+  }
 
-		game.private.summary = game.private.summary.updateLog({
-			presidentVeto: data.vote
-		});
-		game.publicPlayersState[presidentIndex].isLoader = false;
-		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
-		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
+  if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.selectBurnCard = true;
 
-		if (data.vote) {
-			president.cardFlingerState[0].notificationStatus = 'selected';
-			president.cardFlingerState[1].notificationStatus = '';
-		} else {
-			president.cardFlingerState[0].notificationStatus = '';
-			president.cardFlingerState[1].notificationStatus = 'selected';
-		}
+    game.private.summary = game.private.summary.updateLog({
+      presidentVeto: data.vote,
+    });
+    game.publicPlayersState[presidentIndex].isLoader = false;
+    president.cardFlingerState[0].action = president.cardFlingerState[1].action = "";
+    president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
 
-		publicPresident.cardStatus = {
-			cardDisplayed: true,
-			cardFront: 'ballot',
-			cardBack: {
-				cardName: data.vote ? 'ja' : 'nein'
-			}
-		};
+    if (data.vote) {
+      president.cardFlingerState[0].notificationStatus = "selected";
+      president.cardFlingerState[1].notificationStatus = "";
+    } else {
+      president.cardFlingerState[0].notificationStatus = "";
+      president.cardFlingerState[1].notificationStatus = "selected";
+    }
 
-		sendInProgressGameUpdate(game);
+    publicPresident.cardStatus = {
+      cardDisplayed: true,
+      cardFront: "ballot",
+      cardBack: {
+        cardName: data.vote ? "ja" : "nein",
+      },
+    };
 
-		setTimeout(
-			() => {
-				const chat = {
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{ text: 'President ' },
-						{
-							text: game.general.blindMode
-								? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
-								: `${passport.user} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
-							type: 'player'
-						},
-						{
-							text: data.vote ? ' has chosen to discard the top card.' : ' has chosen to keep the top card.'
-						}
-					]
-				};
+    sendInProgressGameUpdate(game);
 
-				if (!game.general.disableGamechat) {
-					game.private.seatedPlayers.forEach(player => {
-						player.gameChats.push(chat);
-					});
-					game.private.unSeatedGameChats.push(chat);
-				}
+    setTimeout(
+      () => {
+        const chat = {
+          timestamp: new Date(),
+          gameChat: true,
+          chat: [
+            { text: "President " },
+            {
+              text: game.general.blindMode
+                ? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
+                : `${passport.user} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+              type: "player",
+            },
+            {
+              text: data.vote ? " has chosen to discard the top card." : " has chosen to keep the top card.",
+            },
+          ],
+        };
 
-				publicPresident.cardStatus.isFlipped = true;
+        if (!game.general.disableGamechat) {
+          game.private.seatedPlayers.forEach((player) => {
+            player.gameChats.push(chat);
+          });
+          game.private.unSeatedGameChats.push(chat);
+        }
 
-				president.cardFlingerState = [];
-				if (data.vote) {
-					game.private.policies.shift();
-					game.gameState.undrawnPolicyCount--;
-					if (game.gameState.undrawnPolicyCount < 3) {
-						shufflePolicies(game);
-					}
-				}
-				sendInProgressGameUpdate(game);
+        publicPresident.cardStatus.isFlipped = true;
 
-				setTimeout(
-					() => {
-						startElection(game);
-					},
-					process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
-				);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
-		);
-	}
+        president.cardFlingerState = [];
+        if (data.vote) {
+          game.private.policies.shift();
+          game.gameState.undrawnPolicyCount--;
+          if (game.gameState.undrawnPolicyCount < 3) {
+            shufflePolicies(game);
+          }
+        }
+        sendInProgressGameUpdate(game);
+
+        setTimeout(
+          () => {
+            startElection(game);
+          },
+          process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 1000 : 3000
+        );
+      },
+      process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 1000 : 3000
+    );
+  }
 };
 
 const selectBurnCard = module.exports.selectBurnCard; // site crashes without this line xd
@@ -559,64 +577,66 @@ const selectBurnCard = module.exports.selectBurnCard; // site crashes without th
 /**
  * @param {object} game - game to act on.
  */
-module.exports.investigateLoyalty = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.investigateLoyalty = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	president.playersState.forEach((player, i) => {
-		if (!seatedPlayers[i]) {
-			console.error(`PLAYERSTATE CONTAINS NULL!\n${JSON.stringify(president.playersState)}\n${JSON.stringify(game)}`);
-		}
-	});
-	const hasTarget =
-		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
-	if (!hasTarget) {
-		const t = new Date();
+  president.playersState.forEach((player, i) => {
+    if (!seatedPlayers[i]) {
+      console.error(`PLAYERSTATE CONTAINS NULL!\n${JSON.stringify(president.playersState)}\n${JSON.stringify(game)}`);
+    }
+  });
+  const hasTarget =
+    president.playersState.filter(
+      (player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated
+    ).length > 0;
+  if (!hasTarget) {
+    const t = new Date();
 
-		t.setMilliseconds(t.getMilliseconds + 1);
+    t.setMilliseconds(t.getMilliseconds + 1);
 
-		const chat = {
-			timestamp: t,
-			gameChat: true,
-			chat: [
-				{ text: 'President ' },
-				{
-					text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: '  has no valid investigation target.' }
-			]
-		};
+    const chat = {
+      timestamp: t,
+      gameChat: true,
+      chat: [
+        { text: "President " },
+        {
+          text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+          type: "player",
+        },
+        { text: "  has no valid investigation target." },
+      ],
+    };
 
-		seatedPlayers.forEach((player, i) => {
-			player.gameChats.push(chat);
-		});
+    seatedPlayers.forEach((player, i) => {
+      player.gameChats.push(chat);
+    });
 
-		game.private.unSeatedGameChats.push(chat);
-		startElection(game);
-		return;
-	}
+    game.private.unSeatedGameChats.push(chat);
+    startElection(game);
+    return;
+  }
 
-	if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.investigateLoyalty = true;
+  if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.investigateLoyalty = true;
 
-		game.general.status = 'Waiting for President to investigate.';
-		president.playersState
-			.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		game.gameState.clickActionInfo = [
-			president.userName,
-			seatedPlayers
-				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated)
-				.map(player => seatedPlayers.indexOf(player))
-		];
-		game.gameState.phase = 'selectPartyMembershipInvestigate';
-		sendInProgressGameUpdate(game, true);
-	}
+    game.general.status = "Waiting for President to investigate.";
+    president.playersState
+      .filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated)
+      .forEach((player) => {
+        player.notificationStatus = "notification";
+      });
+    game.publicPlayersState[presidentIndex].isLoader = true;
+    game.gameState.clickActionInfo = [
+      president.userName,
+      seatedPlayers
+        .filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated)
+        .map((player) => seatedPlayers.indexOf(player)),
+    ];
+    game.gameState.phase = "selectPartyMembershipInvestigate";
+    sendInProgressGameUpdate(game, true);
+  }
 };
 
 /**
@@ -626,217 +646,232 @@ module.exports.investigateLoyalty = game => {
  * @param {object} socket - socket
  */
 module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket) => {
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	const { playerIndex } = data;
-	const { experiencedMode } = game.general;
-	const { presidentIndex } = game.gameState;
-	const { seatedPlayers } = game.private;
-	const president = seatedPlayers[presidentIndex];
-	if (!game.private.seatedPlayers[playerIndex]) return;
-	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (playerIndex === presidentIndex) {
-		return;
-	}
+  const { playerIndex } = data;
+  const { experiencedMode } = game.general;
+  const { presidentIndex } = game.gameState;
+  const { seatedPlayers } = game.private;
+  const president = seatedPlayers[presidentIndex];
+  if (!game.private.seatedPlayers[playerIndex]) return;
+  const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  if (playerIndex === presidentIndex) {
+    return;
+  }
 
-	if (game.gameState.phase !== 'selectPartyMembershipInvestigate') {
-		return;
-	}
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectPartyMembershipInvestigate = true;
+  if (game.gameState.phase !== "selectPartyMembershipInvestigate") {
+    return;
+  }
 
-		if (!seatedPlayers[playerIndex].isDead && !seatedPlayers[playerIndex].wasInvestigated) {
-			game.gameState.audioCue = 'selectedInvestigate';
-			seatedPlayers[playerIndex].wasInvestigated = true;
+  if (
+    !game.private.lock.selectPartyMembershipInvestigate &&
+    !(game.general.isTourny && game.general.tournyInfo.isCancelled)
+  ) {
+    game.private.lock.selectPartyMembershipInvestigate = true;
 
-			president.playersState.forEach(player => {
-				player.notificationStatus = '';
-			});
+    if (!seatedPlayers[playerIndex].isDead && !seatedPlayers[playerIndex].wasInvestigated) {
+      game.gameState.audioCue = "selectedInvestigate";
+      seatedPlayers[playerIndex].wasInvestigated = true;
 
-			game.private.summary = game.private.summary.updateLog({
-				investigationId: playerIndex,
-				investigatorId: presidentIndex
-			});
+      president.playersState.forEach((player) => {
+        player.notificationStatus = "";
+      });
 
-			game.publicPlayersState[presidentIndex].isLoader = false;
-			game.publicPlayersState[playerIndex].cardStatus = {
-				cardDisplayed: true,
-				cardFront: 'partymembership',
-				cardBack: {}
-			};
+      game.private.summary = game.private.summary.updateLog({
+        investigationId: playerIndex,
+        investigatorId: presidentIndex,
+      });
 
-			sendInProgressGameUpdate(game, true);
+      game.publicPlayersState[presidentIndex].isLoader = false;
+      game.publicPlayersState[playerIndex].cardStatus = {
+        cardDisplayed: true,
+        cardFront: "partymembership",
+        cardBack: {},
+      };
 
-			setTimeout(
-				() => {
-					const chat = {
-						timestamp: new Date(),
-						gameChat: true
-					};
+      sendInProgressGameUpdate(game, true);
 
-					president.playersState[playerIndex].cardStatus = {
-						isFlipped: true,
-						cardBack: {
-							cardName: `membership-${playersTeam}`
-						}
-					};
+      setTimeout(
+        () => {
+          const chat = {
+            timestamp: new Date(),
+            gameChat: true,
+          };
 
-					if (!game.general.disableGamechat) {
-						seatedPlayers
-							.filter(player => player.userName !== president.userName)
-							.forEach(player => {
-								chat.chat = [
-									{ text: 'President ' },
-									{
-										text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-										type: 'player'
-									},
-									{ text: ' investigates the party membership of ' },
-									{
-										text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-										type: 'player'
-									},
-									{ text: '.' }
-								];
+          president.playersState[playerIndex].cardStatus = {
+            isFlipped: true,
+            cardBack: {
+              cardName: `membership-${playersTeam}`,
+            },
+          };
 
-								player.gameChats.push(chat);
-							});
+          if (!game.general.disableGamechat) {
+            seatedPlayers
+              .filter((player) => player.userName !== president.userName)
+              .forEach((player) => {
+                chat.chat = [
+                  { text: "President " },
+                  {
+                    text: game.general.blindMode
+                      ? `{${presidentIndex + 1}}`
+                      : `${president.userName} {${presidentIndex + 1}}`,
+                    type: "player",
+                  },
+                  { text: " investigates the party membership of " },
+                  {
+                    text: game.general.blindMode
+                      ? `{${playerIndex + 1}}`
+                      : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+                    type: "player",
+                  },
+                  { text: "." },
+                ];
 
-						game.private.unSeatedGameChats.push(chat);
+                player.gameChats.push(chat);
+              });
 
-						president.gameChats.push({
-							timestamp: new Date(),
-							gameChat: true,
-							chat: [
-								{ text: 'You investigate the party membership of ' },
-								{
-									text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-									type: 'player'
-								},
-								{ text: ' and determine that they are on the ' },
-								{
-									text: playersTeam,
-									type: playersTeam
-								},
-								{ text: ' team.' }
-							]
-						});
-					}
+            game.private.unSeatedGameChats.push(chat);
 
-					const modOnlyChat = {
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: 'President '
-							},
-							{
-								text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-								type: 'player'
-							},
-							{
-								text: ' sees a '
-							},
-							{
-								text: playersTeam,
-								type: playersTeam
-							},
-							{
-								text: ' loyalty card.'
-							}
-						]
-					};
-					game.private.hiddenInfoChat.push(modOnlyChat);
-					sendInProgressModChatUpdate(game, modOnlyChat);
+            president.gameChats.push({
+              timestamp: new Date(),
+              gameChat: true,
+              chat: [
+                { text: "You investigate the party membership of " },
+                {
+                  text: game.general.blindMode
+                    ? `{${playerIndex + 1}}`
+                    : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+                  type: "player",
+                },
+                { text: " and determine that they are on the " },
+                {
+                  text: playersTeam,
+                  type: playersTeam,
+                },
+                { text: " team." },
+              ],
+            });
+          }
 
-					if (
-						!game.general.disableGamechat &&
-						!(
-							game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' &&
-							president.role.team === 'fascist' &&
-							president.role.cardName !== 'monarchist'
-						)
-					) {
-						president.playersState[playerIndex].nameStatus = playersTeam;
-					}
-					game.private.invIndex = playerIndex;
-					sendInProgressGameUpdate(game);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
-			);
+          const modOnlyChat = {
+            timestamp: new Date(),
+            gameChat: true,
+            chat: [
+              {
+                text: "President ",
+              },
+              {
+                text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+                type: "player",
+              },
+              {
+                text: " sees a ",
+              },
+              {
+                text: playersTeam,
+                type: playersTeam,
+              },
+              {
+                text: " loyalty card.",
+              },
+            ],
+          };
+          game.private.hiddenInfoChat.push(modOnlyChat);
+          sendInProgressModChatUpdate(game, modOnlyChat);
 
-			setTimeout(
-				() => {
-					game.gameState.audioCue = '';
-					president.playersState[playerIndex].cardStatus.isFlipped = false;
-					sendInProgressGameUpdate(game, true);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000
-			);
+          if (
+            !game.general.disableGamechat &&
+            !(
+              game.private.seatedPlayers[playerIndex].role.cardName === "hitler" &&
+              president.role.team === "fascist" &&
+              president.role.cardName !== "monarchist"
+            )
+          ) {
+            president.playersState[playerIndex].nameStatus = playersTeam;
+          }
+          game.private.invIndex = playerIndex;
+          sendInProgressGameUpdate(game);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 200 : 2000
+      );
 
-			setTimeout(
-				() => {
-					game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
-					president.playersState[playerIndex].cardStatus.cardBack = {};
-					president.playersState[presidentIndex].claim = 'didInvestigateLoyalty';
-					sendInProgressGameUpdate(game, true);
-					startElection(game);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000
-			);
-		}
-	}
+      setTimeout(
+        () => {
+          game.gameState.audioCue = "";
+          president.playersState[playerIndex].cardStatus.isFlipped = false;
+          sendInProgressGameUpdate(game, true);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4000 : 6000
+      );
+
+      setTimeout(
+        () => {
+          game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
+          president.playersState[playerIndex].cardStatus.cardBack = {};
+          president.playersState[presidentIndex].claim = "didInvestigateLoyalty";
+          sendInProgressGameUpdate(game, true);
+          startElection(game);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4200 : 8000
+      );
+    }
+  }
 };
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.showPlayerLoyalty = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.showPlayerLoyalty = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.showPlayerLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.showPlayerLoyalty = true;
+  if (!game.private.lock.showPlayerLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.showPlayerLoyalty = true;
 
-		game.general.status = 'Waiting for President to show their party.';
-		president.playersState
-			.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		game.gameState.clickActionInfo = [
-			president.userName,
-			seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))
-		];
-		game.gameState.phase = 'selectPartyMembershipInvestigateReverse';
-		sendInProgressGameUpdate(game, true);
-	}
+    game.general.status = "Waiting for President to show their party.";
+    president.playersState
+      .filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+      .forEach((player) => {
+        player.notificationStatus = "notification";
+      });
+    game.publicPlayersState[presidentIndex].isLoader = true;
+    game.gameState.clickActionInfo = [
+      president.userName,
+      seatedPlayers
+        .filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+        .map((player) => seatedPlayers.indexOf(player)),
+    ];
+    game.gameState.phase = "selectPartyMembershipInvestigateReverse";
+    sendInProgressGameUpdate(game, true);
+  }
 };
 
 /**
@@ -846,233 +881,254 @@ module.exports.showPlayerLoyalty = game => {
  * @param {object} socket - socket
  */
 module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	const { playerIndex } = data;
-	const { experiencedMode } = game.general;
-	const { presidentIndex } = game.gameState;
-	const { seatedPlayers } = game.private;
-	const president = seatedPlayers[presidentIndex];
-	const playersTeam = game.private.seatedPlayers[presidentIndex].role.team;
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (playerIndex === presidentIndex) {
-		return;
-	}
+  const { playerIndex } = data;
+  const { experiencedMode } = game.general;
+  const { presidentIndex } = game.gameState;
+  const { seatedPlayers } = game.private;
+  const president = seatedPlayers[presidentIndex];
+  const playersTeam = game.private.seatedPlayers[presidentIndex].role.team;
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  if (playerIndex === presidentIndex) {
+    return;
+  }
 
-	if (game.gameState.phase !== 'selectPartyMembershipInvestigateReverse') {
-		return;
-	}
+  if (!seatedPlayers[playerIndex]) {
+    return; // out-of-range (but integer) seat — guard before locking the phase below
+  }
 
-	if (!game.private.lock.selectPartyMembershipInvestigateReverse && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectPartyMembershipInvestigateReverse = true;
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-		const targetPlayer = seatedPlayers[playerIndex];
-		if (!targetPlayer.isDead) {
-			game.gameState.audioCue = 'selectedInvestigate';
-			seatedPlayers[presidentIndex].wasInvestigated = true;
+  if (game.gameState.phase !== "selectPartyMembershipInvestigateReverse") {
+    return;
+  }
 
-			president.playersState.forEach(player => {
-				player.notificationStatus = '';
-			});
+  if (
+    !game.private.lock.selectPartyMembershipInvestigateReverse &&
+    !(game.general.isTourny && game.general.tournyInfo.isCancelled)
+  ) {
+    game.private.lock.selectPartyMembershipInvestigateReverse = true;
 
-			game.private.summary = game.private.summary.updateLog({
-				investigationId: presidentIndex,
-				investigatorId: playerIndex
-			});
+    const targetPlayer = seatedPlayers[playerIndex];
+    if (!targetPlayer.isDead) {
+      game.gameState.audioCue = "selectedInvestigate";
+      seatedPlayers[presidentIndex].wasInvestigated = true;
 
-			game.publicPlayersState[presidentIndex].isLoader = false;
-			game.publicPlayersState[presidentIndex].cardStatus = {
-				cardDisplayed: true,
-				cardFront: 'partymembership',
-				cardBack: {}
-			};
+      president.playersState.forEach((player) => {
+        player.notificationStatus = "";
+      });
 
-			sendInProgressGameUpdate(game, true);
+      game.private.summary = game.private.summary.updateLog({
+        investigationId: presidentIndex,
+        investigatorId: playerIndex,
+      });
 
-			setTimeout(
-				() => {
-					const chat = {
-						timestamp: new Date(),
-						gameChat: true
-					};
+      game.publicPlayersState[presidentIndex].isLoader = false;
+      game.publicPlayersState[presidentIndex].cardStatus = {
+        cardDisplayed: true,
+        cardFront: "partymembership",
+        cardBack: {},
+      };
 
-					targetPlayer.playersState[presidentIndex].cardStatus = {
-						isFlipped: true,
-						cardBack: {
-							cardName: `membership-${playersTeam}`
-						}
-					};
+      sendInProgressGameUpdate(game, true);
 
-					if (!game.general.disableGamechat) {
-						seatedPlayers
-							.filter(player => player.userName !== president.userName && player.userName !== targetPlayer.userName)
-							.forEach(player => {
-								chat.chat = [
-									{ text: 'President ' },
-									{
-										text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-										type: 'player'
-									},
-									{ text: ' shows their party membership to ' },
-									{
-										text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-										type: 'player'
-									},
-									{ text: '.' }
-								];
+      setTimeout(
+        () => {
+          const chat = {
+            timestamp: new Date(),
+            gameChat: true,
+          };
 
-								player.gameChats.push(chat);
-							});
+          targetPlayer.playersState[presidentIndex].cardStatus = {
+            isFlipped: true,
+            cardBack: {
+              cardName: `membership-${playersTeam}`,
+            },
+          };
 
-						game.private.unSeatedGameChats.push(chat);
+          if (!game.general.disableGamechat) {
+            seatedPlayers
+              .filter((player) => player.userName !== president.userName && player.userName !== targetPlayer.userName)
+              .forEach((player) => {
+                chat.chat = [
+                  { text: "President " },
+                  {
+                    text: game.general.blindMode
+                      ? `{${presidentIndex + 1}}`
+                      : `${president.userName} {${presidentIndex + 1}}`,
+                    type: "player",
+                  },
+                  { text: " shows their party membership to " },
+                  {
+                    text: game.general.blindMode
+                      ? `{${playerIndex + 1}}`
+                      : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+                    type: "player",
+                  },
+                  { text: "." },
+                ];
 
-						president.gameChats.push({
-							timestamp: new Date(),
-							gameChat: true,
-							chat: [
-								{
-									text: 'You have shown your party membership card to '
-								},
-								{
-									text: game.general.blindMode ? `{${playerIndex + 1}}` : `${targetPlayer.userName} {${playerIndex + 1}}`,
-									type: 'player'
-								},
-								{ text: '.' }
-							]
-						});
-						targetPlayer.gameChats.push({
-							timestamp: new Date(),
-							gameChat: true,
-							chat: [
-								{
-									text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-									type: 'player'
-								},
-								{ text: ' has shown you their party membership, and you determine that they are on the ' },
-								{
-									text: playersTeam,
-									type: playersTeam
-								},
-								{ text: ' team.' }
-							]
-						});
-					}
+                player.gameChats.push(chat);
+              });
 
-					const modOnlyChat = {
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: 'President '
-							},
-							{
-								text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-								type: 'player'
-							},
-							{
-								text: ' shows their '
-							},
-							{
-								text: playersTeam,
-								type: playersTeam
-							},
-							{
-								text: ' loyalty card.'
-							}
-						]
-					};
-					game.private.hiddenInfoChat.push(modOnlyChat);
-					sendInProgressModChatUpdate(game, modOnlyChat);
+            game.private.unSeatedGameChats.push(chat);
 
-					if (
-						!game.general.disableGamechat &&
-						!(
-							game.private.seatedPlayers[presidentIndex].role.cardName === 'hitler' &&
-							targetPlayer.role.team === 'fascist' &&
-							targetPlayer.role.team !== 'monarchist'
-						)
-					) {
-						targetPlayer.playersState[presidentIndex].nameStatus = playersTeam;
-					}
+            president.gameChats.push({
+              timestamp: new Date(),
+              gameChat: true,
+              chat: [
+                {
+                  text: "You have shown your party membership card to ",
+                },
+                {
+                  text: game.general.blindMode
+                    ? `{${playerIndex + 1}}`
+                    : `${targetPlayer.userName} {${playerIndex + 1}}`,
+                  type: "player",
+                },
+                { text: "." },
+              ],
+            });
+            targetPlayer.gameChats.push({
+              timestamp: new Date(),
+              gameChat: true,
+              chat: [
+                {
+                  text: game.general.blindMode
+                    ? `{${presidentIndex + 1}}`
+                    : `${president.userName} {${presidentIndex + 1}}`,
+                  type: "player",
+                },
+                { text: " has shown you their party membership, and you determine that they are on the " },
+                {
+                  text: playersTeam,
+                  type: playersTeam,
+                },
+                { text: " team." },
+              ],
+            });
+          }
 
-					game.private.invIndex = presidentIndex;
-					sendInProgressGameUpdate(game);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
-			);
+          const modOnlyChat = {
+            timestamp: new Date(),
+            gameChat: true,
+            chat: [
+              {
+                text: "President ",
+              },
+              {
+                text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+                type: "player",
+              },
+              {
+                text: " shows their ",
+              },
+              {
+                text: playersTeam,
+                type: playersTeam,
+              },
+              {
+                text: " loyalty card.",
+              },
+            ],
+          };
+          game.private.hiddenInfoChat.push(modOnlyChat);
+          sendInProgressModChatUpdate(game, modOnlyChat);
 
-			setTimeout(
-				() => {
-					game.gameState.audioCue = '';
-					targetPlayer.playersState[presidentIndex].cardStatus.isFlipped = false;
-					sendInProgressGameUpdate(game, true);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000
-			);
+          if (
+            !game.general.disableGamechat &&
+            !(
+              game.private.seatedPlayers[presidentIndex].role.cardName === "hitler" &&
+              targetPlayer.role.team === "fascist" &&
+              targetPlayer.role.team !== "monarchist"
+            )
+          ) {
+            targetPlayer.playersState[presidentIndex].nameStatus = playersTeam;
+          }
 
-			setTimeout(
-				() => {
-					game.publicPlayersState[presidentIndex].cardStatus.cardDisplayed = false;
-					targetPlayer.playersState[presidentIndex].cardStatus.cardBack = {};
-					targetPlayer.playersState[playerIndex].claim = 'didInvestigateLoyalty';
-					sendInProgressGameUpdate(game, true);
-					startElection(game);
-				},
-				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000
-			);
-		}
-	}
+          game.private.invIndex = presidentIndex;
+          sendInProgressGameUpdate(game);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 200 : 2000
+      );
+
+      setTimeout(
+        () => {
+          game.gameState.audioCue = "";
+          targetPlayer.playersState[presidentIndex].cardStatus.isFlipped = false;
+          sendInProgressGameUpdate(game, true);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4000 : 6000
+      );
+
+      setTimeout(
+        () => {
+          game.publicPlayersState[presidentIndex].cardStatus.cardDisplayed = false;
+          targetPlayer.playersState[presidentIndex].cardStatus.cardBack = {};
+          targetPlayer.playersState[playerIndex].claim = "didInvestigateLoyalty";
+          sendInProgressGameUpdate(game, true);
+          startElection(game);
+        },
+        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 4200 : 8000
+      );
+    }
+  }
 };
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.specialElection = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.specialElection = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.specialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.specialElection = true;
-		game.general.status = 'President to select special election.';
-		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
-		game.publicPlayersState[presidentIndex].isLoader = true;
+  if (!game.private.lock.specialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.specialElection = true;
+    game.general.status = "President to select special election.";
+    game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
+    game.publicPlayersState[presidentIndex].isLoader = true;
 
-		president.playersState
-			.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
+    president.playersState
+      .filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead)
+      .forEach((player) => {
+        player.notificationStatus = "notification";
+      });
 
-		game.gameState.phase = 'specialElection';
-		game.gameState.clickActionInfo = [
-			president.userName,
-			seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))
-		];
-		sendInProgressGameUpdate(game, true);
-	}
+    game.gameState.phase = "specialElection";
+    game.gameState.clickActionInfo = [
+      president.userName,
+      seatedPlayers
+        .filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+        .map((player) => seatedPlayers.indexOf(player)),
+    ];
+    sendInProgressGameUpdate(game, true);
+  }
 };
 
 /**
@@ -1082,155 +1138,179 @@ module.exports.specialElection = game => {
  * @param {object} socket - socket
  */
 module.exports.selectSpecialElection = (passport, game, data, socket) => {
-	const { playerIndex } = data;
-	const { presidentIndex } = game.gameState;
-	const gameChat = {
-		timestamp: new Date(),
-		gameChat: true,
-		chat: []
-	};
-	const president = game.private.seatedPlayers[presidentIndex];
-	const seatedPlayers = game.private.seatedPlayers;
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  const { playerIndex } = data;
+  const { presidentIndex } = game.gameState;
+  const gameChat = {
+    timestamp: new Date(),
+    gameChat: true,
+    chat: [],
+  };
+  const president = game.private.seatedPlayers[presidentIndex];
+  const seatedPlayers = game.private.seatedPlayers;
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	if (playerIndex === presidentIndex) {
-		return;
-	}
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (game.gameState.phase !== 'specialElection') {
-		return;
-	}
+  if (playerIndex === presidentIndex) {
+    return;
+  }
 
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  if (!seatedPlayers[playerIndex]) {
+    return; // out-of-range (but integer) seat — the chat builders below deref it
+  }
 
-	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.selectSpecialElection = true;
+  if (game.gameState.phase !== "specialElection") {
+    return;
+  }
 
-		game.private.summary = game.private.summary.updateLog({
-			specialElection: data.playerIndex
-		});
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
+  if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.selectSpecialElection = true;
 
-		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
-			player.notificationStatus = '';
-		});
+    game.private.summary = game.private.summary.updateLog({
+      specialElection: data.playerIndex,
+    });
 
-		if (!game.general.disableGamechat) {
-			seatedPlayers
-				.filter(player => player.userName !== president.userName)
-				.forEach(player => {
-					gameChat.chat = [
-						{ text: 'President ' },
-						{
-							text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-							type: 'player'
-						},
-						{ text: ' has chosen to special elect ' },
-						{
-							text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-							type: 'player'
-						},
-						{ text: ' as president.' }
-					];
+    game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
-					player.gameChats.push(gameChat);
-				});
+    game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach((player) => {
+      player.notificationStatus = "";
+    });
 
-			game.private.unSeatedGameChats.push(gameChat);
+    if (!game.general.disableGamechat) {
+      seatedPlayers
+        .filter((player) => player.userName !== president.userName)
+        .forEach((player) => {
+          gameChat.chat = [
+            { text: "President " },
+            {
+              text: game.general.blindMode
+                ? `{${presidentIndex + 1}}`
+                : `${president.userName} {${presidentIndex + 1}}`,
+              type: "player",
+            },
+            { text: " has chosen to special elect " },
+            {
+              text: game.general.blindMode
+                ? `{${playerIndex + 1}}`
+                : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+              type: "player",
+            },
+            { text: " as president." },
+          ];
 
-			president.gameChats.push({
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{ text: 'You choose to special-elect ' },
-					{
-						text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-						type: 'player'
-					},
-					{ text: ' as president.' }
-				]
-			});
-		}
+          player.gameChats.push(gameChat);
+        });
 
-		sendInProgressGameUpdate(game);
+      game.private.unSeatedGameChats.push(gameChat);
 
-		startElection(game, data.playerIndex);
-	}
+      president.gameChats.push({
+        timestamp: new Date(),
+        gameChat: true,
+        chat: [
+          { text: "You choose to special-elect " },
+          {
+            text: game.general.blindMode
+              ? `{${playerIndex + 1}}`
+              : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+            type: "player",
+          },
+          { text: " as president." },
+        ],
+      });
+    }
+
+    sendInProgressGameUpdate(game);
+
+    startElection(game, data.playerIndex);
+  }
 };
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.executePlayer = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
+module.exports.executePlayer = (game) => {
+  const { seatedPlayers } = game.private;
+  const { presidentIndex } = game.gameState;
+  const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.executePlayer && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.executePlayer = true;
-		game.general.status = 'President to execute a player.';
-		game.publicPlayersState[presidentIndex].isLoader = true;
+  if (!game.private.lock.executePlayer && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.private.lock.executePlayer = true;
+    game.general.status = "President to execute a player.";
+    game.publicPlayersState[presidentIndex].isLoader = true;
 
-		if (!game.general.disableGamechat) {
-			president.gameChats.push({
-				gameChat: true,
-				timestamp: new Date(),
-				chat: [{ text: 'You must select a player to execute.' }]
-			});
-		}
+    if (!game.general.disableGamechat) {
+      president.gameChats.push({
+        gameChat: true,
+        timestamp: new Date(),
+        chat: [{ text: "You must select a player to execute." }],
+      });
+    }
 
-		president.playersState
-			.filter(
-				(player, index) =>
-					index !== presidentIndex &&
-					!seatedPlayers[index].isDead &&
-					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'morgana' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
-			)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
+    president.playersState
+      .filter(
+        (player, index) =>
+          index !== presidentIndex &&
+          !seatedPlayers[index].isDead &&
+          ((!game.customGameSettings.fasCanShootHit &&
+            !(president.role.cardName === "fascist" && seatedPlayers[index].role.cardName === "hitler")) ||
+            (!game.customGameSettings.fasCanShootHit &&
+              !(president.role.cardName === "morgana" && seatedPlayers[index].role.cardName === "hitler")) ||
+            (game.customGameSettings.fasCanShootHit &&
+              !(president.role.team === "fascist" && seatedPlayers[index].role.cardName === "hitler")) ||
+            (game.customGameSettings.fasCanShootHit &&
+              president.role.team === "fascist" &&
+              seatedPlayers[index].role.cardName === "hitler"))
+      )
+      .forEach((player) => {
+        player.notificationStatus = "notification";
+      });
 
-		game.gameState.clickActionInfo = [
-			president.userName,
-			seatedPlayers
-				.filter(
-					(player, i) =>
-						i !== presidentIndex &&
-						!seatedPlayers[i].isDead &&
-						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'morgana' && seatedPlayers[index].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && !(president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && president.role.team === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
-				)
-				.map(player => seatedPlayers.indexOf(player))
-		];
-		game.gameState.phase = 'execution';
-		sendInProgressGameUpdate(game);
-	}
+    game.gameState.clickActionInfo = [
+      president.userName,
+      seatedPlayers
+        .filter(
+          (player, i) =>
+            i !== presidentIndex &&
+            !seatedPlayers[i].isDead &&
+            ((!game.customGameSettings.fasCanShootHit &&
+              !(president.role.cardName === "fascist" && seatedPlayers[i].role.cardName === "hitler")) ||
+              (!game.customGameSettings.fasCanShootHit &&
+                !(president.role.cardName === "morgana" && seatedPlayers[i].role.cardName === "hitler")) ||
+              (game.customGameSettings.fasCanShootHit &&
+                !(president.role.team === "fascist" && seatedPlayers[i].role.cardName === "hitler")) ||
+              (game.customGameSettings.fasCanShootHit &&
+                president.role.team === "fascist" &&
+                seatedPlayers[i].role.cardName === "hitler"))
+        )
+        .map((player) => seatedPlayers.indexOf(player)),
+    ];
+    game.gameState.phase = "execution";
+    sendInProgressGameUpdate(game);
+  }
 };
 
 /**
@@ -1240,384 +1320,397 @@ module.exports.executePlayer = game => {
  * @param {object} socket - socket
  */
 module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
-	const { playerIndex } = data;
-	const { presidentIndex } = game.gameState;
-	const { seatedPlayers } = game.private;
-	const selectedPlayer = seatedPlayers[playerIndex];
-	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
-	const president = seatedPlayers[presidentIndex];
+  const parsed = playerIndexSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
 
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'A staff member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
+  const { playerIndex } = data;
+  const { presidentIndex } = game.gameState;
+  const { seatedPlayers } = game.private;
+  const selectedPlayer = seatedPlayers[playerIndex];
+  const publicSelectedPlayer = game.publicPlayersState[playerIndex];
+  const president = seatedPlayers[presidentIndex];
 
-	if (game.general.isRemade) {
-		if (socket) {
-			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
-		}
-		return;
-	}
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
 
-	// Make sure the target is valid
-	if (
-		playerIndex === presidentIndex ||
-		!selectedPlayer ||
-		selectedPlayer.isDead ||
-		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
-	) {
-		return;
-	}
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
 
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
+  // Make sure the target is valid
+  if (
+    playerIndex === presidentIndex ||
+    !selectedPlayer ||
+    selectedPlayer.isDead ||
+    (!game.customGameSettings.fasCanShootHit &&
+      president.role.cardName === "fascist" &&
+      seatedPlayers[playerIndex].role.cardName === "hitler")
+  ) {
+    return;
+  }
 
-	if (game.gameState.phase !== 'execution') {
-		return;
-	}
+  if (!president || president.userName !== passport.user) {
+    return;
+  }
 
-	const nonPresidentChat = {
-		gameChat: true,
-		timestamp: new Date(),
-		chat: [
-			{ text: 'President ' },
-			{
-				text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-				type: 'player'
-			},
-			{ text: ' selects to execute ' },
-			{
-				text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
-				type: 'player'
-			},
-			{ text: '.' }
-		]
-	};
+  if (game.gameState.phase !== "execution") {
+    return;
+  }
 
-	if (game.general.timedMode && game.private.timerId) {
-		clearTimeout(game.private.timerId);
-		game.private.timerId = null;
-		game.gameState.timedModeEnabled = false;
-	}
+  const nonPresidentChat = {
+    gameChat: true,
+    timestamp: new Date(),
+    chat: [
+      { text: "President " },
+      {
+        text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+        type: "player",
+      },
+      { text: " selects to execute " },
+      {
+        text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
+        type: "player",
+      },
+      { text: "." },
+    ],
+  };
 
-	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.gameState.audioCue = 'selectedExecution';
-		game.private.lock.selectPlayerToExecute = true;
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+    game.gameState.timedModeEnabled = false;
+  }
 
-		game.private.summary = game.private.summary.updateLog({
-			execution: playerIndex
-		});
+  if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+    game.gameState.audioCue = "selectedExecution";
+    game.private.lock.selectPlayerToExecute = true;
 
-		if (!game.general.disableGamechat) {
-			game.private.unSeatedGameChats.push(nonPresidentChat);
+    game.private.summary = game.private.summary.updateLog({
+      execution: playerIndex,
+    });
 
-			seatedPlayers
-				.filter(player => player.userName !== president.userName)
-				.forEach(player => {
-					player.gameChats.push(nonPresidentChat);
-				});
+    if (!game.general.disableGamechat) {
+      game.private.unSeatedGameChats.push(nonPresidentChat);
 
-			president.gameChats.push({
-				gameChat: true,
-				timestamp: new Date(),
-				chat: [
-					{ text: 'You select to execute ' },
-					{
-						text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
-						type: 'player'
-					},
-					{ text: '.' }
-				]
-			});
-		}
+      seatedPlayers
+        .filter((player) => player.userName !== president.userName)
+        .forEach((player) => {
+          player.gameChats.push(nonPresidentChat);
+        });
 
-		game.publicPlayersState[presidentIndex].isLoader = false;
+      president.gameChats.push({
+        gameChat: true,
+        timestamp: new Date(),
+        chat: [
+          { text: "You select to execute " },
+          {
+            text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
+            type: "player",
+          },
+          { text: "." },
+        ],
+      });
+    }
 
-		president.playersState.forEach(player => {
-			player.notificationStatus = '';
-		});
+    game.publicPlayersState[presidentIndex].isLoader = false;
 
-		if (game.general.avalonSH && selectedPlayer.role.cardName === 'hitler') {
-			assassinateMerlin(game);
-			return;
-		}
+    president.playersState.forEach((player) => {
+      player.notificationStatus = "";
+    });
 
-		publicSelectedPlayer.cardStatus.cardDisplayed = true;
-		publicSelectedPlayer.cardStatus.cardFront = 'secretrole';
-		publicSelectedPlayer.notificationStatus = 'danger';
-		publicSelectedPlayer.isDead = true;
-		sendInProgressGameUpdate(game);
+    if (game.general.avalonSH && selectedPlayer.role.cardName === "hitler") {
+      assassinateMerlin(game);
+      return;
+    }
 
-		setTimeout(
-			() => {
-				game.gameState.audioCue = '';
-				selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
-				publicSelectedPlayer.notificationStatus = '';
-				game.general.livingPlayerCount--;
-				sendInProgressGameUpdate(game, true);
+    publicSelectedPlayer.cardStatus.cardDisplayed = true;
+    publicSelectedPlayer.cardStatus.cardFront = "secretrole";
+    publicSelectedPlayer.notificationStatus = "danger";
+    publicSelectedPlayer.isDead = true;
+    sendInProgressGameUpdate(game);
 
-				if (selectedPlayer.role.cardName === 'hitler') {
-					const chat = {
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: 'Hitler',
-								type: 'hitler'
-							},
-							{ text: '  has been executed.' }
-						]
-					};
+    setTimeout(
+      () => {
+        game.gameState.audioCue = "";
+        selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
+        publicSelectedPlayer.notificationStatus = "";
+        game.general.livingPlayerCount--;
+        sendInProgressGameUpdate(game, true);
 
-					if (game.general.monarchistSH) {
-						chat.chat = chat.chat.concat([
-							{ text: ' Consequently, the ' },
-							{
-								text: 'monarchist',
-								type: 'monarchist'
-							},
-							{ text: '  has won with the' },
-							{
-								text: ' liberals',
-								type: 'liberal'
-							},
-							{ text: '.' }
-						]);
-					}
+        if (selectedPlayer.role.cardName === "hitler") {
+          const chat = {
+            timestamp: new Date(),
+            gameChat: true,
+            chat: [
+              {
+                text: "Hitler",
+                type: "hitler",
+              },
+              { text: "  has been executed." },
+            ],
+          };
 
-					seatedPlayers.forEach((player, i) => {
-						player.gameChats.push(chat);
-					});
+          if (game.general.monarchistSH) {
+            chat.chat = chat.chat.concat([
+              { text: " Consequently, the " },
+              {
+                text: "monarchist",
+                type: "monarchist",
+              },
+              { text: "  has won with the" },
+              {
+                text: " liberals",
+                type: "liberal",
+              },
+              { text: "." },
+            ]);
+          }
 
-					game.private.unSeatedGameChats.push(chat);
+          seatedPlayers.forEach((player, i) => {
+            player.gameChats.push(chat);
+          });
 
-					publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
-					publicSelectedPlayer.cardStatus.isFlipped = true;
+          game.private.unSeatedGameChats.push(chat);
 
-					setTimeout(
-						() => {
-							game.publicPlayersState.forEach((player, i) => {
-								player.cardStatus.cardFront = 'secretrole';
-								player.cardStatus.cardDisplayed = true;
-								player.cardStatus.cardBack = seatedPlayers[i].role;
-							});
-							game.gameState.audioCue = 'hitlerShot';
-							sendInProgressGameUpdate(game);
-						},
-						process.env.NODE_ENV === 'development' ? 100 : 1000
-					);
+          publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+          publicSelectedPlayer.cardStatus.isFlipped = true;
 
-					setTimeout(
-						() => {
-							game.publicPlayersState.forEach(player => {
-								player.cardStatus.isFlipped = true;
-							});
+          setTimeout(
+            () => {
+              game.publicPlayersState.forEach((player, i) => {
+                player.cardStatus.cardFront = "secretrole";
+                player.cardStatus.cardDisplayed = true;
+                player.cardStatus.cardBack = seatedPlayers[i].role;
+              });
+              game.gameState.audioCue = "hitlerShot";
+              sendInProgressGameUpdate(game);
+            },
+            process.env.NODE_ENV === "development" ? 100 : 1000
+          );
 
-							game.gameState.audioCue = '';
-							completeGame(game, 'liberal');
-						},
-						process.env.NODE_ENV === 'development' ? 100 : 2000
-					);
-				} else {
-					let libAlive = false;
-					seatedPlayers.forEach(p => {
-						if (p.role.team === 'liberal' && !p.isDead) libAlive = true;
-					});
-					if (!libAlive) {
-						const chat = {
-							timestamp: new Date(),
-							gameChat: true,
-							chat: [
-								{ text: 'All ' },
-								{
-									text: 'liberals',
-									type: 'liberal'
-								},
-								{ text: '  have been executed.' }
-							]
-						};
+          setTimeout(
+            () => {
+              game.publicPlayersState.forEach((player) => {
+                player.cardStatus.isFlipped = true;
+              });
 
-						publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
-						publicSelectedPlayer.cardStatus.isFlipped = true;
+              game.gameState.audioCue = "";
+              completeGame(game, "liberal");
+            },
+            process.env.NODE_ENV === "development" ? 100 : 2000
+          );
+        } else {
+          let libAlive = false;
+          seatedPlayers.forEach((p) => {
+            if (p.role.team === "liberal" && !p.isDead) libAlive = true;
+          });
+          if (!libAlive) {
+            const chat = {
+              timestamp: new Date(),
+              gameChat: true,
+              chat: [
+                { text: "All " },
+                {
+                  text: "liberals",
+                  type: "liberal",
+                },
+                { text: "  have been executed." },
+              ],
+            };
 
-						seatedPlayers.forEach((player, i) => {
-							player.gameChats.push(chat);
-						});
+            publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+            publicSelectedPlayer.cardStatus.isFlipped = true;
 
-						game.private.unSeatedGameChats.push(chat);
+            seatedPlayers.forEach((player, i) => {
+              player.gameChats.push(chat);
+            });
 
-						setTimeout(
-							() => {
-								game.publicPlayersState.forEach((player, i) => {
-									player.cardStatus.cardFront = 'secretrole';
-									player.cardStatus.cardDisplayed = true;
-									player.cardStatus.cardBack = seatedPlayers[i].role;
-								});
-								game.gameState.audioCue = 'hitlerShot';
-								sendInProgressGameUpdate(game);
-							},
-							process.env.NODE_ENV === 'development' ? 100 : 1000
-						);
+            game.private.unSeatedGameChats.push(chat);
 
-						setTimeout(
-							() => {
-								game.publicPlayersState.forEach(player => {
-									player.cardStatus.isFlipped = true;
-								});
+            setTimeout(
+              () => {
+                game.publicPlayersState.forEach((player, i) => {
+                  player.cardStatus.cardFront = "secretrole";
+                  player.cardStatus.cardDisplayed = true;
+                  player.cardStatus.cardBack = seatedPlayers[i].role;
+                });
+                game.gameState.audioCue = "hitlerShot";
+                sendInProgressGameUpdate(game);
+              },
+              process.env.NODE_ENV === "development" ? 100 : 1000
+            );
 
-								game.gameState.audioCue = '';
-								completeGame(game, 'fascist');
-							},
-							process.env.NODE_ENV === 'development' ? 100 : 2000
-						);
-					} else {
-						let playersAlive = 0;
-						seatedPlayers.forEach(p => {
-							if (!p.isDead) playersAlive++;
-						});
-						if (playersAlive <= 2) {
-							const chat = {
-								timestamp: new Date(),
-								gameChat: true,
-								chat: [
-									{
-										text: 'Hitler',
-										type: 'hitler'
-									},
-									{
-										text: ' and one '
-									},
-									{
-										text: 'liberal',
-										type: 'liberal'
-									},
-									{
-										text: ' remain, top-decking to the end...'
-									}
-								]
-							};
+            setTimeout(
+              () => {
+                game.publicPlayersState.forEach((player) => {
+                  player.cardStatus.isFlipped = true;
+                });
 
-							seatedPlayers.forEach((player, i) => {
-								player.gameChats.push(chat);
-							});
+                game.gameState.audioCue = "";
+                completeGame(game, "fascist");
+              },
+              process.env.NODE_ENV === "development" ? 100 : 2000
+            );
+          } else {
+            let playersAlive = 0;
+            seatedPlayers.forEach((p) => {
+              if (!p.isDead) playersAlive++;
+            });
+            if (playersAlive <= 2) {
+              const chat = {
+                timestamp: new Date(),
+                gameChat: true,
+                chat: [
+                  {
+                    text: "Hitler",
+                    type: "hitler",
+                  },
+                  {
+                    text: " and one ",
+                  },
+                  {
+                    text: "liberal",
+                    type: "liberal",
+                  },
+                  {
+                    text: " remain, top-decking to the end...",
+                  },
+                ],
+              };
 
-							game.private.unSeatedGameChats.push(chat);
-							game.general.status = 'Top-decking to the end...';
-							sendInProgressGameUpdate(game);
+              seatedPlayers.forEach((player, i) => {
+                player.gameChats.push(chat);
+              });
 
-							const playCard = () => {
-								if (game.general.noTopdecking === 1 || (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)) {
-									game.chats.push({
-										timestamp: new Date(),
-										gameChat: true,
-										chat: [
-											{
-												text: 'The game was topdecked.'
-											}
-										]
-									});
-									game.publicPlayersState.forEach((player, i) => {
-										player.cardStatus.cardFront = 'secretrole';
-										player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-										player.cardStatus.cardDisplayed = true;
-										player.cardStatus.isFlipped = false;
-									});
-									game.gameState.audioCue = 'fascistsWin';
-									sendInProgressGameUpdate(game, true);
+              game.private.unSeatedGameChats.push(chat);
+              game.general.status = "Top-decking to the end...";
+              sendInProgressGameUpdate(game);
 
-									setTimeout(() => {
-										game.publicPlayersState.forEach((player, i) => {
-											player.cardStatus.isFlipped = true;
-										});
-										game.gameState.audioCue = '';
+              const playCard = () => {
+                if (
+                  game.general.noTopdecking === 1 ||
+                  (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)
+                ) {
+                  game.chats.push({
+                    timestamp: new Date(),
+                    gameChat: true,
+                    chat: [
+                      {
+                        text: "The game was topdecked.",
+                      },
+                    ],
+                  });
+                  game.publicPlayersState.forEach((player, i) => {
+                    player.cardStatus.cardFront = "secretrole";
+                    player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+                    player.cardStatus.cardDisplayed = true;
+                    player.cardStatus.isFlipped = false;
+                  });
+                  game.gameState.audioCue = "fascistsWin";
+                  sendInProgressGameUpdate(game, true);
 
-										completeGame(game, 'fascist');
-									}, 2000);
+                  setTimeout(() => {
+                    game.publicPlayersState.forEach((player, i) => {
+                      player.cardStatus.isFlipped = true;
+                    });
+                    game.gameState.audioCue = "";
 
-									return;
-								} else if (game.general.noTopdecking === 2) {
-									game.trackState.consecutiveTopdecks++;
-								}
+                    completeGame(game, "fascist");
+                  }, 2000);
 
-								if (game.private.policies.length < 3) shufflePolicies(game);
-								const index = game.trackState.enactedPolicies.length;
-								const policy = game.private.policies.shift();
-								game.trackState[`${policy}PolicyCount`]++;
-								sendGameList();
-								game.trackState.enactedPolicies.push({
-									position: 'middle',
-									cardBack: policy,
-									isFlipped: false
-								});
-								game.trackState.enactedPolicies[index].isFlipped = true;
-								const chat = {
-									timestamp: new Date(),
-									gameChat: true,
-									chat: [
-										{ text: 'A ' },
-										{
-											text: policy === 'liberal' ? 'liberal' : 'fascist',
-											type: policy === 'liberal' ? 'liberal' : 'fascist'
-										},
-										{
-											text: ` policy has been enacted. (${
-												policy === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
-											}/${policy === 'liberal' ? '5' : '6'})`
-										}
-									]
-								};
-								game.trackState.enactedPolicies[index].position =
-									policy === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
+                  return;
+                } else if (game.general.noTopdecking === 2) {
+                  game.trackState.consecutiveTopdecks++;
+                }
 
-								if (!game.general.disableGamechat) {
-									game.private.seatedPlayers.forEach(player => {
-										player.gameChats.push(chat);
-									});
+                if (game.private.policies.length < 3) shufflePolicies(game);
+                const index = game.trackState.enactedPolicies.length;
+                const policy = game.private.policies.shift();
+                game.trackState[`${policy}PolicyCount`]++;
+                sendGameList();
+                game.trackState.enactedPolicies.push({
+                  position: "middle",
+                  cardBack: policy,
+                  isFlipped: false,
+                });
+                game.trackState.enactedPolicies[index].isFlipped = true;
+                const chat = {
+                  timestamp: new Date(),
+                  gameChat: true,
+                  chat: [
+                    { text: "A " },
+                    {
+                      text: policy === "liberal" ? "liberal" : "fascist",
+                      type: policy === "liberal" ? "liberal" : "fascist",
+                    },
+                    {
+                      text: ` policy has been enacted. (${
+                        policy === "liberal"
+                          ? game.trackState.liberalPolicyCount.toString()
+                          : game.trackState.fascistPolicyCount.toString()
+                      }/${policy === "liberal" ? "5" : "6"})`,
+                    },
+                  ],
+                };
+                game.trackState.enactedPolicies[index].position =
+                  policy === "liberal"
+                    ? `liberal${game.trackState.liberalPolicyCount}`
+                    : `fascist${game.trackState.fascistPolicyCount}`;
 
-									game.private.unSeatedGameChats.push(chat);
-								}
-								if (game.general.avalonSH && game.trackState.liberalPolicyCount === 5) {
-									assassinateMerlin(game);
-								} else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
-									game.publicPlayersState.forEach((player, i) => {
-										player.cardStatus.cardFront = 'secretrole';
-										player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-										player.cardStatus.cardDisplayed = true;
-										player.cardStatus.isFlipped = false;
-									});
-									game.gameState.audioCue = game.trackState.liberalPolicyCount === 5 ? 'liberalsWin' : 'fascistsWin';
-									setTimeout(
-										() => {
-											game.publicPlayersState.forEach((player, i) => {
-												player.cardStatus.isFlipped = true;
-											});
-											game.gameState.audioCue = '';
-											completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-										},
-										process.env.NODE_ENV === 'development' ? 100 : 2000
-									);
-								} else setTimeout(playCard, 2500);
-								sendInProgressGameUpdate(game);
-							};
-							setTimeout(playCard, 2500);
-						} else {
-							publicSelectedPlayer.cardStatus.cardDisplayed = false;
-							sendInProgressGameUpdate(game, true);
-							setTimeout(
-								() => {
-									game.trackState.electionTrackerCount = 0;
-									startElection(game);
-								},
-								process.env.NODE_ENV === 'development' ? 100 : 2000
-							);
-						}
-					}
-				}
-			},
-			process.env.NODE_ENV === 'development' ? 100 : 4000
-		);
-	}
+                if (!game.general.disableGamechat) {
+                  game.private.seatedPlayers.forEach((player) => {
+                    player.gameChats.push(chat);
+                  });
+
+                  game.private.unSeatedGameChats.push(chat);
+                }
+                if (game.general.avalonSH && game.trackState.liberalPolicyCount === 5) {
+                  assassinateMerlin(game);
+                } else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+                  game.publicPlayersState.forEach((player, i) => {
+                    player.cardStatus.cardFront = "secretrole";
+                    player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+                    player.cardStatus.cardDisplayed = true;
+                    player.cardStatus.isFlipped = false;
+                  });
+                  game.gameState.audioCue = game.trackState.liberalPolicyCount === 5 ? "liberalsWin" : "fascistsWin";
+                  setTimeout(
+                    () => {
+                      game.publicPlayersState.forEach((player, i) => {
+                        player.cardStatus.isFlipped = true;
+                      });
+                      game.gameState.audioCue = "";
+                      completeGame(game, game.trackState.liberalPolicyCount === 5 ? "liberal" : "fascist");
+                    },
+                    process.env.NODE_ENV === "development" ? 100 : 2000
+                  );
+                } else setTimeout(playCard, 2500);
+                sendInProgressGameUpdate(game);
+              };
+              setTimeout(playCard, 2500);
+            } else {
+              publicSelectedPlayer.cardStatus.cardDisplayed = false;
+              sendInProgressGameUpdate(game, true);
+              setTimeout(
+                () => {
+                  game.trackState.electionTrackerCount = 0;
+                  startElection(game);
+                },
+                process.env.NODE_ENV === "development" ? 100 : 2000
+              );
+            }
+          }
+        }
+      },
+      process.env.NODE_ENV === "development" ? 100 : 4000
+    );
+  }
 };

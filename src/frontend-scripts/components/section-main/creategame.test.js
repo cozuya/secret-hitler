@@ -1,11 +1,11 @@
-import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
-import Creategame from './Creategame';
+import React from "react"; // eslint-disable-line
+import { shallow } from "enzyme";
+import Creategame from "./Creategame";
 
-describe('Creategame', () => {
-	it('should initialize correctly', () => {
-		const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} />);
+describe("Creategame", () => {
+  it("should initialize correctly", () => {
+    const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} />);
 
-		expect(component).toHaveLength(1);
-	});
+    expect(component).toHaveLength(1);
+  });
 });

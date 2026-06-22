@@ -1,5 +1,5 @@
-import React from 'react'; // eslint-disable-line
-import classnames from 'classnames';
+import React from "react"; // eslint-disable-line
+import classnames from "classnames";
 
 /**
  * @param {object} type - todo
@@ -7,9 +7,9 @@ import classnames from 'classnames';
  * @return {jsx}
  */
 const Card = ({ type, icon }) => {
-	const renderedIcon = icon ? <i className={classnames(icon, 'icon')} /> : null;
+  const renderedIcon = icon ? <i className={classnames(icon, "icon")} /> : null;
 
-	return <div className={classnames(type, 'card')}>{renderedIcon}</div>;
+  return <div className={classnames(type, "card")}>{renderedIcon}</div>;
 };
 
 export default Card;

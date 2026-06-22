@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+set -e
+if git diff --cached --name-only | grep -qE '(^|/)package\.json$'; then
+  pnpm install --lockfile-only
+  git add pnpm-lock.yaml
+fi
+pnpm lint

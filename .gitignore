@@ -25,9 +25,13 @@ public/scripts/bundle.js
 public/scripts/bundle.js.map
 npm-debug.log.*
 npm-debug.log
+pnpm-debug.log
+# pnpm puts its content-addressable store in-project when home is on another filesystem
+.pnpm-store/
 yarn-error.log
 .vscode/
 package-lock.json
+yarn.lock
 public/images/Thumbs.db
 public/images/custom-cardbacks
 public/Thumbs.db
@@ -35,7 +39,8 @@ public/styles/style-dark.css
 public/styles/style-light.css
 public/styles/style-web.css
 public/styles/style-main.css
-public/styles/style-main.css.map
+public/styles/*.css.map
+public/assets/
 public/leaderboardData.json
 public/public/*
 coverage/*
@@ -49,3 +54,8 @@ public/images/emotesheet.png
 .snyk
 .travis.yml
 core
+
+# Local AI-agent guidance (not committed)
+CLAUDE.md
+AGENTS.md
+.claude/
