@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { toggleNotes } from "../actions/actions";
 import PropTypes from "prop-types";
+import Icon from "./reusable/Icon";
 
 const mapDispatchToProps = (dispatch) => ({
     toggleNotes: (notesStatus) => dispatch(toggleNotes(notesStatus)),
@@ -136,8 +137,8 @@ class Gamenotes extends React.Component {
           <div className="drag-boundry 2d top-right" />
           <p>Game Notes</p>
           <div className="icon-container">
-            <i
-              className="large ban icon"
+            <Icon
+              name="ban"
               onClick={() => {
                 if (this.props.value !== "") {
                   this.setState({
@@ -147,7 +148,7 @@ class Gamenotes extends React.Component {
               }}
               title="Click here to clear notes"
             />
-            <i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
+            <Icon name="square-minus" onClick={this.dismissNotes} title="Click here to collapse notes" />
           </div>
         </div>
         <textarea

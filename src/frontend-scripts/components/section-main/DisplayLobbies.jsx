@@ -1,6 +1,7 @@
 import React from "react"; // eslint-disable-line
 import _ from "lodash";
 import PropTypes from "prop-types";
+import Icon from "../reusable/Icon";
 import { PLAYERCOLORS } from "../../constants";
 
 const DisplayLobbies = (props) => {
@@ -101,7 +102,7 @@ const DisplayLobbies = (props) => {
     let unlistedGameTooltip;
 
     if (game.casualGame) {
-      casualGame = <i className="handshake icon" />;
+      casualGame = <Icon name="handshake" />;
       casualGameTooltip = "Casual game - results do not count for wins or losses";
     }
 
@@ -113,7 +114,7 @@ const DisplayLobbies = (props) => {
     const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
 
     if (game.isCustomGame) {
-      customgameactive = <i className="setting icon" />;
+      customgameactive = <Icon name="settings" />;
       customgameactiveTooltip = "Custom Game";
     } else if (hasR6 || hasR7 || hasR9) {
       // ugly but lazy
@@ -142,45 +143,46 @@ const DisplayLobbies = (props) => {
     }
 
     if (game.playerChats === "disabled") {
-      playerChats = <i className="mute icon" />;
+      playerChats = <Icon name="volume-x" />;
       playerChatsTooltip = "Player Chat Disabled";
     } else if (game.playerChats === "emotes") {
-      playerChats = <i className="smile icon" />;
+      playerChats = <Icon name="smile" />;
       playerChatsTooltip = "Emotes Only";
     }
 
     if (game.privateOnly) {
-      privateOnly = <i className="spy icon" />;
+      privateOnly = <Icon name="venetian-mask" />;
       privateOnlyTooltip = "Private game only - only anonymous players.";
     }
 
     if (!game.privateOnly && game.private) {
-      priv = <i className="lock icon" />;
+      priv = <Icon name="lock" />;
       privTooltip = "Private";
     }
 
     if (game.blindMode) {
-      blind = <i className="hide icon" />;
+      blind = <Icon name="eye-off" />;
       blindTooltip = "Blind mode - players are anonymized";
     }
 
     if (game.disableGamechat) {
       disableGamechat = (
-        <i className="icons">
-          <i className="game icon" />
-          <i className="large remove icon" style={{ opacity: "0.6", color: "var(--theme-background-2)" }} />
-        </i>
+        <Icon
+          name="message-circle-off"
+          className="large"
+          style={{ opacity: "0.6", color: "var(--theme-background-2)" }}
+        />
       );
       disableGamechatTooltip = "Game Chat Disabled";
     }
 
     if (game.experiencedMode) {
-      experiencedMode = <i className="fast forward icon" />;
+      experiencedMode = <Icon name="fast-forward" />;
       experiancedModeTooltip = "Speed Mode";
     }
 
     if (game.isVerifiedOnly) {
-      isVerifiedOnly = <i className="thumbs up icon" />;
+      isVerifiedOnly = <Icon name="thumbs-up" />;
       isVerifiedOnlyTooltip = "Only email-verified players can sit in this game.";
     }
 
@@ -190,24 +192,24 @@ const DisplayLobbies = (props) => {
     }
 
     if (game.avalonSH) {
-      avalonSH = <i className="shield icon" />;
+      avalonSH = <Icon name="shield" />;
       avalonSHTooltip = game.avalonSH.withPercival ? "Avalon SH with Percival & Morgana" : "Avalon SH";
     }
 
     if (game.monarchistSH) {
-      monarchistSH = <i className="chess king icon" />;
+      monarchistSH = <Icon name="crown" />;
       monarchistSHTooltip = "Monarchist SH";
     }
 
     if (game.noTopdecking) {
-      noTopdecking = <i className="gavel icon" />;
+      noTopdecking = <Icon name="gavel" />;
       noTopdeckingTooltip = game.noTopdecking === 2 ? "No Double Topdecking" : "No Topdecking";
     }
 
     if (game.timedMode) {
       timedMode = (
         <span style={{ color: "peru" }}>
-          <i className="hourglass half icon" />
+          <Icon name="hourglass" />
           {`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
         </span>
       );
@@ -225,22 +227,22 @@ const DisplayLobbies = (props) => {
     }
 
     if (game.flappyMode && !game.flappyOnlyMode) {
-      flappyMode = <i className="plane icon" />;
+      flappyMode = <Icon name="plane" />;
       flappyModeTooltip = "COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
     }
 
     if (game.flappyOnlyMode) {
-      flappyOnlyMode = <i className="plane icon flappyonly" />;
+      flappyOnlyMode = <Icon name="plane" className="flappyonly" />;
       flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
     }
 
     if (game.isUnlisted) {
-      unlistedGame = <i className="lock icon green" />;
+      unlistedGame = <Icon name="lock" className="green" />;
       unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
     }
 
     if (game.practiceGame) {
-      practiceGame = <i className="chess icon" />;
+      practiceGame = <Icon name="graduation-cap" />;
       practiceGameTooltip = "Practice game - results do not count towards wins and losses";
     }
 
@@ -440,8 +442,9 @@ const DisplayLobbies = (props) => {
       progressText = "Private Game";
       progressIcons = (
         <div className="progress-icons private">
-          <i
-            className="yellow lock icon"
+          <Icon
+            name="lock"
+            className="yellow"
             title="This is a private game.  You can only be seated if you know the password, or are whitelisted"
           />
         </div>
@@ -503,7 +506,7 @@ const DisplayLobbies = (props) => {
     return (
       <div className="game-progress">
         <div className="hidden-join-message">
-          <i className="share icon" />
+          <Icon name="share-2" />
           <div>Enter</div>
         </div>
         <span className={classes}>{progressText}</span>

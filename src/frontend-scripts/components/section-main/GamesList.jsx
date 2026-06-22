@@ -1,5 +1,6 @@
 import React from "react"; // eslint-disable-line
 import DisplayLobbies from "./DisplayLobbies.jsx";
+import Icon from "../reusable/Icon";
 import PropTypes from "prop-types";
 import { Checkbox, Message } from "semantic-ui-react";
 import { processEmotes } from "../../emotes";
@@ -103,7 +104,7 @@ export class GamesList extends React.Component {
           />
         </div>
         <div className="one wide column">
-          <i title="Filter by casual games" className="handshake icon" />
+          <Icon name="handshake" title="Filter by casual games" />
           <Checkbox
             toggle
             checked={!gameFilter.casualgame}
@@ -113,7 +114,7 @@ export class GamesList extends React.Component {
           />
         </div>
         <div className="one wide column">
-          <i title="Filter by custom games" className="setting icon" />
+          <Icon name="settings" title="Filter by custom games" />
           <Checkbox
             toggle
             checked={!gameFilter.customgame}
@@ -123,7 +124,7 @@ export class GamesList extends React.Component {
           />
         </div>
         <div className="one wide column">
-          <i title="Filter by timed mode games" className="hourglass half icon" />
+          <Icon name="hourglass" title="Filter by timed mode games" />
           <Checkbox
             toggle
             checked={!gameFilter.timedMode}
@@ -153,7 +154,7 @@ export class GamesList extends React.Component {
           />
         </div>
         <div className="one wide column">
-          <i title="Get notified when new games are available" className="alarm half icon" />
+          <Icon name="alarm-clock" title="Get notified when new games are available" />
           <Checkbox
             toggle
             checked={notify}
@@ -277,7 +278,7 @@ export class GamesList extends React.Component {
             );
           })()}
           <span className={this.state.filtersVisible ? "enabled" : "disabled"} onClick={toggleFilter}>
-            <i className="large filter icon" title="Game filters" />
+            <Icon name="filter" className="large" title="Game filters" />
           </span>
         </div>
         <a href="#/leaderboards" className="leaderboard">

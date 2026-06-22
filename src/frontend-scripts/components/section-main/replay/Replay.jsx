@@ -1,6 +1,7 @@
 /* eslint-disable spaced-comment */
 import React from "react"; // eslint-disable-line no-unused-vars
 import _ from "lodash";
+import Icon from "../../reusable/Icon";
 import { connect } from "react-redux";
 import toGameInfo from "../../../replay/toGameInfo";
 import toDescription from "../../../replay/toDescription";
@@ -313,7 +314,7 @@ class ReplayWrapper extends React.Component {
         case "NOT_FOUND":
           return (
             <h1 className="not-found ui icon center aligned header">
-              <i className="settings icon" />
+              <Icon name="settings" />
               <div className="content">Replay not found</div>
             </h1>
           );
@@ -349,7 +350,7 @@ class ReplayWrapper extends React.Component {
           {this.state.chatsShown ? "Hide chats" : "Show chats"}
         </button>
         <button className="exit ui inverted red button" onClick={toExit}>
-          <i className="sign out icon" />
+          <Icon name="log-out" />
           Exit Replay
         </button>
         {children}

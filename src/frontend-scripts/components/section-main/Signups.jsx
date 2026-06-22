@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Icon from "../reusable/Icon";
 import moment from "moment";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
@@ -53,7 +54,7 @@ const Signups = ({ socket }) => {
               >
                 Date{" "}
                 {logSort.type === "date" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -64,7 +65,7 @@ const Signups = ({ socket }) => {
               >
                 Username{" "}
                 {logSort.type === "userName" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -75,7 +76,7 @@ const Signups = ({ socket }) => {
               >
                 IP{" "}
                 {logSort.type === "ip" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -86,7 +87,7 @@ const Signups = ({ socket }) => {
               >
                 Type{" "}
                 {logSort.type === "type" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -97,7 +98,7 @@ const Signups = ({ socket }) => {
               >
                 Email{" "}
                 {logSort.type === "email" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
             </tr>
@@ -154,8 +155,9 @@ const Signups = ({ socket }) => {
   return (
     <section>
       <a href="#/">
-        <i
-          className="remove icon"
+        <Icon
+          name="x"
+          className="remove"
           style={{
             position: "absolute",
             top: "10px",

@@ -376,16 +376,19 @@
 	width: 577px;
 }
 
-.game > .ui.grid .eight.chat-container .gamechat .pointing.menu .icon {
+.game > .ui.grid .eight.chat-container .gamechat .pointing.menu .icon,
+.game > .ui.grid .eight.chat-container .gamechat .pointing.menu .lucide-icon {
 	margin: 7px 0 0 410px;
 }
 
-.thirteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button {
+.thirteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button,
+.thirteen.wide .game > .ui.grid .six.chat-container .unlock.lucide-icon + .primary.button {
 	position: relative;
 	z-index: 100;
 }
 
-.sixteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button {
+.sixteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button,
+.sixteen.wide .game > .ui.grid .six.chat-container .unlock.lucide-icon + .primary.button {
 	position: relative;
 	z-index: 100;
 }

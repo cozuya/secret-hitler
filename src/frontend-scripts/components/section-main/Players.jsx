@@ -1,6 +1,7 @@
 import React from "react";
 import $ from "jquery";
 import Dropdown from "semantic-ui-dropdown";
+import Icon from "../reusable/Icon";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
@@ -491,7 +492,7 @@ class Players extends React.Component {
           />
           {/* blacklist can be absent on a partial/older gameSettings — guard it like the userInBlacklist call sites do */}
           {userInfo.gameSettings && userInfo.gameSettings.blacklist?.includes(player.userName) && (
-            <i title="This player is on your blacklist" className={"large file icon blacklist"} />
+            <Icon title="This player is on your blacklist" name="file" className="large blacklist" />
           )}
           <div
             className={(() => {

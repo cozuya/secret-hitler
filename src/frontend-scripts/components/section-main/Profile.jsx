@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import Icon from "../reusable/Icon";
 import { fetchReplay } from "../../actions/actions";
 import Table from "../reusable/Table.jsx";
 import React from "react"; // eslint-disable-line no-unused-vars
@@ -323,7 +324,7 @@ class ProfileWrapper extends React.Component {
         <div className="column-name">
           <h2 className="ui header">Stats</h2>
           <a target="_blank" href="/player-profiles">
-            <i className="large help circle icon" />
+            <Icon name="circle-help" className="large" />
           </a>
         </div>
         <CollapsibleSegment title={"Elo & XP"} defaultExpanded={true}>
@@ -448,7 +449,9 @@ class ProfileWrapper extends React.Component {
       <div>
         <h2 className="ui header bio">
           Bio{" "}
-          {userInfo.userName && userInfo.userName === profile._id && <i onClick={editClick} className="edit icon" />}
+          {userInfo.userName && userInfo.userName === profile._id && (
+            <Icon name="pencil" className="edit" onClick={editClick} />
+          )}
         </h2>
         {(() => {
           switch (this.state.bioStatus) {
@@ -703,7 +706,7 @@ class ProfileWrapper extends React.Component {
     return (
       <div>
         <h1 className="not-found ui icon center aligned header">
-          <i className="settings icon" />
+          <Icon name="settings" />
           <div className="content">No profile</div>
         </h1>
       </div>
@@ -755,7 +758,7 @@ class ProfileWrapper extends React.Component {
     return (
       <section id="profile" className="ui segment">
         <a href="#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         {children}
         <div

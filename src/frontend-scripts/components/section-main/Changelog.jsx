@@ -1,11 +1,12 @@
 import React from "react"; // eslint-disable-line
+import Icon from "../reusable/Icon";
 
 class Changelog extends React.Component {
   render() {
     return (
       <section className="changelog" style={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <a href="#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         <div className="ui header">
           <h2>Changelog</h2>

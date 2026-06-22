@@ -1,4 +1,5 @@
 import React from "react";
+import Icon from "../reusable/Icon";
 import moment from "moment";
 import $ from "jquery";
 import PropTypes from "prop-types";
@@ -1350,7 +1351,7 @@ export default class Moderation extends React.Component {
               >
                 Mod{" "}
                 {logSort.type === "modUserName" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -1361,7 +1362,7 @@ export default class Moderation extends React.Component {
               >
                 Date{" "}
                 {logSort.type === "date" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -1372,7 +1373,7 @@ export default class Moderation extends React.Component {
               >
                 Action{" "}
                 {logSort.type === "actionTaken" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -1383,7 +1384,7 @@ export default class Moderation extends React.Component {
               >
                 Player{" "}
                 {logSort.type === "userActedOn" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -1394,7 +1395,7 @@ export default class Moderation extends React.Component {
               >
                 IP{" "}
                 {logSort.type === "ip" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -1405,7 +1406,7 @@ export default class Moderation extends React.Component {
               >
                 Comment{" "}
                 {logSort.type === "modNotes" && (
-                  <i className={logSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={logSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
             </tr>
@@ -1540,7 +1541,7 @@ export default class Moderation extends React.Component {
     return (
       <section className="moderation">
         <a href="#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         <h2 style={{ userSelect: "none", WebkitUserSelect: "none", MsUserSelect: "none" }}>Moderation</h2>
         {showActions && (
@@ -1560,7 +1561,7 @@ export default class Moderation extends React.Component {
         </span>
         <span className="refreshModlog" onClick={() => this.props.socket.emit("getModInfo", 1)}>
           Refresh
-          <i className="icon repeat" id="modlogRefresh" />
+          <Icon name="repeat" id="modlogRefresh" />
         </span>
         <span onClick={this.togglePlayerList} className="player-list-toggle">
           Toggle Player/Game List
@@ -1595,7 +1596,7 @@ export default class Moderation extends React.Component {
                 onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })}
                 style={{ width: "max-content", cursor: "pointer" }}
               >
-                <i className={`caret icon ${this.state.tableCollapsed ? "right" : "down"}`} />
+                <Icon name={this.state.tableCollapsed ? "chevron-right" : "chevron-down"} />
                 Collapse Table
               </div>
               <table className="ui celled table userlist">
@@ -1610,7 +1611,7 @@ export default class Moderation extends React.Component {
                     >
                       Username{" "}
                       {userSort.type === "username" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                     <th
@@ -1621,7 +1622,7 @@ export default class Moderation extends React.Component {
                     >
                       IP{" "}
                       {userSort.type === "IP" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                     <th
@@ -1632,7 +1633,7 @@ export default class Moderation extends React.Component {
                     >
                       Email suffix{" "}
                       {userSort.type === "email" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                   </tr>
@@ -1674,7 +1675,7 @@ export default class Moderation extends React.Component {
                 onClick={() => this.setState({ tableCollapsed: !this.state.tableCollapsed })}
                 style={{ width: "max-content", cursor: "pointer" }}
               >
-                <i className={`caret icon ${this.state.tableCollapsed ? "right" : "down"}`} />
+                <Icon name={this.state.tableCollapsed ? "chevron-right" : "chevron-down"} />
                 Collapse Table
               </div>
               <table className="ui celled table userlist">
@@ -1689,7 +1690,7 @@ export default class Moderation extends React.Component {
                     >
                       Game Name{" "}
                       {userSort.type === "gamename" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                     <th
@@ -1700,7 +1701,7 @@ export default class Moderation extends React.Component {
                     >
                       UID{" "}
                       {userSort.type === "uid" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                     <th
@@ -1711,7 +1712,7 @@ export default class Moderation extends React.Component {
                     >
                       Election #{" "}
                       {userSort.type === "electionnum" && (
-                        <i className={userSort.direction === "descending" ? "angle down icon" : "angle up icon"} />
+                        <Icon name={userSort.direction === "descending" ? "chevron-down" : "chevron-up"} />
                       )}
                     </th>
                   </tr>

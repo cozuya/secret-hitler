@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=820, initial-scale=1" />
+  <title>Lucide across theme presets</title>
+  <style>
+    html, body { margin: 0; }
+    body { font-family: "Inter", system-ui, sans-serif; }
+    .head { padding: 14px 22px 4px; font: 700 14px monospace; letter-spacing: .04em; }
+    .sub { padding: 0 22px 12px; font: 12px monospace; opacity: .65; }
+    .block { padding: 4px 22px 8px; }
+    .blabel { font: 11px monospace; opacity: .55; margin: 10px 0 6px; text-transform: uppercase; letter-spacing: .08em; }
+    /* Icons inherit the themed accent via currentColor — exactly how the app tints i.icon. */
+    .icons { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; color: var(--accent); }
+    .icons.hover { color: var(--hover); }
+    .icons svg { stroke-width: 2; }
+    .s20 svg { width: 20px; height: 20px; }
+    .s14 svg { width: 14px; height: 14px; }
+    .s30 svg { width: 30px; height: 30px; }
+    .s14strong svg { width: 14px; height: 14px; stroke-width: 2.5; } /* small-size with heavier stroke */
+  </style>
+</head>
+<body>
+  <div class="head" id="head">?</div>
+  <div class="sub" id="sub"></div>
+
+  <div class="block">
+    <div class="blabel">full set · 20px · accent color (= --theme-secondary)</div>
+    <div class="icons s20" id="set20"></div>
+  </div>
+  <div class="block">
+    <div class="blabel">hover state · 20px · (= --theme-tertiary)</div>
+    <div class="icons s20 hover" id="set20h"></div>
+  </div>
+  <div class="block">
+    <div class="blabel">busy icons · small 14px (stroke 2) vs 14px (stroke 2.5) vs large 30px</div>
+    <div class="icons s14" id="small"></div>
+    <div class="icons s14strong" id="smallStrong" style="margin-top:8px"></div>
+    <div class="icons s30" id="large" style="margin-top:8px"></div>
+  </div>
+
+  <script src="css/lucide/lucide.min.js"></script>
+  <script>
+    const PRESETS = {
+      "default-dark": { name: "Default (black bg / blue accent)", bg: "hsl(0,0%,0%)", text: "hsl(0,0%,100%)", accent: "hsl(225,48%,57%)", hover: "hsl(265,73%,57%)" },
+      "light":        { name: "Light background",                 bg: "hsl(0,0%,96%)", text: "hsl(0,0%,12%)",  accent: "hsl(225,60%,45%)", hover: "hsl(265,60%,45%)" },
+      "low-contrast": { name: "RISKY: accent close to background", bg: "hsl(225,35%,22%)", text: "hsl(0,0%,90%)", accent: "hsl(225,45%,45%)", hover: "hsl(225,55%,62%)" },
+      "vibrant":      { name: "Vibrant purple",                    bg: "hsl(265,45%,14%)", text: "hsl(0,0%,95%)", accent: "hsl(282,80%,72%)", hover: "hsl(305,82%,76%)" },
+    };
+    const ALL = ["x","settings","info","hourglass","handshake","fast-forward","thumbs-up","venetian-mask","smile","shield","volume-x","lock","gavel","crown","move-horizontal","eye-off","plane","play","skip-forward","log-out","share-2","ban","filter","user","circle-help","square-minus","check","chevron-right","chevron-left","repeat"];
+    const BUSY = ["venetian-mask","handshake","gavel","settings","crown","info","shield","filter"];
+
+    const key = new URLSearchParams(location.search).get("preset") || "default-dark";
+    const p = PRESETS[key];
+    document.documentElement.style.setProperty("--accent", p.accent);
+    document.documentElement.style.setProperty("--hover", p.hover);
+    document.body.style.background = p.bg;
+    document.body.style.color = p.text;
+    document.getElementById("head").textContent = "PRESET — " + p.name;
+    document.getElementById("head").style.color = p.text;
+    document.getElementById("sub").textContent = `bg ${p.bg}  ·  accent ${p.accent}  ·  hover ${p.hover}`;
+
+    const add = (host, names) => {
+      for (const n of names) {
+        const i = document.createElement("i");
+        i.setAttribute("data-lucide", n);
+        host.appendChild(i);
+      }
+    };
+    add(document.getElementById("set20"), ALL);
+    add(document.getElementById("set20h"), ALL);
+    add(document.getElementById("small"), BUSY);
+    add(document.getElementById("smallStrong"), BUSY);
+    add(document.getElementById("large"), BUSY);
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>

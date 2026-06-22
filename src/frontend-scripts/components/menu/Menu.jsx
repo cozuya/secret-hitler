@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { viewPatchNotes } from "../../actions/actions";
 import { Popup } from "semantic-ui-react";
+import Icon from "../reusable/Icon";
 
 const mapStateToProps = ({ version }) => ({ version });
 
@@ -229,7 +230,7 @@ class Menu extends React.Component {
                  * @return {string} classnames
                  */
                 const iconClasses = () => {
-                  let classes = "setting icon large";
+                  let classes = "setting large";
 
                   if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
                     classes += " disabled";
@@ -274,7 +275,7 @@ class Menu extends React.Component {
                       className="settings-popup"
                       trigger={
                         <a href="#/settings">
-                          <i className={iconClasses()} />
+                          <Icon name="settings" className={iconClasses()} />
                         </a>
                       }
                       content="Settings"
@@ -321,7 +322,7 @@ class Menu extends React.Component {
                  * @return {string} classnames
                  */
                 const iconClasses = () => {
-                  let classes = "setting icon large";
+                  let classes = "setting large";
 
                   if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
                     classes += " disabled";
@@ -366,7 +367,7 @@ class Menu extends React.Component {
                       className="settings-popup"
                       trigger={
                         <a href="#/settings">
-                          <i className={iconClasses()} />
+                          <Icon name="settings" className={iconClasses()} />
                         </a>
                       }
                       content="Settings"

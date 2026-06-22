@@ -1,4 +1,5 @@
 import React from "react";
+import Icon from "../reusable/Icon";
 import moment from "moment";
 import PropTypes from "prop-types";
 import { Checkbox } from "semantic-ui-react";
@@ -58,9 +59,7 @@ export default class Reports extends React.Component {
                 }}
               >
                 Date{" "}
-                {sortType === "date" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
-                )}
+                {sortType === "date" && <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />}
               </th>
               <th
                 onClick={() => {
@@ -68,9 +67,7 @@ export default class Reports extends React.Component {
                 }}
               >
                 UID{" "}
-                {sortType === "uid" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
-                )}
+                {sortType === "uid" && <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />}
               </th>
               <th
                 onClick={() => {
@@ -79,7 +76,7 @@ export default class Reports extends React.Component {
               >
                 User Reported{" "}
                 {sortType === "userReported" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -88,9 +85,7 @@ export default class Reports extends React.Component {
                 }}
               >
                 Type{" "}
-                {sortType === "type" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
-                )}
+                {sortType === "type" && <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />}
               </th>
               <th
                 onClick={() => {
@@ -99,7 +94,7 @@ export default class Reports extends React.Component {
               >
                 Comment{" "}
                 {sortType === "comment" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th
@@ -109,7 +104,7 @@ export default class Reports extends React.Component {
               >
                 Reporting User{" "}
                 {sortType === "reportingUser" && (
-                  <i className={sortDirection === "descending" ? "angle down icon" : "angle up icon"} />
+                  <Icon name={sortDirection === "descending" ? "chevron-down" : "chevron-up"} />
                 )}
               </th>
               <th>Game Type</th>
@@ -176,7 +171,7 @@ export default class Reports extends React.Component {
     return (
       <section className="reports">
         <a href="#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         <h2>Player Reports</h2>
         {this.renderReportsLog()}

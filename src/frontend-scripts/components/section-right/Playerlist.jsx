@@ -1,6 +1,7 @@
 import React, { createRef } from "react";
 import { connect } from "react-redux";
 import { fetchProfile } from "../../actions/actions";
+import Icon from "../reusable/Icon";
 import { getNumberWithOrdinal, PLAYERCOLORS } from "../../constants";
 import $ from "jquery";
 import Modal from "semantic-ui-modal";
@@ -155,7 +156,7 @@ class Playerlist extends React.Component {
     ) {
       return (
         <a href="#/moderation">
-          <i className="fire icon mod-button" />
+          <Icon name="flame" className="mod-button" />
         </a>
       );
     }
@@ -168,7 +169,7 @@ class Playerlist extends React.Component {
       Object.keys(userInfo).length &&
       Boolean(userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran")
     ) {
-      let classes = "comment icon report-button";
+      let classes = "report-button";
 
       const reportClick = () => {
         if (userInfo.gameSettings.newReport) {
@@ -184,7 +185,7 @@ class Playerlist extends React.Component {
 
       return (
         <a href="#/playerreports" onClick={reportClick}>
-          <i className={classes} />
+          <Icon name="message-square" className={classes} />
         </a>
       );
     }
@@ -202,11 +203,9 @@ class Playerlist extends React.Component {
           userInfo.staffRole !== "veteran"
       )
     ) {
-      const classes = "sign-in icon";
-
       return (
         <a href="#/signups">
-          <i className={classes} style={{ color: "teal", fontSize: "20px" }} />
+          <Icon name="log-in" style={{ color: "teal", fontSize: "20px" }} />
         </a>
       );
     }
@@ -498,29 +497,29 @@ class Playerlist extends React.Component {
       return (
         <div>
           <span onClick={() => toggleGroup("AEM")} style={{ cursor: "pointer" }}>
-            <i className={`caret ${expandInfo.AEM ? "down" : "right"} icon`} />
+            <Icon name={expandInfo.AEM ? "chevron-down" : "chevron-right"} />
             <span style={{ userSelect: "none" }}>Staff: {aem.length}</span>
           </span>
           <div>{expandInfo.AEM && aem.map(makeUser)}</div>
           <span onClick={() => toggleGroup("cont")} style={{ cursor: "pointer" }}>
-            <i className={`caret ${expandInfo.cont ? "down" : "right"} icon`} />
+            <Icon name={expandInfo.cont ? "chevron-down" : "chevron-right"} />
             <span style={{ userSelect: "none" }}>Contributors: {contributors.length}</span>
           </span>
           <div>{expandInfo.cont && contributors.map(makeUser)}</div>
           <span onClick={() => toggleGroup("exp")} style={{ cursor: "pointer" }}>
-            <i className={`caret ${expandInfo.exp ? "down" : "right"} icon`} />
+            <Icon name={expandInfo.exp ? "chevron-down" : "chevron-right"} />
             <span style={{ userSelect: "none" }}>Experienced: {experienced.length}</span>
           </span>
           <div>{expandInfo.exp && experienced.map(makeUser)}</div>
           <span onClick={() => toggleGroup("inexp")} style={{ cursor: "pointer" }}>
-            <i className={`caret ${expandInfo.inexp ? "down" : "right"} icon`} />
+            <Icon name={expandInfo.inexp ? "chevron-down" : "chevron-right"} />
             <span style={{ userSelect: "none" }}>Inexperienced: {inexperienced.length}</span>
           </span>
           <div>{expandInfo.inexp && inexperienced.map(makeUser)}</div>
           {isStaff && (
             <div>
               <span onClick={() => toggleGroup("priv")} style={{ cursor: "pointer" }}>
-                <i className={`caret ${expandInfo.priv ? "down" : "right"} icon`} />
+                <Icon name={expandInfo.priv ? "chevron-down" : "chevron-right"} />
                 <span style={{ userSelect: "none" }}>Private: {privateUser.length}</span>
               </span>
               <div>{expandInfo.priv && privateUser.map(makeUser)}</div>
@@ -778,13 +777,7 @@ class Playerlist extends React.Component {
             {!(
               Boolean(Object.keys(userInfo).length) &&
               Boolean(userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran")
-            ) && (
-              <i
-                className="info circle icon"
-                onClick={this.clickInfoIcon}
-                title="Click to get information about player colors"
-              />
-            )}
+            ) && <Icon name="info" onClick={this.clickInfoIcon} title="Click to get information about player colors" />}
           </span>
           {this.renderFilterIcons()}
           {this.renderModerationButton()}
@@ -836,7 +829,7 @@ class Playerlist extends React.Component {
           {Object.keys(this.props.userList).length && (
             <span>
               <span>{this.props.userList.list.length}</span>
-              <i className="large user icon" title="Number of players logged in" />
+              <Icon name="user" className="large" title="Number of players logged in" />
             </span>
           )}
         </div>

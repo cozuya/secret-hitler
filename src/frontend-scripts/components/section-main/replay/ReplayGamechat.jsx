@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import Icon from "../../reusable/Icon";
 import { Scrollbars } from "react-custom-scrollbars";
 import { loadReplay, updateUser } from "../../../actions/actions";
 import { processEmotes } from "../../../emotes";
@@ -358,31 +359,35 @@ class ReplayGamechat extends React.Component {
       <section className="gamechat">
         <section className="ui pointing menu">
           <a className={"item"} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: "5px" }}>
-            <i
-              className={`large comment icon${showPlayerChat ? " alternate" : ""}`}
+            <Icon
+              name={showPlayerChat ? "message-square-more" : "message-square"}
+              className="large"
               title={showPlayerChat ? "Hide player chats" : "Show player chats"}
               style={{ color: showPlayerChat ? "#4169e1" : "indianred" }}
             />
           </a>
           <a className={"item"} onClick={this.handleChatFilterClick} data-filter="Game">
-            <i
-              className={`large circle icon${showGameChat ? " info" : ""}`}
+            <Icon
+              name={showGameChat ? "info" : "circle"}
+              className="large"
               title={showGameChat ? "Hide game chats" : "Show game chats"}
               style={{ color: showGameChat ? "#4169e1" : "indianred" }}
             />
           </a>
           {gameInfo.general && !gameInfo.general.disableObserver && (
             <a className={"item"} onClick={this.handleChatFilterClick} data-filter="Spectator">
-              <i
-                className={`large eye icon${!showObserverChat ? " slash" : ""}`}
+              <Icon
+                name={showObserverChat ? "eye" : "eye-off"}
+                className="large"
                 title={showObserverChat ? "Hide observer chats" : "Show observer chats"}
                 style={{ color: showObserverChat ? "#4169e1" : "indianred" }}
               />
             </a>
           )}
           <a className={"item"} onClick={this.handleChatFilterClick} data-filter="History">
-            <i
-              className={`large file icon${showFullChat ? " alternate" : ""}`}
+            <Icon
+              name={showFullChat ? "file-text" : "file"}
+              className="large"
               title={showFullChat ? "Truncate chats to 250 lines" : "Show entire history (might lag in longer games)"}
               style={{ color: showFullChat ? "#4169e1" : "indianred" }}
             />

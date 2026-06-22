@@ -62,7 +62,9 @@
 	}
 
 	#main .row .thumbs.up.icon,
-	#main .row .thumbs.up.icon + h4 {
+	#main .row .thumbs.up.icon + h4,
+	#main .row .thumbs.up.lucide-icon,
+	#main .row .thumbs.up.lucide-icon + h4 {
 		color: tan !important;
 	}
 
@@ -70,7 +72,8 @@
 		color: var(--theme-background-1);
 	}
 
-	.lock.icon {
+	.lock.icon,
+	.lock.lucide-icon {
 		margin-top: -15px;
 	}
 	.private {
@@ -214,7 +217,9 @@
 	width: 44% !important;
 
 	.thumbs.up.icon,
-	.thumbs.up.icon + h4 {
+	.thumbs.up.icon + h4,
+	.thumbs.up.lucide-icon,
+	.thumbs.up.lucide-icon + h4 {
 		color: tan !important;
 	}
 }

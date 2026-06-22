@@ -1,0 +1,94 @@
+// Box-metric shim for the Lucide icon migration (see Icon.jsx and
+// .semantic-visual-diff/MIGRATION-PLAN.md). Forces a Lucide <svg> to occupy Semantic's
+// exact `.icon` footprint — 1.18em wide x 1em tall, with the same .25rem right margin — so
+// swapping a Semantic font icon for a Lucide one does not change horizontal footprint or
+// line-box height. That is what prevents layout/wrapping regressions during the migration.
+//
+// The glyph itself stays square (1em) and centered inside the slightly-wider box, matching
+// how Semantic centers a glyph in its 1.18em slot. The SVG inherits `color` via
+// currentColor so account theming can tint it like a font icon.
+.lucide-icon {
+  display: inline-block;
+  width: 1.18em;
+  height: 1em;
+  margin: 0 0.25rem 0 0;
+  text-align: center;
+  line-height: 1;
+  vertical-align: middle;
+
+  svg {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+// Mirror Semantic's `.ui.header > .icon` sizing so a Lucide icon placed directly inside a
+// header (replacing a font icon) keeps the header's size/alignment. We use inline-block
+// rather than Semantic's table-cell: table-cell on the wrapper span spawns an anonymous
+// table row that doubles the header height. `svg { display: block }` drops the inline
+// descender gap. Geometry-verified equal to the old font icon.
+.ui.header > .lucide-icon {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.5em;
+
+  svg {
+    display: block;
+  }
+}
+
+// Mirror Semantic's `.ui.icon.header .icon` — the big, centered icon stacked above the
+// text in icon-headers (e.g. "No profile" / "Replay not found" placeholders).
+.ui.icon.header > .lucide-icon {
+  display: block;
+  width: auto;
+  height: auto;
+  font-size: 3em;
+  margin: 0 auto 0.5rem;
+
+  svg {
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+// Size modifiers mirroring Semantic's `i.large` / `i.big` icon font-sizes, for icons that
+// carried those classes. The em-based shim box scales with font-size.
+.lucide-icon.large {
+  font-size: 1.5em;
+}
+.lucide-icon.big {
+  font-size: 2em;
+}
+.lucide-icon.huge {
+  font-size: 4em;
+}
+
+// Horizontal flip, mirroring Semantic's `flipped` (e.g. a reverse "play" in replay controls).
+.lucide-icon.flipped svg {
+  transform: scaleX(-1);
+}
+
+// Dimmed/disabled icon, mirroring Semantic's `i.disabled.icon` opacity.
+.lucide-icon.disabled {
+  opacity: 0.45;
+}
+
+// Color modifiers mirroring Semantic's named icon colors. Higher specificity than the
+// themed `.lucide-icon { color: var(--theme-secondary) }`, so a fixed-color icon keeps its
+// color like the Semantic original. (In-game themed contexts may still override — verify
+// per-icon when migrating colored icons in the game view.)
+.lucide-icon.red {
+  color: #db2828;
+}
+.lucide-icon.yellow {
+  color: #fbbd08;
+}
+.lucide-icon.green {
+  color: #21ba45;
+}
+.lucide-icon.blue {
+  color: #2185d0;
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- Semantic CSS supplies the .icon box metrics for the baseline row. -->
+  <link rel="stylesheet" href="css/semantic/semantic.min.css" />
+  <style>
+    body { font-family: "Inter", system-ui, sans-serif; margin: 20px; }
+    /* Same constrained container for every row: 220px, 14px text — a realistic
+       "icon + setting label" width like the Settings panel / menu items. */
+    .box { width: 220px; font-size: 14px; line-height: 1.4; outline: 1px solid #ddd;
+           padding: 4px; margin: 8px 0; }
+    .lbl { }
+    /* Default Lucide: 24px square replaced element, no margin (the naive swap). */
+    .raw svg { width: 24px; height: 24px; vertical-align: middle; }
+    /* SHIM: force Lucide into Semantic's exact .icon box so footprint is identical. */
+    .lucide-icon { display: inline-block; width: 1.18em; height: 1em; margin: 0 .25rem 0 0;
+                   vertical-align: baseline; }
+    .lucide-icon svg { width: 100%; height: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="box" id="sem"><i class="setting icon"></i><span class="lbl">Toggle player colors in chat window</span></div>
+  <div class="box" id="lucraw"><i data-lucide="settings" class="raw"></i><span class="lbl">Toggle player colors in chat window</span></div>
+  <div class="box" id="lucshim"><span class="lucide-icon"><i data-lucide="settings"></i></span><span class="lbl">Toggle player colors in chat window</span></div>
+
+  <script src="css/lucide/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/semantic/semantic.min.css" />
+  <style>
+    /* Reproduce the relevant .notes-header cascade from style-dark.scss */
+    .notes-header { font-size: 20px; display: flex; align-items: center; }
+    .notes-header i { cursor: pointer; font-size: 24px; }
+    .notes-header .lucide-icon { cursor: pointer; font-size: 30px; }
+    /* The Step-0 shim (lucide-icon.scss) */
+    .lucide-icon { display: inline-block; width: 1.18em; height: 1em; margin: 0 .25rem 0 0;
+                   text-align: center; line-height: 1; vertical-align: middle; }
+    .lucide-icon svg { width: 1em; height: 1em; display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+  <!-- OLD: original Semantic font icons (large ban / large window minus) -->
+  <div class="notes-header" id="old">
+    <p>Game Notes</p>
+    <i class="large ban icon"></i>
+    <i class="large window minus icon"></i>
+  </div>
+  <!-- NEW: post-migration markup the <Icon> wrapper renders -->
+  <div class="notes-header" id="new">
+    <p>Game Notes</p>
+    <span class="lucide-icon"><i data-lucide="ban"></i></span>
+    <span class="lucide-icon"><i data-lucide="square-minus"></i></span>
+  </div>
+  <script src="css/lucide/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

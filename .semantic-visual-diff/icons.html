@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=520, initial-scale=1" />
+  <title>Icon set comparison</title>
+  <style>
+    body { margin: 0; background: #fff; color: #222; font-family: "Inter", system-ui, sans-serif; }
+    .panel-head { font: 700 15px monospace; letter-spacing: .06em; padding: 14px 20px;
+                  border-bottom: 2px solid #222; background: #fafafa; }
+    .grid { padding: 6px 0; }
+    .grid .row { display: flex; align-items: center; height: 44px; padding: 0 20px; border-bottom: 1px solid #f0f0f0; }
+    .glyph { width: 52px; flex: 0 0 52px; font-size: 26px; line-height: 1; color: #2a2a2a; text-align: center; }
+    .glyph svg { width: 26px; height: 26px; stroke-width: 2; vertical-align: middle; }
+    .nm { font: 12px/1 monospace; color: #888; }
+  </style>
+</head>
+<body>
+  <div id="head" class="panel-head">?</div>
+  <div id="grid" class="grid"></div>
+
+  <script src="css/lucide/lucide.min.js"></script>
+  <script>
+    // label = human concept; sem = Semantic/Fomantic icon class; luc = Lucide data-lucide name.
+    // Class names mostly carry across Semantic->Fomantic (Fomantic keeps FA4 aliases).
+    const ICONS = [
+      { label: "remove / close",        sem: "remove",       luc: "x" },
+      { label: "settings",              sem: "setting",      luc: "settings" },
+      { label: "info circle",           sem: "info circle",  luc: "info" },
+      { label: "hourglass (timer)",     sem: "hourglass half", luc: "hourglass" },
+      { label: "handshake (peace)",     sem: "handshake",    luc: "handshake" },
+      { label: "fast forward (skip)",   sem: "fast forward", luc: "fast-forward" },
+      { label: "thumbs up",             sem: "thumbs up",    luc: "thumbs-up" },
+      { label: "spy / hidden role",     sem: "spy",          luc: "venetian-mask" },
+      { label: "smile / emote",         sem: "smile",        luc: "smile" },
+      { label: "shield",                sem: "shield",       luc: "shield" },
+      { label: "mute",                  sem: "mute",         luc: "volume-x" },
+      { label: "lock",                  sem: "lock",         luc: "lock" },
+      { label: "gavel (mod)",           sem: "gavel",        luc: "gavel" },
+      { label: "chess king (hitler)",   sem: "chess king",   luc: "crown" },
+      { label: "swap horizontal",       sem: "arrows alternate horizontal", luc: "move-horizontal" },
+      { label: "hide / eye-off",        sem: "hide",         luc: "eye-off" },
+      { label: "plane (flappy)",        sem: "plane",        luc: "plane" },
+      { label: "play",                  sem: "play",         luc: "play" },
+      { label: "forward / next",        sem: "forward",      luc: "skip-forward" },
+      { label: "sign out",              sem: "sign out",     luc: "log-out" },
+      { label: "share",                 sem: "share",        luc: "share-2" },
+      { label: "ban",                   sem: "ban",          luc: "ban" },
+      { label: "filter",                sem: "filter",       luc: "filter" },
+      { label: "user",                  sem: "user",         luc: "user" },
+      { label: "help circle",           sem: "help circle",  luc: "circle-help" },
+      { label: "window minus",          sem: "window minus", luc: "square-minus" },
+      { label: "checkmark",             sem: "checkmark",    luc: "check" },
+      { label: "angle right",           sem: "angle right",  luc: "chevron-right" },
+      { label: "angle left",            sem: "angle left",   luc: "chevron-left" },
+      { label: "repeat",                sem: "repeat",       luc: "repeat" },
+    ];
+
+    const which = new URLSearchParams(location.search).get("css") || "semantic";
+    const cssMap = {
+      semantic: "css/semantic/semantic.min.css",
+      fomantic: "css/fomantic/semantic.min.css",
+    };
+    const heads = { semantic: "CURRENT — Semantic 2.4.1", fomantic: "FOMANTIC 2.9.4", lucide: "LUCIDE 0.468" };
+    document.getElementById("head").textContent = heads[which];
+
+    if (cssMap[which]) {
+      const l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = cssMap[which];
+      document.head.appendChild(l);
+    }
+
+    const grid = document.getElementById("grid");
+    for (const ic of ICONS) {
+      const row = document.createElement("div");
+      row.className = "row";
+      const glyph = document.createElement("div");
+      glyph.className = "glyph";
+      if (which === "lucide") {
+        const i = document.createElement("i");
+        i.setAttribute("data-lucide", ic.luc);
+        glyph.appendChild(i);
+      } else {
+        const i = document.createElement("i");
+        i.className = ic.sem + " icon";
+        glyph.appendChild(i);
+      }
+      const nm = document.createElement("div");
+      nm.className = "nm";
+      nm.textContent = ic.label;
+      row.appendChild(glyph);
+      row.appendChild(nm);
+      grid.appendChild(row);
+    }
+
+    if (which === "lucide" && window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

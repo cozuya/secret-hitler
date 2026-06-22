@@ -1,4 +1,5 @@
 @import 'variables.scss';
+@import 'lucide-icon.scss';
 @import 'creategame.scss';
 @import 'game.scss';
 @import 'players.scss';
@@ -184,6 +185,16 @@
 				cursor: pointer;
 				color: var(--theme-text-1) !important;
 				font-size: 24px;
+			}
+			// Lucide replacements for the header's former `large ban`/`large window minus`
+			// font icons. font-size matches the 1.5em (.large.icon) the originals rendered at
+			// (1.5 * the 20px header); !important color mirrors the old !important text-1 pin
+			// so the icons stay text-colored (not the themed --theme-secondary) and unchanged
+			// on hover.
+			.lucide-icon {
+				cursor: pointer;
+				color: var(--theme-text-1) !important;
+				font-size: 30px;
 			}
 			p {
 				margin: 0;
@@ -795,7 +806,8 @@
 		border-bottom: 1px solid var(--theme-background-2);
 		border-right: 1px solid var(--theme-background-2);
 	}
-	.remove.icon {
+	.remove.icon,
+	.remove.lucide-icon {
 		cursor: pointer;
 		font-size: 30px;
 		float: right;
@@ -805,7 +817,8 @@
 		}
 	}
 
-	i.icon {
+	i.icon,
+	.lucide-icon {
 		color: var(--theme-secondary);
 
 		&:hover {
@@ -924,7 +937,8 @@ div {
 	.item.right {
 		padding: 3px 10px;
 		margin-left: 0 !important;
-		.setting.icon.large {
+		.setting.icon.large,
+		.setting.lucide-icon.large {
 			color: var(--theme-text-1) !important;
 			text-decoration: none;
 			&:hover {

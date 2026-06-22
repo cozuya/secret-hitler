@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/semantic/semantic.min.css" />
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    /* Step-0 shim */
+    .lucide-icon { display: inline-block; width: 1.18em; height: 1em; margin: 0 .25rem 0 0;
+                   text-align: center; line-height: 1; vertical-align: middle; }
+    .lucide-icon svg { width: 1em; height: 1em; display: inline-block; vertical-align: middle; }
+    /* PROPOSED: header-icon compat — inline-block @1.5em (avoid table-cell's anon row) */
+    .ui.header > .lucide-icon { display: inline-block; vertical-align: middle; font-size: 1.5em; }
+    .ui.header > .lucide-icon svg { display: block; }
+    /* PROPOSED: general .remove.icon close-button rule extended to the new markup */
+    .remove.icon, .remove.lucide-icon { cursor: pointer; font-size: 30px; float: right; opacity: .5; }
+  </style>
+</head>
+<body>
+  <!-- close-X (Settings line 804) -->
+  <div class="box" style="width:400px"><a id="oldrm"><i class="remove icon"></i></a></div>
+  <div class="box" style="width:400px"><a id="newrm"><span class="lucide-icon remove"><i data-lucide="x"></i></span></a></div>
+
+  <!-- info icon inside header (Settings line 1187) -->
+  <h4 class="ui header" id="oldhdr">Cardback <i class="info circle icon"></i></h4>
+  <h4 class="ui header" id="newhdr">Cardback <span class="lucide-icon"><i data-lucide="info"></i></span></h4>
+
+  <script src="css/lucide/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

@@ -2,7 +2,8 @@ import React from "react"; // eslint-disable-line
 import "sweetalert2/src/sweetalert2.scss";
 import PropTypes from "prop-types";
 import { Scrollbars } from "react-custom-scrollbars";
-import { Modal, Header, Button, Icon } from "semantic-ui-react";
+import { Modal, Header, Button } from "semantic-ui-react";
+import Icon from "../reusable/Icon";
 
 import GamesList from "./GamesList.jsx";
 import Creategame from "./Creategame.jsx";
@@ -168,7 +169,7 @@ export class Main extends React.Component {
                       <Icon name="filter" /> icon next to the "create a new game" button. If you have insisted on naming
                       yourself something NSFW, you will want to toggle on the "private-games-only" setting (if you did
                       not check that box while signing up) found by clicking on the upper right corner button that looks
-                      like <Icon name="setting" />. There are many other interesting account settings that can be found
+                      like <Icon name="settings" />. There are many other interesting account settings that can be found
                       there as well.
                     </p>
                     <h4>Public game players:</h4>
@@ -190,7 +191,7 @@ export class Main extends React.Component {
                       players by aggregate ELO than if you win against worse players) are taken seriously by many so you
                       might want to play in some practice or casual (often custom) games to learn how this game works
                       online and the basics of the established metagame before jumping into ranked. Casual games will
-                      have this <Icon name="handshake outline" /> icon in the game list.
+                      have this <Icon name="handshake" /> icon in the game list.
                     </p>
                   </React.Fragment>
                 );
@@ -243,7 +244,7 @@ export class Main extends React.Component {
             inverted
             style={{ background: newPlayerModalPageIndex === 4 ? "#db2828" : "var(--theme-tertiary)", color: "#fff" }}
           >
-            <Icon name="checkmark" />
+            <Icon name="check" />
             {newPlayerModalPageIndex === 4 ? "Close" : "Skip and dismiss forever"}
           </Button>
           <div className="navigation-container">
@@ -254,7 +255,7 @@ export class Main extends React.Component {
               primary
               disabled={!newPlayerModalPageIndex}
             >
-              <Icon name="angle left" /> Previous
+              <Icon name="chevron-left" /> Previous
             </Button>
             <Button
               onClick={() => {
@@ -264,7 +265,7 @@ export class Main extends React.Component {
               disabled={newPlayerModalPageIndex === 4}
             >
               Next
-              <Icon name="angle right" />
+              <Icon name="chevron-right" />
             </Button>
           </div>
         </Modal.Actions>

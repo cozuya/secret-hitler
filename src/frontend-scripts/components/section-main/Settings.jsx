@@ -10,6 +10,7 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import SweetAlert2 from "react-sweetalert2";
 import CollapsibleSegment from "../reusable/CollapsibleSegment.jsx";
+import Icon from "../reusable/Icon";
 
 $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
@@ -801,7 +802,7 @@ class Settings extends React.Component {
     return (
       <section className="settings">
         <a href="/game/#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         <div className="ui header">
           <div className="content">
@@ -1184,8 +1185,8 @@ class Settings extends React.Component {
               <div className="row centered cardback-header-container">
                 <h4 className="ui header">
                   Cardback
-                  <i
-                    className="info circle icon"
+                  <Icon
+                    name="info"
                     title="Click to get information about user uploaded cardbacks"
                     onClick={displayCardbackInfoModal}
                   />

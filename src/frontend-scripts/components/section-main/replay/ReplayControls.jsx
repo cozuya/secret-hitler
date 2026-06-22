@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"; // eslint-disable-line no-unused-vars
 import { Range, List, OrderedMap, Map } from "immutable";
+import Icon from "../../reusable/Icon";
 import { fromNullable } from "option";
 import classnames from "classnames";
 import Slider from "rc-slider";
@@ -186,22 +187,22 @@ const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, 
       <h1>Playback Controls</h1>
       <div className="ui horizontal segments">
         <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={beginning}>
-          <i className="fast backward icon" />
+          <Icon name="rewind" />
         </button>
         <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={backward}>
-          <i className="backward icon" />
+          <Icon name="skip-back" />
         </button>
         <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={prev}>
-          <i className="flipped play icon" />
+          <Icon name="play" className="flipped" />
         </button>
         <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={next}>
-          <i className="play icon" />
+          <Icon name="play" />
         </button>
         <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={forward}>
-          <i className="forward icon" />
+          <Icon name="skip-forward" />
         </button>
         <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={end}>
-          <i className="fast forward icon" />
+          <Icon name="fast-forward" />
         </button>
       </div>
     </div>

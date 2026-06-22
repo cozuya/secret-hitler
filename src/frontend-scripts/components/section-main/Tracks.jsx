@@ -1,5 +1,6 @@
 import React from "react";
 import CardFlinger from "./CardFlinger.jsx";
+import Icon from "../reusable/Icon";
 import EnactedPolicies from "./EnactedPolicies.jsx";
 import PropTypes from "prop-types";
 import { Popup } from "semantic-ui-react";
@@ -168,7 +169,7 @@ class Tracks extends React.Component {
     const customgameactiveTooltip = "Custom Game";
 
     if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
-      customgameactive = <i className="setting icon" />;
+      customgameactive = <Icon name="settings" />;
     } else {
       const hasPlayerCount = (count) =>
         game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
@@ -195,45 +196,42 @@ class Tracks extends React.Component {
     }
 
     if (game.playerChats === "disabled") {
-      playerChats = <i className="mute icon" />;
+      playerChats = <Icon name="volume-x" />;
       playerChatsTooltip = "Player Chat Disabled";
     } else if (game.playerChats === "emotes") {
-      playerChats = <i className="smile icon" />;
+      playerChats = <Icon name="smile" />;
       playerChatsTooltip = "Emotes Only";
     }
 
     if (game.isVerifiedOnly) {
-      isVerifiedOnly = <i className="thumbs up icon" />;
+      isVerifiedOnly = <Icon name="thumbs-up" />;
       isVerifiedOnlyTooltip = "Only email-verified players can sit in this game.";
     }
 
     if (game.privateOnly) {
-      priv = <i className="spy icon" />;
+      priv = <Icon name="venetian-mask" />;
       privTooltip = "Private game only - only anonymous players.";
     }
 
     if (!game.privateOnly && game.private) {
-      priv = <i className="lock icon" />;
+      priv = <Icon name="lock" />;
       privTooltip = "Private game.";
     }
 
     if (game.blindMode) {
-      blind = <i className="hide icon" />;
+      blind = <Icon name="eye-off" />;
       blindTooltip = "Blind mode - players are anonymized";
     }
 
     if (game.disableGamechat) {
       disableGamechat = (
-        <i className="icons">
-          <i className="game icon" />
-          <i className="large remove icon" style={{ opacity: "0.6", color: "var(--theme-primary)" }} />
-        </i>
+        <Icon name="message-circle-off" className="large" style={{ opacity: "0.6", color: "var(--theme-primary)" }} />
       );
       disableGamechatTooltip = "Game Chat Disabled";
     }
 
     if (game.experiencedMode) {
-      experiencedMode = <i className="fast forward icon" />;
+      experiencedMode = <Icon name="fast-forward" />;
       experiencedModeTooltip = "Speed Mode";
     }
 
@@ -244,34 +242,34 @@ class Tracks extends React.Component {
     }
 
     if (game.casualGame) {
-      casualgame = <i className="handshake icon" />;
+      casualgame = <Icon name="handshake" />;
       casualgameTooltip = "Casual game - results do not count towards wins and losses, gameplay rules are not enforced";
     }
 
     if (game.practiceGame) {
-      practiceGame = <i className="chess icon" />;
+      practiceGame = <Icon name="graduation-cap" />;
       practiceGameTooltip = "Practice game - results do not count for Elo, gameplay rules are enforced";
     }
 
     if (game.avalonSH) {
-      avalonSH = <i className="shield icon" />;
+      avalonSH = <Icon name="shield" />;
       avalonSHTooltip = game.avalonSH.withPercival ? "Avalon SH with Percival & Morgana" : "Avalon SH";
     }
 
     if (game.monarchistSH) {
-      monarchistSH = <i className="chess king icon" />;
+      monarchistSH = <Icon name="crown" />;
       monarchistSHTooltip = "Monarchist SH";
     }
 
     if (game.noTopdecking) {
-      noTopdecking = <i className="gavel icon" />;
+      noTopdecking = <Icon name="gavel" />;
       noTopdeckingTooltip = game.noTopdecking === 2 ? "No Double Topdecking" : "No Topdecking";
     }
 
     if (game.timedMode) {
       timedMode = (
         <span>
-          <i className="hourglass half icon" />
+          <Icon name="hourglass" />
           <span style={{ color: "peru" }}>
             {`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
           </span>
@@ -299,17 +297,17 @@ class Tracks extends React.Component {
     }
 
     if (game.flappyMode) {
-      flappyMode = <i className="plane icon" />;
+      flappyMode = <Icon name="plane" />;
       flappyModeTooltip = "COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
     }
 
     if (game.flappyOnlyMode) {
-      flappyOnlyMode = <i className="plane icon flappyonly" />;
+      flappyOnlyMode = <Icon name="plane" className="flappyonly" />;
       flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
     }
 
     if (game.unlistedGame) {
-      unlistedGame = <i className="lock icon green" />;
+      unlistedGame = <Icon name="lock" className="green" />;
       unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
     }
 
@@ -756,7 +754,7 @@ class Tracks extends React.Component {
               />
             )}
           {!showTimer && (minutes || seconds >= 15) && timedMode ? (
-            <i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
+            <Icon title="Click to view Timer." name="hourglass" className="timer" onClick={this.toggleTimer} />
           ) : timedMode ? (
             <div title="Click to hide until the last 15s." onClick={this.toggleTimer} className="timed-mode-counter">
               Action forced in {minutes}:{seconds > 9 ? seconds : `0${seconds}`}

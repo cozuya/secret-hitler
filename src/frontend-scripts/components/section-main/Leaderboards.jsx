@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import Icon from "../reusable/Icon";
 
 class Leaderboard extends React.Component {
   constructor() {
@@ -47,7 +48,7 @@ class Leaderboard extends React.Component {
     return (
       <section className="leaderboards">
         <a href="#/">
-          <i className="remove icon" style={{ marginTop: "30px" }} />
+          <Icon name="x" className="remove" style={{ marginTop: "30px" }} />
         </a>
         {hasLeaderboardData && !this.state.errored ? (
           <>

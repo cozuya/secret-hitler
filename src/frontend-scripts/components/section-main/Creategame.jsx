@@ -1,4 +1,5 @@
 import React from "react";
+import Icon from "../reusable/Icon";
 import _ from "lodash";
 import Switch from "react-switch";
 import Select from "react-select";
@@ -1218,7 +1219,7 @@ export default class Creategame extends React.Component {
     return (
       <div className={this.state.isTourny ? "rebalance-container isTourny" : "rebalance-container"}>
         <span title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck.">
-          <i className="info circle icon" />
+          <Icon name="info" />
           Rebalance:
         </span>
 
@@ -1325,7 +1326,7 @@ export default class Creategame extends React.Component {
             </div>
           )}
           <div className="four wide column elorow" style={{ margin: "-50 auto 0" }}>
-            <i className="big arrows alternate horizontal icon" />
+            <Icon name="move-horizontal" className="big" />
             <h4 className="ui header">Elo limited game</h4>
             <Switch
               onChange={(checked) => {
@@ -1391,7 +1392,7 @@ export default class Creategame extends React.Component {
             </div>
           )}
           <div className="four wide column elorow" style={{ margin: "-50 auto 0" }}>
-            <i className="big arrows alternate horizontal icon" />
+            <Icon name="move-horizontal" className="big" />
             <h4 className="ui header">XP limited game</h4>
             <Switch
               onChange={(checked) => {
@@ -1974,7 +1975,7 @@ export default class Creategame extends React.Component {
     return (
       <section className="creategame">
         <a href="#/">
-          <i className="remove icon" />
+          <Icon name="x" className="remove" />
         </a>
         <div className="ui grid centered footer">
           <div onClick={this.createNewGame} className={createClass}>
@@ -2022,7 +2023,7 @@ export default class Creategame extends React.Component {
                 <h4 className="ui header" style={{ marginBottom: "15px" }}>
                   Private game
                 </h4>
-                <i className="big yellow lock icon" />
+                <Icon name="lock" className="big yellow lock" />
                 <Switch
                   className="create-game-switch"
                   onChange={(checked) => {
@@ -2061,7 +2062,7 @@ export default class Creategame extends React.Component {
                 <h4 className="ui header" style={{ marginBottom: "15px" }}>
                   Unlisted game
                 </h4>
-                <i className="big green lock icon" />
+                <Icon name="lock" className="big green lock" />
                 <Switch
                   className="create-game-switch"
                   onChange={(checked) => {
@@ -2130,7 +2131,7 @@ export default class Creategame extends React.Component {
           {this.props.userInfo.verified && !this.state.privateonlygame && (
             <div className="row verified-row">
               <div className="sixteen wide column">
-                <i className="big thumbs up icon" style={{ color: "tan !important" }} />
+                <Icon name="thumbs-up" className="big thumbs up" style={{ color: "tan" }} />
                 <h4 className="ui header" style={{ color: "tan" }}>
                   Verified - only verified players can play in this game.
                 </h4>
@@ -2155,13 +2156,13 @@ export default class Creategame extends React.Component {
           {this.renderXPSlider()}
           <div className="row sliderrow">
             <div className="four wide column playerchats">
-              <i className="big unmute icon" />
+              <Icon name="volume-2" className="big" />
               <h4 className="ui header">Player chat - disable to only allow claiming and game messages</h4>
               {this.renderPlayerChatDropdown()}
             </div>
 
             <div className="four wide column experiencedmode">
-              <i className="big fast forward icon" />
+              <Icon name="fast-forward" className="big" />
               <h4 className="ui header">Speed mode - most animations and pauses greatly reduced and fewer gamechats</h4>
               <Switch
                 className="create-game-switch"
@@ -2189,7 +2190,7 @@ export default class Creategame extends React.Component {
                   })()}
                 </span>
               )}
-              <i className="big hourglass half icon" />
+              <Icon name="hourglass" className="big" />
               <h4 className="ui header">
                 Timed mode - if a player does not make an action after a certain amount of time, that action is
                 completed for them randomly.
@@ -2249,7 +2250,7 @@ export default class Creategame extends React.Component {
           </div>
           <div className="row">
             <div className="four wide column">
-              <i className="big hide icon" />
+              <Icon name="eye-off" className="big" />
               <h4 className="ui header">
                 Blind mode - player's names are replaced with random animal names, anonymizing them.
               </h4>
@@ -2270,7 +2271,7 @@ export default class Creategame extends React.Component {
             </div>
             {!this.state.isTourny && (
               <div className="four wide column">
-                <i className="big talk icon" />
+                <Icon name="message-circle" className="big" />
                 <h4 className="ui header">Disable observer chat</h4>
                 <Switch
                   className="create-game-switch"
@@ -2307,7 +2308,7 @@ export default class Creategame extends React.Component {
               </div>
             )}
             <div className="four wide column">
-              <i className="big handshake icon" />
+              <Icon name="handshake" className="big" />
               <h4 className="ui header">Game Type</h4>
               {this.renderGameTypeDropdown()}
             </div>
@@ -2358,7 +2359,7 @@ export default class Creategame extends React.Component {
           </div>
           <div className="row">
             <div className="four wide column">
-              <i className="big shield icon" />
+              <Icon name="shield" className="big" />
               <h4 className="ui header">Avalon SH - Adds roles from The Resistance: Avalon to the game, causal only</h4>
               <Switch
                 className="create-game-switch"
@@ -2406,7 +2407,7 @@ export default class Creategame extends React.Component {
               )}
             </div>
             <div className="four wide column">
-              <i className="big chess king icon" />
+              <Icon name="crown" className="big" />
               <h4 className="ui header">
                 Monarchist mode - adds a custom fascist role that wins on 6 fascist policies or executing hitler, casual
                 only
@@ -2438,7 +2439,7 @@ export default class Creategame extends React.Component {
               />
             </div>
             <div className="four wide column">
-              <i className="big gavel icon" />
+              <Icon name="gavel" className="big" />
               <h4 className="ui header">No topdecking - Topdecking results in a fascist win.</h4>
               <Range
                 min={0}
@@ -2461,7 +2462,7 @@ export default class Creategame extends React.Component {
           </div>
           <div className="row" style={{ marginTop: "20px" }}>
             <div className="sixteen wide column">
-              <i className="big setting icon" />
+              <Icon name="settings" className="big" />
               <h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
               <Switch
                 className="create-game-switch"
