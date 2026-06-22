@@ -8,7 +8,7 @@ I only have the following guidelines:
 
 2. Your code should pass lint.
 
-3. Your editor should use prettierjs.
+3. Your editor should use Biome for formatting and linting.
 
 4. Functions that either a) return a value or b) have arguments (non-anonymous/lambda) that aren't obvious i.e. not i/index/event should use JSDoc comments to explain the types and return types of that function.
 

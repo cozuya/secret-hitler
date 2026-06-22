@@ -43,7 +43,7 @@ pnpm dev
 
 Navigate to: http://localhost:8080
 
-You'll need multiple sessions, so use something like Chrome's user profiles, or Firefox's multi-account containers. No, incognito will not work. You'll want to check "disable cache" on the network tab - the webpack setup isn't great, doesn't cache bust itself, and there's no live reload, so all saves will need a F5. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a pnpm script you may run once `server` or `dev` scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+You'll need multiple sessions, so use something like Chrome's user profiles, or Firefox's multi-account containers. No, incognito will not work. You'll want to check "disable cache" on the network tab - the Vite build runs in `--watch` mode and doesn't cache bust itself, and there's no live reload, so all saves will need a F5. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a pnpm script you may run once `server` or `dev` scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
 
 ```bash
 pnpm create-accounts

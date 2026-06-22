@@ -20,7 +20,7 @@ The first (and most important) tool you need is NodeJS. This is the programming 
 
 #### Windows Installation
 
-Go to the [NodeJS website](https://nodejs.org/en/). You should see two green buttons to download. Download the LTS version (12.18.2 at the time of writing). **Important**: when installing, make sure to select to install `npm` as well.
+Go to the [NodeJS website](https://nodejs.org/en/). You should see two green buttons to download. Download the version specified in `.nvmrc` (24.12.0 at the time of writing). **Important**: when installing, make sure to select to install `npm` as well.
 
 #### Linux Installation
 
@@ -74,7 +74,7 @@ For this step, you need the URL of your fork and the name of your branch. Find t
 
 ## Step 4: Install dependencies and run code.
 
-Change directory into your clone (`cd secret-hitler` on all operating systems). Run `pnpm install` to install the dependencies. Then, run `pnpm dev`. A bunch of lines of debug should output. Wait for it to tell you `Webpack compiled in <some number> seconds` (may take more than 30 seconds on some computers), then open `localhost:8080` in your browser. The site should load! When entering the game lobby, you'll see a bunch of buttons to log in to testing accounts. The accounts don't exist yet. Open a new terminal (don't close the one you already have or the site will close) and run `pnpm create-accounts` in the same directory you ran `pnpm dev`. If that works, run `pnpm assign-local-mod`. Now, Uther is an admin and everything is working!
+Change directory into your clone (`cd secret-hitler` on all operating systems). Run `pnpm install` to install the dependencies. Then, run `pnpm dev`. A bunch of lines of debug should output. Wait for Vite to finish the initial build (it will print `built in <some number>ms`, and may take more than 30 seconds on some computers), then open `localhost:8080` in your browser. The site should load! When entering the game lobby, you'll see a bunch of buttons to log in to testing accounts. The accounts don't exist yet. Open a new terminal (don't close the one you already have or the site will close) and run `pnpm create-accounts` in the same directory you ran `pnpm dev`. If that works, run `pnpm assign-local-mod`. Now, Uther is an admin and everything is working!
 
 ### Issues
 
