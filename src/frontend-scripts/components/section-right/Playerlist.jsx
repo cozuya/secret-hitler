@@ -82,22 +82,6 @@ class Playerlist extends React.Component {
   sortByElo(sort) {
     const { gameSettings } = this.props.userInfo;
     const elo = gameSettings && gameSettings.disableSeasonal ? "eloOverall" : "eloSeason";
-    // const w =
-    // 	gameSettings && gameSettings.disableSeasonal
-    // 		? this.state.userListFilter === 'all'
-    // 			? 'wins'
-    // 			: 'rainbowWins'
-    // 		: this.state.userListFilter === 'all'
-    // 		? 'winsSeason'
-    // 		: 'rainbowWinsSeason';
-    // const l =
-    // 	gameSettings && gameSettings.disableSeasonal
-    // 		? this.state.userListFilter === 'all'
-    // 			? 'losses'
-    // 			: 'rainbowLosses'
-    // 		: this.state.userListFilter === 'all'
-    // 		? 'lossesSeason'
-    // 		: 'rainbowLossesSeason';
 
     return (a, b) => {
       const e1 =
@@ -171,10 +155,6 @@ class Playerlist extends React.Component {
       let classes = "comment icon report-button";
 
       const reportClick = () => {
-        if (userInfo.gameSettings.newReport) {
-          this.props.socket.emit("playerReportDismiss");
-        }
-
         window.location.hash = "#/playerreports";
       };
 
@@ -401,11 +381,6 @@ class Playerlist extends React.Component {
           }
         };
 
-        // const renderCrowns = () =>
-        // 	user.tournyWins
-        // 		.filter(winTime => time - winTime < 10800000)
-        // 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
-
         return (
           <div key={user.userName} className="user-container">
             <div className="userlist-username">
@@ -451,7 +426,6 @@ class Playerlist extends React.Component {
               })()}
             </div>
             <div className="userlist-stats-container">
-              {/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
               {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
                 user.previousSeasonAward &&
                 this.renderPreviousSeasonAward(user.previousSeasonAward)}
@@ -674,15 +648,9 @@ class Playerlist extends React.Component {
           }
         };
 
-        // const renderCrowns = () =>
-        // 	user.tournyWins
-        // 		.filter(winTime => time - winTime < 10800000)
-        // 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
-
         return (
           <div key={user.userName} className="user-container">
             <div className="userlist-username">
-              {/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
               {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
                 user.previousSeasonAward &&
                 this.renderPreviousSeasonAward(user.previousSeasonAward)}

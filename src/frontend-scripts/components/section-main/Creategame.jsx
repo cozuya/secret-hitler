@@ -452,10 +452,10 @@ export default class Creategame extends React.Component {
         styles={style}
         value={findValue(this.state.gameType)}
         onChange={(inputValue, action) => {
+          // Emote-only chat isn't offered for ranked/practice, so switching to one resets it.
+          // Silent (disabled) games may now be ranked, so that combination is intentionally not reset.
           const resetPlayerChats =
-            (["ranked", "practice"].includes(inputValue.value) && this.state.playerChats === "emotes") ||
-            (inputValue.value === "ranked" && this.state.playerChats === "disabled");
-          // emote only can't be ranked or practice and silent can't be ranked
+            ["ranked", "practice"].includes(inputValue.value) && this.state.playerChats === "emotes";
 
           this.setState({
             gameType: inputValue.value,
@@ -530,10 +530,9 @@ export default class Creategame extends React.Component {
         styles={style}
         value={findValue(this.state.playerChats)}
         onChange={(inputValue, _action) => {
+          // Silent (disabled) games may now be ranked, so selecting it no longer forces practice.
           this.setState({
             playerChats: inputValue.value,
-            gameType:
-              inputValue.value === "disabled" && this.state.gameType === "ranked" ? "practice" : this.state.gameType,
           });
         }}
         menuPlacement={"auto"}

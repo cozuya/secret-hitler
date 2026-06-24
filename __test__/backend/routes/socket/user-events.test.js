@@ -10,7 +10,6 @@ import {
   handleUpdatedGameSettings,
   handleModerationAction,
   handlePlayerReport,
-  handlePlayerReportDismiss,
   checkUserStatus,
   handleUserLeaveGame,
   handleSocketDisconnect,
@@ -59,10 +58,6 @@ describe("user events", () => {
 
   it("has an handlePlayerReport function", () => {
     expect(typeof handlePlayerReport).toBe("function");
-  });
-
-  it("has an handlePlayerReportDismiss function", () => {
-    expect(typeof handlePlayerReportDismiss).toBe("function");
   });
 
   it("has an checkUserStatus function", () => {

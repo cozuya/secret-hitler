@@ -577,12 +577,23 @@ class Players extends React.Component {
     const index = gameInfo.gameState.isStarted
       ? gameInfo.publicPlayersState.findIndex((player) => player.userName === this.state.reportedPlayer)
       : undefined;
+    // Semantic-UI sets the selection on the input's .value property (via $input.val()), never the
+    // value attribute — read the property, and items carry data-value matching REPORT_REASONS.
+    const reason = document.querySelector('input[name="reason"]')?.value;
+    // Guard before emit: with no reason picked, .value is "" and the backend's z.enum(REPORT_REASONS)
+    // would reject the payload, silently dropping the report. Early-return (leaving the modal open so
+    // the user can pick one), mirroring the empty-comment guard above.
+    if (!reason) {
+      return;
+    }
     if (this.state.reportLength <= 140) {
       this.props.socket.emit("playerReport", {
         uid: gameInfo.general.uid,
         userName: this.props.userInfo.userName || "from replay",
-        reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
-        reason: $('input[name="reason"]').attr("value"),
+        // Only prefix the seat when the player was actually found (index >= 0); findIndex returns -1
+        // for a player no longer in publicPlayersState, which would otherwise emit a bogus "{0}" seat.
+        reportedPlayer: `${gameInfo.gameState.isStarted && index >= 0 ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
+        reason,
         comment: this.state.reportTextValue,
       });
       $(this.reportModal).modal("hide");
@@ -758,13 +769,30 @@ class Players extends React.Component {
               <input type="hidden" name="reason" />
               <i className="dropdown icon" />
               <div className="default text">Reason</div>
+              {/* data-value must match the backend REPORT_REASONS enum (player-reports.schema.js);
+                  Semantic-UI writes the selected item's data-value to the hidden input's value. */}
               <div className="menu">
-                <div className="item">AFK/Leaving game</div>
-                <div className="item">Abusive chat</div>
-                <div className="item">Cheating</div>
-                <div className="item">Gamethrowing</div>
-                <div className="item">Stalling</div>
-                <div className="item">Other</div>
+                <div className="item" data-value="afk/leaving game">
+                  AFK/Leaving game
+                </div>
+                <div className="item" data-value="abusive chat">
+                  Abusive chat
+                </div>
+                <div className="item" data-value="cheating">
+                  Cheating
+                </div>
+                <div className="item" data-value="gamethrowing">
+                  Gamethrowing
+                </div>
+                <div className="item" data-value="stalling">
+                  Stalling
+                </div>
+                <div className="item" data-value="botting">
+                  Botting
+                </div>
+                <div className="item" data-value="other">
+                  Other
+                </div>
               </div>
             </div>
             <textarea

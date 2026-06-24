@@ -499,22 +499,6 @@ class ProfileWrapper extends React.Component {
   Profile() {
     const { gameSettings, profile, userInfo, userList } = this.props;
     const user = userList.list ? userList.list.find((u) => u.userName == profile._id) : null;
-    // const w =
-    // 	gameSettings && gameSettings.disableSeasonal
-    // 		? this.state.userListFilter === 'all'
-    // 			? 'wins'
-    // 			: 'rainbowWins'
-    // 		: this.state.userListFilter === 'all'
-    // 		? 'winsSeason'
-    // 		: 'rainbowWinsSeason';
-    // const l =
-    // 	gameSettings && gameSettings.disableSeasonal
-    // 		? this.state.userListFilter === 'all'
-    // 			? 'losses'
-    // 			: 'rainbowLosses'
-    // 		: this.state.userListFilter === 'all'
-    // 		? 'lossesSeason'
-    // 		: 'rainbowLossesSeason';
     let userClasses = "profile-picture";
     if (user) {
       userClasses =

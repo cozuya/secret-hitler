@@ -267,7 +267,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
               if (err) socket.emit("sendAlert", `IP clear failed:\n${err}`);
             }
           );
-          console.log(handleDefaultIPv6Range(data.ip));
           break;
         case "clearTimeoutAndTimeoutIP":
           Account.findOne({ username: data.userName })
@@ -337,7 +336,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
         }
         case "getIP":
           if (isSuperMod) {
-            console.log(data, "d");
             socket.emit("sendAlert", `Requested IP: ${data.ip}`);
           } else {
             socket.emit("sendAlert", "Only editors and admins can request a raw IP.");

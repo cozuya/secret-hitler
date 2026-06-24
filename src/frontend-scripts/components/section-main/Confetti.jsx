@@ -1,5 +1,4 @@
 import React from "react";
-import $ from "jquery";
 import PropTypes from "prop-types";
 
 /* eslint-disable */
@@ -87,12 +86,16 @@ export default class Confetti extends React.Component {
         };
       }
 
-      $(document).ready(function () {
+      // The DOM is already ready here (componentDidMount), but jQuery 3's $(document).ready still
+      // fires asynchronously (via window.setTimeout). That deferral is load-bearing: it let the rest
+      // of this IIFE run first, notably the window.requestAnimFrame polyfill assigned at the bottom,
+      // which InitializeConfetti -> StartConfetti depends on. setTimeout preserves that ordering.
+      setTimeout(function () {
         SetGlobals();
         InitializeButton();
         InitializeConfetti();
 
-        $(window).resize(function () {
+        window.addEventListener("resize", function () {
           W = window.innerWidth;
           H = window.innerHeight;
           canvas.width = W;
@@ -101,8 +104,10 @@ export default class Confetti extends React.Component {
       });
 
       function InitializeButton() {
-        $("#stopButton").click(DeactivateConfetti);
-        $("#startButton").click(RestartConfetti);
+        // #stopButton/#startButton aren't rendered by this component; guarded so the missing
+        // elements no-op exactly as jQuery's empty-set .click() did.
+        document.getElementById("stopButton")?.addEventListener("click", DeactivateConfetti);
+        document.getElementById("startButton")?.addEventListener("click", RestartConfetti);
       }
 
       function SetGlobals() {

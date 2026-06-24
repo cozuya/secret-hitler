@@ -496,6 +496,22 @@ class LineGuess {
 
 module.exports.LineGuess = LineGuess;
 
+// Single source of truth for the human-readable game-type label used in game-summary reports.
+// Silent (playerChats === "disabled") games intentionally have no separate label — they follow
+// their gameType, so a ranked silent game reads as "Ranked" (matching its Elo/stats treatment).
+const gameTypeLabel = (game) =>
+  game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked";
+
+// The header fields every makeReport() payload shares (mod ping, auto-report, mod-chat). Spread into
+// the call-specific fields (player/seat/role/situation) so this shape lives in one place instead of
+// being copy-pasted at ~16 call sites across election.js / commands.js / mod-modals.js.
+module.exports.gameReportHeader = (game) => ({
+  election: game.general.electionCount,
+  title: game.general.name,
+  uid: game.general.uid,
+  gameType: gameTypeLabel(game),
+});
+
 // tacks on "/64" to IPv6 ips; needed to properly ban IPv6 ips
 module.exports.handleDefaultIPv6Range = (ip) => {
   // check if there is NOT a : or there IS a / (ie. it's not IPv6 or it already has a CIDR range)

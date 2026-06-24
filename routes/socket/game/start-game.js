@@ -296,8 +296,6 @@ const beginGame = (game) => {
     fasElo
   );
 
-  console.log(game.private.summary);
-
   game.private.unSeatedGameChats = [
     {
       gameChat: true,

@@ -289,10 +289,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 
   game.general.isRecorded = true;
 
-  // Don't compute Elo for private, casual, custom, silent, private, or unlisted games
+  // Don't compute Elo for private, casual, custom, practice, or unlisted games.
+  // Silent (playerChats === "disabled") games are eligible when otherwise ranked (i.e. none of
+  // the flags below are set); only casual/practice silent games fall through to the XP-only path.
   if (
     !game.general.private &&
-    game.general.playerChats !== "disabled" &&
     !game.general.casualGame &&
     !(game.customGameSettings && game.customGameSettings.enabled) &&
     !game.general.practiceGame &&

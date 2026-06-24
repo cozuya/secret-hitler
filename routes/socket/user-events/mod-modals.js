@@ -1,5 +1,5 @@
 const ModAction = require("../../../models/modAction");
-const { sendInProgressGameUpdate } = require("../util.js");
+const { sendInProgressGameUpdate, gameReportHeader } = require("../util.js");
 const moment = require("moment");
 const { makeReport } = require("../report.js");
 
@@ -18,10 +18,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
       {
         player: passport.user,
         situation: `has subscribed to mod chat for a game without an auto-report.`,
-        election: game.general.electionCount,
-        title: game.general.name,
-        uid: game.general.uid,
-        gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+        ...gameReportHeader(game),
       },
       game,
       "modchat"
