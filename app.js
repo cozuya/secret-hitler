@@ -25,11 +25,13 @@ if (process.env.NODE_ENV !== "production") {
     collection: "sessions",
   });
 } else {
-  const redis = require("redis").createClient();
+  // Prod uses a shared Render Key Value (Valkey) instance (it also backs another app) via REDIS_URL.
+  // All of SH.io stays on db >= 10 so its keys can't collide with the other app on db 0-9: sessions
+  // on db 10 (here), global settings on db 11 (routes/socket/models.js). The client now carries the
+  // connection, so connect-redis no longer needs the old (and, with a client passed, ignored) host/port.
+  const redis = require("redis").createClient({ url: process.env.REDIS_URL, db: 10 });
   const RedisStore = require("connect-redis")(session);
   store = new RedisStore({
-    host: "127.0.0.1",
-    port: 6379,
     client: redis,
     ttl: 2 * 604800, // 2 weeks
   });
@@ -142,7 +144,12 @@ if (process.env.DISCORDCLIENTID) {
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true, useUnifiedTopology: true });
+// Prod connects to MongoDB Atlas via MONGO_URL; dev falls back to the local mongod. The db name
+// (secret-hitler-app) must be in the Atlas SRV string's path, e.g. ...mongodb.net/secret-hitler-app?...
+mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/secret-hitler-app", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 mongoose.set("useCreateIndex", true);
 mongoose.set("useFindAndModify", false);
 mongoose.Promise = global.Promise;

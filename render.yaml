@@ -1,0 +1,68 @@
+# Render Blueprint for secret-hitler (secrethitler.io).
+#
+# Single web service, ONE instance: all live game state is held in memory (the `games` object,
+# user lists, chats) and there is no socket.io Redis adapter, so running >1 instance would split
+# games across processes and break them. Do not enable autoscaling.
+#
+# Redis/Valkey is intentionally NOT declared here. This app reuses an existing Render Key Value
+# instance from another service (same Virginia region), reached over its internal URL. The app
+# isolates itself to db 10 (sessions, app.js) and db 11 (global settings, routes/socket/models.js);
+# db 0-9 belong to the other app. REDIS_URL is therefore a dashboard secret, not a `fromService` link.
+#
+# MongoDB is on Atlas (Render has no managed Mongo); MONGO_URL is a dashboard secret too.
+#
+# Every `sync: false` value is entered in the Render dashboard and never stored in the repo.
+# Copy the values from the current production .env.
+
+services:
+  - type: web
+    name: secret-hitler
+    runtime: node
+    region: virginia # must match the existing Redis's region so the internal URL resolves
+    plan: starter # 512MB / 0.5 CPU; bump to `standard` if the memory metric runs hot
+    numInstances: 1 # never scale >1 (in-memory game state)
+    healthCheckPath: /
+    autoDeploy: false # a redeploy restarts the process and drops every live game — deploy off-peak, deliberately
+    # --prod=false forces devDependencies (vite, sass, etc.) to install even though NODE_ENV=production,
+    # otherwise the build tooling is missing. The committed build output is git-ignored, so Render must build it.
+    buildCommand: pnpm install --prod=false && pnpm run build-css:web && pnpm run build-css:dark && pnpm build
+    # bin/dev.js is the only server entry (despite the name). It pulls in node-notifier, which is a
+    # devDependency — so the deploy must keep devDependencies installed (don't add a prune step).
+    startCommand: node bin/dev.js
+    envVars:
+      # --- non-secret config (safe to commit) ---
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "24.12.0" # .node-version holds a range; pin an exact version for Render's builder
+      - key: HUSKY
+        value: "0" # no-op husky's git-hook install during `pnpm install` on the builder
+      # --- secrets: set these in the dashboard (sync: false = value lives in Render, not the repo) ---
+      - key: MONGO_URL # Atlas SRV string, including /secret-hitler-app in the path
+        sync: false
+      - key: REDIS_URL # existing Render Key Value INTERNAL url (redis://red-...:6379)
+        sync: false
+      - key: SECRETSESSIONKEY # strong random value; otherwise the code falls back to "hunter2"
+        sync: false
+      - key: DISCORDCLIENTID
+        sync: false
+      - key: DISCORDCLIENTSECRET
+        sync: false
+      - key: GITHUBCLIENTID
+        sync: false
+      - key: GITHUBCLIENTSECRET
+        sync: false
+      - key: MGKEY # Mailgun API key (account-verification email)
+        sync: false
+      - key: MGDOMAIN # Mailgun domain
+        sync: false
+      - key: DISCORDREPORTURL
+        sync: false
+      - key: DISCORDADMINPING
+        sync: false
+      - key: DISCORDCRASHURL
+        sync: false
+      - key: DISCORDPRIVATEDEVELOPERS
+        sync: false
+      - key: GETIPINTELAPIEMAIL
+        sync: false
