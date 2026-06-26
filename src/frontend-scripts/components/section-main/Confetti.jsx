@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 export default class Confetti extends React.Component {
   componentDidMount() {
-    (function () {
+    this.cleanupConfetti = (function () {
       // globals
       var canvas;
       var ctx;
@@ -20,6 +20,8 @@ export default class Confetti extends React.Component {
       var deactivationTimerHandler;
       var reactivationTimerHandler;
       var animationHandler;
+      var setupTimerHandler;
+      var resizeHandler;
 
       // objects
 
@@ -90,17 +92,18 @@ export default class Confetti extends React.Component {
       // fires asynchronously (via window.setTimeout). That deferral is load-bearing: it let the rest
       // of this IIFE run first, notably the window.requestAnimFrame polyfill assigned at the bottom,
       // which InitializeConfetti -> StartConfetti depends on. setTimeout preserves that ordering.
-      setTimeout(function () {
-        SetGlobals();
+      setupTimerHandler = setTimeout(function () {
+        if (!SetGlobals()) return;
         InitializeButton();
         InitializeConfetti();
 
-        window.addEventListener("resize", function () {
+        resizeHandler = function () {
           W = window.innerWidth;
           H = window.innerHeight;
           canvas.width = W;
           canvas.height = H;
-        });
+        };
+        window.addEventListener("resize", resizeHandler);
       });
 
       function InitializeButton() {
@@ -112,11 +115,13 @@ export default class Confetti extends React.Component {
 
       function SetGlobals() {
         canvas = document.getElementById("confetti");
+        if (!canvas) return false;
         ctx = canvas.getContext("2d");
         W = window.innerWidth;
         H = window.innerHeight;
         canvas.width = W;
         canvas.height = H;
+        return true;
       }
 
       function InitializeConfetti() {
@@ -217,14 +222,19 @@ export default class Confetti extends React.Component {
         })();
       }
 
-      function ClearTimers() {
+      function ClearTimers(cancelAnimation) {
+        clearTimeout(setupTimerHandler);
+        clearTimeout(deactivationTimerHandler);
         clearTimeout(reactivationTimerHandler);
-        clearTimeout(animationHandler);
+        if (cancelAnimation) {
+          if (window.cancelAnimationFrame) window.cancelAnimationFrame(animationHandler);
+          clearTimeout(animationHandler);
+        }
       }
 
-      function DeactivateConfetti() {
+      function DeactivateConfetti(cancelAnimation) {
         confettiActive = false;
-        ClearTimers();
+        ClearTimers(cancelAnimation === true);
       }
 
       function StopConfetti() {
@@ -234,7 +244,7 @@ export default class Confetti extends React.Component {
       }
 
       function RestartConfetti() {
-        ClearTimers();
+        ClearTimers(true);
         StopConfetti();
         reactivationTimerHandler = setTimeout(function () {
           confettiActive = true;
@@ -243,7 +253,7 @@ export default class Confetti extends React.Component {
         }, 100);
       }
 
-      setTimeout(() => {
+      deactivationTimerHandler = setTimeout(() => {
         DeactivateConfetti();
       }, 3000);
 
@@ -259,7 +269,24 @@ export default class Confetti extends React.Component {
           }
         );
       })();
+
+      return function cleanupConfetti() {
+        DeactivateConfetti(true);
+        StopConfetti();
+        if (resizeHandler) window.removeEventListener("resize", resizeHandler);
+        document.getElementById("stopButton")?.removeEventListener("click", DeactivateConfetti);
+        document.getElementById("startButton")?.removeEventListener("click", RestartConfetti);
+        particles = [];
+        canvas = null;
+        ctx = null;
+      };
     })();
+  }
+
+  componentWillUnmount() {
+    if (this.cleanupConfetti) {
+      this.cleanupConfetti();
+    }
   }
 
   render() {

@@ -126,7 +126,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
   playerReport.save((err) => {
     if (err) {
       console.log(err, "Failed to save player report");
-      callback({ success: false, error: "Error submitting report." });
+      if (typeof callback === "function") callback({ success: false, error: "Error submitting report." });
       return;
     }
 

@@ -413,6 +413,9 @@ class Gamechat extends React.Component {
         emoteHelperElements: this.defaultEmotes,
         emoteHelperSelectedIndex: -1,
       });
+      if (this.chatInput) {
+        this.chatInput.focus();
+      }
     }
   };
 

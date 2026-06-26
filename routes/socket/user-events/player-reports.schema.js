@@ -1,11 +1,10 @@
 const { z } = require("zod");
+const { REPORT_REASONS } = require("../../../src/frontend-scripts/node-constants");
 
 // Replaces the inline regex guard in player-reports.js and the comment guard at
 // routes.js (`playerReport` listener). `reason` is the canonical lowercase enum
 // the handler switches on; `comment`/`reportedPlayer` are required so the handler's
 // `.replace`/`.split` calls cannot throw.
-const REPORT_REASONS = ["afk/leaving game", "abusive chat", "cheating", "gamethrowing", "stalling", "botting", "other"];
-
 const playerReportSchema = z
   .object({
     reason: z.enum(REPORT_REASONS),

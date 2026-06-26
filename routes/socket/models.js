@@ -6,6 +6,7 @@ const redis = require("redis");
 const { promisify } = require("util");
 const version = require("../../version");
 const { doesIPMatchCIDR } = require("./ip-obf");
+const { getRedisClientOptions } = require("../redis-client-options");
 
 const fs = require("fs");
 const emotes = {};
@@ -19,9 +20,9 @@ fs.readdirSync("public/images/emotes", { withFileTypes: true }).forEach((file) =
 // Prod uses the shared Render Key Value (Valkey) via REDIS_URL (undefined in dev → localhost).
 // SH.io stays on db >= 10 to avoid colliding with the other app on this instance (db 0-9):
 // sessions use db 10 (app.js), these global settings use db 11.
-const globalSettingsClient = redis.createClient({
-  url: process.env.REDIS_URL,
-  db: 11,
+const globalSettingsClient = redis.createClient(getRedisClientOptions(11));
+globalSettingsClient.on("error", (err) => {
+  console.error("Redis global settings client error:", err);
 });
 
 module.exports.globalSettingsClient = globalSettingsClient;

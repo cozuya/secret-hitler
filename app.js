@@ -15,6 +15,8 @@ const helmet = require("helmet");
 const routesIndex = require("./routes/index");
 const Account = require("./models/account");
 const { expandAndSimplify } = require("./routes/socket/ip-obf");
+const { CARDBACK_DIR } = require("./routes/cardback-store");
+const { getRedisClientOptions } = require("./routes/redis-client-options");
 
 let store;
 
@@ -29,7 +31,10 @@ if (process.env.NODE_ENV !== "production") {
   // All of SH.io stays on db >= 10 so its keys can't collide with the other app on db 0-9: sessions
   // on db 10 (here), global settings on db 11 (routes/socket/models.js). The client now carries the
   // connection, so connect-redis no longer needs the old (and, with a client passed, ignored) host/port.
-  const redis = require("redis").createClient({ url: process.env.REDIS_URL, db: 10 });
+  const redis = require("redis").createClient(getRedisClientOptions(10));
+  redis.on("error", (err) => {
+    console.error("Redis session client error:", err);
+  });
   const RedisStore = require("connect-redis")(session);
   store = new RedisStore({
     client: redis,
@@ -72,6 +77,10 @@ app.use(bodyParser.json({ limit: "10kb" })); // limit can be lower since this sh
 app.use(bodyParser.urlencoded({ extended: false, limit: "200kb" })); // limit needs to be decently high to account for cardback uploads
 app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
+// Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
+// public/ path in dev). Mounted before the general static handler so it stays authoritative even
+// though it maps to the same /images/custom-cardbacks/ URL the frontend already requests.
+app.use("/images/custom-cardbacks", express.static(CARDBACK_DIR, { maxAge: 86400000 * 28 }));
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 app.use(
   helmet.frameguard({

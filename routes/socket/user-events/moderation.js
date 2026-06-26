@@ -23,6 +23,7 @@ const { completeGame, saveAndDeleteGame } = require("../game/end-game");
 const Profile = require("../../../models/profile/index");
 const fs = require("fs");
 const https = require("https");
+const { cardbackPath } = require("../../cardback-store");
 const { sendCommandChatsUpdate } = require("../util");
 const { removeBadge, checkBadgesAccount } = require("../badges");
 const { moderationActionSchema } = require("./moderation.schema");
@@ -417,12 +418,16 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
                         });
                       });
 
-                      fs.copyFile(
-                        `public/images/custom-cardbacks/${data.userName}.png`,
-                        `public/images/custom-cardbacks/${data.comment}.png`,
-                        () => {}
-                      );
-                      fs.unlink(`public/images/custom-cardbacks/${data.userName}.png`, () => {});
+                      // Carry the cardback over to the renamed account (errors swallowed: a user
+                      // without a custom cardback simply has no file to move). Paths come from the
+                      // shared CARDBACK_DIR so they track the Persistent Disk in prod.
+                      const oldCardbackPath = cardbackPath(data.userName);
+                      const newCardbackPath = cardbackPath(data.comment);
+                      fs.copyFile(oldCardbackPath, newCardbackPath, (err) => {
+                        if (!err) {
+                          fs.unlink(oldCardbackPath, () => {});
+                        }
+                      });
                     });
                   }
                 }
