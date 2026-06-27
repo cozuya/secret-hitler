@@ -69,6 +69,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Behind Render's proxy (and Cloudflare): trust X-Forwarded-* so req.protocol/req.secure reflect the
+// real https scheme. Needed for OAuth (passport reads x-forwarded-proto via `proxy: true` on the
+// strategies below) and correct secure-cookie behavior. The app's own IP extraction reads
+// cf-connecting-ip/x-forwarded-for headers directly, so it's unaffected by this.
+app.set("trust proxy", true);
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.locals.pretty = true;
@@ -128,6 +133,11 @@ if (process.env.DISCORDCLIENTID) {
         clientSecret: process.env.DISCORDCLIENTSECRET,
         callbackURL: "/discord/login-callback",
         scope: ["identify", "email"],
+        // Render terminates TLS at its proxy and forwards plain HTTP + x-forwarded-proto. Without
+        // this, passport resolves the relative callbackURL above to an http:// redirect_uri that
+        // won't match the https:// URI registered with Discord, breaking OAuth on Render. `proxy:
+        // true` makes passport honor x-forwarded-proto so it resolves to https://secrethitler.io/...
+        proxy: true,
       },
       (accessToken, refreshToken, profile, cb) => {
         cb(profile);
@@ -141,6 +151,7 @@ if (process.env.DISCORDCLIENTID) {
         clientID: process.env.GITHUBCLIENTID,
         clientSecret: process.env.GITHUBCLIENTSECRET,
         callbackURL: "/github/login-callback",
+        proxy: true, // resolve callback via x-forwarded-proto on Render — see Discord strategy above
       },
       (accessToken, refreshToken, profile, cb) => {
         cb(profile);

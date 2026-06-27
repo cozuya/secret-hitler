@@ -43,6 +43,12 @@ services:
       # --- non-secret config (safe to commit) ---
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        # In a 512MB container Node auto-caps the V8 old-space heap at ~256MB and leaves the rest
+        # unused; this app's idle baseline (Mongoose models + Jimp + socket.io + game modules) sits
+        # just above that, so it OOMs at boot on the starter plan. Hand V8 400MB of the 512 (leaving
+        # ~112MB for native/young-gen) so it fits without paying for a bigger instance.
+        value: --max-old-space-size=400
       - key: CARDBACK_DIR # must equal the disk mountPath above
         value: /var/data/cardbacks
       - key: NODE_VERSION
