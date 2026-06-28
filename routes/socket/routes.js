@@ -12,7 +12,6 @@ const {
   handleAddNewClaim,
   handleModerationAction,
   handlePlayerReport,
-  handlePlayerReportDismiss,
   handleUpdatedBio,
   handleUpdatedRemakeGame,
   handleSubscribeModChat,
@@ -584,13 +583,6 @@ module.exports.socketRoutes = () => {
           handleUpdateWhitelist(passport, game, data);
         }
       });
-      socket.on("updateTruncateGame", (data) => {
-        console.log("BAD DATA");
-        console.log(passport);
-        console.log(data);
-        console.log(socket);
-        // handleUpdatedTruncateGame(data);
-      });
       socket.on("addNewGameChat", (data) => {
         const game = findGame(data);
         if (isRestricted) return;
@@ -657,11 +649,6 @@ module.exports.socketRoutes = () => {
           handlePlayerReport(passport, data, callback);
         }
       });
-      socket.on("playerReportDismiss", () => {
-        if (authenticated && isAEM) {
-          handlePlayerReportDismiss();
-        }
-      });
       socket.on("updateRemake", (data) => {
         const game = findGame(data);
         if (authenticated && ensureInGame(passport, game)) {
@@ -707,7 +694,7 @@ module.exports.socketRoutes = () => {
       });
       socket.on("subscribeModChat", (uid) => {
         const game = findGame({ uid });
-        if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
+        if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
           if (game && game.private && game.private.seatedPlayers) {
             const players = game.private.seatedPlayers.map((player) => player.userName);
             Account.find({ staffRole: { $exists: true, $ne: "veteran" } }).then((accounts) => {
@@ -729,7 +716,7 @@ module.exports.socketRoutes = () => {
         if (!data) return;
         const uid = data.uid;
         const game = findGame({ uid });
-        if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
+        if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
           if (game && game.private && game.private.seatedPlayers) {
             handleModPeekVotes(socket, passport, game, data.modName);
           } else {
@@ -741,7 +728,7 @@ module.exports.socketRoutes = () => {
         if (!data) return;
         const uid = data.uid;
         const game = findGame({ uid });
-        if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
+        if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
           if (game && game.private && game.private.seatedPlayers) {
             handleModPeekRemakes(socket, passport, game, data.modName);
           } else {
@@ -751,19 +738,18 @@ module.exports.socketRoutes = () => {
       });
       socket.on("modFreezeGame", (data) => {
         const uid = data?.uid;
-        if (!uid) {
-          console.log("INVALID DATA ENTRY");
-          console.log(data);
-          console.log(socket);
-          console.log(passport);
-        } else {
-          const game = findGame({ uid });
-          if (authenticated && (isAEM || (isTourneyMod && game.general.unlistedGame))) {
-            if (game && game.private && game.private.seatedPlayers) {
-              handleGameFreeze(socket, passport, game, data.modName);
-            } else {
-              socket.emit("sendAlert", "Game is missing.");
-            }
+        if (!uid) return;
+        const game = findGame({ uid });
+        // game?.general guard: findGame returns undefined for a stale/unknown uid. The isTourneyMod
+        // branch dereferences game.general, which would throw (un-caught in this listener = full
+        // process crash) when a tourney mod sends a uid with no live game. Optional chaining makes
+        // that authz term falsy instead, preserving the existing "no-op for unauthorized" behavior;
+        // AEM mods still reach the inner "Game is missing." alert as before.
+        if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
+          if (game && game.private && game.private.seatedPlayers) {
+            handleGameFreeze(socket, passport, game, data.modName);
+          } else {
+            socket.emit("sendAlert", "Game is missing.");
           }
         }
       });

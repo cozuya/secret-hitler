@@ -1503,7 +1503,7 @@ export default class Moderation extends React.Component {
       modName: this.props.userInfo.userName,
       comment: this.state.broadcastText,
       action: "broadcast",
-      isSticky: $("#broadcast-sticky").is(":checked"),
+      isSticky: Boolean(document.getElementById("broadcast-sticky")?.checked),
     });
 
     this.setState({

@@ -7,10 +7,15 @@ import Swal from "sweetalert2";
 import classnames from "classnames";
 import Policies from "./Policies.jsx";
 import { togglePlayerNotes } from "../../actions/actions";
-import { getNumberWithOrdinal, PLAYERCOLORS } from "../../constants";
+import { getNumberWithOrdinal, PLAYERCOLORS, REPORT_REASONS } from "../../constants";
 import UserPopup from "../reusable/UserPopup.jsx";
+import { capitalize } from "../../../../utils";
 
 $.fn.dropdown = Dropdown;
+
+const REPORT_REASON_LABELS = {
+  "afk/leaving game": "AFK/Leaving game",
+};
 
 class Players extends React.Component {
   state = {
@@ -20,6 +25,7 @@ class Players extends React.Component {
     playerNotes: [],
     playerNoteSeatEnabled: false,
     reportLength: 0,
+    reportReasonMissing: false,
   };
 
   componentDidMount() {
@@ -54,6 +60,12 @@ class Players extends React.Component {
     this.props.socket.off("gameJoinStatusUpdate");
   }
 
+  handleReportReasonChange = () => {
+    if (this.state.reportReasonMissing) {
+      this.setState({ reportReasonMissing: false });
+    }
+  };
+
   handlePlayerReport = (userName) => {
     const { gameInfo, userInfo, isReplay } = this.props;
 
@@ -64,9 +76,12 @@ class Players extends React.Component {
         userInfo.userName !== userName) ||
       isReplay
     ) {
-      this.setState({ reportedPlayer: userName });
+      this.setState({ reportedPlayer: userName, reportReasonMissing: false });
       $(this.reportModal).modal("show");
-      $(".ui.dropdown").dropdown();
+      $(this.reportReasonDropdown).dropdown({
+        onChange: this.handleReportReasonChange,
+      });
+      $(this.reportReasonDropdown).dropdown("clear");
     }
   };
 
@@ -574,23 +589,41 @@ class Players extends React.Component {
       return;
     }
 
-    const index = gameInfo.gameState.isStarted
-      ? gameInfo.publicPlayersState.findIndex((player) => player.userName === this.state.reportedPlayer)
-      : undefined;
-    if (this.state.reportLength <= 140) {
-      this.props.socket.emit("playerReport", {
-        uid: gameInfo.general.uid,
-        userName: this.props.userInfo.userName || "from replay",
-        reportedPlayer: `${gameInfo.gameState.isStarted ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
-        reason: $('input[name="reason"]').attr("value"),
-        comment: this.state.reportTextValue,
-      });
-      $(this.reportModal).modal("hide");
-      this.setState({
-        maxReportLengthExceeded: false,
-        reportTextValue: "",
-      });
+    if (this.state.reportLength > 140) {
+      return;
     }
+
+    let reportedSeat = "";
+    // In blind games the backend anonymizes reports from the first token. If a reported player has
+    // already left publicPlayersState, keep a brace token rather than leaking the raw username.
+    if (gameInfo.gameState.isStarted) {
+      const index = gameInfo.publicPlayersState.findIndex((player) => player.userName === this.state.reportedPlayer);
+      reportedSeat = `{${index >= 0 ? index + 1 : "?"}} `;
+    }
+    // Semantic-UI sets the selection on the input's .value property (via $input.val()), never the
+    // value attribute — read the property, and items carry data-value matching REPORT_REASONS.
+    const reason = document.querySelector('input[name="reason"]')?.value;
+    // Guard before emit: with no reason picked, .value is "" and the backend's z.enum(REPORT_REASONS)
+    // would reject the payload, silently dropping the report. Early-return (leaving the modal open so
+    // the user can pick one), mirroring the empty-comment guard above.
+    if (!reason) {
+      this.setState({ reportReasonMissing: true });
+      return;
+    }
+    this.props.socket.emit("playerReport", {
+      uid: gameInfo.general.uid,
+      userName: this.props.userInfo.userName || "from replay",
+      reportedPlayer: `${reportedSeat}${this.state.reportedPlayer}`,
+      reason,
+      comment: this.state.reportTextValue,
+    });
+    $(this.reportModal).modal("hide");
+    $(this.reportReasonDropdown).dropdown("clear");
+    this.setState({
+      maxReportLengthExceeded: false,
+      reportTextValue: "",
+      reportReasonMissing: false,
+    });
   };
 
   clickedTakeSeat = () => {
@@ -754,19 +787,26 @@ class Players extends React.Component {
               </span>{" "}
               to the moderators
             </div>
-            <div className="ui selection dropdown">
+            <div
+              className="ui selection dropdown"
+              ref={(c) => {
+                this.reportReasonDropdown = c;
+              }}
+            >
               <input type="hidden" name="reason" />
               <i className="dropdown icon" />
               <div className="default text">Reason</div>
+              {/* data-value must match the backend REPORT_REASONS enum (player-reports.schema.js);
+                  Semantic-UI writes the selected item's data-value to the hidden input's value. */}
               <div className="menu">
-                <div className="item">AFK/Leaving game</div>
-                <div className="item">Abusive chat</div>
-                <div className="item">Cheating</div>
-                <div className="item">Gamethrowing</div>
-                <div className="item">Stalling</div>
-                <div className="item">Other</div>
+                {REPORT_REASONS.map((reason) => (
+                  <div className="item" data-value={reason} key={reason}>
+                    {REPORT_REASON_LABELS[reason] || capitalize(reason)}
+                  </div>
+                ))}
               </div>
             </div>
+            {this.state.reportReasonMissing && <div className="ui pointing red basic label">Pick a reason</div>}
             <textarea
               placeholder="Comment"
               value={this.state.reportTextValue}

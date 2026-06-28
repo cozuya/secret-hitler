@@ -152,15 +152,12 @@ class Gamechat extends React.Component {
         prevProps.gameInfo.gameState.phase !== "presidentSelectingPolicy")
     ) {
       this.setState({ inputValue: "" });
-      $(this.gameChatInput).blur();
     }
 
     if (prevProps.notesActive && !nextProps.notesActive && this.state.notesEnabled) {
       this.setState({ notesEnabled: false });
     }
 
-    // DEBUG
-    // console.log(this.state.forceProcess, prevProps.gameInfo.chats.length < gameInfo.chats.length, !this.state.processedChats);
     if (
       this.state.forceProcess ||
       (prevProps.gameInfo &&
@@ -396,7 +393,11 @@ class Gamechat extends React.Component {
 
     const { chatValue } = this.state;
 
-    if (chatValue.length <= 300 && chatValue && !$(".expando-container + div").hasClass("disabled")) {
+    if (
+      chatValue.length <= 300 &&
+      chatValue &&
+      !document.querySelector(".expando-container + div")?.classList.contains("disabled")
+    ) {
       const chat = {
         chat: chatValue,
         uid: gameInfo.general.uid,
@@ -412,9 +413,8 @@ class Gamechat extends React.Component {
         emoteHelperElements: this.defaultEmotes,
         emoteHelperSelectedIndex: -1,
       });
-
-      if (this.gameChatInput) {
-        this.gameChatInput.focus();
+      if (this.chatInput) {
+        this.chatInput.focus();
       }
     }
   };

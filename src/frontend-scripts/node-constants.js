@@ -1,5 +1,7 @@
 const cn = require("classnames");
 
+module.exports.REPORT_REASONS = require("./report-reasons.json");
+
 module.exports.TOU_CHANGES = [
   {
     changeVer: "1.5",

@@ -117,9 +117,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
         data.withPercival ||
         data.monarchistSH ||
         data.noTopdecking > 0) && !customGame;
+  // Silent (playerChats === "disabled") games are no longer forced to practice; they follow the
+  // chosen gameType so a silent game can be ranked (and thus compute Elo) like any other.
   const practiceGame =
     !(typeof data.timedMode === "number" && data.timedMode < 30) &&
-    (data.gameType === "practice" || data.playerChats === "disabled") &&
+    data.gameType === "practice" &&
     !casualGame &&
     !customGame;
 

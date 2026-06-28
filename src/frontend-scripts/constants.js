@@ -1,4 +1,7 @@
 const cn = require("classnames");
+const REPORT_REASONS = require("./report-reasons.json");
+
+export { REPORT_REASONS };
 
 export const TOU_CHANGES = [
   {

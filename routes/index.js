@@ -552,7 +552,7 @@ module.exports = () => {
             });
           } else {
             ProcessImage(username, raw, (resp, err) => {
-              res.json({ message: err || resp });
+              res.json({ message: err ? err.message || "Image upload failed." : resp });
             });
           }
         })

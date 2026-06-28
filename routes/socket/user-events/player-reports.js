@@ -126,7 +126,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
   playerReport.save((err) => {
     if (err) {
       console.log(err, "Failed to save player report");
-      callback({ success: false, error: "Error submitting report." });
+      if (typeof callback === "function") callback({ success: false, error: "Error submitting report." });
       return;
     }
 
@@ -154,19 +154,4 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
       }
     }
   });
-};
-
-module.exports.handlePlayerReportDismiss = () => {
-  // Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
-  // 	accounts.forEach(account => {
-  // 		const onlineSocketId = Object.keys(io.sockets.sockets).find(
-  // 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-  // 		);
-  // 		account.gameSettings.newReport = false;
-  // 		if (onlineSocketId) {
-  // 			io.sockets.sockets[onlineSocketId].emit('reportUpdate', false);
-  // 		}
-  // 		account.save();
-  // 	});
-  // });
 };

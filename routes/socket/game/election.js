@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require("../util");
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate, gameReportHeader } = require("../util");
 const { startElection, shufflePolicies } = require("./common");
 const { sendGameList } = require("../user-requests");
 const { selectChancellor } = require("./election-util");
@@ -836,10 +836,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
             seat: chancellorIndex + 1,
             role: chancellor.role.cardName,
             situation: `was given choice as chancellor, and played fascist.`,
-            election: game.general.electionCount,
-            title: game.general.name,
-            uid: game.general.uid,
-            gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+            ...gameReportHeader(game),
           },
           game,
           "report"
@@ -859,10 +856,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
             seat: chancellorIndex + 1,
             role: chancellor.role.cardName,
             situation: `was given choice as chancellor with 4 blues on the track, and played liberal.`,
-            election: game.general.electionCount,
-            title: game.general.name,
-            uid: game.general.uid,
-            gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+            ...gameReportHeader(game),
           },
           game,
           "report"
@@ -1151,10 +1145,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BRR with 4 blues on the track, and tossed the blue.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1167,10 +1158,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BBR with 4 blues on the track, and did not force the 5th blue.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1185,10 +1173,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BRR before HZ, and tossed the blue.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1203,10 +1188,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BRR during veto zone, and tossed the blue.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1219,10 +1201,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BBR during veto zone, and offered choice.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1242,10 +1221,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1258,10 +1234,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1276,10 +1249,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BBR with 5 reds on the track, and forced blues on a fascist chancellor.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1292,10 +1262,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
                   seat: presidentIndex + 1,
                   role: president.role.cardName,
                   situation: `got BRR with 5 reds on the track, and offered choice to a liberal chancellor.`,
-                  election: game.general.electionCount,
-                  title: game.general.name,
-                  uid: game.general.uid,
-                  gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+                  ...gameReportHeader(game),
                 },
                 game,
                 "report"
@@ -1535,10 +1502,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
           seat: presidentIndex + 1,
           role: seatedPlayers[presidentIndex].role.cardName,
           situation: `has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`,
-          election: game.general.electionCount,
-          title: game.general.name,
-          uid: game.general.uid,
-          gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+          ...gameReportHeader(game),
         },
         game,
         "report"

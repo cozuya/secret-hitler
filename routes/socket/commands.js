@@ -1,7 +1,7 @@
 const { makeReport } = require("./report");
 const { selectChancellor } = require("./game/election-util");
 const { selectVoting } = require("./game/election");
-const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require("./util");
+const { sendInProgressGameUpdate, sendCommandChatsUpdate, gameReportHeader } = require("./util");
 const { LineGuess } = require("./util");
 const Account = require("../../models/account");
 const { selectPlayerToAssassinate } = require("./game/assassination");
@@ -367,10 +367,7 @@ module.exports.commands.getCommand("pingmod").run = (socket, passport, user, gam
           {
             player: passport.user,
             situation: `"${args[0]}".`,
-            election: game.general.electionCount,
-            title: game.general.name,
-            uid: game.general.uid,
-            gameType: game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked",
+            ...gameReportHeader(game),
           },
           game,
           "ping"

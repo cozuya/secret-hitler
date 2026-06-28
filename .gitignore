@@ -46,6 +46,9 @@ public/public/*
 coverage/*
 .idea/
 dump/
+# Mongo dump archives (mongodump --archive --gzip) — prod data, must never reach the public repo
+*.archive.gz
+*.archive
 scripts/out/*
 public/images/emotesheet.png
 
