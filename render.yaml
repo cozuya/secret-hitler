@@ -76,6 +76,18 @@ services:
         sync: false
       - key: DISCORDREPORTURL
         sync: false
+      - key: DISCORDURL
+        sync: false
+      - key: DISCORDMODID
+        sync: false
+      - key: DISCORDFEEDBACKURL
+        sync: false
+      - key: DISCORDBROADCASTURL
+        sync: false
+      - key: DISCORDMODDMSTHREADURL
+        sync: false
+      - key: DISCORDMODLOGURL
+        sync: false
       - key: DISCORDADMINPING
         sync: false
       - key: DISCORDCRASHURL
