@@ -121,10 +121,13 @@ function profileDelta(username, game) {
 function profileDeltaWithMatchType(username, game, gameSummary) {
   // Silent (playerChats === "disabled") games keep their own stats bucket so the silentPlayer /
   // silentPro badges — which count silentMatches via checkBadgesGamesPlayed — stay earnable. This is
-  // independent of Elo: a ranked silent game still computes Elo (that guard was removed in
-  // end-game.js); it just records its win/loss under silentMatches rather than grey/rainbow, exactly
-  // as it did before silent games became rankable. Keeping the single bucket also avoids
-  // double-counting silent games in the ranked/practice games-played total below.
+  // independent of Elo: a ranked silent game now computes Elo (that guard was removed in end-game.js)
+  // and, because it is no longer forced to practiceGame, it also falls through profileDelta's
+  // casual/practice early-return and counts toward voteAccuracy/shotAccuracy like any other ranked
+  // game. That is intended now that silent games are rankable (it was zeroed when they were
+  // practice-only). The silentMatches bucket only changes which win/loss tally the game lands in
+  // (vs grey/rainbow); keeping the single bucket also avoids double-counting silent games in the
+  // ranked/practice games-played total below.
   const matchType = (() => {
     if (game.general.playerChats === "emotes") return "emoteMatches";
     if (game.customGameSettings && game.customGameSettings.enabled) return "customMatches";

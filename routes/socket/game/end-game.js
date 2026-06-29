@@ -1,4 +1,6 @@
-const { sendInProgressGameUpdate, rateEloGame } = require("../util.js");
+const { sendInProgressGameUpdate } = require("../util.js");
+const { computeRatingUpdates, xpAward } = require("../rating/rate.js");
+const { DISPLAY_BASE } = require("../rating/display.js");
 const { userList, games } = require("../models.js");
 const { sendUserList, sendGameList } = require("../user-requests.js");
 const Account = require("../../../models/account.js");
@@ -13,6 +15,28 @@ const { makeReport } = require("../report.js");
 const { CURRENTSEASONNUMBER } = require("../../../src/frontend-scripts/node-constants.js");
 const { LineGuess } = require("../util");
 const { checkBadgesELO, checkBadgesXP } = require("../badges");
+
+// XP award + rainbow promotion, shared by the ranked and silent/practice end-game paths so the
+// amount and the >=10 rainbow threshold can't drift apart between them again. The amount comes from
+// rate.js's xpAward (rainbow scales the win to preserve the ~2.25x pacing); the silent/practice path
+// leaves isRainbow false to keep its historical flat +2/+1.
+// This deliberately unifies the casual/practice rainbow threshold down from a stale 50 to the ranked
+// value of 10. Seasonal XP is zeroed by the cutover, so nothing flips on the season track at launch.
+// On the cumulative overall track, a never-ranked account sitting at 10-49 overall XP (and not
+// already rainbow) will earn overall rainbow on its next silent/practice game — intended; the
+// affected set is small, since the ranked path already grants overall rainbow at 10.
+const applyXpAndRainbow = (player, won, isRainbow = false) => {
+  const gain = xpAward(won, isRainbow);
+  player.xpOverall = (player.xpOverall || 0) + gain;
+  player.xpSeason = (player.xpSeason || 0) + gain;
+  if (player.xpOverall >= 10.0) {
+    player.isRainbowOverall = true;
+    player.dateRainbowOverall = new Date();
+  }
+  if (player.xpSeason >= 10.0) {
+    player.isRainbowSeason = true;
+  }
+};
 
 const generateGameObject = (game) => {
   const casualBool = Boolean(game?.general?.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
@@ -115,6 +139,19 @@ const formatSignedDelta = (value) => {
   return `${safeValue >= 0 ? "+" : "-"}${Math.abs(safeValue).toFixed(1)}`;
 };
 
+// One end-of-game delta chat line ("<name>'s Elo: +X (Y)" / "<name>'s XP: ..."). Shared by the
+// public replay log and the per-viewer seated chats, which build the byte-identical shape.
+const buildDeltaChat = (eachPlayer, label, active, secondary, i) => ({
+  gameChat: true,
+  timestamp: new Date(Date.now() + i),
+  chat: [
+    { text: eachPlayer.userName, type: eachPlayer.role.cardName },
+    { text: `'s ${label}: ` },
+    { text: ` ${formatSignedDelta(active)}`, type: "player" },
+    { text: ` (${formatSignedDelta(secondary)})` },
+  ],
+});
+
 /**
  * @param {object} game - game to act on.
  */
@@ -188,6 +225,16 @@ module.exports.saveGame = saveGame;
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
+  // Defense-in-depth at the sink: winner/loser partitioning and the rating engine assume a real
+  // team here. A bad value (omitted/typo'd/computed by any caller) would rate the whole table as
+  // losing fascists, so refuse rather than silently corrupt. The moderation handler validates its
+  // wire input separately; this protects every other caller too. Today's callers all pass valid
+  // literals/ternaries, so this is a forward-looking backstop, not a fix for a current live bug.
+  if (winningTeamName !== "liberal" && winningTeamName !== "fascist") {
+    console.log(winningTeamName, "invalid winningTeamName in completeGame; aborting to avoid corrupt ratings");
+    return;
+  }
+
   if (game && game.unsentReports) {
     game.unsentReports.forEach((report) => {
       makeReport({ ...report }, game, report.type === "modchat" ? "modchatdelayed" : "reportdelayed");
@@ -289,6 +336,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 
   game.general.isRecorded = true;
 
+  // Built once and reused for both Account.find $in queries and the rating call (which needs the
+  // full roster), so the seated->username mapping can't drift across those call sites. Order is
+  // irrelevant (used only as a membership/$in set), so the later seatedPlayers re-sort doesn't matter.
+  const seatedUserNames = seatedPlayers.map((player) => player.userName);
+
   // Don't compute Elo for private, casual, custom, practice, or unlisted games.
   // Silent (playerChats === "disabled") games are eligible when otherwise ranked (i.e. none of
   // the flags below are set); only casual/practice silent games fall through to the XP-only path.
@@ -300,12 +352,17 @@ module.exports.completeGame = (game, winningTeamName) => {
     !game.general.unlistedGame
   ) {
     Account.find({
-      username: { $in: seatedPlayers.map((player) => player.userName) },
+      username: { $in: seatedUserNames },
     })
       .then((results) => {
         const isRainbow = game.general.rainbowgame;
         const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
-        const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
+        // Pure computation only — no DB writes here. Deltas are applied + persisted once below,
+        // in the results.forEach that already saves each account (no more mid-loop double-save).
+        // Pass the full seated roster so a player whose account didn't resolve (deleted/renamed mid
+        // game) doesn't shrink the OpenSkill teams and skew everyone else's deltas.
+        const eloAdjustments = computeRatingUpdates(game, results, winningPlayerNames, seatedUserNames);
+        const ratingDate = new Date(); // one timestamp for every player's pastElo entry this game
 
         const byUsername = (a, b) => {
           if (a.userName === b.userName)
@@ -332,49 +389,32 @@ module.exports.completeGame = (game, winningTeamName) => {
           const activeChangeXP = playerChange?.xpChange;
           const secondaryChangeXP = playerChange?.xpChangeSeason;
 
-          game.private.replayGameChats.push({
-            gameChat: true,
-            timestamp: new Date(Date.now() + i),
-            chat: [
-              {
-                text: eachPlayer.userName,
-                type: eachPlayer.role.cardName,
-              },
-              {
-                text: `'s Elo: `,
-              },
-              {
-                text: ` ${formatSignedDelta(activeChange)}`,
-                type: "player",
-              },
-              {
-                text: ` (${formatSignedDelta(secondaryChange)})`,
-              },
-            ],
-          });
-          game.private.replayGameChats.push({
-            gameChat: true,
-            timestamp: new Date(Date.now() + i),
-            chat: [
-              {
-                text: eachPlayer.userName,
-                type: eachPlayer.role.cardName,
-              },
-              {
-                text: `'s XP: `,
-              },
-              {
-                text: ` ${formatSignedDelta(activeChangeXP)}`,
-                type: "player",
-              },
-              {
-                text: ` (${formatSignedDelta(secondaryChangeXP)})`,
-              },
-            ],
-          });
+          game.private.replayGameChats.push(buildDeltaChat(eachPlayer, "Elo", activeChange, secondaryChange, i));
+          game.private.replayGameChats.push(buildDeltaChat(eachPlayer, "XP", activeChangeXP, secondaryChangeXP, i));
         });
 
         results.forEach((player) => {
+          const won = winningPlayerNames.includes(player.username);
+          // Apply the computed rating update to this account. computeRatingUpdates is pure, so the
+          // mutation/persistence that the old rateEloGame did mid-loop happens here instead, landing
+          // in the single player.save() further down. computeRatingUpdates returns an entry for every
+          // resolved seated account (it partitions the full roster), so this guard is effectively
+          // roster membership — it never skips XP/rating for a player who still gets a win/loss below.
+          const ratingUpdate = eloAdjustments[player.username];
+          if (ratingUpdate) {
+            player.rating = player.rating || {};
+            player.rating.overall = ratingUpdate.overall;
+            player.rating.season = ratingUpdate.season;
+            player.markModified("rating");
+            // Deprecated mirrors: keep eloOverall/eloSeason as the Elo-flavored display value so
+            // every existing reader keeps working through the cutover.
+            player.eloOverall = ratingUpdate.overall.display;
+            player.eloSeason = ratingUpdate.season.display;
+            player.maxElo = Math.max(player.maxElo || DISPLAY_BASE, ratingUpdate.overall.display);
+            player.pastElo.push({ date: ratingDate, value: ratingUpdate.overall.display });
+            applyXpAndRainbow(player, won, isRainbow);
+          }
+
           const listUser = userList.find((user) => user.userName === player.username);
           if (listUser) {
             listUser.eloOverall = player.eloOverall;
@@ -393,53 +433,16 @@ module.exports.completeGame = (game, winningTeamName) => {
             const secondaryChange = showingOverall ? playerChange?.changeSeason : playerChange?.change;
             const activeChangeXP = showingOverall ? playerChange?.xpChange : playerChange?.xpChangeSeason;
             const secondaryChangeXP = showingOverall ? playerChange?.xpChangeSeason : playerChange?.xpChange;
-            if (!player.gameSettings.disableElo) {
-              seatedPlayer.gameChats.push({
-                gameChat: true,
-                timestamp: new Date(Date.now() + i),
-                chat: [
-                  {
-                    text: eachPlayer.userName,
-                    type: eachPlayer.role.cardName,
-                  },
-                  {
-                    text: `'s Elo: `,
-                  },
-                  {
-                    text: ` ${formatSignedDelta(activeChange)}`,
-                    type: "player",
-                  },
-                  {
-                    text: ` (${formatSignedDelta(secondaryChange)})`,
-                  },
-                ],
-              });
-              seatedPlayer.gameChats.push({
-                gameChat: true,
-                timestamp: new Date(Date.now() + i),
-                chat: [
-                  {
-                    text: eachPlayer.userName,
-                    type: eachPlayer.role.cardName,
-                  },
-                  {
-                    text: `'s XP: `,
-                  },
-                  {
-                    text: ` ${formatSignedDelta(activeChangeXP)}`,
-                    type: "player",
-                  },
-                  {
-                    text: ` (${formatSignedDelta(secondaryChangeXP)})`,
-                  },
-                ],
-              });
+            // seatedPlayer can be undefined if this account's role.cardName fell outside the re-sort
+            // set above; guard so pushing chats can't throw and abort persistence for the whole roster
+            // (rating/wins/XP for every player are saved later in this same loop).
+            if (seatedPlayer && !player.gameSettings.disableElo) {
+              seatedPlayer.gameChats.push(buildDeltaChat(eachPlayer, "Elo", activeChange, secondaryChange, i));
+              seatedPlayer.gameChats.push(buildDeltaChat(eachPlayer, "XP", activeChangeXP, secondaryChangeXP, i));
             }
           });
 
-          let winner = false;
-
-          if (winningPlayerNames.includes(player.username)) {
+          if (won) {
             if (isRainbow) {
               player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
               player[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = player[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
@@ -457,7 +460,6 @@ module.exports.completeGame = (game, winningTeamName) => {
             player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`]
               ? player[`lossesSeason${CURRENTSEASONNUMBER}`]
               : 0;
-            winner = true;
 
             if (isTournamentFinalGame && !game.general.casualGame) {
               player.gameSettings.tournyWins.push(Date.now());
@@ -467,7 +469,12 @@ module.exports.completeGame = (game, winningTeamName) => {
                   io.sockets.sockets[socketId].handshake.session.passport.user === player.username
               );
 
-              io.sockets.sockets[playerSocketId].emit("gameSettings", player.gameSettings);
+              // A winner can disconnect before the final resolves; .find then returns undefined and
+              // io.sockets.sockets[undefined].emit would throw inside this synchronous loop, aborting
+              // persistence for every remaining player. Skip the emit if they're no longer connected.
+              if (playerSocketId) {
+                io.sockets.sockets[playerSocketId].emit("gameSettings", player.gameSettings);
+              }
             }
           } else {
             if (isRainbow) {
@@ -480,7 +487,9 @@ module.exports.completeGame = (game, winningTeamName) => {
                 : 0;
             }
 
-            player.losses++;
+            // Null-safe like the winner path: losses has no schema default, so ++ on a never-rated
+            // account would write NaN and corrupt the W/L record permanently.
+            player.losses = player.losses ? player.losses + 1 : 1;
             player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`]
               ? player[`lossesSeason${CURRENTSEASONNUMBER}`] + 1
               : 1;
@@ -494,63 +503,35 @@ module.exports.completeGame = (game, winningTeamName) => {
           checkBadgesELO(player, game.general.uid);
           checkBadgesXP(player, game.general.uid);
           player.save(() => {
-            const userEntry = userList.find((user) => user.userName === player.username);
+            // Reuse listUser resolved above — it's the same userList object (no need to re-find it).
+            if (listUser) {
+              // Copy the freshly-persisted counters straight off the player doc instead of
+              // re-deriving them with a parallel set of ternaries. The two used to be maintained
+              // independently (and drifted — that's where the rainbowLossesSeason cross-wire lived);
+              // mirroring the saved doc keeps the broadcast list and the DB in lockstep by construction.
+              listUser.xpSeason = player.xpSeason || 0;
+              listUser.isRainbowSeason = player.isRainbowSeason;
+              listUser.xpOverall = player.xpOverall || 0;
+              listUser.isRainbowOverall = player.isRainbowOverall;
+              listUser.wins = player.wins;
+              listUser.losses = player.losses;
+              listUser.rainbowWins = player.rainbowWins;
+              listUser.rainbowLosses = player.rainbowLosses;
+              listUser[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`];
+              listUser[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`];
+              listUser[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = player[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
+              listUser[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] =
+                player[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 
-            if (userEntry) {
-              userEntry.xpSeason = player.xpSeason || 0;
-              userEntry.isRainbowSeason = player.isRainbowSeason;
-              userEntry.xpOverall = player.xpOverall || 0;
-              userEntry.isRainbowOverall = player.isRainbowOverall;
-
-              if (winner) {
-                if (isRainbow) {
-                  userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
-                  userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses : 0;
-                  userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[
-                    `rainbowWinsSeason${CURRENTSEASONNUMBER}`
-                  ]
-                    ? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] + 1
-                    : 1;
-                  userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[
-                    `rainbowLossesSeason${CURRENTSEASONNUMBER}`
-                  ]
-                    ? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
-                    : 0;
-                }
-                userEntry.wins = userEntry.wins ? userEntry.wins + 1 : 1;
-                userEntry[`winsSeason${CURRENTSEASONNUMBER}`] = userEntry[`winsSeason${CURRENTSEASONNUMBER}`]
-                  ? userEntry[`winsSeason${CURRENTSEASONNUMBER}`] + 1
-                  : 1;
-                userEntry[`lossesSeason${CURRENTSEASONNUMBER}`] = userEntry[`lossesSeason${CURRENTSEASONNUMBER}`]
-                  ? userEntry[`lossesSeason${CURRENTSEASONNUMBER}`]
-                  : 0;
-
-                if (isTournamentFinalGame && !game.general.casualGame) {
-                  userEntry.tournyWins.push(Date.now());
-                }
-              } else {
-                if (isRainbow) {
-                  userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
-                  userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[
-                    `rainbowLossesSeason${CURRENTSEASONNUMBER}`
-                  ]
-                    ? userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] + 1
-                    : 1;
-                  userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[
-                    `rainbowWinsSeason${CURRENTSEASONNUMBER}`
-                  ]
-                    ? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
-                    : 0;
-                }
-                userEntry.losses = userEntry.losses ? userEntry.losses + 1 : 1;
-                userEntry[`lossesSeason${CURRENTSEASONNUMBER}`] = userEntry[`lossesSeason${CURRENTSEASONNUMBER}`]
-                  ? userEntry[`lossesSeason${CURRENTSEASONNUMBER}`] + 1
-                  : 1;
-                userEntry[`winsSeason${CURRENTSEASONNUMBER}`] = userEntry[`winsSeason${CURRENTSEASONNUMBER}`]
-                  ? userEntry[`winsSeason${CURRENTSEASONNUMBER}`]
-                  : 0;
+              if (won && isTournamentFinalGame && !game.general.casualGame) {
+                listUser.tournyWins.push(Date.now());
               }
 
+              // PERF NOTE (pre-existing, not introduced by the rating rewrite): a full sendUserList()
+              // broadcast fires inside each player's save callback — N broadcasts per game end — and
+              // the tournament-final emit above scans the whole socket map per player. Fine at
+              // current scale; if it gets hot, batch to one trailing sendUserList() and resolve
+              // sockets via a single passport->socketId map.
               sendUserList();
             }
           });
@@ -563,30 +544,26 @@ module.exports.completeGame = (game, winningTeamName) => {
   } else if (game.general.playerChats === "disabled" || game.general.practiceGame) {
     // 2 XP for win, 1 for loss
     Account.find({
-      username: { $in: seatedPlayers.map((player) => player.userName) },
-    }).then((results) => {
-      for (const player of results) {
-        if (winningPlayerNames.includes(player.username)) {
-          player.xpOverall += 2;
-          player.xpSeason += 2;
-        } else {
-          player.xpOverall += 1;
-          player.xpSeason += 1;
+      username: { $in: seatedUserNames },
+    })
+      .then((results) => {
+        for (const player of results) {
+          // isRainbow omitted on purpose: casual/practice keeps its historical flat +2/+1 (no rainbow
+          // XP scaling on this path).
+          applyXpAndRainbow(player, winningPlayerNames.includes(player.username));
+          checkBadgesXP(player, game.general.uid);
+          // Callback form (not a bare promise) so a transient save rejection can't become an
+          // unhandled rejection — the process-level handler turns those into an exit, dropping every
+          // live game.
+          player.save((err) => {
+            if (err) console.log(err, "error saving account in silent/practice XP path");
+          });
         }
-
-        if (player.xpOverall >= 50.0) {
-          player.isRainbowOverall = true;
-          player.dateRainbowOverall = new Date();
-        }
-
-        if (player.xpSeason >= 50.0) {
-          player.isRainbowSeason = true;
-        }
-
-        checkBadgesXP(player, game.general.uid);
-        player.save();
-      }
-    });
+      })
+      // Mirror the ranked branch: a rejected find or a throw in the loop must not crash the process.
+      .catch((err) => {
+        console.log(err, "error in silent/practice XP update at end of game");
+      });
   }
 
   if (game.general.isTourny) {

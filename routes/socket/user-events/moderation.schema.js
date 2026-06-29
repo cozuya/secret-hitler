@@ -32,7 +32,10 @@ const moderationActionSchema = z
     _id: z.string().optional(),
     uid: z.string().optional(),
     modName: z.string().optional(),
-    winningTeamName: z.string().optional(),
+    // Only the end-game action sends this; constrain it to a real team so a forged/garbage value
+    // can't reach completeGame and rate every seated player as a losing fascist. Stays optional
+    // because the other moderation actions sharing this schema don't send it.
+    winningTeamName: z.enum(["liberal", "fascist"]).optional(),
     frontEndTime: z.number().optional(),
     isSticky: z.boolean().optional(),
   })

@@ -194,6 +194,25 @@ const Account = new Schema({
   isFixed: Boolean,
   eloSeason: Number,
   eloOverall: Number,
+  // OpenSkill per-player rating (authoritative). `display` is the Elo-flavored rescale
+  // (see routes/socket/rating/display.js). eloSeason/eloOverall above are kept as deprecated
+  // mirrors of `display` for cutover safety (lobby restrictions, colors, badges, profiles,
+  // leaderboards, scripts still read them).
+  // No schema defaults on purpose: an unmigrated/never-rated account must read as "unset" so the
+  // rating engine detects it and seeds mu from the legacy Elo mirror (rather than treating a
+  // veteran as a fresh 1600 player). The migration and the first rated game populate these.
+  rating: {
+    overall: {
+      mu: Number,
+      sigma: Number,
+      display: Number,
+    },
+    season: {
+      mu: Number,
+      sigma: Number,
+      display: Number,
+    },
+  },
   hashUid: String,
   discordUsername: String,
   discordDiscriminator: String,

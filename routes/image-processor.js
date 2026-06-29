@@ -65,7 +65,9 @@ module.exports.ProcessImage = (username, raw, callback) => {
 
       writeStream.on("close", () => {
         if (done) return;
-        clearTimeout(pipeTimeout);
+        // Don't clear the timeout here — the findOne -> rename -> save stage below is still async, and
+        // a hung network-disk fs.rename or stalled Mongo op would otherwise leave the request hanging
+        // forever. finish() (called by every terminal path, incl. the timeout) owns clearing the timer.
         Account.findOne({ username: username })
           .then((account) => {
             if (!account) {
@@ -84,6 +86,10 @@ module.exports.ProcessImage = (username, raw, callback) => {
               account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
               account.save((err3) => {
                 if (err3) {
+                  // Partial-failure edge: the temp file was already renamed onto the live path, so the
+                  // new image is on disk but the cache-busting customCardbackUid never persisted —
+                  // clients keep serving the old UID's (now stale) URL. Rare, and self-heals on the
+                  // next successful upload; left as-is rather than reordering the write for one edge.
                   finish(null, err3);
                   return;
                 }

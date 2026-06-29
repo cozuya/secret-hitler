@@ -73,6 +73,10 @@ app.use((req, res, next) => {
 // real https scheme. Needed for OAuth (passport reads x-forwarded-proto via `proxy: true` on the
 // strategies below) and correct secure-cookie behavior. The app's own IP extraction reads
 // cf-connecting-ip/x-forwarded-for headers directly, so it's unaffected by this.
+// SECURITY NOTE: `true` trusts the entire X-Forwarded-For chain, so a direct caller could spoof
+// req.ip / req.secure. Tolerable today because ban/IP logic uses cf-connecting-ip (above), not
+// req.ip — but any future req.ip consumer should not treat it as trusted. If that changes, switch
+// to a fixed hop count (Cloudflare + Render) or a CIDR allowlist instead of `true`.
 app.set("trust proxy", true);
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
