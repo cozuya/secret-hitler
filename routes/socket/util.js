@@ -149,9 +149,12 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
 
         sock.emit("gameUpdate", secureGame(_game));
       }
-
-      testGameObject(_game);
     });
+
+    // Cyclic-structure check (reports to Discord) — run once per update instead of once per observer
+    // socket. It JSON.stringifies the whole game, so per-socket meant O(observers) full serializations
+    // of identical state each update; one check per update suffices.
+    testGameObject(game);
   }
 };
 

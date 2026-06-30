@@ -1,5 +1,5 @@
 const { sendInProgressGameUpdate } = require("../util.js");
-const { computeRatingUpdates, xpAward } = require("../rating/rate.js");
+const { computeRatingUpdates, xpAward, SEASON_MIGRATED_VERSION } = require("../rating/rate.js");
 const { DISPLAY_BASE } = require("../rating/display.js");
 const { userList, games } = require("../models.js");
 const { sendUserList, sendGameList } = require("../user-requests.js");
@@ -418,6 +418,16 @@ module.exports.completeGame = (game, winningTeamName) => {
             player.rating.overall = ratingUpdate.overall;
             player.rating.season = ratingUpdate.season;
             player.markModified("rating");
+            // Cutover safety net (transient — inert once every account has ratingVersion >= the cutover
+            // version): if this account hasn't been migrated yet, snapshot its legacy season/overall Elo
+            // BEFORE the mirrors are overwritten with the new display scale. scripts/seasonCutover24.js
+            // reads legacyEloSeasonS23 to award the S23 medal; a game completing in the deploy window
+            // would otherwise clobber the only copy. Guarded on legacyEloSeasonS23 == null so only the
+            // first such game records the true pre-game legacy value.
+            if (!(player.ratingVersion >= SEASON_MIGRATED_VERSION) && player.legacyEloSeasonS23 == null) {
+              player.legacyEloOverallS23 = player.eloOverall;
+              player.legacyEloSeasonS23 = player.eloSeason;
+            }
             // Deprecated mirrors: keep eloOverall/eloSeason (+ maxElo/pastElo) as the Elo-flavored
             // display value so every existing reader keeps working through the cutover. This same
             // mirror set is re-derived independently in scripts/seasonCutover24.js (kept inline in both

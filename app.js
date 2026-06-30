@@ -91,13 +91,25 @@ app.use(cookieParser());
 // BEFORE express.static on purpose: the old host's generator wrote a public/leaderboardData.json
 // file, and if any such stale file is present the static handler would otherwise shadow this route
 // and serve outdated data. Falls back to empty (correctly-shaped) boards until the first cron run.
-// TODO(perf): this does a Mongo findById per request for data the cron rewrites once/day (and the
-// frontend fetches no-store) — could cache the payload in module memory (short TTL / cron-invalidated).
+// Cached in module memory: the cron rewrites this once/day, but the frontend fetches it no-store, so
+// every Leaderboards view (plus any scraper) would otherwise hit Mongo — an avoidable amplifier on a
+// memory-constrained web instance. Short TTL so a fresh cron run still shows up within the minute with
+// no explicit invalidation hook; on a Mongo error we serve the last good payload if we have one.
+let leaderboardCache = null;
+let leaderboardCacheAt = 0;
+const LEADERBOARD_CACHE_TTL_MS = 60 * 1000;
 app.get("/leaderboardData.json", (req, res) => {
+  if (leaderboardCache && Date.now() - leaderboardCacheAt < LEADERBOARD_CACHE_TTL_MS) {
+    return res.json(leaderboardCache);
+  }
   Leaderboard.findById("current")
     .lean()
-    .then((doc) => res.json((doc && doc.payload) || Leaderboard.freshBoard()))
-    .catch(() => res.json(Leaderboard.freshBoard()));
+    .then((doc) => {
+      leaderboardCache = (doc && doc.payload) || Leaderboard.freshBoard();
+      leaderboardCacheAt = Date.now();
+      res.json(leaderboardCache);
+    })
+    .catch(() => res.json(leaderboardCache || Leaderboard.freshBoard()));
 });
 // Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
 // public/ path in dev). Mounted before the general static handler so it stays authoritative even

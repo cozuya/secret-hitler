@@ -74,7 +74,9 @@ module.exports.checkUserStatus = (socket, callback) => {
                 logOutUser(user);
               else {
                 sendUserList();
-                callback();
+                // Pass the loaded account to the connection callback so it doesn't re-query the same
+                // user twice more (AEM flags + restriction check) on every connect.
+                callback(account);
               }
             });
           }

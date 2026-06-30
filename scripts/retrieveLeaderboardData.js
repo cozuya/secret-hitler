@@ -27,15 +27,22 @@ const main = async () => {
     .cursor()
     .eachAsync(async (account) => {
       if (!account.isBanned) {
-        data.dailyLeaderboardElo.push({
-          userName: account.username,
-          dailyEloDifference: account.eloSeason - (account.previousDayElo || 1600),
-        });
-        data.dailyLeaderboardXP.push({
-          userName: account.username,
-          // XP baseline is 0 — the 1600 used for ELO above is an ELO rating baseline, not XP.
-          dailyXPDifference: account.xpSeason - (account.previousDayXP || 0),
-        });
+        // Mirror the seasonal scan's finiteness guard: an account active in the last 24h may still have
+        // an unset eloSeason/xpSeason (e.g. only casual games), which would otherwise push a NaN delta
+        // onto the served board. Skip just the offending row rather than the whole account.
+        if (Number.isFinite(account.eloSeason)) {
+          data.dailyLeaderboardElo.push({
+            userName: account.username,
+            dailyEloDifference: account.eloSeason - (account.previousDayElo || 1600),
+          });
+        }
+        if (Number.isFinite(account.xpSeason)) {
+          data.dailyLeaderboardXP.push({
+            userName: account.username,
+            // XP baseline is 0 — the 1600 used for ELO above is an ELO rating baseline, not XP.
+            dailyXPDifference: account.xpSeason - (account.previousDayXP || 0),
+          });
+        }
       }
       account.previousDayElo = account.eloSeason;
       account.previousDayXP = account.xpSeason;

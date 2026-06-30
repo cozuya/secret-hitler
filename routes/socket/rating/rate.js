@@ -159,4 +159,5 @@ module.exports = {
   RAINBOW_MU_MULT,
   xpAward,
   computeRatingUpdates,
+  SEASON_MIGRATED_VERSION,
 };

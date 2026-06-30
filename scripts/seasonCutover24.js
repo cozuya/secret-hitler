@@ -109,7 +109,12 @@ const main = async () => {
       acc.gameSettings = acc.gameSettings || {};
       acc.gameSettings.previousSeasonAward = "";
       if (!acc.isBanned) {
-        const medal = Number.isFinite(oldEloSeason) ? medalFor(oldEloSeason) : null;
+        // For a live-updated account, end-game has already overwritten eloSeason with the new ~1600
+        // display scale, so oldEloSeason (captured above) is NOT the S23 value — but end-game snapshots
+        // the pre-clobber legacy season Elo into legacyEloSeasonS23, so prefer that. For a normal,
+        // not-yet-migrated account legacyEloSeasonS23 is unset and oldEloSeason is still the legacy value.
+        const seasonEloForMedal = Number.isFinite(acc.legacyEloSeasonS23) ? acc.legacyEloSeasonS23 : oldEloSeason;
+        const medal = Number.isFinite(seasonEloForMedal) ? medalFor(seasonEloForMedal) : null;
         if (medal) {
           acc.gameSettings.previousSeasonAward = medal;
           totals[medal]++;
@@ -129,19 +134,32 @@ const main = async () => {
         }
       }
 
-      // Deploy-order safety net: if a ranked game completed on the new live engine before the
-      // migration reached this account, end-game already wrote its rating.season (preserved from the
-      // legacy season — see getRating) but left ratingVersion unset. The migration writes rating AND
-      // ratingVersion in a single atomic save, so "rating.season present but ratingVersion unset" can
-      // only mean a live update. Overwriting the rating here would erase that game (cold-reset season,
-      // zero the Season-24 counters), so we persist ONLY the awards above and skip the rating reset,
-      // flagging for manual review. The maintenance window (creation disabled, games drained) should
-      // make this impossible; this backstop makes the edge visible rather than silently lossy.
+      // Deploy-order safety net: if a ranked game completed on the new live engine before the migration
+      // reached this account, end-game already wrote its rating.season (preserved from the legacy season
+      // — see getRating) but left ratingVersion unset, so "rating.season present but ratingVersion unset"
+      // means a live update. We must NOT cold-reset the rating or zero the Season-24 counters (that would
+      // erase the game), so those are left exactly as the live engine wrote them. But the seasonal
+      // CARRYOVER fields below (S23 season XP, rainbow flag, seasonal percentile, daily baseline) are
+      // unrelated to the rating and would otherwise bleed S23 state through all of S24, so we still reset
+      // them — and stamp ratingVersion so a resumed run treats this account as migrated. The S23
+      // medal/badge were already awarded above (from legacyEloSeasonS23, snapshotted by end-game). The
+      // maintenance window (creation disabled, games drained) should make this path unreachable; it
+      // exists so a window slip degrades gracefully instead of silently losing a game or a season.
       if (acc.rating && acc.rating.season && Number.isFinite(acc.rating.season.mu)) {
         totals.liveUpdated++;
         console.log(
-          `[cutover] LIVE-UPDATE — ${acc.username} rated by the live engine pre-migration; awarded medal/badge only, rating left as-is, review manually`
+          `[cutover] LIVE-UPDATE — ${acc.username}: rating + S24 counters preserved, seasonal carryover reset`
         );
+
+        // Reset seasonal carryover only. xpSeason=0 also drops the single live game's season XP, which is
+        // negligible next to retaining the full S23 total; the rating and S24 win/loss counters stay.
+        acc.xpSeason = 0;
+        acc.isRainbowSeason = false;
+        if (acc.eloPercentile) acc.eloPercentile.seasonal = null;
+        acc.previousDayElo = acc.eloSeason;
+        acc.previousDayXP = 0;
+        acc.ratingVersion = RATING_VERSION;
+
         if (!DRY_RUN) await acc.save();
         continue;
       }

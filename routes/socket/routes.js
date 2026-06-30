@@ -248,7 +248,7 @@ module.exports.socketRoutes = () => {
         console.error(`socket transport error: ${err.stack || err.message}`);
       }
     });
-    checkUserStatus(socket, () => {
+    checkUserStatus(socket, (initialAccount) => {
       socket.emit("version", { current: version });
 
       // defensively check if game exists
@@ -281,7 +281,12 @@ module.exports.socketRoutes = () => {
       let isTourneyMod = false;
 
       if (authenticated && passport && passport.user) {
-        Account.findOne({ username: passport.user }).then((account) => {
+        // Reuse the account already loaded in checkUserStatus instead of issuing a second identical
+        // findOne. Wrapped in a resolved promise so the flags still settle on a later tick — exactly
+        // as the prior .then(findOne) did — keeping isAEM false for the sendGameList(socket, isAEM)
+        // call below, which runs synchronously before this resolves.
+        Promise.resolve(initialAccount).then((account) => {
+          if (!account) return;
           if (
             account.staffRole &&
             account.staffRole.length > 0 &&
@@ -343,7 +348,8 @@ module.exports.socketRoutes = () => {
       };
 
       if (passport && passport.user && authenticated) {
-        Account.findOne({ username: passport.user }).then((account) => {
+        // Same loaded account as above (see note) rather than a third findOne for this user on connect.
+        Promise.resolve(initialAccount).then((account) => {
           isRestricted = checkRestriction(account);
         });
       }
