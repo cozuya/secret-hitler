@@ -11,12 +11,17 @@ const path = require("path");
 const os = require("os");
 const v8 = require("v8");
 
-// Persist under the mounted disk (CARDBACK_DIR == the disk's mountPath) when it exists; fall back to
-// the OS temp dir in local dev so we never write into the repo tree. DIAGNOSTICS_DIR overrides both.
+// Persist on the mounted disk so these survive the instance dying, but NEVER inside CARDBACK_DIR:
+// app.js static-serves all of CARDBACK_DIR at /images/custom-cardbacks, so a "diagnostics" subdir
+// there would make crash logs and heap snapshots (which can contain session data) publicly
+// downloadable. CARDBACK_DIR is a subdir of the disk mount (render.yaml mounts the disk one level
+// up), so the SIBLING "<disk>/diagnostics" is on the same persistent disk but outside the served
+// tree. Fall back to the OS temp dir in local dev so we never write into the repo tree.
+// DIAGNOSTICS_DIR overrides both (render.yaml sets it explicitly to this same path).
 const baseDir =
   process.env.DIAGNOSTICS_DIR ||
   (process.env.CARDBACK_DIR
-    ? path.join(process.env.CARDBACK_DIR, "diagnostics")
+    ? path.join(process.env.CARDBACK_DIR, "..", "diagnostics")
     : path.join(os.tmpdir(), "secret-hitler-diagnostics"));
 
 let ready = false;

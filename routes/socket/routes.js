@@ -704,10 +704,12 @@ module.exports.socketRoutes = () => {
           if (game && game.private && game.private.seatedPlayers) {
             const players = game.private.seatedPlayers.map((player) => player.userName);
             Account.find({ staffRole: { $exists: true, $ne: "veteran" } }).then((accounts) => {
+              // Block the peek when a seated player is AEM staff (a non-veteran staffRole): a mod
+              // shouldn't read the mod chat of a game staff are playing in. Expression body on
+              // purpose — the previous block body returned nothing, so staff was always [] and this
+              // guard never fired.
               const staff = accounts
-                .filter((acc) => {
-                  acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
-                })
+                .filter((acc) => acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username))
                 .map((acc) => acc.username);
               if (staff.length) {
                 socket.emit("sendAlert", `AEM members are present: ${JSON.stringify(staff)}`);
