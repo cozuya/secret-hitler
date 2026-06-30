@@ -253,6 +253,7 @@ module.exports.formattedGameList = () => {
     playerChats: games[gameName].general.playerChats || undefined,
     disableGamechat: games[gameName].general.disableGamechat || undefined,
     blindMode: games[gameName].general.blindMode || undefined,
+    noVoteReveal: games[gameName].general.noVoteReveal || undefined,
     enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
     enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
     electionCount: games[gameName].general.electionCount,
