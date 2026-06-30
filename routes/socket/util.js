@@ -394,10 +394,18 @@ class LineGuess {
 module.exports.LineGuess = LineGuess;
 
 // Single source of truth for the human-readable game-type label used in game-summary reports.
-// Silent (playerChats === "disabled") games intentionally have no separate label — they follow
-// their gameType, so a ranked silent game reads as "Ranked" (matching its Elo/stats treatment).
-const gameTypeLabel = (game) =>
-  game.general.casualGame ? "Casual" : game.general.practiceGame ? "Practice" : "Ranked";
+// Mirrors end-game.js's rating-eligibility gate so a game only reads as "Ranked" when it actually
+// rates: private / custom / unlisted are excluded there, so they get their own label here rather than
+// the misleading "Ranked". (Keep this in sync with that gate — see the NOTE there.) Silent games have
+// no separate label: a silent game that's otherwise ranked reads "Ranked", matching its Elo treatment.
+const gameTypeLabel = (game) => {
+  if (game.general.casualGame) return "Casual";
+  if (game.general.practiceGame) return "Practice";
+  if (game.general.private) return "Private";
+  if (game.customGameSettings && game.customGameSettings.enabled) return "Custom";
+  if (game.general.unlistedGame) return "Unlisted";
+  return "Ranked";
+};
 
 // The header fields every makeReport() payload shares (mod ping, auto-report, mod-chat). Spread into
 // the call-specific fields (player/seat/role/situation) so this shape lives in one place instead of

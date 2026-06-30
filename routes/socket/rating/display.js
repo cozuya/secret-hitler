@@ -35,9 +35,15 @@ const DISPLAY_BASE = 1600; // display value of a fresh (DEFAULT_MU) rating
 // Map a skill estimate (mu) to the Elo-flavored display number. Sigma is deliberately not an input.
 const displayRating = (mu) => Math.round(DISPLAY_BASE + DISPLAY_SCALE * (mu - DEFAULT_MU));
 
-// Inverse of displayRating: recover the mu that renders to `display`. Used to seed an OpenSkill mu
-// from a legacy Elo value (the season-cutover migration and the getRating safety net both use this).
+// Inverse of displayRating: recover the mu that renders to `display`.
 const seedMuFromDisplay = (display) => DEFAULT_MU + (display - DISPLAY_BASE) / DISPLAY_SCALE;
+
+// The mu to seed an account's OVERALL rating from its legacy Elo mirror: invert a real Elo, else
+// start fresh. SINGLE source shared by getRating (live safety net) and the season-cutover migration,
+// so the seed transform can't drift between them (a drift would break the seed<->display round-trip
+// that keeps migrated mirrors equal to their old Elo).
+const seedMuFromLegacy = (legacyElo) =>
+  Number.isFinite(legacyElo) && legacyElo > 0 ? seedMuFromDisplay(legacyElo) : DEFAULT_MU;
 
 // Single source for "a brand-new rating". Returns a fresh object each call so callers can't share
 // (and accidentally mutate) one instance.
@@ -50,5 +56,6 @@ module.exports = {
   DISPLAY_BASE,
   displayRating,
   seedMuFromDisplay,
+  seedMuFromLegacy,
   freshRating,
 };

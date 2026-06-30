@@ -54,6 +54,9 @@ describe("rating/bias", () => {
     expect(fascistWinPrior(gameFor(9, true))).toBeCloseTo(0.604, 3);
     expect(fascistWinPrior(gameFor(9, true, { flags: { rebalance9p: true } }))).toBe(0.5);
     expect(fascistWinPrior(gameFor(9, true, { flags: { rerebalance9p: true } }))).toBe(0.5);
+    // The 2-fascist deck keeps 0.55 even when also rerebalanced (must not be shadowed to 0.5).
+    expect(fascistWinPrior(gameFor(9, true, { flags: { rebalance9p2f: true } }))).toBe(0.55);
+    expect(fascistWinPrior(gameFor(9, true, { flags: { rebalance9p2f: true, rerebalance9p: true } }))).toBe(0.55);
   });
 
   it.each([5, 6, 7, 8, 9, 10])("offset reproduces the calibrated prior at neutral ratings (%ip)", (count) => {
@@ -162,15 +165,24 @@ describe("rating/rate computeRatingUpdates", () => {
     expect(withRoster.F3).toBeUndefined();
   });
 
-  it("seeds overall from legacy Elo but starts the season track cold", () => {
-    // F1 is a 2400 veteran with no new rating field yet (pre-migration); everyone else is fresh.
-    const vet = { username: "F1", eloOverall: 2400, eloSeason: 2400 };
+  it("seeds overall from legacy Elo but starts the season track cold for a MIGRATED account", () => {
+    // F1 is a 2400 veteran the migration has reached (ratingVersion 24) but with no rating subdoc yet.
+    const vet = { username: "F1", eloOverall: 2400, eloSeason: 2400, ratingVersion: 24 };
     const others = ["F2", "F3", "L1", "L2", "L3", "L4"].map((n) => ({ username: n }));
     const updates = computeRatingUpdates(gameFor(7, true), [vet, ...others], ["F1", "F2", "F3"]);
     // Overall is seeded near 2400 (a win nudges it up), NOT collapsed to the ~1600 fresh anchor.
     expect(updates.F1.overall.display).toBeGreaterThan(2200);
     expect(Math.abs(updates.F1.change)).toBeLessThan(200); // small overall delta, not a ~+800 jump
-    // Season must NOT inherit the stale Season-23 eloSeason (2400) — it starts cold near 1600.
+    // Migrated -> season starts cold near 1600 (the migration cold-started it).
     expect(updates.F1.season.display).toBeLessThan(1800);
+  });
+
+  it("PRESERVES the season standing for an UNMIGRATED account (pre-cutover deploy-order safety)", () => {
+    // No ratingVersion: a game running before the migration reached this veteran. Their live season
+    // standing must NOT be wiped to ~1600 — it's seeded from the eloSeason mirror instead.
+    const vet = { username: "F1", eloOverall: 2400, eloSeason: 2100 };
+    const others = ["F2", "F3", "L1", "L2", "L3", "L4"].map((n) => ({ username: n }));
+    const updates = computeRatingUpdates(gameFor(7, true), [vet, ...others], ["F1", "F2", "F3"]);
+    expect(updates.F1.season.display).toBeGreaterThan(1900); // preserved near 2100, not cold-reset
   });
 });

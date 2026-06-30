@@ -12,7 +12,7 @@
 
 const { rate } = require("openskill");
 const { biasMuPerFascist } = require("./bias.js");
-const { DEFAULT_SIGMA, displayRating, seedMuFromDisplay, freshRating } = require("./display.js");
+const { DEFAULT_SIGMA, displayRating, seedMuFromLegacy, freshRating } = require("./display.js");
 
 // Rainbow games historically moved ratings ~2.25x faster (legacy k was size*9 vs size*4). We
 // preserve that as a product behavior by scaling the mu delta only — sigma (uncertainty) still
@@ -31,6 +31,15 @@ const LOSS_XP = 1;
 // engine (replay deltas) and end-game's apply step.
 const xpAward = (won, rainbow) => (won ? Math.round(WIN_XP * (rainbow ? RAINBOW_MU_MULT : 1)) : LOSS_XP);
 
+// An account is "migrated" once the Season-24 cutover has stamped this on it (see
+// scripts/seasonCutover24.js — must match its RATING_VERSION). Used to decide whether a missing
+// season rating means "cold-started by the migration" or "a game ran before the migration reached
+// this account" (in which case we must NOT cold-reset their live season standing).
+// TODO(next cutover): this 24 is duplicated across RATING_VERSION (seasonCutover24.js),
+// CURRENTSEASONNUMBER (node-constants.js), and the winsSeason24 schema fields, coupled only by
+// comments. Consolidate into one shared cutover-version constant so an S25 bump can't miss a site.
+const SEASON_MIGRATED_VERSION = 24;
+
 const getRating = (account, track) => {
   const r = account.rating && account.rating[track];
   // Require finite values, not just typeof "number": NaN is a number, and OpenSkill sums team mu,
@@ -38,20 +47,19 @@ const getRating = (account, track) => {
   if (r && Number.isFinite(r.mu) && Number.isFinite(r.sigma)) {
     return { mu: r.mu, sigma: r.sigma };
   }
-  // No usable OpenSkill rating yet — a pre-migration veteran or a never-rated account. ONLY the
-  // overall track soft-resets from the legacy mirror (overall is continuous across seasons), so a
-  // 2400 player isn't treated as fresh and reset on their next game; high sigma re-settles it. The
-  // SEASON track must start cold — seeding it from the stale eloSeason mirror would leak the old
-  // season's standings into the new one if a game lands before/around the cutover. This mirrors what
-  // the migration does (overall seeded, season cold); it's the safety net if a game runs first.
-  //
-  // DEPLOY ORDERING (required, not enforced in code): this build must go live ATOMICALLY with the
-  // Season-24 migration + CURRENTSEASONNUMBER bump, never before. While it's still Season 23 with no
-  // rating.season present, this cold-start would reset each veteran's live eloSeason to ~1600 one
-  // game at a time. The robust enforcement is a ratingVersion/migratedAt marker, which is part of the
-  // deferred migration task; until then the maintenance-window runbook is the guarantee.
-  if (track === "overall" && Number.isFinite(account.eloOverall) && account.eloOverall > 0) {
-    return { mu: seedMuFromDisplay(account.eloOverall), sigma: DEFAULT_SIGMA };
+  // No usable rating for this track yet. Overall is continuous across seasons, so always soft-reset
+  // it from the legacy Elo mirror (high sigma re-settles) — a 2400 player isn't treated as fresh.
+  if (track === "overall") {
+    return { mu: seedMuFromLegacy(account.eloOverall), sigma: DEFAULT_SIGMA };
+  }
+  // SEASON track. Behaviour depends on whether the Season-24 migration has reached this account:
+  //  - NOT migrated (ratingVersion < 24): a ranked game is running before the cutover seeded this
+  //    account. Preserve the live season standing from the eloSeason mirror — DO NOT cold-reset it.
+  //    This turns the deploy-ordering requirement (engine must ship atomically with the migration)
+  //    into a code invariant, so a window slip can't wipe seasonal standings one game at a time.
+  //  - migrated: the migration already cold-started rating.season, so a missing one means cold.
+  if (!(account.ratingVersion >= SEASON_MIGRATED_VERSION)) {
+    return { mu: seedMuFromLegacy(account.eloSeason), sigma: DEFAULT_SIGMA };
   }
   return freshRating();
 };

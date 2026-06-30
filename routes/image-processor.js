@@ -35,6 +35,10 @@ module.exports.ProcessImage = (username, raw, callback) => {
       // clients once the temp file is fully written and closed. `done` makes callback fire exactly
       // once so a write error can't race the success path into a double res.json.
       let done = false;
+      // Once the temp file is being renamed onto the live path it must NOT be unlinked: a timeout
+      // firing mid-rename would otherwise delete the source, the rename would fail with ENOENT, and the
+      // upload would silently not apply. Guards cleanupTempFile below.
+      let renameStarted = false;
       const finish = (resp, err) => {
         if (done) return;
         done = true;
@@ -42,6 +46,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
         callback(resp, err);
       };
       const cleanupTempFile = () => {
+        if (renameStarted) return;
         fs.unlink(tempCardbackPath, (unlinkErr) => {
           if (unlinkErr && unlinkErr.code !== "ENOENT") {
             console.log(unlinkErr, "Failed to remove temporary cardback upload");
@@ -68,6 +73,10 @@ module.exports.ProcessImage = (username, raw, callback) => {
         // Don't clear the timeout here — the findOne -> rename -> save stage below is still async, and
         // a hung network-disk fs.rename or stalled Mongo op would otherwise leave the request hanging
         // forever. finish() (called by every terminal path, incl. the timeout) owns clearing the timer.
+        // Trade-off: a >15s stall after the rename reports "Timed out" even though the PNG is already
+        // live (the renameStarted guard above keeps the timeout from unlinking it mid-rename, so it
+        // really does land) — accepted, because a bounded false-failure the user can retry beats an
+        // unbounded hang, and a slow save self-heals on the next upload.
         Account.findOne({ username: username })
           .then((account) => {
             if (!account) {
@@ -75,7 +84,9 @@ module.exports.ProcessImage = (username, raw, callback) => {
               finish(null, new Error("Account not found."));
               return;
             }
+            renameStarted = true;
             fs.rename(tempCardbackPath, finalCardbackPath, (renameErr) => {
+              renameStarted = false; // rename resolved (ok or err) — temp is safe to clean up again
               if (renameErr) {
                 cleanupTempFile();
                 finish(null, renameErr);

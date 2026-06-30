@@ -14,6 +14,7 @@ const helmet = require("helmet");
 
 const routesIndex = require("./routes/index");
 const Account = require("./models/account");
+const Leaderboard = require("./models/leaderboard");
 const { expandAndSimplify } = require("./routes/socket/ip-obf");
 const { CARDBACK_DIR } = require("./routes/cardback-store");
 const { getRedisClientOptions } = require("./routes/redis-client-options");
@@ -86,6 +87,18 @@ app.use(bodyParser.json({ limit: "10kb" })); // limit can be lower since this sh
 app.use(bodyParser.urlencoded({ extended: false, limit: "200kb" })); // limit needs to be decently high to account for cardback uploads
 app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
+// Serve the daily-generated leaderboards from Mongo (written by the Render Cron Job). Registered
+// BEFORE express.static on purpose: the old host's generator wrote a public/leaderboardData.json
+// file, and if any such stale file is present the static handler would otherwise shadow this route
+// and serve outdated data. Falls back to empty (correctly-shaped) boards until the first cron run.
+// TODO(perf): this does a Mongo findById per request for data the cron rewrites once/day (and the
+// frontend fetches no-store) — could cache the payload in module memory (short TTL / cron-invalidated).
+app.get("/leaderboardData.json", (req, res) => {
+  Leaderboard.findById("current")
+    .lean()
+    .then((doc) => res.json((doc && doc.payload) || Leaderboard.freshBoard()))
+    .catch(() => res.json(Leaderboard.freshBoard()));
+});
 // Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
 // public/ path in dev). Mounted before the general static handler so it stays authoritative even
 // though it maps to the same /images/custom-cardbacks/ URL the frontend already requests.

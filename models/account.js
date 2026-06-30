@@ -185,6 +185,10 @@ const Account = new Schema({
   lossesSeason23: Number,
   rainbowWinsSeason23: Number,
   rainbowLossesSeason23: Number,
+  winsSeason24: Number,
+  lossesSeason24: Number,
+  rainbowWinsSeason24: Number,
+  rainbowLossesSeason24: Number,
   previousDayElo: Number,
   previousDayXP: Number,
   created: Date,
@@ -194,6 +198,11 @@ const Account = new Schema({
   isFixed: Boolean,
   eloSeason: Number,
   eloOverall: Number,
+  // Season-24 cutover bookkeeping: pre-cutover Elo snapshots (so the migration is reversible) and a
+  // version marker that makes the migration idempotent/resumable (see scripts/seasonCutover24.js).
+  legacyEloOverallS23: Number,
+  legacyEloSeasonS23: Number,
+  ratingVersion: Number,
   // OpenSkill per-player rating (authoritative). `display` is the Elo-flavored rescale
   // (see routes/socket/rating/display.js). eloSeason/eloOverall above are kept as deprecated
   // mirrors of `display` for cutover safety (lobby restrictions, colors, badges, profiles,

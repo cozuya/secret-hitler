@@ -21,17 +21,23 @@ const { checkBadgesELO, checkBadgesXP } = require("../badges");
 // rate.js's xpAward (rainbow scales the win to preserve the ~2.25x pacing); the silent/practice path
 // leaves isRainbow false to keep its historical flat +2/+1.
 // This deliberately unifies the casual/practice rainbow threshold down from a stale 50 to the ranked
-// value of 10. Seasonal XP is zeroed by the cutover, so nothing flips on the season track at launch.
-// On the cumulative overall track, a never-ranked account sitting at 10-49 overall XP (and not
-// already rainbow) will earn overall rainbow on its next silent/practice game — intended; the
-// affected set is small, since the ranked path already grants overall rainbow at 10.
+// value of 10 — for BOTH tracks: isRainbowOverall (xpOverall>=10) and isRainbowSeason (xpSeason>=10).
+// Season track: xpSeason is zeroed at the cutover, so nothing flips at launch; afterwards a
+// casual/practice player reaches season rainbow in ~5-10 games (was ~25-50) — intended.
+// Overall track (cumulative, never reset): a never-ranked account sitting at 10-49 overall XP (and
+// not already rainbow) earns overall rainbow on its next silent/practice game — intended; the set is
+// small since the ranked path already grants overall rainbow at 10.
 const applyXpAndRainbow = (player, won, isRainbow = false) => {
   const gain = xpAward(won, isRainbow);
   player.xpOverall = (player.xpOverall || 0) + gain;
   player.xpSeason = (player.xpSeason || 0) + gain;
   if (player.xpOverall >= 10.0) {
+    // Stamp the date the first time it's missing (the transition into rainbow, or a one-time backfill
+    // for a legacy rainbow account that never had a date), then never re-stamp. Keeps the rainbow
+    // leaderboard (sorted by dateRainbowOverall desc) ordered by when rainbow was earned rather than
+    // who played most recently, without leaving date-less legacy accounts stuck at epoch 0.
+    if (!player.dateRainbowOverall) player.dateRainbowOverall = new Date();
     player.isRainbowOverall = true;
-    player.dateRainbowOverall = new Date();
   }
   if (player.xpSeason >= 10.0) {
     player.isRainbowSeason = true;
@@ -225,14 +231,15 @@ module.exports.saveGame = saveGame;
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
-  // Defense-in-depth at the sink: winner/loser partitioning and the rating engine assume a real
-  // team here. A bad value (omitted/typo'd/computed by any caller) would rate the whole table as
-  // losing fascists, so refuse rather than silently corrupt. The moderation handler validates its
-  // wire input separately; this protects every other caller too. Today's callers all pass valid
-  // literals/ternaries, so this is a forward-looking backstop, not a fix for a current live bug.
-  if (winningTeamName !== "liberal" && winningTeamName !== "fascist") {
-    console.log(winningTeamName, "invalid winningTeamName in completeGame; aborting to avoid corrupt ratings");
-    return;
+  // Defense-in-depth at the sink: winner/loser partitioning and the rating engine assume a real team.
+  // A bad value (omitted/typo'd/computed by any caller, or a future no-winner path) would rate the
+  // whole table as losing fascists. Rather than abort completeGame entirely (which would skip the
+  // teardown below and hang the game), gate only the rating/XP step on a valid winner — the game
+  // still ends (reports flushed, saved, players released), just as a no-op rating-wise. The
+  // moderation handler validates its wire input separately; today's other callers pass literals.
+  const winnerValid = winningTeamName === "liberal" || winningTeamName === "fascist";
+  if (!winnerValid) {
+    console.log(winningTeamName, "invalid winningTeamName in completeGame; ending game without rating it");
   }
 
   if (game && game.unsentReports) {
@@ -344,7 +351,12 @@ module.exports.completeGame = (game, winningTeamName) => {
   // Don't compute Elo for private, casual, custom, practice, or unlisted games.
   // Silent (playerChats === "disabled") games are eligible when otherwise ranked (i.e. none of
   // the flags below are set); only casual/practice silent games fall through to the XP-only path.
+  // NOTE: this ranked / xp-only / none taxonomy is also expressed at the silent-path `else if` below
+  // and in generateGameObject. A single shared gameRatingMode(game) was considered but deferred —
+  // rewiring the live end-game gate has no gameplay test coverage. If you add a new mode flag, thread
+  // it through all three sites or they silently desync.
   if (
+    winnerValid &&
     !game.general.private &&
     !game.general.casualGame &&
     !(game.customGameSettings && game.customGameSettings.enabled) &&
@@ -406,8 +418,10 @@ module.exports.completeGame = (game, winningTeamName) => {
             player.rating.overall = ratingUpdate.overall;
             player.rating.season = ratingUpdate.season;
             player.markModified("rating");
-            // Deprecated mirrors: keep eloOverall/eloSeason as the Elo-flavored display value so
-            // every existing reader keeps working through the cutover.
+            // Deprecated mirrors: keep eloOverall/eloSeason (+ maxElo/pastElo) as the Elo-flavored
+            // display value so every existing reader keeps working through the cutover. This same
+            // mirror set is re-derived independently in scripts/seasonCutover24.js (kept inline in both
+            // rather than a shared helper — only two sites); if the mirror set changes, update both.
             player.eloOverall = ratingUpdate.overall.display;
             player.eloSeason = ratingUpdate.season.display;
             player.maxElo = Math.max(player.maxElo || DISPLAY_BASE, ratingUpdate.overall.display);
@@ -502,46 +516,36 @@ module.exports.completeGame = (game, winningTeamName) => {
           player.lastCompletedGame = new Date();
           checkBadgesELO(player, game.general.uid);
           checkBadgesXP(player, game.general.uid);
-          player.save(() => {
-            // Reuse listUser resolved above — it's the same userList object (no need to re-find it).
-            if (listUser) {
-              // Copy the freshly-persisted counters straight off the player doc instead of
-              // re-deriving them with a parallel set of ternaries. The two used to be maintained
-              // independently (and drifted — that's where the rainbowLossesSeason cross-wire lived);
-              // mirroring the saved doc keeps the broadcast list and the DB in lockstep by construction.
-              listUser.xpSeason = player.xpSeason || 0;
-              listUser.isRainbowSeason = player.isRainbowSeason;
-              listUser.xpOverall = player.xpOverall || 0;
-              listUser.isRainbowOverall = player.isRainbowOverall;
-              listUser.wins = player.wins;
-              listUser.losses = player.losses;
-              listUser.rainbowWins = player.rainbowWins;
-              listUser.rainbowLosses = player.rainbowLosses;
-              listUser[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`];
-              listUser[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`];
-              listUser[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = player[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-              listUser[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] =
-                player[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
+          // Sync the broadcast user-list off the just-mutated player doc. W/L counters were set in the
+          // win/loss block above; elo/xp/rainbow were already mirrored in the pre-save block. Done
+          // synchronously (not in the save callback) so the single sendUserList() after the loop
+          // reflects every player — ONE broadcast per game end instead of N (one per save callback),
+          // which matters on the memory-tight web instance.
+          if (listUser) {
+            listUser.wins = player.wins;
+            listUser.losses = player.losses;
+            listUser.rainbowWins = player.rainbowWins;
+            listUser.rainbowLosses = player.rainbowLosses;
+            listUser[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`];
+            listUser[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`];
+            listUser[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = player[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
+            listUser[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = player[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 
-              if (won && isTournamentFinalGame && !game.general.casualGame) {
-                listUser.tournyWins.push(Date.now());
-              }
-
-              // PERF NOTE (pre-existing, not introduced by the rating rewrite): a full sendUserList()
-              // broadcast fires inside each player's save callback — N broadcasts per game end — and
-              // the tournament-final emit above scans the whole socket map per player. Fine at
-              // current scale; if it gets hot, batch to one trailing sendUserList() and resolve
-              // sockets via a single passport->socketId map.
-              sendUserList();
+            if (won && isTournamentFinalGame && !game.general.casualGame) {
+              listUser.tournyWins.push(Date.now());
             }
+          }
+          player.save((err) => {
+            if (err) console.log(err, "error saving account at end of game");
           });
         });
+        sendUserList(); // one broadcast after all in-memory listUser updates (was N — one per save)
         sendInProgressGameUpdate(game);
       })
       .catch((err) => {
         console.log(err, "error in updating accounts at end of game");
       });
-  } else if (game.general.playerChats === "disabled" || game.general.practiceGame) {
+  } else if (winnerValid && (game.general.playerChats === "disabled" || game.general.practiceGame)) {
     // 2 XP for win, 1 for loss
     Account.find({
       username: { $in: seatedUserNames },
@@ -566,13 +570,17 @@ module.exports.completeGame = (game, winningTeamName) => {
       });
   }
 
+  // NOTE: this whole tournament block is currently DEAD CODE — game.general.isTourny is hardcoded
+  // false at creation (create-game.js) and nothing sets it true. Kept in case tournaments are
+  // re-enabled; the `games` accesses use bracket form because `games` is a plain object keyed by uid
+  // (models.js), NOT an array — `games.find`/`games.push` would throw a TypeError if ever reached.
   if (game.general.isTourny) {
     if (game.general.tournyInfo.round === 1) {
       const { uid } = game.general;
       const tableUidLastLetter = uid.charAt(uid.length - 1);
       const otherUid =
         tableUidLastLetter === "A" ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
-      const otherGame = games.find((g) => g.general.uid === otherUid);
+      const otherGame = games[otherUid];
 
       if (!otherGame || otherGame.gameState.isCompleted) {
         const finalGame = _.cloneDeep(game);
@@ -671,7 +679,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
             finalGame.private.lock = {};
             finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
-            games.push(finalGame);
+            games[finalGame.general.uid] = finalGame;
             require("./start-game.js")(finalGame); // circular dep.
             sendGameList();
           }

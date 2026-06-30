@@ -290,6 +290,12 @@ class ProfileWrapper extends React.Component {
               alt={x.title}
               key={x.id}
               height={50}
+              onError={(e) => {
+                // Some badge ids may not have art yet (e.g. topSeasonN — art currently exists only
+                // through season 17). Hide the broken image instead of showing the browser's
+                // broken-image icon; the badge data is still recorded, so adding the PNG reveals it.
+                e.currentTarget.style.display = "none";
+              }}
               onClick={() =>
                 Swal.fire({
                   title: x.title,

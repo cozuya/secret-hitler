@@ -56,12 +56,14 @@ const fascistWinPrior = (game) => {
   const g = game.general;
   if (g.rebalance6p) return 0.5;
   if (g.rebalance7p) return 0.5;
-  // The 9p rebalances exist specifically to neutralize the strong base-9p fascist skew (0.604), so
-  // target ~0.5 like 6p/7p. rerebalance9p is the field actually wired for 9p games (start-game.js);
-  // rebalance9p is handled too for completeness. Without this, a rebalanced 9p game would be rated
-  // against the un-rebalanced 0.604 prior, systematically over-rewarding fascist wins.
+  // The 2-fascist 9p deck variant keeps a mild fascist edge. Checked BEFORE the general 9p
+  // neutralization below so a game that sets BOTH isn't shadowed down to 0.5.
+  if (g.rebalance9p2f) return 0.55; // sparse data; mild fascist edge for the 2-fascist deck
+  // The other 9p rebalances neutralize the strong base-9p fascist skew (0.604) -> ~0.5. rerebalance9p
+  // is the field actually wired for 9p games (start-game.js); rebalance9p is included for completeness
+  // (currently always false from start-game, but a real schema field, so harmless to honor). Without
+  // this a rebalanced 9p game would be rated against the un-rebalanced 0.604 prior.
   if (g.rebalance9p || g.rerebalance9p) return 0.5;
-  if (g.rebalance9p2f) return 0.55; // 9p-with-2-fascists variant; sparse data, mild fascist edge
   return FASCIST_WIN_PRIOR[g.playerCount] ?? 0.5;
 };
 
@@ -85,6 +87,9 @@ const calibrateOffset = (nFas, nLib, q) => {
   return (lo + hi) / 2;
 };
 
+// Memoizes the bisection result per (team-size, prior) key. The input set is small and fully
+// determined (~8 combos across the 6 player counts + rebalance flags), so in practice this fills once
+// on the first game of each shape and is a constant lookup thereafter — effectively a lazy precompute.
 const offsetCache = new Map();
 
 // Total mu offset to add to the fascist team for this game (distribute across the present
