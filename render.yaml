@@ -29,12 +29,20 @@ services:
     # bin/dev.js is the only server entry (despite the name). It pulls in node-notifier, which is a
     # devDependency — so the deploy must keep devDependencies installed (don't add a prune step).
     startCommand: node bin/dev.js
-    # User-uploaded custom cardbacks (rainbow users) must survive deploys, but the service
-    # filesystem is ephemeral and the built public/ tree isn't writable by the runtime user
-    # (overwrites -> EACCES). Mount a Persistent Disk and point CARDBACK_DIR at it. A disk pins the
-    # service to ONE instance with non-zero-downtime deploys — already true here (in-memory game
-    # state, numInstances: 1), so nothing is lost. Size is generous: cardbacks are 70x95 PNGs (a
-    # few KB each); 1GB holds the entire user base many times over.
+    # Two things must survive deploys/restarts (the service filesystem is ephemeral): user-uploaded
+    # custom cardbacks (rainbow users) and the OOM/crash diagnostics. ONE Persistent Disk holds both.
+    # LAYOUT (matches the live mount — verified with findmnt): the disk is mounted at
+    # /var/data/cardbacks. Its PARENT /var/data is a root-owned ephemeral dir the runtime user (uid
+    # 1000) can NOT write to — so a sibling like /var/data/diagnostics is both unwritable (EACCES) and
+    # non-persistent; that's why the earlier sibling layout silently logged nothing. Diagnostics
+    # therefore live INSIDE the mount as a dot-dir: DIAGNOSTICS_DIR=/var/data/cardbacks/.diagnostics.
+    # app.js static-serves CARDBACK_DIR at /images/custom-cardbacks with dotfiles:"deny", so the
+    # .diagnostics dir (crash logs / heap snapshots — can hold session data) is NOT publicly
+    # downloadable even though it sits under the served tree. The built public/ tree isn't writable by
+    # the runtime user (overwrites -> EACCES), which is why cardbacks can't live there either. A disk
+    # pins the service to ONE instance with non-zero-downtime deploys — already true here (in-memory
+    # game state, numInstances: 1), so nothing is lost. Size is generous: cardbacks are 70x95 PNGs (a
+    # few KB each) and diagnostics ~200KB/day of JSONL plus the occasional heap snapshot; 1GB holds both.
     disk:
       name: cardbacks
       mountPath: /var/data/cardbacks
@@ -49,8 +57,13 @@ services:
         # just above that, so it OOMs at boot on the starter plan. Hand V8 400MB of the 512 (leaving
         # ~112MB for native/young-gen) so it fits without paying for a bigger instance.
         value: --max-old-space-size=400
-      - key: CARDBACK_DIR # must equal the disk mountPath above
+      - key: CARDBACK_DIR # the disk mount root (static-served at /images/custom-cardbacks)
         value: /var/data/cardbacks
+      # A DOT-dir INSIDE the disk mount (NOT a sibling — /var/data isn't writable by the runtime user;
+      # see the disk note above). dotfiles:"deny" on the static serve keeps it private. bin/diagnostics.js
+      # falls back to this exact path if this var is unset/unwritable; set it explicitly for visibility.
+      - key: DIAGNOSTICS_DIR
+        value: /var/data/cardbacks/.diagnostics
       - key: NODE_VERSION
         value: "24.12.0" # .node-version holds a range; pin an exact version for Render's builder
       - key: HUSKY
@@ -96,3 +109,24 @@ services:
         sync: false
       - key: GETIPINTELAPIEMAIL
         sync: false
+
+  # Daily leaderboard generation. A SEPARATE Cron service (not the web app) for two reasons:
+  # (1) a Render Persistent Disk attaches to one service, so a cron can't share the web's cardbacks
+  # disk; (2) the web instance is memory-tight, so the heavy account scan must not run in-process.
+  # It writes the result to Mongo (a single `leaderboards` doc); the web serves it at
+  # GET /leaderboardData.json. No disk needed here (output goes to Mongo, not a file).
+  - type: cron
+    name: secret-hitler-leaderboard
+    runtime: node
+    region: virginia # same region as Atlas/Redis for low-latency access
+    plan: starter
+    schedule: "0 9 * * *" # daily at 09:00 UTC (off-peak); adjust as desired
+    buildCommand: pnpm install --prod=false
+    startCommand: node scripts/retrieveLeaderboardData.js
+    envVars:
+      - key: MONGO_URL # same Atlas SRV string as the web service (set in the dashboard)
+        sync: false
+      - key: NODE_VERSION
+        value: "24.12.0"
+      - key: HUSKY
+        value: "0" # no-op husky's git-hook install during `pnpm install` on the builder

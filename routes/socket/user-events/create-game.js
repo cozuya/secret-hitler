@@ -158,6 +158,9 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
       disableGamechat: data.disableGamechat,
       rainbowgame: user.isRainbowOverall ? data.rainbowgame : false,
       blindMode: data.blindMode,
+      // Hides individual ballots in flipBallotCards (only the Ja/Nein tally is shown). Like silent
+      // games, it's intentionally not in the casualGame expression above, so it can be ranked.
+      noVoteReveal: Boolean(data.noVoteReveal),
       timedMode:
         typeof data.timedMode === "number" && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
       flappyMode: data.flappyMode,

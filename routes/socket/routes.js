@@ -248,7 +248,7 @@ module.exports.socketRoutes = () => {
         console.error(`socket transport error: ${err.stack || err.message}`);
       }
     });
-    checkUserStatus(socket, () => {
+    checkUserStatus(socket, (initialAccount) => {
       socket.emit("version", { current: version });
 
       // defensively check if game exists
@@ -281,7 +281,12 @@ module.exports.socketRoutes = () => {
       let isTourneyMod = false;
 
       if (authenticated && passport && passport.user) {
-        Account.findOne({ username: passport.user }).then((account) => {
+        // Reuse the account already loaded in checkUserStatus instead of issuing a second identical
+        // findOne. Wrapped in a resolved promise so the flags still settle on a later tick — exactly
+        // as the prior .then(findOne) did — keeping isAEM false for the sendGameList(socket, isAEM)
+        // call below, which runs synchronously before this resolves.
+        Promise.resolve(initialAccount).then((account) => {
+          if (!account) return;
           if (
             account.staffRole &&
             account.staffRole.length > 0 &&
@@ -343,7 +348,8 @@ module.exports.socketRoutes = () => {
       };
 
       if (passport && passport.user && authenticated) {
-        Account.findOne({ username: passport.user }).then((account) => {
+        // Same loaded account as above (see note) rather than a third findOne for this user on connect.
+        Promise.resolve(initialAccount).then((account) => {
           isRestricted = checkRestriction(account);
         });
       }
@@ -693,23 +699,41 @@ module.exports.socketRoutes = () => {
         }
       });
       socket.on("subscribeModChat", (uid) => {
-        const game = findGame({ uid });
-        if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
-          if (game && game.private && game.private.seatedPlayers) {
-            const players = game.private.seatedPlayers.map((player) => player.userName);
-            Account.find({ staffRole: { $exists: true, $ne: "veteran" } }).then((accounts) => {
-              const staff = accounts
-                .filter((acc) => {
-                  acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
+        // This handler isn't zod-hardened yet and mutates live game state inside an async .then with no
+        // rejection path, so an edge-case game shape here would otherwise surface as an unhandledRejection
+        // and take the whole process — every live game — down via bin/dev.js's fatal handler. A mod failing
+        // to open mod chat must not crash the server: log and alert instead. Scoped to this one handler (not
+        // a blanket swallow), and the mutations in handleSubscribeModChat are observability-only, not
+        // game-rules state, so bailing part-way can't corrupt a game.
+        const onError = (err) => {
+          console.log(err, "err in subscribeModChat");
+          socket.emit("sendAlert", "Something went wrong opening mod chat.");
+        };
+        try {
+          const game = findGame({ uid });
+          if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
+            if (game && game.private && game.private.seatedPlayers) {
+              const players = game.private.seatedPlayers.map((player) => player.userName);
+              Account.find({ staffRole: { $exists: true, $ne: "veteran" } })
+                .then((accounts) => {
+                  // Block the peek when a seated player is AEM staff (a non-veteran staffRole): a mod
+                  // shouldn't read the mod chat of a game staff are playing in. Expression body on
+                  // purpose — the previous block body returned nothing, so staff was always [] and this
+                  // guard never fired.
+                  const staff = accounts
+                    .filter((acc) => acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username))
+                    .map((acc) => acc.username);
+                  if (staff.length) {
+                    socket.emit("sendAlert", `AEM members are present: ${JSON.stringify(staff)}`);
+                    return;
+                  }
+                  handleSubscribeModChat(socket, passport, game);
                 })
-                .map((acc) => acc.username);
-              if (staff.length) {
-                socket.emit("sendAlert", `AEM members are present: ${JSON.stringify(staff)}`);
-                return;
-              }
-              handleSubscribeModChat(socket, passport, game);
-            });
-          } else socket.emit("sendAlert", "Game is missing.");
+                .catch(onError);
+            } else socket.emit("sendAlert", "Game is missing.");
+          }
+        } catch (err) {
+          onError(err);
         }
       });
       socket.on("modPeekVotes", (data) => {
