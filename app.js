@@ -114,7 +114,9 @@ app.get("/leaderboardData.json", (req, res) => {
 // Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
 // public/ path in dev). Mounted before the general static handler so it stays authoritative even
 // though it maps to the same /images/custom-cardbacks/ URL the frontend already requests.
-app.use("/images/custom-cardbacks", express.static(CARDBACK_DIR, { maxAge: 86400000 * 28 }));
+// dotfiles:"deny" keeps the private ".diagnostics" dir the crash/heap logger nests inside this mount
+// (see bin/diagnostics.js) unreadable over HTTP — those files can contain session data.
+app.use("/images/custom-cardbacks", express.static(CARDBACK_DIR, { maxAge: 86400000 * 28, dotfiles: "deny" }));
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 app.use(
   helmet.frameguard({

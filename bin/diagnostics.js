@@ -11,34 +11,42 @@ const path = require("path");
 const os = require("os");
 const v8 = require("v8");
 
-// Persist on the mounted disk so these survive the instance dying, but NEVER inside CARDBACK_DIR:
-// app.js static-serves all of CARDBACK_DIR at /images/custom-cardbacks, so a "diagnostics" subdir
-// there would make crash logs and heap snapshots (which can contain session data) publicly
-// downloadable. CARDBACK_DIR is a subdir of the disk mount (render.yaml mounts the disk one level
-// up), so the SIBLING "<disk>/diagnostics" is on the same persistent disk but outside the served
-// tree. Fall back to the OS temp dir in local dev so we never write into the repo tree.
-// DIAGNOSTICS_DIR overrides both (render.yaml sets it explicitly to this same path).
-const baseDir =
-  process.env.DIAGNOSTICS_DIR ||
-  (process.env.CARDBACK_DIR
-    ? path.join(process.env.CARDBACK_DIR, "..", "diagnostics")
-    : path.join(os.tmpdir(), "secret-hitler-diagnostics"));
+// Persist on the mounted disk so these survive the instance dying. On Render the persistent disk is
+// mounted AT CARDBACK_DIR (/var/data/cardbacks) — NOT at its parent /var/data, which is a root-owned
+// ephemeral dir the service user (uid 1000) can't write to. So the old sibling path
+// ("<CARDBACK_DIR>/../diagnostics") was both unwritable (EACCES) and non-persistent, and silently
+// logged nothing. Instead we nest a DOT-prefixed dir INSIDE the writable mount; app.js serves
+// CARDBACK_DIR with dotfiles:"deny", so crash logs and heap snapshots (which can contain session
+// data) stay private despite living under the static-served tree. Try candidates in order, first
+// writable one wins: an explicit DIAGNOSTICS_DIR (render.yaml) first, then the in-mount dot-dir, then
+// the OS temp dir for local dev. This self-heals even if DIAGNOSTICS_DIR is stale/unset.
+const candidateDirs = [
+  process.env.DIAGNOSTICS_DIR,
+  process.env.CARDBACK_DIR && path.join(process.env.CARDBACK_DIR, ".diagnostics"),
+  path.join(os.tmpdir(), "secret-hitler-diagnostics"),
+].filter(Boolean);
 
-let ready = false;
+// Resolved lazily by ensureDir() (the first candidate we can actually mkdir), so it stays null until
+// then — read it through the exported getter, never capture it at module load.
+let baseDir = null;
 let warned = false;
 function ensureDir() {
-  if (ready) return true;
-  try {
-    fs.mkdirSync(baseDir, { recursive: true });
-    ready = true;
-  } catch (err) {
-    if (!warned) {
-      // Warn once, then stay silent — never spam the log, never throw.
-      warned = true;
-      console.error("diagnostics: could not create", baseDir, (err && err.message) || err);
+  if (baseDir) return true;
+  for (const dir of candidateDirs) {
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      baseDir = dir;
+      return true;
+    } catch {
+      // not writable (e.g. EACCES under the root-owned mount parent) — fall through to the next
     }
   }
-  return ready;
+  if (!warned) {
+    // Warn once, then stay silent — never spam the log, never throw.
+    warned = true;
+    console.error("diagnostics: could not create any of", candidateDirs.join(", "));
+  }
+  return false;
 }
 
 function appendLine(file, line) {
@@ -151,7 +159,11 @@ function installHeapSnapshotHandler() {
 }
 
 module.exports = {
-  baseDir,
+  // Getter, not a value: baseDir is null until ensureDir() picks a writable candidate, so a plain
+  // value export would freeze it at null. (Currently unread, but keep it honest.)
+  get baseDir() {
+    return baseDir;
+  },
   logCrash,
   installSignalMarkers,
   startMemorySampler,

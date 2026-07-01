@@ -30,19 +30,22 @@ services:
     # devDependency — so the deploy must keep devDependencies installed (don't add a prune step).
     startCommand: node bin/dev.js
     # Two things must survive deploys/restarts (the service filesystem is ephemeral): user-uploaded
-    # custom cardbacks (rainbow users) and the OOM/crash diagnostics. Mount ONE Persistent Disk at
-    # /var/data and give each its own subdir — CARDBACK_DIR=/var/data/cardbacks and
-    # DIAGNOSTICS_DIR=/var/data/diagnostics (both set below). They must be SIBLINGS, not nested:
-    # app.js static-serves all of CARDBACK_DIR at /images/custom-cardbacks, so diagnostics under it
-    # would be publicly downloadable (crash logs / heap snapshots can hold session data). The built
-    # public/ tree also isn't writable by the runtime user (overwrites -> EACCES), the other reason
-    # cardbacks can't live there. A disk pins the service to ONE instance with non-zero-downtime
-    # deploys — already true here (in-memory game state, numInstances: 1), so nothing is lost. Size
-    # is generous: cardbacks are 70x95 PNGs (a few KB each) and diagnostics are ~200KB/day of JSONL
-    # plus the occasional manual heap snapshot; 1GB holds both many times over.
+    # custom cardbacks (rainbow users) and the OOM/crash diagnostics. ONE Persistent Disk holds both.
+    # LAYOUT (matches the live mount — verified with findmnt): the disk is mounted at
+    # /var/data/cardbacks. Its PARENT /var/data is a root-owned ephemeral dir the runtime user (uid
+    # 1000) can NOT write to — so a sibling like /var/data/diagnostics is both unwritable (EACCES) and
+    # non-persistent; that's why the earlier sibling layout silently logged nothing. Diagnostics
+    # therefore live INSIDE the mount as a dot-dir: DIAGNOSTICS_DIR=/var/data/cardbacks/.diagnostics.
+    # app.js static-serves CARDBACK_DIR at /images/custom-cardbacks with dotfiles:"deny", so the
+    # .diagnostics dir (crash logs / heap snapshots — can hold session data) is NOT publicly
+    # downloadable even though it sits under the served tree. The built public/ tree isn't writable by
+    # the runtime user (overwrites -> EACCES), which is why cardbacks can't live there either. A disk
+    # pins the service to ONE instance with non-zero-downtime deploys — already true here (in-memory
+    # game state, numInstances: 1), so nothing is lost. Size is generous: cardbacks are 70x95 PNGs (a
+    # few KB each) and diagnostics ~200KB/day of JSONL plus the occasional heap snapshot; 1GB holds both.
     disk:
       name: cardbacks
-      mountPath: /var/data
+      mountPath: /var/data/cardbacks
       sizeGB: 1
     envVars:
       # --- non-secret config (safe to commit) ---
@@ -54,13 +57,13 @@ services:
         # just above that, so it OOMs at boot on the starter plan. Hand V8 400MB of the 512 (leaving
         # ~112MB for native/young-gen) so it fits without paying for a bigger instance.
         value: --max-old-space-size=400
-      - key: CARDBACK_DIR # a subdir of the disk mount (static-served at /images/custom-cardbacks)
+      - key: CARDBACK_DIR # the disk mount root (static-served at /images/custom-cardbacks)
         value: /var/data/cardbacks
-      # Sibling of CARDBACK_DIR on the same persistent disk, but NOT static-served, so crash logs
-      # and heap snapshots stay private. bin/diagnostics.js defaults to this same path; set it
-      # explicitly so the intent is visible in the blueprint.
+      # A DOT-dir INSIDE the disk mount (NOT a sibling — /var/data isn't writable by the runtime user;
+      # see the disk note above). dotfiles:"deny" on the static serve keeps it private. bin/diagnostics.js
+      # falls back to this exact path if this var is unset/unwritable; set it explicitly for visibility.
       - key: DIAGNOSTICS_DIR
-        value: /var/data/diagnostics
+        value: /var/data/cardbacks/.diagnostics
       - key: NODE_VERSION
         value: "24.12.0" # .node-version holds a range; pin an exact version for Render's builder
       - key: HUSKY
