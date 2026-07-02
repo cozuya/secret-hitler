@@ -60,6 +60,39 @@ const drawLane = (ctx, snapshot, team, laneY, userName) => {
   }
 };
 
+// The server simulates at ~20Hz but we render at display refresh rate. Drawing raw
+// snapshots looks choppy (each position repeats for ~3 frames, then jumps), so we render
+// one snapshot behind and interpolate toward the latest — smooth motion at the cost of
+// ~one tick (~50ms) of display latency, which is imperceptible here.
+const lerp = (a, b, t) => a + (b - a) * t;
+
+const interpolateSnapshot = (prev, curr, alpha) => {
+  if (!prev || prev.status !== "running" || curr.status !== "running") {
+    return curr;
+  }
+
+  const prevPylonsById = {};
+  prev.pylons.forEach((pylon) => {
+    prevPylonsById[pylon.id] = pylon;
+  });
+
+  return {
+    ...curr,
+    liberal: {
+      ...curr.liberal,
+      bird: { ...curr.liberal.bird, y: lerp(prev.liberal.bird.y, curr.liberal.bird.y, alpha) },
+    },
+    fascist: {
+      ...curr.fascist,
+      bird: { ...curr.fascist.bird, y: lerp(prev.fascist.bird.y, curr.fascist.bird.y, alpha) },
+    },
+    pylons: curr.pylons.map((pylon) => {
+      const prevPylon = prevPylonsById[pylon.id];
+      return prevPylon ? { ...pylon, x: lerp(prevPylon.x, pylon.x, alpha) } : pylon;
+    }),
+  };
+};
+
 const drawSnapshot = (canvas, snapshot, userName) => {
   if (!canvas) {
     return;
@@ -90,23 +123,38 @@ const drawSnapshot = (canvas, snapshot, userName) => {
 
 const Flappy = ({ userInfo, gameInfo, socket }) => {
   const canvasRef = useRef(null);
-  const snapshotRef = useRef(null);
+  const framesRef = useRef({ prev: null, curr: null, currAt: 0, interval: 50 });
 
   useEffect(() => {
     // seed from the game object so reconnecting players and fresh observers see the field before the next tick arrives
     if (gameInfo.flappyState && gameInfo.flappyState.config) {
-      snapshotRef.current = gameInfo.flappyState;
+      framesRef.current.curr = gameInfo.flappyState;
+      framesRef.current.currAt = performance.now();
     }
 
     const onFlappyUpdate = (data) => {
       if (data && data.type === "snapshot") {
-        snapshotRef.current = data;
+        const frames = framesRef.current;
+        const now = performance.now();
+        // clamp the measured inter-arrival time so one delayed packet doesn't cause slow-motion
+        frames.interval = frames.curr ? Math.min(Math.max(now - frames.currAt, 30), 120) : 50;
+        frames.prev = frames.curr;
+        frames.curr = data;
+        frames.currAt = now;
       }
     };
 
     let animationFrame;
     const render = () => {
-      drawSnapshot(canvasRef.current, snapshotRef.current, userInfo && userInfo.userName);
+      const frames = framesRef.current;
+      let displaySnapshot = frames.curr;
+
+      if (frames.curr && frames.prev) {
+        const alpha = Math.min(Math.max((performance.now() - frames.currAt) / frames.interval, 0), 1);
+        displaySnapshot = interpolateSnapshot(frames.prev, frames.curr, alpha);
+      }
+
+      drawSnapshot(canvasRef.current, displaySnapshot, userInfo && userInfo.userName);
       animationFrame = window.requestAnimationFrame(render);
     };
 
