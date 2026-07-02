@@ -1,564 +1,583 @@
-import React from 'react'; // eslint-disable-line
-import _ from 'lodash';
-import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
+import React from "react"; // eslint-disable-line
+import _ from "lodash";
+import PropTypes from "prop-types";
+import { PLAYERCOLORS } from "../../constants";
 
-const DisplayLobbies = props => {
-	const { game, userInfo, userList } = props;
-	const gameClasses = () => {
-		let classes = 'browser-row';
+const DisplayLobbies = (props) => {
+  const { game, userInfo, userList } = props;
+  const gameClasses = () => {
+    let classes = "browser-row";
 
-		if (game.gameStatus === 'isStarted') {
-			classes += ' inprogress';
-		} else if (game.gameStatus === 'fascist') {
-			classes += ' fascist';
-		} else if (game.gameStatus === 'liberal') {
-			classes += ' liberal';
-		} else {
-			classes += ' notstarted';
-		}
+    if (game.gameStatus === "isStarted") {
+      classes += " inprogress";
+    } else if (game.gameStatus === "fascist") {
+      classes += " fascist";
+    } else if (game.gameStatus === "liberal") {
+      classes += " liberal";
+    } else {
+      classes += " notstarted";
+    }
 
-		if (game.isTourny) {
-			classes += ' tourny';
-		}
+    if (game.isTourny) {
+      classes += " tourny";
+    }
 
-		return classes;
-	};
+    return classes;
+  };
 
-	const playerCount = game => {
-		const availableSeatCounts = new Array(game.maxPlayersCount)
-			.fill(true)
-			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
-			.filter(el => el);
+  const playerCount = (game) => {
+    const availableSeatCounts = new Array(game.maxPlayersCount)
+      .fill(true)
+      .map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
+      .filter((el) => el);
 
-		let str = '';
+    let str = "";
 
-		availableSeatCounts.forEach(el => {
-			if (availableSeatCounts.includes(el)) {
-				if (el === game.maxPlayersCount) {
-					str = `${str}${el}`;
-				} else {
-					if (availableSeatCounts.includes(el - 1)) {
-						if (!availableSeatCounts.includes(el + 1)) {
-							str = `${str}${el}, `;
-						}
-					} else {
-						if (!str.length) {
-							str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
-						} else {
-							str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
-						}
-					}
-				}
-			}
-		});
+    availableSeatCounts.forEach((el) => {
+      if (availableSeatCounts.includes(el)) {
+        if (el === game.maxPlayersCount) {
+          str = `${str}${el}`;
+        } else {
+          if (availableSeatCounts.includes(el - 1)) {
+            if (!availableSeatCounts.includes(el + 1)) {
+              str = `${str}${el}, `;
+            }
+          } else {
+            if (!str.length) {
+              str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
+            } else {
+              str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
+            }
+          }
+        }
+      }
+    });
 
-		return str || game.seatedCount;
-	};
+    return str || game.seatedCount;
+  };
 
-	const optionIcons = () => {
-		let rebalance;
-		let rebalanceTooltip;
-		let playerChats;
-		let playerChatsTooltip;
-		let disableGamechat;
-		let disableGamechatTooltip;
-		let experiencedMode;
-		let experiancedModeTooltip;
-		let rainbowgame;
-		let rainbowgameTooltip;
-		let blind;
-		let blindTooltip;
-		let priv;
-		let privTooltip;
-		let privateOnly;
-		let privateOnlyTooltip;
-		let casualGame;
-		let casualGameTooltip;
-		let practiceGame;
-		let practiceGameTooltip;
-		let avalonSH;
-		let avalonSHTooltip;
-		let monarchistSH;
-		let monarchistSHTooltip;
-		let noTopdecking;
-		let noTopdeckingTooltip;
-		let timedMode;
-		let timedModeTooltip;
-		let isVerifiedOnly;
-		let isVerifiedOnlyTooltip;
-		let eloMinimum;
-		let eloMinimumTooltip;
-		let xpMinimum;
-		let xpMinimumTooltip;
-		let customgameactive;
-		let customgameactiveTooltip;
-		let flappyMode;
-		let flappyModeTooltip;
-		let flappyOnlyMode;
-		let flappyOnlyModeTooltip;
-		let unlistedGame;
-		let unlistedGameTooltip;
+  const optionIcons = () => {
+    let rebalance;
+    let rebalanceTooltip;
+    let playerChats;
+    let playerChatsTooltip;
+    let disableGamechat;
+    let disableGamechatTooltip;
+    let experiencedMode;
+    let experiancedModeTooltip;
+    let rainbowgame;
+    let rainbowgameTooltip;
+    let blind;
+    let blindTooltip;
+    let priv;
+    let privTooltip;
+    let privateOnly;
+    let privateOnlyTooltip;
+    let casualGame;
+    let casualGameTooltip;
+    let practiceGame;
+    let practiceGameTooltip;
+    let avalonSH;
+    let avalonSHTooltip;
+    let monarchistSH;
+    let monarchistSHTooltip;
+    let noTopdecking;
+    let noTopdeckingTooltip;
+    let timedMode;
+    let timedModeTooltip;
+    let isVerifiedOnly;
+    let isVerifiedOnlyTooltip;
+    let eloMinimum;
+    let eloMinimumTooltip;
+    let xpMinimum;
+    let xpMinimumTooltip;
+    let customgameactive;
+    let customgameactiveTooltip;
+    let flappyMode;
+    let flappyModeTooltip;
+    let flappyOnlyMode;
+    let flappyOnlyModeTooltip;
+    let unlistedGame;
+    let unlistedGameTooltip;
 
-		if (game.casualGame) {
-			casualGame = <i className="handshake icon" />;
-			casualGameTooltip = 'Casual game - results do not count for wins or losses';
-		}
+    if (game.casualGame) {
+      casualGame = <i className="handshake icon" />;
+      casualGameTooltip = "Casual game - results do not count for wins or losses";
+    }
 
-		const hasPlayerCount = count => game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
+    const hasPlayerCount = (count) =>
+      game.minPlayersCount <= count && count <= game.maxPlayersCount && !game.excludedPlayerCount.includes(count);
 
-		const hasR6 = game.rebalance6p && hasPlayerCount(6);
-		const hasR7 = game.rebalance7p && hasPlayerCount(7);
-		const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
+    const hasR6 = game.rebalance6p && hasPlayerCount(6);
+    const hasR7 = game.rebalance7p && hasPlayerCount(7);
+    const hasR9 = game.rebalance9p2f && hasPlayerCount(9);
 
-		if (game.isCustomGame) {
-			customgameactive = <i className="setting icon" />;
-			customgameactiveTooltip = 'Custom Game';
-		} else if (hasR6 || hasR7 || hasR9) {
-			// ugly but lazy
-			if (hasR6 && hasR7 && hasR9) {
-				rebalance = <div> R679 </div>;
-				rebalanceTooltip = 'Rebalanced 6, 7, and 9p games';
-			} else if (hasR7 && hasR9) {
-				rebalance = <div> R79 </div>;
-				rebalanceTooltip = 'Rebalanced 7 and 9p games';
-			} else if (hasR6 && hasR7) {
-				rebalance = <div> R67 </div>;
-				rebalanceTooltip = 'Rebalanced 6 and 7p games';
-			} else if (hasR6 && hasR9) {
-				rebalance = <div> R69 </div>;
-				rebalanceTooltip = 'Rebalanced 6 and 9p games';
-			} else if (hasR6) {
-				rebalance = <div> R6 </div>;
-				rebalanceTooltip = 'Rebalanced 6p games';
-			} else if (hasR7) {
-				rebalance = <div> R7 </div>;
-				rebalanceTooltip = 'Rebalanced 7p games';
-			} else if (hasR9) {
-				rebalance = <div> R9 </div>;
-				rebalanceTooltip = 'Rebalanced 9p games';
-			}
-		}
+    if (game.isCustomGame) {
+      customgameactive = <i className="setting icon" />;
+      customgameactiveTooltip = "Custom Game";
+    } else if (hasR6 || hasR7 || hasR9) {
+      // ugly but lazy
+      if (hasR6 && hasR7 && hasR9) {
+        rebalance = <div> R679 </div>;
+        rebalanceTooltip = "Rebalanced 6, 7, and 9p games";
+      } else if (hasR7 && hasR9) {
+        rebalance = <div> R79 </div>;
+        rebalanceTooltip = "Rebalanced 7 and 9p games";
+      } else if (hasR6 && hasR7) {
+        rebalance = <div> R67 </div>;
+        rebalanceTooltip = "Rebalanced 6 and 7p games";
+      } else if (hasR6 && hasR9) {
+        rebalance = <div> R69 </div>;
+        rebalanceTooltip = "Rebalanced 6 and 9p games";
+      } else if (hasR6) {
+        rebalance = <div> R6 </div>;
+        rebalanceTooltip = "Rebalanced 6p games";
+      } else if (hasR7) {
+        rebalance = <div> R7 </div>;
+        rebalanceTooltip = "Rebalanced 7p games";
+      } else if (hasR9) {
+        rebalance = <div> R9 </div>;
+        rebalanceTooltip = "Rebalanced 9p games";
+      }
+    }
 
-		if (game.playerChats === 'disabled') {
-			playerChats = <i className="mute icon" />;
-			playerChatsTooltip = 'Player Chat Disabled';
-		} else if (game.playerChats === 'emotes') {
-			playerChats = <i className="smile icon" />;
-			playerChatsTooltip = 'Emotes Only';
-		}
+    if (game.playerChats === "disabled") {
+      playerChats = <i className="mute icon" />;
+      playerChatsTooltip = "Player Chat Disabled";
+    } else if (game.playerChats === "emotes") {
+      playerChats = <i className="smile icon" />;
+      playerChatsTooltip = "Emotes Only";
+    }
 
-		if (game.privateOnly) {
-			privateOnly = <i className="spy icon" />;
-			privateOnlyTooltip = 'Private game only - only anonymous players.';
-		}
+    if (game.privateOnly) {
+      privateOnly = <i className="spy icon" />;
+      privateOnlyTooltip = "Private game only - only anonymous players.";
+    }
 
-		if (!game.privateOnly && game.private) {
-			priv = <i className="lock icon" />;
-			privTooltip = 'Private';
-		}
+    if (!game.privateOnly && game.private) {
+      priv = <i className="lock icon" />;
+      privTooltip = "Private";
+    }
 
-		if (game.blindMode) {
-			blind = <i className="hide icon" />;
-			blindTooltip = 'Blind mode - players are anonymized';
-		}
+    if (game.blindMode) {
+      blind = <i className="hide icon" />;
+      blindTooltip = "Blind mode - players are anonymized";
+    }
 
-		if (game.disableGamechat) {
-			disableGamechat = (
-				<i className="icons">
-					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
-				</i>
-			);
-			disableGamechatTooltip = 'Game Chat Disabled';
-		}
+    if (game.disableGamechat) {
+      disableGamechat = (
+        <i className="icons">
+          <i className="game icon" />
+          <i className="large remove icon" style={{ opacity: "0.6", color: "var(--theme-background-2)" }} />
+        </i>
+      );
+      disableGamechatTooltip = "Game Chat Disabled";
+    }
 
-		if (game.experiencedMode) {
-			experiencedMode = <i className="fast forward icon" />;
-			experiancedModeTooltip = 'Speed Mode';
-		}
+    if (game.experiencedMode) {
+      experiencedMode = <i className="fast forward icon" />;
+      experiancedModeTooltip = "Speed Mode";
+    }
 
-		if (game.isVerifiedOnly) {
-			isVerifiedOnly = <i className="thumbs up icon" />;
-			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
-		}
+    if (game.isVerifiedOnly) {
+      isVerifiedOnly = <i className="thumbs up icon" />;
+      isVerifiedOnlyTooltip = "Only email-verified players can sit in this game.";
+    }
 
-		if (game.rainbowgame) {
-			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
-			rainbowgameTooltip = 'Experienced Game';
-		}
+    if (game.rainbowgame) {
+      rainbowgame = <img style={{ maxHeight: "14px", marginBottom: "-2px" }} src="../images/rainbow.png" />;
+      rainbowgameTooltip = "Experienced Game";
+    }
 
-		if (game.avalonSH) {
-			avalonSH = <i className="shield icon" />;
-			avalonSHTooltip = game.avalonSH.withPercival ? 'Avalon SH with Percival & Morgana' : 'Avalon SH';
-		}
+    if (game.avalonSH) {
+      avalonSH = <i className="shield icon" />;
+      avalonSHTooltip = game.avalonSH.withPercival ? "Avalon SH with Percival & Morgana" : "Avalon SH";
+    }
 
-		if (game.monarchistSH) {
-			monarchistSH = <i className="chess king icon" />;
-			monarchistSHTooltip = 'Monarchist SH';
-		}
+    if (game.monarchistSH) {
+      monarchistSH = <i className="chess king icon" />;
+      monarchistSHTooltip = "Monarchist SH";
+    }
 
-		if (game.noTopdecking) {
-			noTopdecking = <i className="gavel icon" />;
-			noTopdeckingTooltip = game.noTopdecking === 2 ? 'No Double Topdecking' : 'No Topdecking';
-		}
+    if (game.noTopdecking) {
+      noTopdecking = <i className="gavel icon" />;
+      noTopdeckingTooltip = game.noTopdecking === 2 ? "No Double Topdecking" : "No Topdecking";
+    }
 
-		if (game.timedMode) {
-			timedMode = (
-				<span style={{ color: 'peru' }}>
-					<i className="hourglass half icon" />
-					{`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
-				</span>
-			);
-			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
-		}
+    if (game.timedMode) {
+      timedMode = (
+        <span style={{ color: "peru" }}>
+          <i className="hourglass half icon" />
+          {`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
+        </span>
+      );
+      timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
+    }
 
-		if (game.eloMinimum) {
-			eloMinimum = <span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>;
-			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
-		}
+    if (game.eloMinimum) {
+      eloMinimum = <span style={{ color: "yellow" }}>Elo min: {game.eloMinimum}</span>;
+      eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+    }
 
-		if (game.xpMinimum) {
-			xpMinimum = <span style={{ color: 'yellow' }}>XP min: {game.xpMinimum}</span>;
-			xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
-		}
+    if (game.xpMinimum) {
+      xpMinimum = <span style={{ color: "yellow" }}>XP min: {game.xpMinimum}</span>;
+      xpMinimumTooltip = `XP minimum: ${game.xpMinimum}`;
+    }
 
-		if (game.flappyMode && !game.flappyOnlyMode) {
-			flappyMode = <i className="plane icon" />;
-			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
-		}
+    if (game.flappyMode && !game.flappyOnlyMode) {
+      flappyMode = <i className="plane icon" />;
+      flappyModeTooltip = "COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
+    }
 
-		if (game.flappyOnlyMode) {
-			flappyOnlyMode = <i className="plane icon flappyonly" />;
-			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
-		}
+    if (game.flappyOnlyMode) {
+      flappyOnlyMode = <i className="plane icon flappyonly" />;
+      flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
+    }
 
-		if (game.isUnlisted) {
-			unlistedGame = <i className="lock icon green" />;
-			unlistedGameTooltip = 'Unlisted Game - Not Visible in Game List';
-		}
+    if (game.isUnlisted) {
+      unlistedGame = <i className="lock icon green" />;
+      unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
+    }
 
-		if (game.practiceGame) {
-			practiceGame = <i className="chess icon" />;
-			practiceGameTooltip = 'Practice game - results do not count towards wins and losses';
-		}
+    if (game.practiceGame) {
+      practiceGame = <i className="chess icon" />;
+      practiceGameTooltip = "Practice game - results do not count towards wins and losses";
+    }
 
-		return (
-			<div className="options-icons-container">
-				{game.isCustomGame && (
-					<span className="customgame" data-tooltip={customgameactiveTooltip} data-inverted="">
-						{customgameactive}
-					</span>
-				)}
-				{casualGame && (
-					<span data-tooltip={casualGameTooltip} data-inverted="">
-						{casualGame}
-					</span>
-				)}
-				{practiceGame && (
-					<span data-tooltip={practiceGameTooltip} data-inverted="">
-						{practiceGame}
-					</span>
-				)}
-				{rebalance && (
-					<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
-						{rebalance}
-					</span>
-				)}
-				{playerChats && (
-					<span data-tooltip={playerChatsTooltip} data-inverted="">
-						{playerChats}
-					</span>
-				)}
-				{disableGamechat && (
-					<span data-tooltip={disableGamechatTooltip} data-inverted="">
-						{disableGamechat}
-					</span>
-				)}
-				{privateOnly && (
-					<span data-tooltip={privateOnlyTooltip} data-inverted="">
-						{privateOnly}
-					</span>
-				)}
-				{priv && (
-					<span data-tooltip={privTooltip} data-inverted="">
-						{priv}
-					</span>
-				)}
-				{blind && (
-					<span data-tooltip={blindTooltip} data-inverted="">
-						{blind}
-					</span>
-				)}
-				{experiencedMode && (
-					<span data-tooltip={experiancedModeTooltip} data-inverted="">
-						{experiencedMode}
-					</span>
-				)}
-				{avalonSH && (
-					<span data-tooltip={avalonSHTooltip} data-inverted="">
-						{avalonSH}
-					</span>
-				)}
-				{monarchistSH && (
-					<span data-tooltip={monarchistSHTooltip} data-inverted="">
-						{monarchistSH}
-					</span>
-				)}
-				{noTopdecking && (
-					<span data-tooltip={noTopdeckingTooltip} data-inverted="">
-						{noTopdecking}
-					</span>
-				)}
-				{rainbowgame && (
-					<span data-tooltip={rainbowgameTooltip} data-inverted="">
-						{rainbowgame}
-					</span>
-				)}
-				{timedMode && (
-					<span data-tooltip={timedModeTooltip} data-inverted="">
-						{timedMode}
-					</span>
-				)}
-				{eloMinimum && (
-					<span data-tooltip={eloMinimumTooltip} data-inverted="">
-						{eloMinimum}
-					</span>
-				)}
-				{xpMinimum && (
-					<span data-tooltip={xpMinimumTooltip} data-inverted="">
-						{xpMinimum}
-					</span>
-				)}
-				{isVerifiedOnly && (
-					<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
-						{isVerifiedOnly}
-					</span>
-				)}
-				{flappyMode && (
-					<span data-tooltip={flappyModeTooltip} data-inverted="">
-						{flappyMode}
-					</span>
-				)}
-				{flappyOnlyMode && (
-					<span data-tooltip={flappyOnlyModeTooltip} data-inverted="">
-						{flappyOnlyMode}
-					</span>
-				)}
-				{unlistedGame && (
-					<span data-tooltip={unlistedGameTooltip} data-inverted="">
-						{unlistedGame}
-					</span>
-				)}
-			</div>
-		);
-	};
+    return (
+      <div className="options-icons-container">
+        {game.isCustomGame && (
+          <span className="customgame" data-tooltip={customgameactiveTooltip} data-inverted="">
+            {customgameactive}
+          </span>
+        )}
+        {casualGame && (
+          <span data-tooltip={casualGameTooltip} data-inverted="">
+            {casualGame}
+          </span>
+        )}
+        {practiceGame && (
+          <span data-tooltip={practiceGameTooltip} data-inverted="">
+            {practiceGame}
+          </span>
+        )}
+        {rebalance && (
+          <span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
+            {rebalance}
+          </span>
+        )}
+        {playerChats && (
+          <span data-tooltip={playerChatsTooltip} data-inverted="">
+            {playerChats}
+          </span>
+        )}
+        {disableGamechat && (
+          <span data-tooltip={disableGamechatTooltip} data-inverted="">
+            {disableGamechat}
+          </span>
+        )}
+        {privateOnly && (
+          <span data-tooltip={privateOnlyTooltip} data-inverted="">
+            {privateOnly}
+          </span>
+        )}
+        {priv && (
+          <span data-tooltip={privTooltip} data-inverted="">
+            {priv}
+          </span>
+        )}
+        {blind && (
+          <span data-tooltip={blindTooltip} data-inverted="">
+            {blind}
+          </span>
+        )}
+        {experiencedMode && (
+          <span data-tooltip={experiancedModeTooltip} data-inverted="">
+            {experiencedMode}
+          </span>
+        )}
+        {avalonSH && (
+          <span data-tooltip={avalonSHTooltip} data-inverted="">
+            {avalonSH}
+          </span>
+        )}
+        {monarchistSH && (
+          <span data-tooltip={monarchistSHTooltip} data-inverted="">
+            {monarchistSH}
+          </span>
+        )}
+        {noTopdecking && (
+          <span data-tooltip={noTopdeckingTooltip} data-inverted="">
+            {noTopdecking}
+          </span>
+        )}
+        {rainbowgame && (
+          <span data-tooltip={rainbowgameTooltip} data-inverted="">
+            {rainbowgame}
+          </span>
+        )}
+        {timedMode && (
+          <span data-tooltip={timedModeTooltip} data-inverted="">
+            {timedMode}
+          </span>
+        )}
+        {eloMinimum && (
+          <span data-tooltip={eloMinimumTooltip} data-inverted="">
+            {eloMinimum}
+          </span>
+        )}
+        {xpMinimum && (
+          <span data-tooltip={xpMinimumTooltip} data-inverted="">
+            {xpMinimum}
+          </span>
+        )}
+        {isVerifiedOnly && (
+          <span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
+            {isVerifiedOnly}
+          </span>
+        )}
+        {flappyMode && (
+          <span data-tooltip={flappyModeTooltip} data-inverted="">
+            {flappyMode}
+          </span>
+        )}
+        {flappyOnlyMode && (
+          <span data-tooltip={flappyOnlyModeTooltip} data-inverted="">
+            {flappyOnlyMode}
+          </span>
+        )}
+        {unlistedGame && (
+          <span data-tooltip={unlistedGameTooltip} data-inverted="">
+            {unlistedGame}
+          </span>
+        )}
+      </div>
+    );
+  };
 
-	const playerIcons = () => {
-		const players = [];
-		const total = [];
-		const { gameSettings } = userInfo;
-		// Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
-		if (game.blindMode) {
-			return null;
-		}
+  const playerIcons = () => {
+    const players = [];
+    const total = [];
+    const { gameSettings } = userInfo;
+    // Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
+    if (game.blindMode) {
+      return null;
+    }
 
-		game.userNames.forEach(el => players.push({ userName: game.private ? '' : el }));
-		game.customCardback.forEach((el, index) => (players[index].customCardback = el));
-		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
-		players.forEach((player, index) => {
-			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
+    game.userNames.forEach((el) => players.push({ userName: game.private ? "" : el }));
+    game.customCardback.forEach((el, index) => (players[index].customCardback = el));
+    game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
+    players.forEach((player, index) => {
+      const userStats = userList.list ? userList.list.find((el) => el.userName === player.userName) : null;
 
-			if (userStats) {
-				players[index].wins = userStats.wins;
-				players[index].losses = userStats.losses;
-				players[index].winsSeason = userStats.winsSeason;
-				players[index].lossesSeason = userStats.lossesSeason;
-				players[index].eloOverall = userStats.eloOverall;
-				players[index].eloSeason = userStats.eloSeason;
-				players[index].isRainbowOverall = userStats.isRainbowOverall;
-				players[index].isRainbowSeason = userStats.isRainbowSeason;
-				players[index].staffRole = userStats.staffRole;
-				players[index].isContributor = userStats.isContributor;
-			}
-		});
+      if (userStats) {
+        players[index].wins = userStats.wins;
+        players[index].losses = userStats.losses;
+        players[index].winsSeason = userStats.winsSeason;
+        players[index].lossesSeason = userStats.lossesSeason;
+        players[index].eloOverall = userStats.eloOverall;
+        players[index].eloSeason = userStats.eloSeason;
+        players[index].isRainbowOverall = userStats.isRainbowOverall;
+        players[index].isRainbowSeason = userStats.isRainbowSeason;
+        players[index].staffRole = userStats.staffRole;
+        players[index].isContributor = userStats.isContributor;
+      }
+    });
 
-		players.forEach(player => {
-			const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
+    players.forEach((player) => {
+      const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), "player-small-cardback");
 
-			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
-				total.push(
-					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
-					</div>
-				);
-			} else {
-				total.push(
-					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/default_cardback.png`} />
-					</div>
-				);
-			}
-		});
+      if (
+        player.customCardback &&
+        (!userInfo.userName ||
+          !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+      ) {
+        total.push(
+          <div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
+            <img
+              src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`}
+            />
+          </div>
+        );
+      } else {
+        total.push(
+          <div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
+            <img src={`../images/default_cardback.png`} />
+          </div>
+        );
+      }
+    });
 
-		// Adds empty seat icons
-		if (game.gameStatus === 'notStarted') {
-			const difference = game.maxPlayersCount - players.length;
-			for (let i = 1; i <= difference; i++) {
-				if (players.length + i >= game.minPlayersCount && !game.excludedPlayerCount.includes(players.length + i)) {
-					total.push(
-						<div key={total.length} className="empty-seat-icons included-player-count">
-							{players.length + i}
-						</div>
-					);
-				} else {
-					total.push(
-						<div key={total.length} className="empty-seat-icons">
-							{players.length + i}
-						</div>
-					);
-				}
-			}
-		}
-		return total;
-	};
+    // Adds empty seat icons
+    if (game.gameStatus === "notStarted") {
+      const difference = game.maxPlayersCount - players.length;
+      for (let i = 1; i <= difference; i++) {
+        if (players.length + i >= game.minPlayersCount && !game.excludedPlayerCount.includes(players.length + i)) {
+          total.push(
+            <div key={total.length} className="empty-seat-icons included-player-count">
+              {players.length + i}
+            </div>
+          );
+        } else {
+          total.push(
+            <div key={total.length} className="empty-seat-icons">
+              {players.length + i}
+            </div>
+          );
+        }
+      }
+    }
+    return total;
+  };
 
-	const gameProgress = () => {
-		let progressText;
-		let progressIcons;
-		let classes = 'progress-text';
+  const gameProgress = () => {
+    let progressText;
+    let progressIcons;
+    let classes = "progress-text";
 
-		if (game.private) {
-			classes += ' private';
-			progressText = 'Private Game';
-			progressIcons = (
-				<div className="progress-icons private">
-					<i className="yellow lock icon" title="This is a private game.  You can only be seated if you know the password, or are whitelisted" />
-				</div>
-			);
-		} else if (game.gameStatus === 'liberal') {
-			classes += ' liberal';
-			progressText = 'Liberals Win !';
-			progressIcons = (
-				<div className="victory-icon">
-					<img src="../images/bird.png" />
-				</div>
-			);
-		} else if (game.gameStatus === 'fascist') {
-			classes += ' fascist';
-			progressText = 'Fascists Win !';
-			progressIcons = (
-				<div className="victory-icon">
-					<img src="../images/skull.png" />
-				</div>
-			);
-		} else if (game.gameStatus === 'notStarted') {
-			classes += ' waiting';
-			progressText = 'Waiting for players...';
-		} else {
-			if (game.electionCount > 0) {
-				progressText = 'Election #' + game.electionCount;
-				progressIcons = (
-					<div className="progress-icons">
-						<div className="liberal-count">
-							{_.range(1, 6).map(num => (
-								<div
-									key={num}
-									className={num <= game.enactedLiberalPolicyCount ? 'leftsidebar box liberal-box filled' : 'leftsidebar box liberal-box unfilled'}
-								/>
-							))}
-						</div>
-						<div className="fascist-count">
-							{_.range(1, 7).map(num => (
-								<div
-									key={num}
-									className={num <= game.enactedFascistPolicyCount ? 'leftsidebar box fascist-box filled' : ' leftsidebar box fascist-box unfilled'}
-								/>
-							))}
-						</div>
-					</div>
-				);
-			} else {
-				progressText = 'Starting Game...';
-			}
-		}
-		return (
-			<div className="game-progress">
-				<div className="hidden-join-message">
-					<i className="share icon" />
-					<div>Enter</div>
-				</div>
-				<span className={classes}>{progressText}</span>
-				{progressIcons}
-			</div>
-		);
-	};
+    if (game.private) {
+      classes += " private";
+      progressText = "Private Game";
+      progressIcons = (
+        <div className="progress-icons private">
+          <i
+            className="yellow lock icon"
+            title="This is a private game.  You can only be seated if you know the password, or are whitelisted"
+          />
+        </div>
+      );
+    } else if (game.gameStatus === "liberal") {
+      classes += " liberal";
+      progressText = "Liberals Win !";
+      progressIcons = (
+        <div className="victory-icon">
+          <img src="../images/bird.png" />
+        </div>
+      );
+    } else if (game.gameStatus === "fascist") {
+      classes += " fascist";
+      progressText = "Fascists Win !";
+      progressIcons = (
+        <div className="victory-icon">
+          <img src="../images/skull.png" />
+        </div>
+      );
+    } else if (game.gameStatus === "notStarted") {
+      classes += " waiting";
+      progressText = "Waiting for players...";
+    } else {
+      if (game.electionCount > 0) {
+        progressText = "Election #" + game.electionCount;
+        progressIcons = (
+          <div className="progress-icons">
+            <div className="liberal-count">
+              {_.range(1, 6).map((num) => (
+                <div
+                  key={num}
+                  className={
+                    num <= game.enactedLiberalPolicyCount
+                      ? "leftsidebar box liberal-box filled"
+                      : "leftsidebar box liberal-box unfilled"
+                  }
+                />
+              ))}
+            </div>
+            <div className="fascist-count">
+              {_.range(1, 7).map((num) => (
+                <div
+                  key={num}
+                  className={
+                    num <= game.enactedFascistPolicyCount
+                      ? "leftsidebar box fascist-box filled"
+                      : " leftsidebar box fascist-box unfilled"
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        );
+      } else {
+        progressText = "Starting Game...";
+      }
+    }
+    return (
+      <div className="game-progress">
+        <div className="hidden-join-message">
+          <i className="share icon" />
+          <div>Enter</div>
+        </div>
+        <span className={classes}>{progressText}</span>
+        {progressIcons}
+      </div>
+    );
+  };
 
-	const renderFlag = () => {
-		if (game.flag !== 'none') {
-			return <i className={`ui flag ${game.flag}`} />;
-		}
-	};
+  const renderFlag = () => {
+    if (game.flag !== "none") {
+      return <i className={`ui flag ${game.flag}`} />;
+    }
+  };
 
-	return (
-		<React.Fragment>
-			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) && (
-				<div
-					data-uid={game.uid}
-					onClick={() => {
-						location.href = `#/table/${game.uid}`;
-					}}
-					className={gameClasses()}
-				>
-					<div className="game-row">
-						{gameProgress()}
-						<div className="game-main">
-							<div className="game-main-top-row">
-								<div className="gamename-column">
-									{renderFlag()}
-									{game.name}
-									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran' && (
-										<span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>
-									)}
-								</div>
-								<div className="options-column experienced">{optionIcons()}</div>
-							</div>
-							<div className="game-main-bottom-row">
-								{game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
-									<span className="game-tournament-unstarted">Tournament starting soon..</span>
-								) : (
-									<div className="player-icons-column">
-										<div className="player-icons">{playerIcons()}</div>
-									</div>
-								)}
-								<div className="player-count-column">
-									<span className="seatedcount" style={{ fontWeight: 'bold' }}>
-										{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
-									</span>
-									<span className="divider">/</span>
-									<span className="allowed-players"> {playerCount(game)}</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			)}
-		</React.Fragment>
-	);
+  return (
+    <React.Fragment>
+      {(!game.isUnlisted ||
+        (userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran")) && (
+        <div
+          data-uid={game.uid}
+          onClick={() => {
+            location.href = `#/table/${game.uid}`;
+          }}
+          className={gameClasses()}
+        >
+          <div className="game-row">
+            {gameProgress()}
+            <div className="game-main">
+              <div className="game-main-top-row">
+                <div className="gamename-column">
+                  {renderFlag()}
+                  {game.name}
+                  {userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran" && (
+                    <span style={{ color: "lightblue" }}>{` Created by: ${game.gameCreatorName}`}</span>
+                  )}
+                </div>
+                <div className="options-column experienced">{optionIcons()}</div>
+              </div>
+              <div className="game-main-bottom-row">
+                {game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
+                  <span className="game-tournament-unstarted">Tournament starting soon..</span>
+                ) : (
+                  <div className="player-icons-column">
+                    <div className="player-icons">{playerIcons()}</div>
+                  </div>
+                )}
+                <div className="player-count-column">
+                  <span className="seatedcount" style={{ fontWeight: "bold" }}>
+                    {game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{" "}
+                  </span>
+                  <span className="divider">/</span>
+                  <span className="allowed-players"> {playerCount(game)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </React.Fragment>
+  );
 };
 
 DisplayLobbies.defaultProps = {
-	game: {},
-	socket: {},
-	userInfo: {},
-	userList: {}
+  game: {},
+  socket: {},
+  userInfo: {},
+  userList: {},
 };
 
 DisplayLobbies.propTypes = {
-	game: PropTypes.object,
-	socket: PropTypes.object,
-	userInfo: PropTypes.object,
-	userList: PropTypes.object
+  game: PropTypes.object,
+  socket: PropTypes.object,
+  userInfo: PropTypes.object,
+  userList: PropTypes.object,
 };
 
 export default DisplayLobbies;

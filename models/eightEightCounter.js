@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Eighteightcounter = new Schema({
-	username: String,
-	date: Date
+  username: String,
+  date: Date,
 });
 
-module.exports = mongoose.model('Eighteightcounter', Eighteightcounter);
+module.exports = mongoose.model("Eighteightcounter", Eighteightcounter);

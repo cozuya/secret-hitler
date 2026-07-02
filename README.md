@@ -17,23 +17,21 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 ## Installation
 
-Install NodeJS v22.14.0. [NVM](https://github.com/nvm-sh/nvm) is the industry standard way to install Node.
+Install NodeJS v24.12.0 (see `.nvmrc`). [NVM](https://github.com/nvm-sh/nvm) is the industry standard way to install Node.
 
 Install [mongodb](https://www.mongodb.com/download-center/community), have it in your path.
 
 Install [redis](https://redis.io/download), have it in your path.
 
-Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
+Install [pnpm](https://pnpm.io/installation) for your OS.
 
 then
 
 ```bash
 git clone https://github.com/cozuya/secret-hitler.git
 cd secret-hitler
-yarn
+pnpm install
 ```
-
-If you're receiving an error like "Found incompatible module", try using `yarn --ignore-engines`
 
 ## Running in dev mode
 
@@ -42,15 +40,15 @@ If you're receiving an error like "Found incompatible module", try using `yarn -
 Start the redis server.
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 Navigate to: http://localhost:8080
 
-You'll need multiple sessions, so use something like Chrome's user profiles, or Firefox's multi-account containers. No, incognito will not work. You'll want to check "disable cache" on the network tab - the webpack setup isn't great, doesn't cache bust itself, and there's no live reload, so all saves will need a F5. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+You'll need multiple sessions, so use something like Chrome's user profiles, or Firefox's multi-account containers. No, incognito will not work. You'll want to check "disable cache" on the network tab - the Vite build runs in `--watch` mode and doesn't cache bust itself, and there's no live reload, so all saves will need a F5. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a pnpm script you may run once `server` or `dev` scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
 
 ```bash
-yarn create-accounts
+pnpm create-accounts
 ```
 
 **Assigning a local mod:**
@@ -61,7 +59,7 @@ After running the `create-accounts` script you will have the helper accounts pop
 Running the next line below will then assign `Uther` to the `admin` staffRole to better test all site functions in testing.
 
 ```bash
-yarn assign-local-mod
+pnpm assign-local-mod
 ```
 
 Upon seeing the end result in the terminal of `Assigned.` you will know it worked. Just refresh your localhost:8080 page at this point and then you will have a local mod to test additional functions of the site with in a development mode environment.

@@ -1,5 +1,5 @@
-import React from 'react'; // eslint-disable-line
-import classnames from 'classnames';
+import React from "react"; // eslint-disable-line
+import classnames from "classnames";
 
 /**
  * @param {object} title - todo
@@ -8,14 +8,14 @@ import classnames from 'classnames';
  * @return {jsx}
  */
 const CardGroup = ({ title, cards, className }) => {
-	const renderedTitle = title ? <h1>{title}</h1> : null;
+  const renderedTitle = title ? <h1>{title}</h1> : null;
 
-	return (
-		<div className={classnames(className)}>
-			{renderedTitle}
-			{cards}
-		</div>
-	);
+  return (
+    <div className={classnames(className)}>
+      {renderedTitle}
+      {cards}
+    </div>
+  );
 };
 
 export default CardGroup;

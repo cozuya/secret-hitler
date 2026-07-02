@@ -1,17 +1,17 @@
-import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
-import Reports from './Reports';
+import React from "react"; // eslint-disable-line
+import { shallow } from "enzyme";
+import Reports from "./Reports";
 
-describe('Reports', () => {
-	it('should initialize correctly', () => {
-		const initialState = {
-			reports: [],
-			sortType: 'date',
-			sortDirection: 'descending'
-		};
+describe("Reports", () => {
+  it("should initialize correctly", () => {
+    const initialState = {
+      reports: [],
+      sortType: "date",
+      sortDirection: "descending",
+    };
 
-		const component = shallow(<Reports socket={{ emit: jest.fn(), on: jest.fn() }} />);
+    const component = shallow(<Reports socket={{ emit: jest.fn(), on: jest.fn() }} />);
 
-		expect(component.state()).toEqual(initialState);
-	});
+    expect(component.state()).toEqual(initialState);
+  });
 });
