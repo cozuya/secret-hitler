@@ -172,6 +172,15 @@ const saveOrUpdateGame = (gameID, callback) => {
 };
 
 const saveAndDeleteGame = gameID => {
+	const gameInMemory = games[gameID];
+
+	// inline rather than requiring game/flappy to avoid a circular require (flappy requires completeGame)
+	if (gameInMemory && gameInMemory.private && gameInMemory.private.flappyTimers) {
+		clearInterval(gameInMemory.private.flappyTimers.tick);
+		clearInterval(gameInMemory.private.flappyTimers.spawn);
+		gameInMemory.private.flappyTimers = null;
+	}
+
 	saveOrUpdateGame(gameID, () => {
 		delete games[gameID];
 		sendGameList();

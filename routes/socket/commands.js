@@ -5,6 +5,7 @@ const { sendInProgressGameUpdate, sendCommandChatsUpdate } = require('./util');
 const { LineGuess } = require('./util');
 const Account = require('../../models/account');
 const { selectPlayerToAssassinate } = require('./game/assassination');
+const { canStartFlappy, startFlappy } = require('./game/flappy');
 
 const sendMessage = (game, user, s, date = new Date()) =>
 	game.private.commandChats[user.userName].push({
@@ -142,6 +143,16 @@ module.exports.commands = [
 		argumentsFormat: /^(\d{1,2})$/,
 		aemOnly: true,
 		observerOnly: true,
+		seatedOnly: false,
+		gameStartedOnly: true
+	},
+	{
+		name: ['forceflappy'],
+		description: 'Skips straight to Flappy Hitler, development only',
+		examples: ['/forceflappy'],
+		argumentsFormat: /.*/,
+		aemOnly: true,
+		observerOnly: false,
 		seatedOnly: false,
 		gameStartedOnly: true
 	},
@@ -794,6 +805,31 @@ module.exports.commands.getCommand('forceping').run = (socket, passport, user, g
 	} catch (e) {
 		console.log(e, 'caught exception in ping chat');
 	}
+};
+
+module.exports.commands.getCommand('forceflappy').run = (socket, passport, user, game, args) => {
+	if (process.env.NODE_ENV === 'production') {
+		sendMessage(game, user, 'This command is only available in development.');
+		return;
+	}
+
+	if (game.general.isRemade) {
+		socket.emit('sendAlert', 'This game has been remade.');
+		return;
+	}
+
+	if (!canStartFlappy(game)) {
+		sendMessage(game, user, 'Flappy cannot start on this game (needs a started, uncompleted, non-blind, non-Avalon game with living players on both teams).');
+		return;
+	}
+
+	game.chats.push({
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [{ text: 'A staff member has forced this game into Flappy Hitler.' }]
+	});
+
+	startFlappy(game);
 };
 
 module.exports.commands.getCommand('forcerigrole').run = (socket, passport, user, game, args) => {

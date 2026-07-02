@@ -104,7 +104,7 @@ export default class Game extends React.Component {
 
 	render() {
 		const { allEmotes, gameInfo, onClickedTakeSeat, userInfo, userList, socket } = this.props;
-		const isFlappy = false;
+		const isFlappy = Boolean(gameInfo.gameState && gameInfo.gameState.phase === 'flappyHitler');
 
 		return (
 			<section className="game">
@@ -112,10 +112,7 @@ export default class Game extends React.Component {
 					<div className="row">
 						<div className="sixteen wide column tracks-container">
 							{isFlappy ? (
-								<React.Fragment>
-									<Flappy isFacist={false} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
-									<Flappy isFacist userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
-								</React.Fragment>
+								<Flappy userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 							) : (
 								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 							)}

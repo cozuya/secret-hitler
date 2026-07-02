@@ -384,10 +384,9 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('flappyEvent', data => {
-				return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					handleFlappyEvent(data, game);
+					handleFlappyEvent(passport, game, data);
 				}
 			});
 

@@ -1,122 +1,146 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
-	const cb = new Image();
+const LANE_GAP = 8;
 
-	cb.src = '/images/default_cardback.png';
+const birdImage = new Image();
 
-	// the draw function is apparently not updating from prop updates or useState
-	let vert = 50;
-	let lastFlapTime = Date.now() - 1000;
+birdImage.src = '/images/default_cardback.png';
 
-	const pylonCoords = [];
+const drawLane = (ctx, snapshot, team, laneY, userName) => {
+	const { config } = snapshot;
+	const lane = snapshot[team];
+	const isLiberal = team === 'liberal';
 
-	/**
-	 * @param {number} cardY
-	 * @param {object} pylon
-	 */
-	const detectCollisionAndPass = (cardY, pylon) => {
-		const { offset, x } = pylon;
-		if (cardY < 30 + offset / 2 || cardY + 57 > 150 + offset / 2) {
-			socket.emit('flappyEvent', {
-				uid: gameInfo.general.uid,
-				team: isFacist ? 'fascist' : 'liberal',
-				type: 'collision'
-			});
-		} else if (x === -32) {
-			socket.emit('flappyEvent', {
-				uid: gameInfo.general.uid,
-				type: 'passedPylon'
-			});
+	const skyGradient = ctx.createLinearGradient(0, laneY, 0, laneY + config.laneHeight);
+
+	skyGradient.addColorStop(0, isLiberal ? '#7db9e8' : '#e8a97d');
+	skyGradient.addColorStop(1, isLiberal ? '#1e5799' : '#99321e');
+	ctx.fillStyle = skyGradient;
+	ctx.fillRect(0, laneY, config.laneWidth, config.laneHeight);
+
+	ctx.strokeStyle = '#555';
+	snapshot.pylons.forEach(pylon => {
+		const pipeGradient = ctx.createLinearGradient(pylon.x, 0, pylon.x + config.pylonWidth, 0);
+
+		pipeGradient.addColorStop(0, '#87B145');
+		pipeGradient.addColorStop(0.4, '#b5ffb2');
+		pipeGradient.addColorStop(1, 'darkgreen');
+		ctx.fillStyle = pipeGradient;
+
+		ctx.fillRect(pylon.x, laneY, config.pylonWidth, pylon.gapTop);
+		ctx.strokeRect(pylon.x, laneY, config.pylonWidth, pylon.gapTop);
+		ctx.fillRect(pylon.x, laneY + pylon.gapBottom, config.pylonWidth, config.laneHeight - pylon.gapBottom);
+		ctx.strokeRect(pylon.x, laneY + pylon.gapBottom, config.pylonWidth, config.laneHeight - pylon.gapBottom);
+	});
+
+	if (birdImage.complete) {
+		ctx.drawImage(birdImage, config.birdX, laneY + lane.bird.y, config.birdWidth, config.birdHeight);
+	} else {
+		ctx.fillStyle = isLiberal ? '#1a4a8a' : '#8a1a1a';
+		ctx.fillRect(config.birdX, laneY + lane.bird.y, config.birdWidth, config.birdHeight);
+	}
+
+	ctx.font = 'bold 16px sans-serif';
+	ctx.textAlign = 'left';
+	ctx.fillStyle = '#fff';
+	const controlText = lane.controllerUserName === userName ? 'YOU - click or press space to flap!' : lane.controllerUserName;
+
+	ctx.fillText(`${isLiberal ? 'Liberals' : 'Fascists'}: controlled by ${controlText}`, 10, laneY + 22);
+
+	if (snapshot.status === 'finished') {
+		ctx.font = 'bold 32px sans-serif';
+		ctx.textAlign = 'center';
+		ctx.fillText(
+			snapshot.winningTeam === team ? `${isLiberal ? 'Liberals' : 'Fascists'} win!` : 'Crashed!',
+			config.laneWidth / 2,
+			laneY + config.laneHeight / 2
+		);
+	}
+};
+
+const drawSnapshot = (canvas, snapshot, userName) => {
+	if (!canvas) {
+		return;
+	}
+
+	const ctx = canvas.getContext('2d');
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	if (!snapshot) {
+		ctx.fillStyle = '#222';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = '#fff';
+		ctx.font = 'bold 24px sans-serif';
+		ctx.textAlign = 'center';
+		ctx.fillText('FLAPPY HITLER - waiting for server..', canvas.width / 2, canvas.height / 2);
+		return;
+	}
+
+	drawLane(ctx, snapshot, 'liberal', 0, userName);
+	drawLane(ctx, snapshot, 'fascist', snapshot.config.laneHeight + LANE_GAP, userName);
+
+	ctx.font = 'bold 16px sans-serif';
+	ctx.textAlign = 'right';
+	ctx.fillStyle = '#fff';
+	ctx.fillText(`Gaps passed: ${snapshot.passedGapCount}`, snapshot.config.laneWidth - 10, 22);
+};
+
+const Flappy = ({ userInfo, gameInfo, socket }) => {
+	const canvasRef = useRef(null);
+	const snapshotRef = useRef(null);
+
+	useEffect(() => {
+		// seed from the game object so reconnecting players and fresh observers see the field before the next tick arrives
+		if (gameInfo.flappyState && gameInfo.flappyState.config) {
+			snapshotRef.current = gameInfo.flappyState;
 		}
-	};
 
-	const draw = () => {
-		const ctx = document.getElementById(isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1').getContext('2d');
-		const timeDiff = Date.now() - lastFlapTime;
-
-		// vert = vert - (1000 * gameInfo.flappyState ? gameInfo.flappyState.flapDistance : 1 - timeDiff) * 0.001;
-
-		vert = vert - (1000 - timeDiff) * 0.001;
-
-		ctx.clearRect(0, 0, 650, 220);
-		ctx.drawImage(cb, 10, Math.floor(vert), 42, 57);
-		ctx.strokeStyle = '#555';
-
-		if (pylonCoords[0] && pylonCoords[0].x < -50) {
-			pylonCoords.shift();
-		}
-
-		let foo;
-		pylonCoords.forEach(coord => {
-			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
-			ctx.fillStyle = pipeGradient;
-			if (coord.x >= -32 && coord.x <= 52 && !isFacist) {
-				detectCollisionAndPass(vert, coord);
+		const onFlappyUpdate = data => {
+			if (data && data.type === 'snapshot') {
+				snapshotRef.current = data;
 			}
+		};
 
-			pipeGradient.addColorStop(0, '#87B145');
-			pipeGradient.addColorStop(0.4, '#b5ffb2');
-			pipeGradient.addColorStop(1, 'darkgreen');
+		let animationFrame;
+		const render = () => {
+			drawSnapshot(canvasRef.current, snapshotRef.current, userInfo && userInfo.userName);
+			animationFrame = window.requestAnimationFrame(render);
+		};
 
-			ctx.fillRect(coord.x, 0, 40, 30 + coord.offset / 2);
-			ctx.fillRect(coord.x, 150 + coord.offset / 2, 40, 220);
-			ctx.strokeRect(coord.x - 1, 0, 42, 31 + coord.offset / 2);
-			ctx.strokeRect(coord.x - 1, 150 + coord.offset / 2, 42, 221);
-			ctx.fillRect(coord.x - 2, 30 + coord.offset / 2 - 12, 44, 12);
-			ctx.strokeRect(coord.x - 3, 30 + coord.offset / 2 - 13, 46, 14);
-			ctx.fillRect(coord.x - 2, 150 + coord.offset / 2, 44, 12);
-			ctx.strokeRect(coord.x - 3, 150 + coord.offset / 2, 46, 14);
-			coord.x = coord.x - 1;
-		});
+		const onKeyDown = e => {
+			if (e.code === 'Space' || e.keyCode === 32) {
+				e.preventDefault();
+				flap();
+			}
+		};
 
-		if (!foo) window.requestAnimationFrame(draw);
-	};
+		socket.on('flappyUpdate', onFlappyUpdate);
+		window.addEventListener('keydown', onKeyDown);
+		animationFrame = window.requestAnimationFrame(render);
+
+		return () => {
+			socket.removeListener('flappyUpdate', onFlappyUpdate);
+			window.removeEventListener('keydown', onKeyDown);
+			window.cancelAnimationFrame(animationFrame);
+		};
+	}, []);
 
 	const flap = () => {
 		socket.emit('flappyEvent', {
 			uid: gameInfo.general.uid,
-			team: isFacist ? 'fascist' : 'liberal',
 			type: 'flap'
 		});
 	};
 
-	useEffect(() => {
-		setTimeout(() => {
-			if (!isFacist) {
-				socket.emit('flappyEvent', {
-					uid: gameInfo.general.uid,
-					type: 'startFlappy'
-				});
-			}
-		}, 500);
-
-		socket.on('flappyUpdate', data => {
-			if (data.type === 'flap' && ((isFacist && data.team == 'fascist') || (!isFacist && data.team === 'liberal'))) {
-				lastFlapTime = Date.now();
-			}
-
-			if (data.type === 'startFlappy') {
-				draw();
-			}
-
-			if (data.type === 'newPylon') {
-				pylonCoords.push({
-					offset: data.offset,
-					x: 751,
-					pylonType: data.pylonType
-				});
-			}
-		});
-	}, []);
-
 	return (
 		<canvas
+			ref={canvasRef}
 			width="750"
-			height="220"
-			id={isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1'}
-			style={{ background: 'linear-gradient(to bottom, #7db9e8 0%, #1e5799 100%)' }}
+			height="448"
+			id="flappy-canvas"
+			style={{ background: '#222', cursor: 'pointer', maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' }}
 			onClick={flap}
 		/>
 	);
@@ -125,8 +149,7 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 Flappy.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	socket: PropTypes.object,
-	isFacist: PropTypes.bool
+	socket: PropTypes.object
 };
 
 export default Flappy;
