@@ -2,6 +2,8 @@
 
 [![Build Status](https://github.com/cozuya/secret-hitler/actions/workflows/node.js.yml/badge.svg)](https://github.com/cozuya/secret-hitler/actions)
 
+#### Important note summer 2025: there's many crashing vulnerabilities in this codebase if users know how to malform socket requests, so it should probably not be used as is. In the production site, these have been patched out. To fix, one should probably tediously apply zod.js to all of the endpoints. That came out years after this was made..
+
 Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists.
 Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
 
