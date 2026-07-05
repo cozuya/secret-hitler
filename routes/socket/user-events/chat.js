@@ -4,6 +4,7 @@ const {
   setLastGenchatModPingAsync,
   newStaff,
   generalChats,
+  games,
 } = require("../models");
 const { makeReport } = require("../report.js");
 const { chatReplacements } = require("../chatReplacements");
@@ -12,6 +13,7 @@ const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require("../util.js")
 const { emoteList, getPrivateChatTruncate } = require("../models");
 const { sendCommandChatsUpdate } = require("../util");
 const { generalChatSchema, gameChatSchema } = require("./chat.schema");
+const { isFlappyPreLock } = require("../game/flappy");
 
 const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
 
@@ -64,6 +66,24 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
     } catch (err) {
       console.error(err);
     }
+    return;
+  }
+
+  // the flappy first-gate mute extends to GENERAL chat: it's a player-attributed
+  // public channel, so a seated pilot could otherwise prove control site-wide
+  // ("watch the liberal bird double-flap now") and correlate their name to the bird.
+  // Mirrors the game-chat mute: placed after the @mod carve-out (private output),
+  // and dead/left players are exempt - they can't be pilots. isFlappyPreLock's
+  // phase check makes the registry scan cheap (only flappyHitler games are probed).
+  const inPreLockFlappy = Object.values(games).some((g) => {
+    if (!isFlappyPreLock(g)) {
+      return false;
+    }
+    const seat = g.publicPlayersState.find((p) => p.userName === passport.user);
+    return seat && !seat.isDead && !seat.leftGame;
+  });
+  if (inPreLockFlappy) {
+    socket.emit("sendAlert", "Chat is disabled until a bird clears the first gate.");
     return;
   }
 
@@ -348,6 +368,25 @@ module.exports.handleAddNewGameChat = async (
       AEM || (isTourneyMod && game.general.unlistedGame),
       Boolean(player)
     );
+
+  // flappy first-gate mute: pilot identities are secret and control claims in chat are
+  // provable, so no seated player's message may reach PUBLIC game chat until a bird
+  // clears the gate - including staff (a seated staff pilot could self-identify).
+  // Placed deliberately AFTER slash-command and @mod routing (both return above and
+  // output privately): a prefix-based carve-out before routing was bypassable with a
+  // multiline "@mod x\n<secret>" that matched the carve-out but failed the routing
+  // regex and fell through to public chat. Only messages that would actually reach
+  // public chat from here on are muted. (Commands with public output get their own
+  // flappy guards - see /ping in commands.js.)
+  // Dead and left players are excluded: their messages are already dropped by the
+  // baseline rule below, and they'd otherwise get a spurious "chat is disabled"
+  // alert for a mute that isn't flappy's doing.
+  if (isFlappyPreLock(game) && player && !player.isDead && !player.leftGame) {
+    if (socket) {
+      socket.emit("sendAlert", "Chat is disabled until a bird clears the first gate.");
+    }
+    return;
+  }
 
   if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) return;
 

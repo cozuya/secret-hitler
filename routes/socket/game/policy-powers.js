@@ -3,6 +3,7 @@ const { startElection, shufflePolicies } = require("./common.js");
 const { sendGameList } = require("../user-requests");
 const { completeGame } = require("./end-game.js");
 const { assassinateMerlin } = require("./assassination");
+const { shouldStartMatchPointFlappy, scheduleMatchPointFlappy } = require("./flappy");
 const { playerIndexSchema, voteSchema } = require("./policy-powers.schema");
 
 /**
@@ -1692,6 +1693,14 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
                     },
                     process.env.NODE_ENV === "development" ? 100 : 2000
                   );
+                } else if (shouldStartMatchPointFlappy(game)) {
+                  // double match point (4-5 board): Flappy Hitler replaces all remaining
+                  // play. If it can't start (or is cancelled at the first gate), resume
+                  // this top-deck loop rather than forcing an election that this endgame
+                  // exists to avoid.
+                  scheduleMatchPointFlappy(game, () => {
+                    setTimeout(playCard, 2500);
+                  });
                 } else setTimeout(playCard, 2500);
                 sendInProgressGameUpdate(game);
               };

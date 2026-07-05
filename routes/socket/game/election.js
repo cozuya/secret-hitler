@@ -18,6 +18,7 @@ const _ = require("lodash");
 const { makeReport } = require("../report.js");
 const { assassinateMerlin } = require("./assassination");
 const { completeGame } = require("./end-game");
+const { shouldStartMatchPointFlappy, scheduleMatchPointFlappy } = require("./flappy");
 const { voteSchema, policySelectionSchema } = require("./election.schema");
 
 const powerMapping = {
@@ -234,6 +235,16 @@ const enactPolicy = (game, team, socket) => {
           },
           process.env.NODE_ENV === "development" ? 100 : 2000
         );
+      } else if (shouldStartMatchPointFlappy(game)) {
+        // double match point: a 4-liberal/5-fascist board, where the next enactment
+        // wins for whoever draws it. Flappy Hitler replaces all remaining play,
+        // including any power this policy would have granted (e.g. the 5th-fascist
+        // execution) - INTENTIONALLY even on the cancellation path, per FLAPPY_SPEC.md:
+        // the design is "replace the final stretch completely", and a cancelled flappy
+        // resumes with the next election, not a replayed power.
+        addPreviousGovernmentStatus(); // keep term limits correct in case flappy is cancelled
+        sendInProgressGameUpdate(game); // flush the settled policy/chat before the flappy delay
+        scheduleMatchPointFlappy(game); // resumes with the next election if flappy can't run
       } else if (powerToEnact && game.trackState.electionTrackerCount <= 2) {
         const chat = {
           timestamp: new Date(),
@@ -1428,6 +1439,12 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
     if (socket) {
       socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
     }
+    return;
+  }
+
+  // a stale/in-flight ballot must not process outside the voting phase - e.g. after
+  // /forceflappy has taken the table into flappyHitler
+  if (game.gameState.phase !== "voting") {
     return;
   }
 

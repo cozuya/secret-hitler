@@ -93,6 +93,13 @@ function buildEnhancedGameSummary(_summary) {
 
   // String
   const winningTeam = (() => {
+    // flappy-decided games carry an authoritative winner: the race/coin-flip/topdeck
+    // outcome is not derivable from policy logs (the last enacted policy may be the
+    // losing team's - it merely created the 4-5 board that triggered flappy)
+    if (summary.gameSetting && summary.gameSetting.flappyWinner) {
+      return summary.gameSetting.flappyWinner;
+    }
+
     const lastTurn = turns.last();
 
     if (lastTurn.isMerlinShot) {

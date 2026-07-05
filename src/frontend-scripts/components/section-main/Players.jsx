@@ -206,6 +206,44 @@ class Players extends React.Component {
     }
   }
 
+  renderFlappyControllerToken(i) {
+    const { gameState, flappyState, publicPlayersState } = this.props.gameInfo;
+
+    // status check: the phase stays flappyHitler after the game ends and roles reveal
+    // ~2s before isCompleted flips, so gate on the race actually running - the markers
+    // shouldn't linger over revealed role cards
+    if (
+      !flappyState ||
+      !gameState ||
+      gameState.phase !== "flappyHitler" ||
+      gameState.isCompleted ||
+      flappyState.status !== "running" ||
+      // defense-in-depth for the anonymity invariant: never paint a pilot marker before
+      // lock-in, even if a future server change leaks a name onto flappyState early
+      !flappyState.lockedIn
+    ) {
+      return null;
+    }
+
+    const { userName } = publicPlayersState[i];
+    const isLiberalController = flappyState.liberal && flappyState.liberal.controllerUserName === userName;
+    const isFascistController = flappyState.fascist && flappyState.fascist.controllerUserName === userName;
+
+    if (!isLiberalController && !isFascistController) {
+      return null;
+    }
+
+    return (
+      <i
+        title={`This player is currently flying the ${isLiberalController ? "liberal" : "fascist"} bird`}
+        className={classnames("large plane icon flappy-controller", {
+          "liberal-controller": isLiberalController,
+          "fascist-controller": isFascistController,
+        })}
+      />
+    );
+  }
+
   renderPlayerNotesIcon(index) {
     const { userInfo, gameInfo, togglePlayerNotes, playerNotesActive } = this.props;
     const { userName } = gameInfo.publicPlayersState[index];
@@ -462,6 +500,7 @@ class Players extends React.Component {
         {this.renderPreviousGovtToken(i)}
         {this.renderLoader(i)}
         {this.renderGovtToken(i)}
+        {this.renderFlappyControllerToken(i)}
         {/* {this.renderPlayerNotesIcon(i)} */}
         <div
           className={(() => {

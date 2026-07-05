@@ -479,6 +479,7 @@ module.exports.socketRoutes = () => {
       });
 
       socket.on("flappyEvent", (data) => {
+        if (isRestricted) return;
         const game = findGame(data);
         if (authenticated && ensureInGame(passport, game)) {
           handleFlappyEvent(passport, game, data);

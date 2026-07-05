@@ -1,5 +1,6 @@
 const { sendInProgressGameUpdate, rateEloGame } = require("../util.js");
 const { userList, games } = require("../models.js");
+const { clearFlappyTimers } = require("./flappy-timers");
 const { sendUserList, sendGameList } = require("../user-requests.js");
 const Account = require("../../../models/account.js");
 const Game = require("../../../models/game");
@@ -172,14 +173,7 @@ const saveOrUpdateGame = (gameID, callback) => {
 };
 
 const saveAndDeleteGame = (gameID) => {
-  const gameInMemory = games[gameID];
-
-  // inline rather than requiring game/flappy to avoid a circular require (flappy requires completeGame)
-  if (gameInMemory?.private?.flappyTimers) {
-    clearInterval(gameInMemory.private.flappyTimers.tick);
-    clearInterval(gameInMemory.private.flappyTimers.spawn);
-    gameInMemory.private.flappyTimers = null;
-  }
+  clearFlappyTimers(games[gameID]);
 
   saveOrUpdateGame(gameID, () => {
     delete games[gameID];

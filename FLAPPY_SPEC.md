@@ -1,599 +1,195 @@
-# Flappy Hitler MVP Spec
+# Flappy Hitler
 
 ## Summary
 
-This document describes a practical MVP plan for adding `flappyMode` to the game.
+This document describes `flappyMode` as implemented.
 
-When enabled on a table, a game that would normally end by policy track victory will instead transition into a short server-authoritative minigame. Two birds, one per team, race through flappy-style gaps. Control of each team's bird rotates between living teammates every 3 passed gaps. The team whose bird dies loses the game.
+When enabled on a table, a policy-track endgame that reaches the **double match point** — a 4-liberal / 5-fascist board, both teams one policy from victory — transitions into a server-authoritative flappy-style minigame instead of being decided by the next card draw. Two birds — one per team — race through a shared set of pipe gaps. Control of each bird rotates between living teammates, difficulty escalates over time, and the team whose bird dies loses the game. The flappy result is the game result.
 
-This spec intentionally excludes `flappyOnlyMode`. That idea is dropped for now.
+Flappy has **two visibility windows**, split by one event: the first bird to clear the first gate. Before it, pilot identities are secret and flappy can still be erased from history; after it, flappy is locked in, identities go public, and the game will end in flappy.
 
-## Goals
+Everything below is implemented and verified; this is documentation, not a plan.
 
-- Make `flappyMode` real and shippable.
-- Keep the implementation small enough to fit this codebase.
-- Reuse existing game UI and socket patterns where they are good enough.
-- Avoid adding major dependencies unless a real need appears.
-- Make the feature testable locally without needing to play a full normal game every time.
+## Trigger
 
-## Non-Goals
+If `game.general.flappyMode` is true and, after a policy is enacted, the board is at the **double match point**:
 
-- No `flappyOnlyMode`.
-- No attempt to preserve the old client-authoritative prototype.
-- No replay support in MVP.
-- No support in MVP for non-policy win paths:
-  - Hitler elected
-  - Hitler shot
-  - Merlin assassination
-  - other variant-specific terminal states
-- No blind mode support in MVP.
-- No Avalon SH / Monarchist SH support in MVP.
-- No mobile-specific polish beyond "works well enough to test".
+- liberals have 4 policies, **and**
+- fascists have 5 policies
 
-## Why This Shape
+then instead of continuing normal play (including any presidential power that policy would have granted), the game enters Flappy Hitler after a short delay. The suspended power is replaced entirely — flappy owns all remaining play.
 
-The abandoned implementation already proved that canvas rendering, scrolling pylons, click-to-flap, and socket delivery are workable in this repo. What it did not solve was authority, state ownership, end-game integration, controller rotation, reconnect behavior, or safe activation.
+**Why both, not either** (the original 2019 design intent, restored 2026-07-04): flappy exists to resolve a genuinely *close* game. Triggering on either team's match point always robbed the leading team of an earned advantage, and structurally taxed liberal wins harder (every liberal policy win passes through 4; fascists keep the flappy-free Hitler-chancellor route). At 4–5 the next enactment wins for whoever draws it — largely deck luck — so replacing that draw with a shared-pipe skill race is *fairer* than the cards. Accepted tradeoffs: flappy fires in fewer games, and at 4–5 both teams surrender their endgame tools to the race (fascists the Hitler-zone chancellor threat, liberals the veto).
 
-For MVP, the main design decision is:
+The transition is scheduled via `scheduleMatchPointFlappy(game, resume)` (exported by flappy.js along with the `shouldStartMatchPointFlappy` gate, so both hook sites share one implementation). If flappy can no longer start when the delay fires (e.g. a team's last living player left during the window), the game resumes via the `resume` continuation instead of stranding the table — the election path resumes with the next election; the top-deck path resumes its `playCard` loop. The same continuation is used when a match-point flappy is cancelled at the first gate.
 
-- server owns simulation
-- client only renders and sends input
+Hook sites (both enactment paths):
 
-This is the simplest way to avoid a game-deciding minigame being cheat-prone or desynced.
+- `routes/socket/game/election.js` — the main enactPolicy if-chain, after the actual-win check and before the power branch
+- `routes/socket/game/policy-powers.js` — the top-decking `playCard` loop
 
-## MVP Rules
+Gate (all must hold):
 
-### Trigger
+- `general.flappyMode === true` — **rated flappyMode games are intentional** (owner decision): players opt into the mode at game creation, and the match-point minigame may decide ELO, including via the coin-flip stalemate/error endings (a stalemate requires the whole table refusing to fly; the error path needs 20 consecutive tick failures). `/forceflappy` remains restricted to casual/practice/flappyMode games — a ranked table that did not opt in can't have flappy forced onto it, while a ranked *flappyMode* game can (it opted in).
+- `general.flappyCancelled` is not set (see The First Gate)
+- match point reached (4 liberal or 5 fascist policies)
+- `canStartFlappy(game)`: game started, tracks flipped, not completed, no active flappy, not blind mode, not Avalon SH, not Monarchist SH, and both teams have at least one living player
 
-If `game.general.flappyMode` is true, and the game would otherwise end because:
+Standard and custom SH games are supported. Non-policy endings that occur **before** match point (Hitler elected, Hitler shot, etc.) are unchanged — flappy only replaces the policy-track endgame. An actual policy-track win (5th liberal / 6th fascist) still ends the game normally; in a flappy game this can only happen after a cancellation.
 
-- liberals reached 5 policies, or
-- fascists reached 6 policies
+## Window 1 — The First Gate (qualification)
 
-then instead of calling `completeGame(...)`, the game enters flappy mode.
+From flappy start until a bird clears the first gate, **pilot identities are secret** — on screen and on the wire — so that a cancelled flappy leaks nothing into the resumed game.
 
-### Flappy Start
+- No names anywhere: no seat markers, no membership reveal, no named chat messages, no controller names in any emission.
+- Rotation order is **random** (shuffled at start), not seat order.
+- Each pilot's own client shows their **own custom cardback** on their team's bird (default cardback if they have none) plus a highlighted "YOU are in control" HUD line — a private self-recognition cue. Everyone else sees default cardbacks and "pilot hidden until the first gate".
+- **Seated living players' chat is muted** (AEM exempt): a pilot could otherwise *prove* control ("watch me double-flap"), poisoning a resumed game with team information. Dead players and observers are outside the flappy mute (they can't be pilots): observers chat normally, and dead/left players get the base game's usual silent drop rather than a spurious flappy alert.
+- The HUD shows `First gate - attempt N of 3` instead of the gap counter.
 
-On flappy start:
+The first gate is a **qualification round**, not sudden death, and gets **10px of extra gap clearance** (every attempt's first gate, pre-lock only):
 
-- the game enters a new phase, e.g. `gameState.phase = 'flappyHitler'`
-- a new `game.flappyState` object is created
-- living players are partitioned by team
-- team membership becomes publicly visible
-- control is assigned to one player per team
-- the regular tracks area is replaced by the flappy view
-- normal game actions are blocked
+- A bird that crashes (pipe or floor) freezes in place; the game waits for the other bird's first-gate result.
+- **Both fail** → the field resets and control passes to the **next pilot pair** (one per team; fascists, the smaller team, wrap). Announced anonymously: "Neither bird cleared the first gate and the next pilots take flight. (attempt N)". Every field reset (attempt or sudden-death) re-arms the spawn timer so fresh pilots get a full runway, and reset birds re-center by the **live** config (birds grow with difficulty).
+- **Attempts scale with table size**: `maxAttempts = floor(livingPlayers / 2)` — equal to liberalCount − 1 for every standard composition (2 attempts / 1 reset in 5p, 3 in 6–7p, 4 in 8–9p, 5 in 10p), but derived **only from public information** (deaths are public). Deriving it from the hidden liberal count would leak executed players' alignment through the observable cancellation threshold itself, not just the data. When all attempts fail, flappy is cancelled entirely (see below). The HUD and chat show only the current attempt number.
+- Pre-lock **leaver handoffs get no per-bird grace** (a single bird visibly leveling off on the tick a player's public leftGame flag flips would correlate the secret pilot to a seat and reveal their team). Instead, a pre-lock handoff of a **live** bird triggers a **symmetric full-field reset** — both birds re-center with fresh grace, pipes clear, full runway — so the incoming pilot doesn't inherit a doomed mid-fall bird and lose one of the team's limited attempts to a run they never had a fair shot at. A symmetric reset names no team (it reveals at most "the leaver was a pilot"). Dead-bird handoffs don't reset: that would undo a legitimate crash and let a crashed pilot refund the attempt by leaving. Accepted trade: a pilot facing an imminent crash could leave the game to refund the run — leaving a (typically rated) game costs far more than one attempt.
+- The chat mute covers **all seated players** — including staff (a seated staff pilot could self-identify) and leavers — and the **claims path** (`handleAddNewClaim`) is guarded too, since claims post named gamechat and would otherwise bypass the mute. The mute also covers **site-wide general chat** (`handleNewGeneralChat`) — it's a player-attributed public channel, so a seated pilot could otherwise prove control there ("watch the liberal bird double-flap now"). The game-chat mute sits **after** slash-command and `@mod` routing in `handleAddNewGameChat`, so only messages that would actually reach public chat are muted: commands (private commandChats) and properly-routed `@mod` pings work for every seated player, while anything that falls through — including a malformed multiline `@mod` message that fails the routing regex — is blocked. (A prefix-based carve-out *before* routing was tried and was bypassable exactly that way.) Commands with **public** output need their own guards — `/ping` posts named public chat and is disabled for the whole flappy phase. The anonymity predicate itself is the shared `isFlappyPreLock` export — one source of truth for chat, claims, and any future channel; never inline a copy.
+- **One clears while the other crashed** → the clearing team **wins the game immediately**; identities go public via the normal end-game reveal.
+- **Both clear** → locked in (Window 2).
 
-### Core Gameplay
+### Cancellation
 
-- There are two lanes, one for liberals and one for fascists.
-- Each lane has one bird.
-- Each team's currently controlling player can flap for that team.
-- A flap applies an impulse to that team's bird.
-- Gravity and obstacle movement are simulated on the server.
-- Pylons scroll from right to left.
-- Each pylon has a gap.
-- If a bird hits a pylon or leaves vertical bounds, that team loses immediately.
+After all first-gate attempts fail, what happens depends on how flappy started:
 
-### Control Rotation
+- **Match-point flappy: the deck decides, immediately.** One policy is topdecked onto the 4–5 board, which ends the game for whichever team's policy it is (chat: `...the top card of the deck decides the game.` → `The deck decides: a X policy is enacted.`). This is what makes the first gate a real decision instead of a formality: refusing to fly trades the skill race for a card-count-informed gamble on the deck — and it removes the asymmetry where "returning to normal play" at 4–5 favored fascists (live Hitler-zone chancellor route). Exception: an **abandoned** match-point table is never topdeck-completed (no rating games for empty tables) — but it does not resume normal play on rejoin either. The 4–5 trigger already fired and is only checked at enactment time, so resuming would let a mass-disconnect during the secret first-gate window **skip the flappyMode endgame entirely** (an escape hatch for a team that fears the race). Instead the pre-flappy board view is restored and flappy **re-enters on rejoin** via `scheduleMatchPointFlappy`, which retries every 2s while abandoned, self-terminates when the abandonment GC deletes the game, and falls back to the resume continuation if flappy can no longer start (e.g. a whole team left for good). Identities never leaked, so the fresh first gate is clean. (Continuations are never run on an abandoned table in any path — an empty table must not play itself to a rated result; the timed-mode `/forceflappy` cancel defers its election the same way.)
+- **`/forceflappy`: returns to normal play** (chat: `Flappy Hitler cancelled due to neither first player clearing the first gate, returning to normal last round play.`) — the game wasn't at a deciding board, so the exact pre-flappy state restores as described below.
 
-- There is a global passed-gap counter in `flappyState`.
-- Every 3 passed gaps, control rotates to the next living player on each team.
-- Rotation order is deterministic and stable for the duration of flappy.
-- If a team has only one living player, control never changes for that team.
+In both cases:
+- `general.flappyCancelled` is set **only for a genuine match-point cancellation** — not by a cancelled `/forceflappy` (an admin toy run shouldn't consume the event the flappyMode game is built around) and not by an **abandonment** cancel (that table never used its event; a rejoined game keeps its flappy). `/forceflappy` itself still works after any cancellation.
+- On the **restore paths**, `game.flappyState` is removed entirely — it rides on every `gameUpdate` via `secureGame`, so leaving even a "cancelled" husk behind would keep broadcasting flappy metadata into the resumed hidden-role game. On the **topdeck ending** it deliberately survives as a `finished` husk with the deck's winner: the game ends while still in the `flappyHitler` phase, so the husk is both the winner overlay for connected clients and the render seed for anyone who refreshes post-game (a nulled seed would strand them on the waiting-for-server screen).
+- resume:
+  - match-point-triggered flappy: ends by topdeck as above. The hook site's `resume` continuation is now used only when flappy **can't start** at the transition (deferred fire finds it unstartable) and for the **abandoned-table** cancel — in those cases the pre-flappy phase/status are restored **first** (the top-deck continuation never sets a phase, and leaving `flappyHitler` strands clients on the frozen canvas), then play resumes (a throwing continuation falls back to an election)
+  - `/forceflappy`-triggered flappy: the exact pre-flappy phase/status/pending action is restored — except in **timed mode**, where a fresh election is started instead with the **same president** (via startElection's special-election parameter; startFlappy destroyed the pending timer and per-phase re-arming is inline at real transitions only)
+- if the tick loop fails 20 consecutive times pre-lock, flappy cancels itself through this same path (with an error message) rather than leaving the table wedged in the `flappyHitler` phase
+- Nothing identifying was ever shown or sent, so the resumed game inherits zero information. The only private knowledge is each pilot's own "I had control and failed a gate."
 
-### End
+## Window 2 — Locked In (the race)
 
-When one team dies:
+A bird clearing the first gate is the point of no return: flappy will decide the game, so there is nothing left to protect and identities go public. Chat re-opens (announced in gamechat), pilots are named, and:
 
-- flappy simulation stops
-- the normal end-game reveal / `completeGame(game, winner)` flow runs
-- the winning team is the team whose bird survived
+- The bird sprite becomes the pilot's **actual role card, exact art variant included** — everyone watches the liberal card race the fascist (or Hitler) card, and the lock-in unmasking is the dramatic beat. This reveals pilots' roles as rotations proceed, which is fine: flappy now inevitably ends in the full `completeGame` role reveal.
+- HUD shows `controlled by X`; a pulsing plane marker (blue liberal / red fascist) sits on the current pilots' seats.
+- Standard instant-death rules: a bird dying ends the game, the other team wins.
+- If both birds die on the **same tick** mid-race (e.g. both smack the face of the same gate — a real draw, since both lanes share pipe positions): sudden-death reset with the same pilots, and the chat warns "the next draw passes control." A **second consecutive draw by the same pair** hands both birds to the next pilots — so a colluding pair can't stall the game with endless draws. Both a scheduled rotation **and any gap progress** clear the warning (consecutive means consecutive). If the whole table refuses to fly, `2 × liberalCount` **consecutive** post-lock draws end the game by an announced coin flip ("Due to no one flying, winning is determined by a coin flip") — the draw counter resets whenever a gap is passed, so an actively contested game can never be coin-flipped. A **sustained** post-lock tick error (20 consecutive failed ticks — single transient throws just skip the tick) also ends by coin flip: pilot roles are already public, so resuming a hidden-role game is not an option.
+- Control rotates to the next living teammate every 3 passed gaps; the rotation-triggering pipe is drawn **gold** in both lanes. Rotations are announced by name. A pilot who leaves the table hands off immediately.
+- **Handoff grace**: for 1000ms after any fresh pair of hands takes the bird (rotation, leaver handoff, resets, flappy start), velocity is zeroed and gravity runs at 40% — the bird sags gently so the incoming pilot can orient while keeping descent control. The grace ends early the moment they flap. (Added because testing showed handoffs, not pipes, were the #1 cause of death; zero-gravity grace was tried first and rejected — it altitude-locks the bird and halved the skilled-play ceiling.)
+- **Difficulty escalates** on a fixed rotation cadence — every `liberalCount` scheduled rotations, i.e. roughly each time every liberal has had a turn (counted per rotation event, not per actual controller change, so a team down to one living player still escalates) — cycling through four escalations forever: pipes 10% faster (`spawnMs *= 0.9`, which also shortens each turn) → gap 10% smaller → birds 10% bigger → gravity 10% stronger. Floors/caps: `spawnMs >= 500`, `gapSize >= birdHeight + 30`, bird growth capped so it fits the current gap, `gravity <= 0.9`. Long games get very hard; each bump is announced.
 
-## Scope Gate
-
-MVP only enables flappy when all of the following are true:
-
-- `general.flappyMode === true`
-- game is standard SH or custom SH only
-- game is not blind mode
-- game is not Avalon SH
-- game is not Monarchist SH
-- game-ending condition is policy-track victory
-
-If any of those conditions are false, existing behavior remains unchanged.
+When one bird dies: normal end-game reveal → `completeGame(game, winner)`. Stats/ELO record the flappy winner as the game winner. **Profile win/loss and enhanced summaries need special handling**: they derive the winner from the policy logs (last enacted policy / Hitler events), which a flappy outcome can contradict — so every flappy ending stamps `gameSetting.flappyWinner` on the game summary (`endFlappyIntoGameCompletion`), and both `buildEnhancedGameSummary` and `EnhancedGameSummary.isWinner` prefer that field when present. Legacy summaries lack it and fall through to the old derivation. The winner gamechat line is completeGame's alone — flappy pushes its flavor lines (crash, deck-decides) but never a second "X win the game."
 
 ## State Model
 
-### New / Updated Fields
+Controller truth is **private** (never serialized to clients):
 
-Add a `flappyState` object on the in-memory game object. Initial draft:
+```js
+game.private.flappyControl = {
+  liberal: { controllerOrder, controllerIndex, controllerUserName },
+  fascist: { ... },
+}
+```
+
+`game.flappyState` (public, rides on `gameUpdate`; the truth for reconnects):
 
 ```js
 flappyState: {
-  isActive: true,
-  status: 'running', // running | finished
-  winningTeam: null,
-  passedGapCount: 0,
-  tickIntervalId: null,
-  spawnIntervalId: null,
-  startedAt: number,
-  liberal: {
-    controllerOrder: string[],
-    controllerIndex: number,
-    controllerUserName: string,
-    bird: {
-      y: number,
-      velocity: number,
-      alive: true
-    }
-  },
-  fascist: {
-    controllerOrder: string[],
-    controllerIndex: number,
-    controllerUserName: string,
-    bird: {
-      y: number,
-      velocity: number,
-      alive: true
-    }
-  },
-  pylons: [
-    {
-      id: string,
-      x: number,
-      gapTop: number,
-      gapBottom: number,
-      counted: false
-    }
-  ],
-  config: {
-    tickMs: number,
-    gravity: number,
-    flapVelocity: number,
-    laneHeight: number,
-    laneWidth: number,
-    birdX: number,
-    birdWidth: number,
-    birdHeight: number,
-    pylonWidth: number,
-    pylonSpeed: number,
-    gapSize: number,
-    spawnMs: number
-  }
+  isActive, status,            // 'running' | 'finished' | 'cancelled'
+  winningTeam,                 // null until finished
+  lockedIn,                    // false during the first-gate window
+  failedAttempts, maxAttempts, // first-gate attempts (maxAttempts = liberalCount - 1)
+  passedGapCount,
+  liberalRotationCount, difficultyLevel, startedAt,
+  liberal: { bird: { y, velocity, alive, graceTicks },
+             controllerUserName, controllerRole },   // <- ONLY present when lockedIn
+  fascist: { ... },
+  pylons: [{ id, x, gapTop, gapBottom, counted, isRotator }],
+  config: { tickMs, spawnMs, gravity, flapVelocity, maxFallVelocity,
+            laneHeight, laneWidth, birdX, birdWidth, birdHeight,
+            pylonWidth, pylonSpeed, gapSize, graceMs, graceGravityMult }
 }
 ```
 
-### Game Phase
-
-Add a phase constant or convention:
-
-- `flappyHitler`
-
-This phase prevents normal election/policy interaction and lets the frontend branch cleanly.
-
-## Authority Model
-
-### Server Responsibilities
-
-- start flappy
-- maintain bird state
-- maintain pylon state
-- simulate gravity and movement
-- detect passed gaps
-- rotate controllers
-- detect collisions / out-of-bounds
-- decide winner
-- broadcast snapshots
-
-### Client Responsibilities
-
-- render current snapshot
-- send flap intent
-- show which player currently has control
-- show team reveal state
-
-### What Clients Must Not Decide
-
-- collisions
-- passed gaps
-- controller changes
-- winner
-- spawn timing
+- `controllerRole` is `{ cardName, icon }` — the client renders `/images/cards/<cardName><icon>.png` as the bird.
+- `config` is a per-game copy of `FLAPPY_CONFIG` (mutated by difficulty escalation).
+- Timer ids live in `game.private.flappyTimers` as **numbers** via `setInterval(...)[Symbol.toPrimitive]()`. Never store Node `Timeout` objects on the game object — they are cyclic, `JSON.stringify(game)` in `testGameObject` throws, and in dev that crashes the server through an unconfigured Discord webhook.
+- **Every flappy timer callback is wrapped in try/catch** (tick, spawn, match-point transition, end-game reveal): `bin/dev.js` turns any uncaught throw into `process.exit(1)`, killing every live game on the server. The tick additionally tolerates transient errors (recovery only after 20 consecutive failures).
+- **External transitions are respected via one shared predicate** (`isFlappyGameLive`): every timer/tick entry point — the tick, the match-point transition, and the delayed completion — bails if the game was completed (mod force-end), remade, abandoned, or deleted/replaced in the registry. An abandoned table must never run to a coin-flip `completeGame` that rates ELO for players who left; a mod-ended game must never get a phantom election or a second recording. `cleanupFlappy` (the external-stop path) settles both liveness fields (`isActive` answers "may a new flappy start?", `status` answers "what is this run doing?" — every terminal path must set both) and broadcasts a final `cancelled` snapshot so clients stop cleanly. Remakes explicitly reset `flappyState`/`flappyCancelled` (deep-cloning them would silently kill the feature in the remade game).
+- **A moderator freeze pauses flappy in place** — no physics, no spawns, no flaps, no match-point transition (it retries every 2s until unfrozen or dead) — and the run resumes when unfrozen. `canStartFlappy` deliberately does **not** check freezes: the match-point hook calls it at the enactment instant, and a freeze active at that moment must not permanently skip the trigger (the scheduled transition waits freezes out). `/forceflappy` refuses frozen games with its own explicit check. **Post-lock abandonment pauses the same way as a freeze** — physics *and* pylon spawning stop (spawning while physics is paused would stack an unpassable wall of pipes at the spawn edge for a rejoiner) — and the pending transition/completion retry timers are intentionally *not* registered in `flappyTimers` (a teardown's `clearFlappyTimers` must never orphan a decided game unrecorded); their registry-identity guards self-terminate them within one 2s cycle of the game's deletion.
+- Nothing secret may ever live on `game.flappyState` — it is serialized wholesale on every `gameUpdate`. Controller truth, rotation order, and anything hidden-team-derived belong in `game.private.flappyControl`.
+- `game.private.preFlappy` holds the cancellation snapshot: `{ phase, clickActionInfo, status, fromMatchPoint }`.
 
 ## Socket Protocol
 
-### Incoming Client Event
-
-Reuse or replace the old `flappyEvent` path with a stricter contract.
-
-Recommended action:
-
-- keep the event name `flappyEvent`
-- change payload handling to be server-authoritative and validated
-
-Allowed input shapes:
+Incoming (`flappyEvent`, zod-validated by `flappy-hitler.schema.js`):
 
 ```js
-{
-  uid: string,
-  type: 'flap'
-}
+{ uid: string, type: 'flap' }
 ```
 
-The server infers acting username from socket session. Client should not be trusted to provide team or controller identity.
+The acting user comes from the socket session, never the payload. The engine additionally validates: flappy active and running, phase is `flappyHitler`, user seated / alive / not left, user is their team's **current pilot** (checked against private control), and their bird is alive.
 
-### Outgoing Server Event
+Outgoing:
 
-Two reasonable options:
+- `gameUpdate` — phase transitions, chats, announcements. Any flappy path that pushes gamechat (lock-in, rotations, difficulty, draws, attempts) must send a **full** update (`noChats=false`): chats pushed onto `game.chats` are silently dropped from `noChats` sends and would otherwise only arrive in the end-of-game dump. Per-gap status ticks without chat stay `noChats`.
+- `flappyUpdate` — a frame snapshot every tick (~20/sec), emitted **per-socket**, not room-wide: the base snapshot is anonymous, and only the two current pilots receive an added `youControl: 'liberal'|'fascist'` flag. Pre-lock snapshots carry no controller names or roles; post-lock they carry both. Anonymity is enforced at the emission layer — a client reading raw websocket frames learns nothing.
 
-- put flappy snapshot on `gameUpdate`
-- or send `flappyUpdate` separately
+Observers receive everything and cannot flap. Reconnecting players are seeded from `flappyState` on `gameUpdate` and receive live frames (including their `youControl` flag if they are a pilot) immediately.
 
-Recommended MVP:
+## Client Rendering
 
-- keep high-level phase/status on `gameUpdate`
-- send frame data on `flappyUpdate`
+`Flappy.jsx` is render-only:
 
-Reason:
+- one canvas, two lanes (blue liberal / orange fascist), replacing the Tracks area while `phase === 'flappyHitler'`
+- **snapshot interpolation**: the server ticks at 20Hz; the client renders one snapshot behind and lerps birds/pylons toward the latest — smooth motion for ~50ms of imperceptible display latency
+- bird sprite: pre-lock, own cardback for the pilot / default for everyone else; post-lock, the pilot's role card
+- dead birds render faded (first-gate wait)
+- input: click/tap the canvas or Space (ignored while focus is in an input/textarea/contentEditable, so typing in chat neither loses spaces nor flaps the typist's bird)
 
-- `gameUpdate` already carries table state and phase changes
-- a lighter `flappyUpdate` avoids shoving large chat/game objects across the wire every tick
+`Players.jsx` adds the plane seat markers, keyed off `flappyState.<team>.controllerUserName` — which only exists post-lock, so markers appear exactly when identities are public. (Colors need `!important` — an `#main i.icon` theme rule wins otherwise.)
 
-Suggested snapshot:
+## Files
 
-```js
-{
-  type: 'snapshot',
-  passedGapCount: number,
-  liberal: {
-    controllerUserName: string,
-    bird: { y: number, alive: boolean }
-  },
-  fascist: {
-    controllerUserName: string,
-    bird: { y: number, alive: boolean }
-  },
-  pylons: [
-    { id: string, x: number, gapTop: number, gapBottom: number }
-  ]
-}
-```
+- `routes/socket/game/flappy.js` — engine: windows, qualification, rotation, difficulty, cancellation, per-socket emission, input validation, cleanup
+- `routes/socket/user-events/flappy-hitler.js` + `flappy-hitler.schema.js` — thin zod-validated wrapper for `flappyEvent`
+- `routes/socket/user-events/chat.js` — first-gate-window chat mute
+- `routes/socket/routes.js` — event registration
+- `routes/socket/game/election.js`, `routes/socket/game/policy-powers.js` — match-point hooks
+- `routes/socket/game/end-game.js` — flappy timer cleanup in `saveAndDeleteGame` (inlined to avoid a require cycle)
+- `routes/socket/commands.js` — `/forceflappy`
+- `src/frontend-scripts/components/section-main/Flappy.jsx`, `Game.jsx`, `Players.jsx`
+- `src/scss/players.scss` — controller marker
 
-Other events:
+Require-cycle note: flappy requires `end-game` (completeGame) and `common` (startElection); election/policy-powers require flappy. No cycle — do not add a flappy require to end-game or common.
 
-- `start`
-- `rotateControl`
-- `finish`
+## Dev Tooling
 
-These can be separate event types or just encoded in the snapshot plus `gameUpdate`. MVP should favor simplicity over elegance.
+- `/forceflappy` — AEM-only chat command, ships in production like the other `/force*` commands. Forces a started, eligible **casual, practice, or flappy-mode** game straight into flappy (never tournaments — ranked results and brackets shouldn't be decided by a force-started minigame; the auto match-point trigger already requires `flappyMode`) — but only from the stable waiting phases (`selectingChancellor`, or `voting` while votes are genuinely outstanding; forcing is blocked both while ballots are still being dealt — the phase flips to `voting` before the delayed ballot setup runs — and once the last ballot is in, when the tally chain is running): other phases have untracked multi-step animation timeouts that would keep firing underneath flappy. This allowlist is admin-tool scoping, not a general fix for the codebase's untracked transition timers. Additionally, `selectChancellor`, `selectVoting`, and the delayed ballot-setup timeout now carry their own phase guards, so a stale nomination, ballot, or ballot-deal arriving *after* flappy starts is rejected rather than mutating the table underneath the engine. The timed-mode cancel restart also clears aborted-vote leftovers (`pendingChancellorIndex`, the `selectChancellor` lock, ballot cardFlingers, pending-chancellor status) — `startElection` resets none of those, and without clearing them the next nomination would be rejected and the table would wedge.
+- `scripts/flappyHarness.js` — headless 5-player harness. Signs in the quick-login accounts, creates and starts a real game, auto-pilots both birds (tracking the private `youControl` signal per client), and asserts pre-lock wire anonymity and the chat-mute window. Requires `pnpm create-accounts` + `pnpm assign-local-mod`, and a server **restarted after** assigning the mod (staff roles are cached at boot).
+  - `node scripts/flappyHarness.js` — /forceflappy path: lock-in, rotation, difficulty, chat mute/reopen, anonymity checks
+  - `DEMO_SECONDS=600 ...` — keeps both birds alive so you can watch in a browser
+  - `MATCHPOINT=1 ...` — creates a custom game starting at 3 liberal policies and plays real rounds until the 4th liberal policy auto-triggers flappy
+  - `TEST_CANCEL=1 ...` — nobody flaps; asserts the scaling attempts (2 in the 5p harness game) with advancing pilot pairs, then cancellation and state restore (combine with `MATCHPOINT=1` to also assert the game then plays to a normal win with no flappy restart)
+  - `PILOT_MS=<ms> PILOT_ERR=<px> ...` — degrade the autopilot's reaction time and aim to simulate human skill tiers for balance testing
 
-## Backend Integration Plan
+## Known Limitations
 
-### 1. Add a Flappy Engine Module
+- **Stale in-flight actions are guarded point-wise, not systemically**: `selectVoting` and `selectChancellor` carry phase guards, and `/forceflappy` is phase-restricted, but other normal-game handlers/timeout chains are not individually flappy-aware. The systemic fix would be a per-game generation/epoch counter bumped on entering `flappyHitler` (stale callbacks bail on mismatch) — deferred; the currently reachable paths are covered.
+- A flappyMode game can legitimately end without flappy ever firing (Hitler elected/shot before match point) — intentional; flappy only replaces the policy-track endgame.
+- A custom game configured to **start at the 4–5 double match point** (`trackState.lib: 4` is legal; `fas: 5` is not — the veto-zone constraint caps fascist starts at 4) never arms flappy: the trigger evaluates after enactments, and the first enactment goes straight into a win branch. Accepted as degenerate — such a game is one enactment long by construction.
+- Abandonment handling depends on the window, because a rejoin can clear `timeAbandoned` before the GC sweeps and state a returning table needs must survive: **pre-lock** it cancels through the full cancel path (nothing identifying was shown — the resurrected table resumes hidden-role play); **post-lock** it *pauses* like a freeze (pilots were publicly named, so cancelling back to hidden-role play would leak alignments; nobody-returns = GC sweeps an unrated, uncompleted game, matching normal abandonment); **during the post-win reveal delay** it does *not* block completion (the winner is already decided — decided games record even if everyone walks out); **during the match-point transition delay** it retries every 2s like a freeze rather than dropping the continuation.
 
-Create a dedicated module, likely:
-
-- `routes/socket/game/flappy.js`
-
-Responsibilities:
-
-- `canStartFlappy(game)`
-- `startFlappy(game)`
-- `handleFlappyInput(socket, game, data)`
-- `broadcastFlappySnapshot(game)`
-- `advanceFlappy(game)`
-- `rotateFlappyControllers(game)`
-- `finishFlappy(game, winningTeam)`
-- `cleanupFlappy(game)`
-
-### 2. Replace Dead Handler
-
-Current `routes/socket/user-events/flappy-hitler.js` is disabled by an immediate `return`.
-
-Options:
-
-- delete and replace with calls into the new module
-- or keep filename and make it a thin wrapper
-
-Recommended:
-
-- keep the file path for minimal routing churn
-- rewrite it as a thin validated wrapper around `game/flappy.js`
-
-### 3. Hook Policy-Win Paths
-
-Current policy-win completion happens in:
-
-- `routes/socket/game/election.js`
-- `routes/socket/game/policy-powers.js`
-
-When policy-track victory is reached:
-
-- call `canStartFlappy(game)`
-- if true, call `startFlappy(game)`
-- otherwise preserve existing `completeGame(...)`
-
-### 4. Do Not Hook Other Endings in MVP
-
-Leave these unchanged:
-
-- Hitler elected
-- assassination outcomes
-- Merlin assassination
-- moderation force-end
-
-### 5. Secure Input
-
-For a `flap` input:
-
-- validate `game.flappyState.isActive`
-- validate current phase is `flappyHitler`
-- validate acting user is seated and alive
-- validate acting user is current controller for their team
-- apply flap impulse only if valid
-
-### 6. Cleanup
-
-On finish or table destruction:
-
-- clear tick interval
-- clear spawn interval
-- delete or mark `flappyState`
-
-This is important to avoid orphaned intervals and broken tables.
-
-## Frontend Integration Plan
-
-### 1. Replace Hardcoded Gate
-
-`Game.jsx` currently hardcodes:
-
-```js
-const isFlappy = false;
-```
-
-Replace with a real check based on game phase or `flappyState.isActive`.
-
-Recommended:
-
-```js
-const isFlappy = gameInfo.gameState && gameInfo.gameState.phase === 'flappyHitler';
-```
-
-### 2. Rewrite `Flappy.jsx`
-
-Current `Flappy.jsx` is not reusable as-is. It owns:
-
-- local bird physics
-- local pylon positions
-- local collision detection
-- automatic `startFlappy`
-
-All of that should move to the server except rendering and input.
-
-New `Flappy.jsx` should:
-
-- subscribe/unsubscribe cleanly to `flappyUpdate`
-- render two lanes from server snapshots
-- emit `flappyEvent: { type: 'flap' }` on click / keypress for the local user
-- visually indicate current controller for each team
-- display passed gap count and current status
-
-### 3. Team Reveal UI
-
-When flappy starts, team alignment should become public.
-
-Recommended MVP presentation:
-
-- show public card-backs as liberal/fascist team cards, not full role cards
-- add a visible controller marker to the current controlling seat
-
-The seat system already supports card-back class composition and icon variants. MVP should use that rather than inventing a whole new seat widget.
-
-### 4. Controller Marker
-
-Recommended simple UI:
-
-- small plane icon or ring on the current controlling seat
-- duplicate this in the flappy lane HUD text:
-  - `Liberals: controlled by X`
-  - `Fascists: controlled by Y`
-
-### 5. Input
-
-MVP input methods:
-
-- click / tap on the lane
-- keyboard key for convenience, e.g. `Space`
-
-The server should still ignore input from non-controllers.
-
-## Physics / Tuning Defaults
-
-These are initial placeholders only and should be tuned with the sandbox.
-
-- tick rate: `50ms`
-- spawn interval: `1600ms`
-- bird X: fixed near left side of lane
-- gravity: modest, arcade-feel
-- flap impulse: strong enough to recover from mid-gap
-- gap size: forgiving but not trivial
-- pylon speed: moderate
-
-Important design preference:
-
-- MVP should err easy rather than brutal
-
-The whole point is a funny tiebreaker, not a precision esports mode.
-
-## Local Testing Plan
-
-### Existing Helpers
-
-The repo already includes:
-
-- `yarn dev`
-- `yarn create-accounts`
-- `yarn assign-local-mod`
-
-Those create quick local users and a local admin.
-
-### New MVP Test Helper
-
-Add one admin-only dev tool:
-
-- `Force Flappy`
-
-Behavior:
-
-- only available in development
-- only available to admin / local mod
-- only available on a started table
-- takes the current table directly into `flappyHitler`
-
-This avoids needing to play a whole match to terminal policy state every time.
-
-Recommended placement:
-
-- existing moderation/gamechat admin controls
-- or a temporary dev-only button
-
-### Optional Secondary Helper
-
-If physics tuning is awkward, add a second dev helper:
-
-- `Flappy Sandbox`
-
-This could be:
-
-- a temporary route/hash, or
-- a dev-only fake table entry
-
-Use it only if tuning inside real table flow is too annoying.
-
-## Reconnect / Observer Rules
-
-### Reconnect
-
-If a player reconnects during flappy:
-
-- they rejoin the table normally
-- they receive current `gameUpdate`
-- they receive the latest flappy snapshot
-- if they are current controller, they may immediately flap
-
-### Observers
-
-Observers can watch flappy.
-
-Observers:
-
-- receive snapshots
-- cannot flap
-- can see controller indicators
-- can see revealed teams
-
-## Chat / Status
-
-Recommended status flow:
-
-- `Flappy Hitler begins. Policy victory is suspended.`
-- `FLAPPY HITLER: Control rotates every 3 passed gaps.`
-- `Liberals are now controlled by X. Fascists are now controlled by Y.`
-- `Control rotates: Liberal -> X, Fascist -> Y`
-- `Liberals crash! Fascists win the game.`
-
-Gamechat messages should be concise and explicit. Status text should update, but not spam every tick.
-
-## Files Likely Touched
-
-- `FLAPPY_SPEC.md`
-- `routes/socket/game/flappy.js` (new)
-- `routes/socket/user-events/flappy-hitler.js`
-- `routes/socket/routes.js`
-- `routes/socket/game/election.js`
-- `routes/socket/game/policy-powers.js`
-- `routes/socket/util.js`
-- `src/frontend-scripts/components/section-main/Game.jsx`
-- `src/frontend-scripts/components/section-main/Flappy.jsx`
-- `src/frontend-scripts/components/section-main/Players.jsx`
-- `src/scss/...` for controller marker / flappy lane styles
-
-Potentially:
-
-- moderation or gamechat UI for dev-only `Force Flappy`
-
-## Risks
-
-### 1. Interval Cleanup
-
-This codebase has many delayed transitions already. Flappy adds another timed system. If cleanup is sloppy, stale intervals will survive after finish or table deletion.
-
-### 2. Desync / Input Feel
-
-Server authority is correct, but input may feel sluggish if snapshots are too sparse. Tick rate and broadcast strategy need to be "good enough" without overengineering.
-
-### 3. Seat Reveal Semantics
-
-Revealing teams publicly is straightforward in standard/custom SH, but gets messy with blind mode and variants. This is why MVP excludes them.
-
-### 4. Legacy UI Entanglement
-
-`Game.jsx`, `Players.jsx`, and the table shell are old and tightly coupled. The main UI risk is making flappy fit without breaking normal table rendering.
-
-### 5. No Replay Support
-
-MVP will create a state transition replays do not understand. That is acceptable for MVP, but should be documented.
-
-## Estimate
-
-### Implementation
-
-- backend flappy state machine and routing: 1.5 to 2 days
-- frontend render/input/controller UI: 1 to 1.5 days
-- dev helper and tuning: 0.5 to 1 day
-- testing / bug fixing: 0.5 to 1 day
-
-Total MVP estimate:
-
-- about 3 to 5 days
-
-### Risk Level
-
-- overall: moderate
-
-Not because the feature itself is huge, but because it touches end-game transitions, sockets, and legacy UI.
-
-## Open Questions
-
-- Should control rotation happen exactly on every 3rd passed gap globally, or separately per team lane?
-  - Recommendation: global.
-- Should team reveal use actual membership card-backs, or just a lighter visual team indicator?
-  - Recommendation: membership/team indicator, not full role reveal.
-- Should the flappy bird use the default cardback image, or a new dedicated sprite?
-  - Recommendation: use existing assets first, add a sprite only if needed.
-- Should there be sound for flap/crash/rotation in MVP?
-  - Recommendation: no new sounds in MVP.
-
-## Recommended First Implementation Order
-
-1. Add the backend flappy engine and validated input path.
-2. Add the policy-win interception hook.
-3. Add `gameState.phase = 'flappyHitler'`.
-4. Rewrite `Flappy.jsx` as a render-only client for server snapshots.
-5. Add team reveal and controller markers.
-6. Add the dev-only `Force Flappy` tool.
-7. Tune physics and fix reconnect/cleanup bugs.
-
-## Final Recommendation
-
-Do the MVP exactly once, narrowly:
-
-- policy-win replacement only
-- standard/custom SH only
-- server-authoritative simulation
-- rotate controllers every 3 passed gaps
-- dev-only force-start helper for testing
-
-That is the smallest version that feels real rather than gimmicky.
+- Replays do not understand the `flappyHitler` phase.
+- Mobile is untested beyond the canvas scaling to its container.
+- Pre-lock, a pilot without a custom cardback sees the default cardback (same as everyone) — their only cue is the highlighted "YOU are in control" text. New players may miss handoffs; a louder cue (sound/flash) may be needed.
+- No sounds specific to flappy.
+- Input latency is one server tick (~50ms) plus interpolation delay; if controls feel laggy with real players, the lever is `tickMs` 50 → 25, not anything client-side.
+- Whether this is actually a good game for 7 people is an open experiment.

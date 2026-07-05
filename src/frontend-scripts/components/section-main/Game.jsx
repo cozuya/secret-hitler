@@ -155,6 +155,10 @@ export default class Game extends React.Component {
 
   render() {
     const { allEmotes, gameInfo, onClickedTakeSeat, userInfo, userList, socket } = this.props;
+    // INTENTIONAL: this stays true after a flappy-decided game completes (the phase is
+    // never reset), so the flappy end screen - not the policy Tracks board - is the
+    // post-game view. The game ended in the minigame; the crash/win canvas IS its final
+    // board, and the seats below show the full role reveal.
     const isFlappy = Boolean(gameInfo.gameState && gameInfo.gameState.phase === "flappyHitler");
 
     return (

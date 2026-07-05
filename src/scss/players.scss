@@ -178,6 +178,23 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.government-token.isPendingChancellor {
 			animation: fadeIn 1.5s infinite alternate;
 		}
+		.flappy-controller {
+			position: absolute;
+			top: 46px;
+			left: 50%;
+			transform: translateX(-50%);
+			margin: 0;
+			z-index: 2;
+			text-shadow: 0 0 4px #000;
+			animation: fadeIn 1.5s infinite alternate;
+
+			&.liberal-controller {
+				color: #4a90d9 !important;
+			}
+			&.fascist-controller {
+				color: #e04b4b !important;
+			}
+		}
 		.government-token.isPendingPresident,
 		.government-token.isPresident,
 		.government-token.wasPresident {
@@ -191,7 +208,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.card-container {
 			width: 100%;
 			height: 95px;
-			top: 100%;
+			top: 100px;
 			left: 0;
 			transition-duration: 1s;
 			transition-property: transform, top;
@@ -366,7 +383,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			}
 		}
 		.card-container.showing {
-			top: 0;
+			// prevents 1px gap showing below card
+			top: 1px;
 		}
 		.card-container.flipped {
 			transform: rotateY(180deg);

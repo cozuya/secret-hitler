@@ -68,6 +68,10 @@ module.exports = class EnhancedGameSummary {
   }
 
   isWinner(identifier) {
+    // flappy-decided games carry an authoritative winner not derivable from the logs
+    if (this.summary.gameSetting && this.summary.gameSetting.flappyWinner) {
+      return this.loyaltyOf(identifier) === this.summary.gameSetting.flappyWinner;
+    }
     if (this.lastTurn.execution === this.hitlerIndex) {
       return this.loyaltyOf(identifier) === "liberal";
     } else if (
