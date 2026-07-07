@@ -426,6 +426,9 @@ const rotateFlappyControllers = (game) => {
 // if a controller leaves the table mid-flappy, hand their bird to the next teammate
 // immediately rather than letting it fall until the next scheduled rotation. Before
 // lock-in this happens silently (identities are secret); after, it is announced.
+// Returns true iff it performed a pre-lock full-field reset, signalling the caller
+// (advanceFlappy) to abort the rest of the current tick - the birds and pylons that
+// tick was mid-processing have just been replaced/cleared.
 const ensureControllersValid = (game) => {
   const control = game.private.flappyControl;
   let changed = false;
@@ -475,8 +478,15 @@ const ensureControllersValid = (game) => {
       // than one first-gate attempt, and the alternative punishes the innocent
       // incoming teammate instead of the leaver.
       resetFlappyField(game);
+      // signal advanceFlappy to abandon the rest of this tick: it computed
+      // gapsPassedThisTick and captured bird references against the pre-reset field,
+      // both now stale (pylons cleared, bird objects replaced). Consuming either would
+      // lock in / decide the game off the wiped field and reveal the incoming pilot.
+      return true;
     }
   }
+
+  return false;
 };
 
 // standard end-of-game sequence shared by a flappy win and a policy-win cancellation:
@@ -1022,7 +1032,16 @@ const advanceFlappy = (game) => {
   });
   flappyState.pylons = flappyState.pylons.filter((pylon) => pylon.x + config.pylonWidth > -10);
 
-  ensureControllersValid(game);
+  if (ensureControllersValid(game)) {
+    // a pre-lock controller handoff just reset the whole field (both birds re-centered,
+    // pylons cleared, spawn re-armed). gapsPassedThisTick was counted against the now-
+    // discarded pylons and the local liberalBird/fascistBird refs point at the replaced
+    // bird objects - consuming either below would lock in or decide the game off a field
+    // that no longer exists, revealing the just-swapped-in replacement pilot. Abandon
+    // this tick; the fresh field runs next tick.
+    broadcastFlappySnapshot(game);
+    return;
+  }
 
   if (liberalBird.alive && birdCollides(liberalBird, flappyState.pylons, config, flappyState.lockedIn)) {
     liberalBird.alive = false;
