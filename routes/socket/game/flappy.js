@@ -7,6 +7,9 @@ const _ = require("lodash");
 
 const FLAPPY_CONFIG = {
   tickMs: 50,
+  // a "get ready" countdown before physics/pipes begin, so pilots (especially first-timers
+  // who don't yet know they must flap) can orient before the birds start falling
+  countdownMs: 3000,
   spawnMs: 1950,
   gravity: 0.4,
   flapVelocity: -5.5,
@@ -123,6 +126,8 @@ const buildSnapshot = (game) => {
   const snapshot = {
     type: "snapshot",
     status: flappyState.status,
+    // only meaningful while status === "countdown"; drives the canvas "get ready" overlay
+    countdownSeconds: flappyState.countdownSecondsShown,
     winningTeam: flappyState.winningTeam,
     lockedIn: flappyState.lockedIn,
     failedAttempts: flappyState.failedAttempts,
@@ -235,10 +240,14 @@ const spawnPylon = (game) => {
   });
 };
 
-const birdCollides = (bird, pylons, config) => {
+// floorLethal is false during the first-gate window: pre-lock the ground is a skim, not a
+// crash (see the clamp in advanceFlappy), so a passive pilot rides the bottom instead of
+// dying before the first pylon ever arrives. The lower pylon body still kills, so the
+// first gate stays a real skill check. Post-lock the floor is lethal (standard rules).
+const birdCollides = (bird, pylons, config, floorLethal) => {
   const { birdX, birdWidth, birdHeight, laneHeight, pylonWidth } = config;
 
-  if (bird.y + birdHeight >= laneHeight) {
+  if (floorLethal && bird.y + birdHeight >= laneHeight) {
     return true;
   }
 
@@ -879,10 +888,45 @@ const finishFlappy = (game, winningTeam) => {
   endFlappyIntoGameCompletion(game, winningTeam);
 };
 
+// the pre-race "get ready" countdown, driven off the normal tick so it shares the
+// liveness/freeze handling in advanceFlappy. Physics and pipe spawning are held off until
+// it reaches zero; the remaining whole seconds are surfaced through general.status (the
+// status bar) and the snapshot (the canvas overlay).
+const advanceCountdown = (game) => {
+  const { flappyState } = game;
+
+  flappyState.countdownTicks--;
+
+  if (flappyState.countdownTicks <= 0) {
+    flappyState.status = "running";
+    game.general.status = "FLAPPY HITLER: clear the first gate";
+    // arm the spawn timer only now, so the first pylon is a full spawnMs after "go" -
+    // a clean, predictable opening runway rather than a pipe already in flight
+    armSpawnTimer(game);
+    sendInProgressGameUpdate(game, true);
+    broadcastFlappySnapshot(game);
+    return;
+  }
+
+  const secondsLeft = Math.ceil((flappyState.countdownTicks * FLAPPY_CONFIG.tickMs) / 1000);
+
+  if (secondsLeft !== flappyState.countdownSecondsShown) {
+    flappyState.countdownSecondsShown = secondsLeft;
+    game.general.status = `FLAPPY HITLER: get ready... ${secondsLeft}`;
+    // noChats status update so the countdown number reaches the status bar each second
+    sendInProgressGameUpdate(game, true);
+  }
+
+  broadcastFlappySnapshot(game);
+};
+
 const advanceFlappy = (game) => {
   const { flappyState } = game;
 
-  if (!flappyState || flappyState.status !== "running") {
+  // "countdown" runs through this same tick so it inherits the liveness + freeze guards
+  // below (an abandoned/force-ended/frozen table must pause or tear down the countdown
+  // exactly as it does the running race); only the physics section past them is skipped.
+  if (!flappyState || (flappyState.status !== "running" && flappyState.status !== "countdown")) {
     return;
   }
 
@@ -924,6 +968,11 @@ const advanceFlappy = (game) => {
     return;
   }
 
+  if (flappyState.status === "countdown") {
+    advanceCountdown(game);
+    return;
+  }
+
   const config = flappyState.config;
   const liberalBird = flappyState.liberal.bird;
   const fascistBird = flappyState.fascist.bird;
@@ -950,6 +999,15 @@ const advanceFlappy = (game) => {
       bird.y = 0;
       bird.velocity = 0;
     }
+
+    // pre-lock the floor is a skim, not a crash (symmetric with the ceiling clamp above):
+    // clamp the bird to the ground so a pilot who hasn't started flapping doesn't die
+    // before the first pylon arrives. Post-lock this clamp is off and birdCollides kills
+    // on floor contact as usual.
+    if (!flappyState.lockedIn && bird.y > config.laneHeight - config.birdHeight) {
+      bird.y = config.laneHeight - config.birdHeight;
+      bird.velocity = 0;
+    }
   });
 
   let gapsPassedThisTick = 0;
@@ -966,10 +1024,10 @@ const advanceFlappy = (game) => {
 
   ensureControllersValid(game);
 
-  if (liberalBird.alive && birdCollides(liberalBird, flappyState.pylons, config)) {
+  if (liberalBird.alive && birdCollides(liberalBird, flappyState.pylons, config, flappyState.lockedIn)) {
     liberalBird.alive = false;
   }
-  if (fascistBird.alive && birdCollides(fascistBird, flappyState.pylons, config)) {
+  if (fascistBird.alive && birdCollides(fascistBird, flappyState.pylons, config, flappyState.lockedIn)) {
     fascistBird.alive = false;
   }
 
@@ -1104,7 +1162,7 @@ const startFlappy = (game, fromMatchPoint = false, resume = null) => {
 
   game.gameState.phase = "flappyHitler";
   game.gameState.clickActionInfo = null;
-  game.general.status = "FLAPPY HITLER: clear the first gate";
+  game.general.status = "FLAPPY HITLER: get ready... 3";
 
   // no stale president/chancellor tokens under the pilot markers: flappy replaces the
   // election view. Restored on a /forceflappy cancel; a match-point cancel resumes via
@@ -1121,7 +1179,11 @@ const startFlappy = (game, fromMatchPoint = false, resume = null) => {
 
   game.flappyState = {
     isActive: true,
-    status: "running",
+    // begin in the "get ready" countdown; advanceCountdown flips this to "running" when it
+    // elapses (and only then arms pipe spawning)
+    status: "countdown",
+    countdownTicks: Math.round(FLAPPY_CONFIG.countdownMs / FLAPPY_CONFIG.tickMs),
+    countdownSecondsShown: Math.ceil(FLAPPY_CONFIG.countdownMs / 1000),
     winningTeam: null,
     lockedIn: false,
     failedAttempts: 0,
@@ -1215,7 +1277,8 @@ const startFlappy = (game, fromMatchPoint = false, resume = null) => {
     }, FLAPPY_CONFIG.tickMs)[Symbol.toPrimitive](),
     spawn: null,
   };
-  armSpawnTimer(game);
+  // NOTE: the spawn timer is intentionally NOT armed here - advanceCountdown arms it when
+  // the countdown reaches "go", so no pipes appear (or spawn-tick) during the countdown.
 
   sendInProgressGameUpdate(game);
   broadcastFlappySnapshot(game);
@@ -1285,9 +1348,10 @@ const cleanupFlappy = (game) => {
   if (game.flappyState) {
     game.flappyState.isActive = false;
 
-    if (game.flappyState.status === "running") {
+    if (game.flappyState.status === "running" || game.flappyState.status === "countdown") {
       // terminal-but-not-a-flappy-ending: lets the client render loop stop and shows
-      // the frozen field without a misleading win/crash overlay
+      // the frozen field without a misleading win/crash overlay (covers a teardown that
+      // lands during the pre-race countdown too)
       game.flappyState.status = "cancelled";
       broadcastFlappySnapshot(game);
     }

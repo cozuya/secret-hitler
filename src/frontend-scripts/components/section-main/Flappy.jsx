@@ -134,9 +134,10 @@ const drawLane = (ctx, snapshot, team, laneY, view) => {
   ctx.textAlign = "left";
   ctx.fillStyle = "#fff";
 
-  if (view.youControl === team && snapshot.status === "running") {
+  if (view.youControl === team && (snapshot.status === "running" || snapshot.status === "countdown")) {
     // status gate: without it the losing pilot's end screen still showed the active
-    // "YOU are in control" prompt over the finished race
+    // "YOU are in control" prompt over the finished race (countdown is included so the
+    // pilot knows to get ready before "go")
     ctx.fillStyle = "#ffe14d";
     ctx.fillText(
       `${isLiberal ? "Liberals" : "Fascists"}: YOU are in control - click or press space to flap`,
@@ -250,6 +251,26 @@ const drawSnapshot = (canvas, snapshot, view) => {
   } else {
     ctx.fillText(`First gate - attempt ${(snapshot.failedAttempts || 0) + 1}`, snapshot.config.laneWidth - 10, 22);
   }
+
+  // pre-race "get ready" overlay: a dimming wash plus a large centered count so pilots
+  // orient before the birds start falling (the same number rides the status bar)
+  if (snapshot.status === "countdown") {
+    const midX = canvas.width / 2;
+    const midY = canvas.height / 2;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#ffe14d";
+    ctx.font = "bold 120px sans-serif";
+    ctx.fillText(String(snapshot.countdownSeconds || ""), midX, midY - 24);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 26px sans-serif";
+    ctx.fillText("GET READY", midX, midY + 60);
+    ctx.textBaseline = "alphabetic"; // restore default for the next frame's lane text
+  }
 };
 
 const Flappy = ({ userInfo, gameInfo, socket }) => {
@@ -311,8 +332,9 @@ const Flappy = ({ userInfo, gameInfo, socket }) => {
       });
 
       // once the race is over no more snapshots arrive - draw the end screen once and
-      // stop instead of redrawing a static frame at display refresh rate forever
-      if (displaySnapshot && displaySnapshot.status !== "running") {
+      // stop instead of redrawing a static frame at display refresh rate forever. The
+      // pre-race "countdown" keeps animating (the overlay number is live).
+      if (displaySnapshot && displaySnapshot.status !== "running" && displaySnapshot.status !== "countdown") {
         renderLoopStopped = true;
         return;
       }
