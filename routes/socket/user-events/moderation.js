@@ -304,6 +304,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
           }
 
           if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
+            // Guard the omitted case (the schema only rejects a *present* invalid value): completing
+            // with a non-team winner partitions everyone as a losing fascist and corrupts ratings.
+            // Validate before mutating game state so a rejected request leaves no bogus "game ended"
+            // chat behind.
+            if (data.winningTeamName !== "liberal" && data.winningTeamName !== "fascist") {
+              socket.emit("sendAlert", "Choose the winning team (liberal or fascist) before ending the game.");
+              return;
+            }
             gameToEnd.chats.push({
               userName: data.modName,
               chat: "This game has been ended by a moderator, game deletes in 5 seconds.",
@@ -381,6 +389,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
         case "renameUser":
           if (isSuperMod) {
             let success = false;
+            // The new username (data.comment) becomes an account username, a Profile _id, AND a
+            // cardback filename via cardbackPath() -> path.join(CARDBACK_DIR, `${name}.png`). Constrain
+            // it to the signup username charset (accounts.js) so a value like "../../etc/x" can't
+            // traverse out of CARDBACK_DIR (path traversal) or create a malformed account.
+            if (!/^[a-z0-9]+$/i.test(data.comment)) {
+              socket.emit("sendAlert", "Invalid new username: letters and numbers only.");
+              return;
+            }
             Account.findOne({ username: data.comment }).then((account) => {
               Profile.findOne({ _id: data.comment }).then((profile) => {
                 if (profile) {

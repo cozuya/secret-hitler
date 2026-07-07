@@ -207,8 +207,8 @@ export class Main extends React.Component {
                     </p>
                     <h5>How do you get a medal (seasonal reward)?</h5>
                     <p>
-                      Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at
-                      the first of the year.
+                      Be a top performing player by ELO at the end of a season. A new season begins when ratings are
+                      reset for a fresh competitive cycle.
                     </p>
                     <h5>Is my information secure?</h5>
                     <p>

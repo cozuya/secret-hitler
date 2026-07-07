@@ -12,6 +12,19 @@ class Changelog extends React.Component {
         </div>
 
         <div className="ui header">
+          <p>
+            Welcome to Season 24! The ranking system has been rebuilt — ratings now track individual skill more
+            accurately.
+          </p>
+        </div>
+        {/* TODO(cutover): before going live, add here:
+              <h4>The top 10 players of season 23 are:</h4>
+              <ol>...the 10 entries printed by scripts/seasonCutover24.js...</ol>
+            Omitted until then so an accidental deploy doesn't render a placeholder list. */}
+
+        <hr style={{ width: "100%" }} />
+
+        <div className="ui header">
           <p>Welcome to the delayed Season 22!</p>
         </div>
         <h4>The top 10 players of season 21 are:</h4>

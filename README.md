@@ -87,6 +87,10 @@ There is an option when players make a game to "rebalance" the 6, 7 and 9 player
 
 There is a custom game mode where game creators can make games with different rulesets such as being able to pick policy powers, pick number of fascists (always less than liberals), number of policies, etc.
 
+## A note on the theme, after 10 years of production
+
+It's parody, and I originally adapted the board game because I like hidden role games and because this one is Creative Commons, not because I like Nazis. I don't like Nazis, and I'm very proud of the fact that the volunteer mods have always done a great job of keeping that stuff off the site after years and years.
+
 ## Credits
 
 While I (poorly) made this many years ago, it could not have been as successful as it has been, with close to 2 million games played, without the efforts of all of the people who have given up their time on our discord found at https://discord.gg/secrethitlerio, and a special thanks to many of the larger PRs over the years. -coz

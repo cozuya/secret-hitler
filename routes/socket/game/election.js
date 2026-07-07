@@ -448,6 +448,9 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
       president.cardFlingerState[1].notificationStatus = "selected";
     }
 
+    // Veto votes are public by the game's rules — the President and Chancellor must openly agree to
+    // veto — so they are intentionally revealed even in noVoteReveal games, which only hides the
+    // secret government-election ballot, not this open negotiation.
     publicPresident.cardStatus = {
       cardDisplayed: true,
       cardFront: "ballot",
@@ -641,6 +644,8 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
       chancellor.cardFlingerState[1].notificationStatus = "selected";
     }
 
+    // Public by the game's rules (see selectPresidentVoteOnVeto) — intentionally revealed even in
+    // noVoteReveal games, which only hides the secret government-election ballot.
     publicChancellor.cardStatus = {
       cardDisplayed: true,
       cardFront: "ballot",
@@ -1788,18 +1793,39 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
         seatedPlayers[i] ? seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes : false
       );
 
-    game.publicPlayersState.forEach((player, i) => {
-      if (!player.isDead && seatedPlayers[i]) {
-        player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? "ja" : "nein";
-        player.cardStatus.isFlipped = true;
-      }
-    });
+    // No-vote-reveal games keep individual ballots hidden; only the tally below is shown. The
+    // private voteStatus (and the summary log) are untouched, so the result still computes and the
+    // replay reveals votes after the game.
+    if (!game.general.noVoteReveal) {
+      game.publicPlayersState.forEach((player, i) => {
+        if (!player.isDead && seatedPlayers[i]) {
+          player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? "ja" : "nein";
+          player.cardStatus.isFlipped = true;
+        }
+      });
+    } else {
+      const livingJa = seatedPlayers.filter((p) => !p.isDead && p.voteStatus.didVoteYes).length;
+      const livingNein = seatedPlayers.filter((p) => !p.isDead && !p.voteStatus.didVoteYes).length;
+      const tallyChat = {
+        timestamp: new Date(),
+        gameChat: true,
+        chat: [{ text: `Vote result: ${livingJa} Ja · ${livingNein} Nein` }],
+      };
+      // Intentionally ungated, unlike the pass/fail chats below (which are guarded by
+      // !experiencedMode / !disableGamechat): with no ballot cards to flip, this tally is the only
+      // reveal-window feedback, so it must show even in experienced or chat-disabled games.
+      seatedPlayers.forEach((player) => player.gameChats.push(tallyChat));
+      game.private.unSeatedGameChats.push(tallyChat);
+    }
 
     game.private.summary = game.private.summary.updateLog({
       votes: seatedPlayers.map((p) => p.voteStatus.didVoteYes),
     });
 
-    sendInProgressGameUpdate(game, true);
+    // Normally this update carries the visual card flip with chats stripped for efficiency; the
+    // result text follows after the reveal delay. No-reveal games flip no cards, so the tally above
+    // is the only reveal-window feedback — it must ride a chat-bearing update now, not after the delay.
+    sendInProgressGameUpdate(game, !game.general.noVoteReveal);
 
     setTimeout(
       () => {

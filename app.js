@@ -14,6 +14,7 @@ const helmet = require("helmet");
 
 const routesIndex = require("./routes/index");
 const Account = require("./models/account");
+const Leaderboard = require("./models/leaderboard");
 const { expandAndSimplify } = require("./routes/socket/ip-obf");
 const { CARDBACK_DIR } = require("./routes/cardback-store");
 const { getRedisClientOptions } = require("./routes/redis-client-options");
@@ -73,6 +74,10 @@ app.use((req, res, next) => {
 // real https scheme. Needed for OAuth (passport reads x-forwarded-proto via `proxy: true` on the
 // strategies below) and correct secure-cookie behavior. The app's own IP extraction reads
 // cf-connecting-ip/x-forwarded-for headers directly, so it's unaffected by this.
+// SECURITY NOTE: `true` trusts the entire X-Forwarded-For chain, so a direct caller could spoof
+// req.ip / req.secure. Tolerable today because ban/IP logic uses cf-connecting-ip (above), not
+// req.ip — but any future req.ip consumer should not treat it as trusted. If that changes, switch
+// to a fixed hop count (Cloudflare + Render) or a CIDR allowlist instead of `true`.
 app.set("trust proxy", true);
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
@@ -82,10 +87,36 @@ app.use(bodyParser.json({ limit: "10kb" })); // limit can be lower since this sh
 app.use(bodyParser.urlencoded({ extended: false, limit: "200kb" })); // limit needs to be decently high to account for cardback uploads
 app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
+// Serve the daily-generated leaderboards from Mongo (written by the Render Cron Job). Registered
+// BEFORE express.static on purpose: the old host's generator wrote a public/leaderboardData.json
+// file, and if any such stale file is present the static handler would otherwise shadow this route
+// and serve outdated data. Falls back to empty (correctly-shaped) boards until the first cron run.
+// Cached in module memory: the cron rewrites this once/day, but the frontend fetches it no-store, so
+// every Leaderboards view (plus any scraper) would otherwise hit Mongo — an avoidable amplifier on a
+// memory-constrained web instance. Short TTL so a fresh cron run still shows up within the minute with
+// no explicit invalidation hook; on a Mongo error we serve the last good payload if we have one.
+let leaderboardCache = null;
+let leaderboardCacheAt = 0;
+const LEADERBOARD_CACHE_TTL_MS = 60 * 1000;
+app.get("/leaderboardData.json", (req, res) => {
+  if (leaderboardCache && Date.now() - leaderboardCacheAt < LEADERBOARD_CACHE_TTL_MS) {
+    return res.json(leaderboardCache);
+  }
+  Leaderboard.findById("current")
+    .lean()
+    .then((doc) => {
+      leaderboardCache = (doc && doc.payload) || Leaderboard.freshBoard();
+      leaderboardCacheAt = Date.now();
+      res.json(leaderboardCache);
+    })
+    .catch(() => res.json(leaderboardCache || Leaderboard.freshBoard()));
+});
 // Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
 // public/ path in dev). Mounted before the general static handler so it stays authoritative even
 // though it maps to the same /images/custom-cardbacks/ URL the frontend already requests.
-app.use("/images/custom-cardbacks", express.static(CARDBACK_DIR, { maxAge: 86400000 * 28 }));
+// dotfiles:"deny" keeps the private ".diagnostics" dir the crash/heap logger nests inside this mount
+// (see bin/diagnostics.js) unreadable over HTTP — those files can contain session data.
+app.use("/images/custom-cardbacks", express.static(CARDBACK_DIR, { maxAge: 86400000 * 28, dotfiles: "deny" }));
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 app.use(
   helmet.frameguard({

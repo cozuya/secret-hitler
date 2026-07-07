@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Game = new Schema({
-  uid: String,
+  uid: { type: String, index: true },
   name: String,
   flag: String,
   date: Date,

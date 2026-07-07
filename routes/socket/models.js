@@ -195,14 +195,19 @@ const userListEmitter = {
 
       userListEmitter.send = false;
 
+      // Build each view once and reuse — formattedUserList maps the entire online list, so calling it
+      // inside the per-socket loops was O(users × sockets) of throwaway allocations every tick.
+      const staffView = module.exports.formattedUserList(true);
+      const publicView = module.exports.formattedUserList(false);
+
       // Send to staff
       staffSocketIds.forEach((id) => {
-        io.sockets.sockets[id].emit("userList", { list: module.exports.formattedUserList(true) });
+        io.sockets.sockets[id].emit("userList", { list: staffView });
       });
 
       // Send to non-staff
       nonStaffSocketIds.forEach((id) => {
-        io.sockets.sockets[id].emit("userList", { list: module.exports.formattedUserList(false) });
+        io.sockets.sockets[id].emit("userList", { list: publicView });
       });
     }
   }, 100),
@@ -253,6 +258,7 @@ module.exports.formattedGameList = () => {
     playerChats: games[gameName].general.playerChats || undefined,
     disableGamechat: games[gameName].general.disableGamechat || undefined,
     blindMode: games[gameName].general.blindMode || undefined,
+    noVoteReveal: games[gameName].general.noVoteReveal || undefined,
     enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
     enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
     electionCount: games[gameName].general.electionCount,
@@ -287,8 +293,6 @@ const gameListEmitter = {
 };
 
 module.exports.gameListEmitter = gameListEmitter;
-
-module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: "veteran" } });
 
 const bypassKeys = [];
 

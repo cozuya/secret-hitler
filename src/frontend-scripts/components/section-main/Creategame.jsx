@@ -39,6 +39,7 @@ export default class Creategame extends React.Component {
       unlistedGame: false,
       isTourny: false,
       blindMode: false,
+      noVoteReveal: false,
       timedMode: false,
       isVerifiedOnly: props.userInfo.verified && !isRainbow,
       timedSliderValue: [180],
@@ -623,6 +624,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -664,6 +666,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: true,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [180],
@@ -705,6 +708,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -747,6 +751,7 @@ export default class Creategame extends React.Component {
           unlistedGame: true,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -789,6 +794,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -831,6 +837,7 @@ export default class Creategame extends React.Component {
           unlistedGame: true,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: false,
           timedSliderValue: [120],
@@ -873,6 +880,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -915,6 +923,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: false,
           timedSliderValue: [120],
@@ -957,6 +966,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -1101,6 +1111,7 @@ export default class Creategame extends React.Component {
         disableGamechat: false, // this.state.disablegameChat,
         rainbowgame: this.state.rainbowgame,
         blindMode: this.state.blindMode,
+        noVoteReveal: this.state.noVoteReveal,
         flappyMode: this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode,
         flappyOnlyMode: this.state.flappyOnlyMode,
         timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
@@ -2260,6 +2271,26 @@ export default class Creategame extends React.Component {
                   this.setState({ blindMode: checked });
                 }}
                 checked={this.state.blindMode}
+                onColor="#627cc8"
+                offColor="#444444"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={21}
+                width={48}
+                handleDiameter={21}
+              />
+            </div>
+            <div className="four wide column">
+              <i className="big eye slash icon" />
+              <h4 className="ui header">
+                No vote reveal — individual votes stay hidden; only the Ja/Nein tally is shown.
+              </h4>
+              <Switch
+                className="create-game-switch"
+                onChange={(checked) => {
+                  this.setState({ noVoteReveal: checked });
+                }}
+                checked={this.state.noVoteReveal}
                 onColor="#627cc8"
                 offColor="#444444"
                 uncheckedIcon={false}

@@ -26,9 +26,19 @@ describe("getRedisClientOptions", () => {
     });
   });
 
-  it("rejects rediss URLs because redis 2.x is not wired for TLS here", () => {
-    process.env.REDIS_URL = "rediss://example.test:6379";
+  it("wires TLS for rediss URLs and normalizes the scheme to redis", () => {
+    process.env.REDIS_URL = "rediss://example.test:6379/4?ignored=true#ignored";
 
-    expect(() => getRedisClientOptions(10)).toThrow("redis:// scheme");
+    expect(getRedisClientOptions(10)).toEqual({
+      url: "redis://example.test:6379/",
+      db: 10,
+      tls: { servername: "example.test" },
+    });
+  });
+
+  it("rejects non-redis schemes", () => {
+    process.env.REDIS_URL = "http://example.test:6379";
+
+    expect(() => getRedisClientOptions(10)).toThrow("rediss://");
   });
 });
