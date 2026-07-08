@@ -3,6 +3,7 @@ const { computeRatingUpdates, xpAward, SEASON_MIGRATED_VERSION } = require("../r
 const { DISPLAY_BASE } = require("../rating/display.js");
 const { userList, games } = require("../models.js");
 const { clearFlappyTimers } = require("./flappy-timers");
+const { clearVoteSpamTimers } = require("./vote-timers");
 const { sendUserList, sendGameList } = require("../user-requests.js");
 const Account = require("../../../models/account.js");
 const Game = require("../../../models/game");
@@ -217,6 +218,9 @@ const saveOrUpdateGame = (gameID, callback) => {
 
 const saveAndDeleteGame = (gameID) => {
   clearFlappyTimers(games[gameID]);
+  // clear per-player unvote intervals too — otherwise they keep firing after the game is
+  // deleted and their closures pin the whole game object in memory (slow OOM leak).
+  clearVoteSpamTimers(games[gameID]);
 
   saveOrUpdateGame(gameID, () => {
     delete games[gameID];
