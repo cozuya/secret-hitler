@@ -4,8 +4,8 @@ import Tracks from "./Tracks";
 
 describe("Tracks", () => {
   it("should initialize correctly", () => {
+    // remakeStatus moved to the extracted RemakeButton component (shared by Tracks and Flappy)
     const initialState = {
-      remakeStatus: false,
       minutes: 0,
       seconds: 0,
       timedMode: false,

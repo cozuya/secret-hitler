@@ -1,6 +1,7 @@
 import React from "react";
 import CardFlinger from "./CardFlinger.jsx";
 import EnactedPolicies from "./EnactedPolicies.jsx";
+import RemakeButton from "./RemakeButton.jsx";
 import PropTypes from "prop-types";
 import { Popup } from "semantic-ui-react";
 import playSound from "../reusable/playSound.js";
@@ -11,7 +12,6 @@ class Tracks extends React.Component {
   constructor() {
     super();
     this.state = {
-      remakeStatus: false,
       minutes: 0,
       seconds: 0,
       timedMode: false,
@@ -27,14 +27,6 @@ class Tracks extends React.Component {
     if (Notification && Notification.permission === "granted" && this.props.socket) {
       this.props.socket.on("pingPlayer", (data) => {
         new Notification(data);
-      });
-    }
-
-    if (this.props.socket) {
-      this.props.socket.on("updateRemakeVoting", (status) => {
-        this.setState({
-          remakeStatus: status,
-        });
       });
     }
   }
@@ -62,12 +54,6 @@ class Tracks extends React.Component {
     // Guards the gameState/general reads below against a partial payload reaching this lifecycle method.
     if (!gameInfo.gameState || !gameInfo.general) {
       return;
-    }
-
-    if (!gameInfo.gameState.isStarted) {
-      this.setState({
-        remakeStatus: false,
-      });
     }
 
     if (
@@ -458,13 +444,6 @@ class Tracks extends React.Component {
       }
     };
 
-    const updateRemake = () => {
-      this.props.socket.emit("updateRemake", {
-        remakeStatus: !this.state.remakeStatus,
-        uid: gameInfo.general.uid,
-      });
-    };
-
     const renderFasTrack = () => {
       if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
         const offX = -8;
@@ -736,25 +715,7 @@ class Tracks extends React.Component {
           <div className="player-count">
             Players: <span>{gameInfo.publicPlayersState.length}</span>
           </div>
-          {userInfo.userName &&
-            userInfo.isSeated &&
-            gameInfo.gameState.isTracksFlipped &&
-            !gameInfo.general.isRemade &&
-            !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
-              <i
-                className={
-                  gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1
-                    ? `remove icon ${this.state.remakeStatus ? "enabled" : ""}`
-                    : `icon repeat ${this.state.remakeStatus ? "enabled" : ""}`
-                }
-                onClick={updateRemake}
-                title={
-                  gameInfo.general.isTourny
-                    ? "Enable this button to show that you would like to cancel this tournament"
-                    : "Enable this button to show that you would like to remake this game"
-                }
-              />
-            )}
+          <RemakeButton userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
           {!showTimer && (minutes || seconds >= 15) && timedMode ? (
             <i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
           ) : timedMode ? (

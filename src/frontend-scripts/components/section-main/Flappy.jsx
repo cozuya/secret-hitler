@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
+import RemakeButton from "./RemakeButton.jsx";
 
 const LANE_GAP = 8;
 
@@ -426,27 +427,36 @@ const Flappy = ({ userInfo, gameInfo, socket }) => {
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      width="750"
-      height="448"
-      id="flappy-canvas"
-      style={{
-        background: "#222",
-        cursor: "pointer",
-        maxWidth: "100%",
-        maxHeight: "100%",
-        // height:auto keeps the aspect ratio when maxWidth bites on narrow screens
-        // (without it the canvas squishes horizontally but stays 448px tall)
-        height: "auto",
-        // rapid taps are the whole game - without this, mobile browsers interpret
-        // them as double-tap-to-zoom and hijack the race mid-flight
-        touchAction: "manipulation",
-        display: "block",
-        margin: "auto",
-      }}
-      onClick={flap}
-    />
+    <React.Fragment>
+      {/* The flappy board doubles as the post-game view for a flappy-decided game (the
+          phase never leaves "flappyHitler"), so the remake vote button - which otherwise
+          lives only on the Tracks board - has to ride along here or a flappy-ended game
+          has no way to remake. Same RemakeButton as Tracks; it self-gates on seat/state. */}
+      <div className="option-icons" style={{ textAlign: "center" }}>
+        <RemakeButton userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+      </div>
+      <canvas
+        ref={canvasRef}
+        width="750"
+        height="448"
+        id="flappy-canvas"
+        style={{
+          background: "#222",
+          cursor: "pointer",
+          maxWidth: "100%",
+          maxHeight: "100%",
+          // height:auto keeps the aspect ratio when maxWidth bites on narrow screens
+          // (without it the canvas squishes horizontally but stays 448px tall)
+          height: "auto",
+          // rapid taps are the whole game - without this, mobile browsers interpret
+          // them as double-tap-to-zoom and hijack the race mid-flight
+          touchAction: "manipulation",
+          display: "block",
+          margin: "auto",
+        }}
+        onClick={flap}
+      />
+    </React.Fragment>
   );
 };
 
