@@ -26,6 +26,11 @@ const gameSummary = new Schema({
       default: null,
     },
     noTopdecking: Number,
+    // authoritative winner for games decided by Flappy Hitler (race, coin flip, or
+    // deck-decides). These outcomes are NOT derivable from the policy logs - the last
+    // enacted policy may belong to the LOSING team - so consumers must prefer this
+    // field when present. Absent on all non-flappy games (legacy derivation applies).
+    flappyWinner: String,
   },
   players: [
     {

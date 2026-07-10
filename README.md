@@ -2,6 +2,8 @@
 
 [![Build Status](https://github.com/cozuya/secret-hitler/actions/workflows/node.js.yml/badge.svg)](https://github.com/cozuya/secret-hitler/actions)
 
+#### Important note summer 2025: there's many crashing vulnerabilities in this codebase if users know how to malform socket requests, so it should probably not be used as is. In the production site, these have been patched out. To fix, one should probably tediously apply zod.js to all of the endpoints. That came out years after this was made..
+
 Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists.
 Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
 
@@ -84,6 +86,10 @@ Adapted the rules explanation to account for online vs physical play.
 There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p starts with one less fascist policy in the deck, 9p starts with two less fascist policies in the deck. Players (and results from analyzing statistics) have noted that these game modes are not balanced well in the original ruleset.
 
 There is a custom game mode where game creators can make games with different rulesets such as being able to pick policy powers, pick number of fascists (always less than liberals), number of policies, etc.
+
+## A note on the theme, after 10 years of production
+
+It's parody, and I originally adapted the board game because I like hidden role games and because this one is Creative Commons, not because I like Nazis. I don't like Nazis, and I'm very proud of the fact that the volunteer mods have always done a great job of keeping that stuff off the site after years and years.
 
 ## Credits
 

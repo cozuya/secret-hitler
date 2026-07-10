@@ -20,7 +20,6 @@ const {
   formattedGameList,
   staffList,
 } = require("./models");
-const { getProfile } = require("../../models/profile/utils");
 const { sendInProgressGameUpdate } = require("./util");
 const version = require("../../version");
 const { obfIP } = require("./ip-obf");
@@ -196,7 +195,6 @@ module.exports.sendUserGameSettings = (socket) => {
 
       const userListNames = userList.map((user) => user.userName);
 
-      getProfile(passport.user);
       if (!userListNames.includes(passport.user)) {
         const userListInfo = {
           userName: passport.user,
@@ -238,8 +236,6 @@ module.exports.sendUserGameSettings = (socket) => {
         userList.push(userListInfo);
         sendUserList();
       }
-
-      getProfile(passport.user);
 
       socket.emit("version", {
         current: version,

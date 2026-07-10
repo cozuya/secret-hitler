@@ -1,5 +1,6 @@
 const { sendInProgressGameUpdate } = require("../util.js");
 const { claimSchema } = require("./claim.schema");
+const { isFlappyPreLock } = require("../game/flappy");
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
@@ -11,6 +12,12 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
   const parsed = claimSchema.safeParse(data);
   if (!parsed.success) return;
   data = parsed.data;
+
+  // claims post named gamechat and would bypass the flappy first-gate chat mute
+  // (pilot identities are secret until a bird clears the gate)
+  if (isFlappyPreLock(game)) {
+    return;
+  }
 
   const playerIndex = game.publicPlayersState.findIndex((player) => player.userName === passport.user);
 

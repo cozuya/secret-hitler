@@ -160,6 +160,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
     newGame.general.isRemaking = false;
     newGame.general.isRecorded = false;
     newGame.summarySaved = false;
+    // flappy state must not survive a remake: a cloned flappyState.isActive would make
+    // canStartFlappy false forever, and a cloned flappyCancelled would silently disable
+    // the match-point trigger for the whole remade game
+    newGame.flappyState = null;
+    newGame.general.flappyCancelled = false;
     if (game.general.uid.indexOf("Remake") === -1) {
       newGame.general.uid = `${game.general.uid}Remake1`;
     } else {

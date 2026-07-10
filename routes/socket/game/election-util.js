@@ -58,7 +58,9 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
   if (
     !game.private.lock.selectChancellor &&
     !Number.isInteger(game.gameState.pendingChancellorIndex) &&
-    game.gameState.phase !== "voting"
+    // require the actual nomination phase - a stale/in-flight pick must not process
+    // after the table has moved on (e.g. into flappyHitler via /forceflappy)
+    game.gameState.phase === "selectingChancellor"
   ) {
     game.private.lock.selectChancellor = true;
     game.publicPlayersState[presidentIndex].isLoader = false;
@@ -185,6 +187,13 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 
     setTimeout(
       () => {
+        // stale-chain guard: if the table has left the voting phase during this delay
+        // (e.g. /forceflappy took it into flappyHitler), dealing ballots and re-arming
+        // the timed-mode timer would mutate the game underneath the new phase
+        if (game.gameState.phase !== "voting") {
+          return;
+        }
+
         seatedPlayers.forEach((player) => {
           if (player.cardFlingerState && player.cardFlingerState.length) {
             player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;

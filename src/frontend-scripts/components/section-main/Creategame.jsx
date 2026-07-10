@@ -39,6 +39,7 @@ export default class Creategame extends React.Component {
       unlistedGame: false,
       isTourny: false,
       blindMode: false,
+      noVoteReveal: false,
       timedMode: false,
       isVerifiedOnly: props.userInfo.verified && !isRainbow,
       timedSliderValue: [180],
@@ -47,7 +48,9 @@ export default class Creategame extends React.Component {
       xpSliderValue: [0],
       isEloLimited: false,
       isXPLimited: false,
-      flappyMode: false,
+      // default ON (owner decision, 2026-07-05): flappy ships as the standard way a
+      // 4-5 board resolves; creators opt OUT via the toggle rather than opting in
+      flappyMode: true,
       flappyOnlyMode: false,
       privateAnonymousRemakes: false,
       avalonSH: false,
@@ -621,6 +624,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -662,6 +666,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: true,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [180],
@@ -703,6 +708,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -745,6 +751,7 @@ export default class Creategame extends React.Component {
           unlistedGame: true,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -787,6 +794,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -829,6 +837,7 @@ export default class Creategame extends React.Component {
           unlistedGame: true,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: false,
           timedSliderValue: [120],
@@ -871,6 +880,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -913,6 +923,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: false,
           timedSliderValue: [120],
@@ -955,6 +966,7 @@ export default class Creategame extends React.Component {
           unlistedGame: false,
           isTourny: false,
           blindMode: false,
+          noVoteReveal: false,
           timedMode: false,
           isVerifiedOnly: !isRainbow,
           timedSliderValue: [120],
@@ -1099,7 +1111,8 @@ export default class Creategame extends React.Component {
         disableGamechat: false, // this.state.disablegameChat,
         rainbowgame: this.state.rainbowgame,
         blindMode: this.state.blindMode,
-        flappyMode: this.state.flappyMode,
+        noVoteReveal: this.state.noVoteReveal,
+        flappyMode: this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode,
         flappyOnlyMode: this.state.flappyOnlyMode,
         timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
         rebalance6p: this.state.checkedRebalanceValues[0],
@@ -2267,6 +2280,26 @@ export default class Creategame extends React.Component {
                 handleDiameter={21}
               />
             </div>
+            <div className="four wide column">
+              <i className="big eye slash icon" />
+              <h4 className="ui header">
+                No vote reveal — individual votes stay hidden; only the Ja/Nein tally is shown.
+              </h4>
+              <Switch
+                className="create-game-switch"
+                onChange={(checked) => {
+                  this.setState({ noVoteReveal: checked });
+                }}
+                checked={this.state.noVoteReveal}
+                onColor="#627cc8"
+                offColor="#444444"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={21}
+                width={48}
+                handleDiameter={21}
+              />
+            </div>
             {!this.state.isTourny && (
               <div className="four wide column">
                 <i className="big talk icon" />
@@ -2455,6 +2488,32 @@ export default class Creategame extends React.Component {
                 }}
                 value={[this.state.noTopdecking]}
                 marks={{ 0: "TDing", 1: "No TDing", 2: "No Double TDing" }}
+              />
+            </div>
+            <div className="four wide column">
+              <i className="big plane icon" />
+              <h4 className="ui header">
+                Flappy mode - when both teams are one policy from winning, the game is decided by Flappy Hitler.
+              </h4>
+              {/* blind/Avalon/Monarchist games can't start flappy (server refuses), so the
+                  toggle reads false and locks while one is selected - and springs back to
+                  the player's choice when the incompatible mode is deselected */}
+              <Switch
+                className="create-game-switch"
+                onChange={(checked) => {
+                  this.setState({ flappyMode: checked });
+                }}
+                checked={
+                  this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode
+                }
+                disabled={this.state.avalonSH || this.state.monarchistSH || this.state.blindMode}
+                onColor="#627cc8"
+                offColor="#444444"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={21}
+                width={48}
+                handleDiameter={21}
               />
             </div>
           </div>

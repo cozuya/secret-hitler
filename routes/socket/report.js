@@ -3,57 +3,64 @@ const Account = require("../../models/account");
 const { newStaff } = require("./models");
 
 function sendReport(game, report, data, type) {
-  Account.find({ staffRole: { $exists: true } }).then((accounts) => {
-    const staffUserNames = accounts
-      .filter(
-        (account) =>
-          account.staffRole === "altmod" ||
-          account.staffRole === "moderator" ||
-          account.staffRole === "editor" ||
-          account.staffRole === "admin" ||
-          account.staffRole === "trialmod"
-      )
-      .map((account) => account.username);
-    const players = game.private.seatedPlayers.map((player) => player.userName);
-    const isStaff = players.some(
-      (n) =>
-        staffUserNames.includes(n) ||
-        newStaff.altmodUserNames.includes(n) ||
-        newStaff.modUserNames.includes(n) ||
-        newStaff.editorUserNames.includes(n) ||
-        newStaff.trialmodUserNames.includes(n)
-    );
+  // Always read current staff from the DB — kept cheap here via a field projection + .lean() — rather
+  // than the in-memory staffList cache, which is only refreshed at boot / on the manual
+  // regatherAEMUsernames event. With that cache a demoted staffer would linger in it and keep their
+  // games' auto-reports buffered instead of sent. Same role set as before (admins included;
+  // veteran/contributor excluded by the filter below).
+  Account.find({ staffRole: { $exists: true } }, "username staffRole")
+    .lean()
+    .then((accounts) => {
+      const staffUserNames = accounts
+        .filter(
+          (account) =>
+            account.staffRole === "altmod" ||
+            account.staffRole === "moderator" ||
+            account.staffRole === "editor" ||
+            account.staffRole === "admin" ||
+            account.staffRole === "trialmod"
+        )
+        .map((account) => account.username);
+      const players = game.private.seatedPlayers.map((player) => player.userName);
+      const isStaff = players.some(
+        (n) =>
+          staffUserNames.includes(n) ||
+          newStaff.altmodUserNames.includes(n) ||
+          newStaff.modUserNames.includes(n) ||
+          newStaff.editorUserNames.includes(n) ||
+          newStaff.trialmodUserNames.includes(n)
+      );
 
-    if (type !== "reportdelayed" && type !== "modchatdelayed") {
-      if (isStaff) {
-        if (!game.unsentReports) game.unsentReports = [];
-        data.type = type;
-        game.unsentReports[game.unsentReports.length] = data;
-        return;
+      if (type !== "reportdelayed" && type !== "modchatdelayed") {
+        if (isStaff) {
+          if (!game.unsentReports) game.unsentReports = [];
+          data.type = type;
+          game.unsentReports[game.unsentReports.length] = data;
+          return;
+        }
       }
-    }
 
-    if (process.env.NODE_ENV === "production") {
-      try {
-        report = JSON.stringify(report);
-        const req = https.request({
-          hostname: "discordapp.com",
-          path: process.env.DISCORDREPORTURL,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Content-Length": Buffer.byteLength(report),
-          },
-        });
-        req.end(report);
-      } catch (e) {
-        console.log(e);
+      if (process.env.NODE_ENV === "production") {
+        try {
+          report = JSON.stringify(report);
+          const req = https.request({
+            hostname: "discordapp.com",
+            path: process.env.DISCORDREPORTURL,
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Content-Length": Buffer.byteLength(report),
+            },
+          });
+          req.end(report);
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        const text = JSON.stringify(report);
+        console.log(`${text}\n${game.general.uid}`);
       }
-    } else {
-      const text = JSON.stringify(report);
-      console.log(`${text}\n${game.general.uid}`);
-    }
-  });
+    });
 }
 
 module.exports.makeReport = (data, game, type = "report") => {

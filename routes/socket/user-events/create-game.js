@@ -116,6 +116,15 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
         data.avalonSH ||
         data.withPercival ||
         data.monarchistSH ||
+        // NOTE: flappyMode deliberately does NOT force casual - rated flappyMode games
+        // are an explicit product decision (owner call, 2026-07-04): players opt into
+        // the mode at creation, and its match-point minigame may decide ELO.
+        // ALSO INTENTIONAL (owner call, 2026-07-05): the create UI DEFAULT-CHECKS
+        // flappyMode, so ordinary ranked games divert to flappy at the 4-5 board
+        // unless the creator opts out. Signed off with data: 4-5 occurs in ~23% of
+        // 7p games, and its historical 44% blue winrate is FARTHER from fair than
+        // the ~50% race that replaces it. Do not re-flag default-on-ranked as a
+        // defect - it is the ship decision.
         data.noTopdecking > 0) && !customGame;
   // Silent (playerChats === "disabled") games are no longer forced to practice; they follow the
   // chosen gameType so a silent game can be ranked (and thus compute Elo) like any other.
@@ -158,10 +167,18 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
       disableGamechat: data.disableGamechat,
       rainbowgame: user.isRainbowOverall ? data.rainbowgame : false,
       blindMode: data.blindMode,
+      // Hides individual ballots in flipBallotCards (only the Ja/Nein tally is shown). Like silent
+      // games, it's intentionally not in the casualGame expression above, so it can be ranked.
+      noVoteReveal: Boolean(data.noVoteReveal),
       timedMode:
         typeof data.timedMode === "number" && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
-      flappyMode: data.flappyMode,
-      flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
+      // modes canStartFlappy() refuses must not STORE flappyMode either, or the
+      // lobby/track UI advertises a plane that can never take off (the client also
+      // clears the toggle for these modes, but this is the authoritative gate)
+      flappyMode: Boolean(data.flappyMode) && !data.blindMode && !data.avalonSH && !data.monarchistSH,
+      flappyOnlyMode: Boolean(
+        data.flappyMode && !data.blindMode && !data.avalonSH && !data.monarchistSH && data.flappyOnlyMode
+      ),
       casualGame,
       practiceGame,
       rebalance6p: data.rebalance6p,

@@ -69,6 +69,8 @@ const DisplayLobbies = (props) => {
     let rainbowgameTooltip;
     let blind;
     let blindTooltip;
+    let noVoteReveal;
+    let noVoteRevealTooltip;
     let priv;
     let privTooltip;
     let privateOnly;
@@ -164,6 +166,11 @@ const DisplayLobbies = (props) => {
       blindTooltip = "Blind mode - players are anonymized";
     }
 
+    if (game.noVoteReveal) {
+      noVoteReveal = <i className="eye slash icon" />;
+      noVoteRevealTooltip = "No vote reveal - individual votes are hidden";
+    }
+
     if (game.disableGamechat) {
       disableGamechat = (
         <i className="icons">
@@ -226,7 +233,7 @@ const DisplayLobbies = (props) => {
 
     if (game.flappyMode && !game.flappyOnlyMode) {
       flappyMode = <i className="plane icon" />;
-      flappyModeTooltip = "COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
+      flappyModeTooltip = "Flappy Mode - sudden death games are resolved with a game of Flappy Hitler";
     }
 
     if (game.flappyOnlyMode) {
@@ -289,6 +296,11 @@ const DisplayLobbies = (props) => {
         {blind && (
           <span data-tooltip={blindTooltip} data-inverted="">
             {blind}
+          </span>
+        )}
+        {noVoteReveal && (
+          <span data-tooltip={noVoteRevealTooltip} data-inverted="">
+            {noVoteReveal}
           </span>
         )}
         {experiencedMode && (

@@ -5,6 +5,7 @@ const { sendInProgressGameUpdate, sendCommandChatsUpdate, gameReportHeader } = r
 const { LineGuess } = require("./util");
 const Account = require("../../models/account");
 const { selectPlayerToAssassinate } = require("./game/assassination");
+const { canStartFlappy, startFlappy } = require("./game/flappy");
 
 const sendMessage = (game, user, s, date = new Date()) =>
   game.private.commandChats[user.userName].push({
@@ -142,6 +143,16 @@ module.exports.commands = [
     argumentsFormat: /^(\d{1,2})$/,
     aemOnly: true,
     observerOnly: true,
+    seatedOnly: false,
+    gameStartedOnly: true,
+  },
+  {
+    name: ["forceflappy"],
+    description: "Skips straight to Flappy Hitler",
+    examples: ["/forceflappy"],
+    argumentsFormat: /.*/,
+    aemOnly: true,
+    observerOnly: false,
     seatedOnly: false,
     gameStartedOnly: true,
   },
@@ -384,6 +395,14 @@ module.exports.commands.getCommand("pingmod").run = (socket, passport, user, gam
 };
 
 module.exports.commands.getCommand("ping").run = (socket, passport, user, game, args) => {
+  // /ping pushes a NAMED public game chat ("X has pinged Y") - during flappy's secret
+  // first-gate window that would out a potential pilot, and during flappy generally
+  // there is no action to nudge anyone toward
+  if (game.gameState.phase === "flappyHitler") {
+    sendMessage(game, user, "You cannot ping players during Flappy Hitler.");
+    return;
+  }
+
   const player = game.publicPlayersState.find((player) => player.userName === passport.user);
   const seat = parseInt(args[0]);
 
@@ -807,6 +826,84 @@ module.exports.commands.getCommand("forceping").run = (socket, passport, user, g
   } catch (e) {
     console.log(e, "caught exception in ping chat");
   }
+};
+
+module.exports.commands.getCommand("forceflappy").run = (socket, passport, user, game, args) => {
+  if (game.general.isRemade) {
+    socket.emit("sendAlert", "This game has been remade.");
+    return;
+  }
+
+  // ranked results and tournament brackets shouldn't be decided by a force-started
+  // minigame: forcing requires the table to be casual or to have opted into flappyMode
+  if (game.general.isTourny || !(game.general.casualGame || game.general.practiceGame || game.general.flappyMode)) {
+    sendMessage(game, user, "Flappy can only be forced on casual, practice, or flappy-mode games.");
+    return;
+  }
+
+  // only allow forcing flappy from the stable waiting phases: many normal-game
+  // transitions (policy enactment, powers) run multi-step setTimeout chains that are
+  // not tracked anywhere and would keep firing underneath a force-started flappy
+  if (game.gameState.phase !== "selectingChancellor" && game.gameState.phase !== "voting") {
+    sendMessage(game, user, "Flappy can only be forced while a chancellor is being selected or during voting.");
+    return;
+  }
+
+  if (game.gameState.phase === "voting") {
+    // the phase flips to 'voting' before the delayed ballot setup runs - an unflipped
+    // ballot means that setup timeout is still pending and this window isn't safe
+    if (
+      game.private.seatedPlayers.some(
+        (player, i) =>
+          !game.publicPlayersState[i].isDead &&
+          player.cardFlingerState &&
+          player.cardFlingerState.length &&
+          player.cardFlingerState[0].cardStatus &&
+          player.cardFlingerState[0].cardStatus.isFlipped === false
+      )
+    ) {
+      sendMessage(game, user, "Ballots are being dealt - wait a moment to force flappy.");
+      return;
+    }
+
+    // the phase also stays 'voting' while the ballot-reveal/enactment timeout chain
+    // resolves after the last vote - only the genuinely-waiting-for-votes window is safe
+    if (
+      !game.private.seatedPlayers.some(
+        (player, i) =>
+          !game.publicPlayersState[i].isDead &&
+          !game.publicPlayersState[i].leftGame &&
+          !(player.voteStatus && player.voteStatus.hasVoted)
+      )
+    ) {
+      sendMessage(game, user, "Votes are being tallied - wait for the next round to force flappy.");
+      return;
+    }
+  }
+
+  // canStartFlappy deliberately ignores freezes (so a freeze can't permanently skip
+  // the match-point trigger) - the admin command checks it explicitly instead
+  if (game.gameState.isGameFrozen) {
+    sendMessage(game, user, "This game is frozen - unfreeze it before forcing flappy.");
+    return;
+  }
+
+  if (!canStartFlappy(game)) {
+    sendMessage(
+      game,
+      user,
+      "Flappy cannot start on this game (needs a started, uncompleted, non-blind, non-Avalon game with living players on both teams)."
+    );
+    return;
+  }
+
+  game.chats.push({
+    gameChat: true,
+    timestamp: new Date(),
+    chat: [{ text: "A staff member has forced this game into Flappy Hitler." }],
+  });
+
+  startFlappy(game);
 };
 
 module.exports.commands.getCommand("forcerigrole").run = (socket, passport, user, game, args) => {

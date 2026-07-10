@@ -253,3 +253,74 @@ The migration and deploy must be contiguous. If the Season 23 server is allowed 
 | Season history/copy | `src/frontend-scripts/components/section-main/Changelog.jsx`, `Main.jsx` |
 | Deploy constraints | `render.yaml` (`numInstances: 1`, `autoDeploy: false`) |
 | Display readers to audit | `Profile.jsx`, `Leaderboards.jsx`, `Playerlist.jsx`, `UserPopup.jsx`, `routes/socket/user-requests.js` |
+
+---
+
+## 12. Season 24 execution plan (decisions LOCKED — supersedes §7 open items)
+
+> **Status:** engine rewrite is committed (OpenSkill engine in `routes/socket/rating/`, wired into
+> `end-game.js`, 20/20 rating tests). This section is the remaining work to make the cutover a
+> coherent, deployable unit. **Locked decisions:** (1) reuse existing medal rules; (2) defer
+> display-scale tuning to post-launch; (3) leaderboard via a Render Cron Job writing to the existing
+> cardbacks Persistent Disk.
+
+**De-risking insight:** `seedMuFromDisplay` and `displayRating` are exact inverses, so seeding
+`rating.overall.mu` from a veteran's old `eloOverall` makes the new `eloOverall` mirror come back out
+**equal to their old Elo**. So at launch every migrated account's ELO badges (`badges.js` `ELO_BADGES`)
+and `eloMinimum` eligibility are **preserved** — no disruption. The only intended change is the season
+reset (`eloSeason` → 1600 cold). This is why display-scale tuning (§7 #3) is a post-launch monitoring
+knob, not a launch blocker.
+
+### 12.1 Code (lands in the branch; suggested 3 commits)
+
+**Commit 1 — trivial bumps + copy**
+- `CURRENTSEASONNUMBER` 23→24: `src/frontend-scripts/constants.js:42`, `src/frontend-scripts/node-constants.js:41`.
+- `models/account.js` after `:187` (`rainbowLossesSeason23`): add `winsSeason24`/`lossesSeason24`/`rainbowWinsSeason24`/`rainbowLossesSeason24`; add legacy snapshots `legacyEloOverallS23`/`legacyEloSeasonS23`; add a `ratingVersion: Number` marker.
+- `Changelog.jsx:14`: prepend a "Welcome to Season 24!" block + Season-23 top-10 list (note: the changelog is currently stuck on "Season 22", one behind — catch it up).
+- `Main.jsx:208-212`: fix the stale "Seasons last for 3 months and start at the first of the year" copy.
+
+**Commit 2 — migration script** `scripts/seasonCutover24.js` (§12.2).
+
+**Commit 3 — leaderboard relocation** (§12.3).
+
+### 12.2 Migration script (idempotent, `--dry-run`, `MONGO_URL`, await every write, exit non-zero on failure; run on a staging copy first)
+
+1. Connect; **skip accounts already at `ratingVersion: 24`** (rerun-safe).
+2. **Capture Season-23 standings from `eloSeason` before any writes.**
+3. **Awards (reuse existing rules):** clear old `gameSettings.previousSeasonAward`; assign `bronze/silver/gold` by `addEndofSeasonRewards.js` cutoff buckets (1737 / +30 / +85) on the *pre-reset* `eloSeason`; award `topSeason23` badge (id `topSeason${season}`, via `awardBadgePrequeried`) to the computed top 10. Exclude `isBanned`.
+4. **Snapshot** `eloOverall`/`eloSeason` → `legacyEloOverallS23`/`legacyEloSeasonS23`.
+5. **Seed** `rating.overall = { mu: seedMuFromDisplay(eloOverall), sigma: DEFAULT_SIGMA, display }` (fresh if no Elo); `rating.season` = fresh/cold.
+6. **Mirror** `eloOverall`/`eloSeason` ← `rating.*.display` (overall ≈ unchanged; season → ~1600).
+7. **Reset** `xpSeason=0`, `isRainbowSeason=false`, `eloPercentile.seasonal`, and `previousDayElo`/`previousDayXP` to the new baselines (so the first daily board isn't a giant reset delta).
+8. Init Season-24 counters to 0.
+9. Stamp `ratingVersion=24` + `migratedAt`.
+10. Print totals: scanned / migrated / skipped / awards / badges / failures.
+
+### 12.3 Leaderboard on Render (Cron → Mongo → web route) — IMPLEMENTED
+The originally-considered "Cron → cardbacks disk" is infeasible: a Render Persistent Disk attaches to a
+single service (a separate cron can't write the web's disk) and the web instance is memory-tight (the
+heavy account scan can't safely run in-process). So instead:
+- `scripts/retrieveLeaderboardData.js` now uses `MONGO_URL`, **awaits** the daily-baseline writes (the
+  old version fire-and-forgot them), and upserts the result into a single `leaderboards` Mongo doc
+  (`models/leaderboard.js`).
+- A Render **Cron Job** (`render.yaml`, `type: cron`, daily 09:00 UTC) runs that script in its own
+  instance — no game-server memory pressure, no disk-sharing problem.
+- The web serves `GET /leaderboardData.json` from that Mongo doc (`routes/index.js`); the frontend
+  (`Leaderboards.jsx`, unchanged) reads it the same way. Empty boards until the first cron run.
+- It already reads `eloSeason` (which IS the new display mirror), so no field changes were needed; the
+  migration's `previousDay*` reset (step 7) keeps the first post-cutover daily board from reporting the
+  reset as a swing.
+
+### 12.4 Cutover runbook (maintenance window)
+**The operational, step-by-step deploy-day checklist now lives in its own doc:
+[`season-24-cutover-runbook.md`](./season-24-cutover-runbook.md)** — follow that on cutover day (it
+reflects the code as built: the `--dry-run`/`cutoverState`/`liveUpdated` migration behavior, the
+Cron→Mongo leaderboard, the changelog top-10 fill, the cron `MONGO_URL` secret, verification, rollback).
+In short: Atlas backup → staging dry-run → disable game creation **+ remakes** → drain → run the
+production migration (it prints the top 10) → fill the changelog → deploy the Season-24 build
+(contiguous) → set the cron secret → verify → re-enable.
+
+### 12.5 Verify during build (not a blocker)
+Confirm whether the `eloMinimum` lobby gate reads `eloSeason` or `eloOverall`. If `eloSeason`,
+high-minimum lobbies are expected to be empty at season start (cold season rating) — normal for any
+rollover, just noting so it isn't a surprise.

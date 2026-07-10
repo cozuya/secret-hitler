@@ -3,6 +3,7 @@
 const http = require("http");
 const express = require("express");
 require("dotenv").config();
+const diagnostics = require("./diagnostics");
 
 // Crash-with-context. Every socket/game handler is now zod-typed, so a surviving unhandled
 // rejection or uncaught exception means genuine corruption — log it loudly so it's diagnosable,
@@ -16,6 +17,8 @@ process.on("uncaughtException", (err) => {
     (err && err.stack) || err,
     context ? `\nlast socket packet (may be related): ${JSON.stringify(context)}` : ""
   );
+  // Also persist to disk — the console copy dies with the instance; this one is recoverable.
+  diagnostics.logCrash("uncaughtException", err, context);
   process.exit(1);
 });
 process.on("unhandledRejection", (reason) => {
@@ -25,8 +28,14 @@ process.on("unhandledRejection", (reason) => {
     (reason && reason.stack) || reason,
     context ? `\nlast socket packet (may be related): ${JSON.stringify(context)}` : ""
   );
+  diagnostics.logCrash("unhandledRejection", reason, context);
   process.exit(1);
 });
+
+// Persist a marker on platform-initiated shutdown (deploy / OOM / health-check kill arriving as
+// SIGTERM) and enable on-demand heap snapshots via SIGUSR2. Both are production-only internally.
+diagnostics.installSignalMarkers();
+diagnostics.installHeapSnapshotHandler();
 
 const port = (() => {
   const val = process.env.PORT || "8080";
@@ -89,6 +98,8 @@ function onListening() {
   debug("Listening on " + bind);
   console.log("Listening on " + bind);
   require("../app");
+  // Start after app boot so the sampler's lazy require of models hits the warm cache.
+  diagnostics.startMemorySampler();
 }
 
 server.on("error", onError);
