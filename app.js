@@ -19,6 +19,7 @@ const GameStats = require("./models/gameStats");
 const { expandAndSimplify } = require("./routes/socket/ip-obf");
 const { CARDBACK_DIR } = require("./routes/cardback-store");
 const { getRedisClientOptions } = require("./routes/redis-client-options");
+const httpBandwidthDiagnostics = require("./routes/http-bandwidth-diagnostics");
 
 let store;
 
@@ -83,6 +84,7 @@ app.set("trust proxy", true);
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.locals.pretty = true;
+app.use(httpBandwidthDiagnostics);
 app.use(compression());
 app.use(bodyParser.json({ limit: "10kb" })); // limit can be lower since this should not have a lot of data per request (helps protect against json expansion attacks I guess)
 app.use(bodyParser.urlencoded({ extended: false, limit: "200kb" })); // limit needs to be decently high to account for cardback uploads

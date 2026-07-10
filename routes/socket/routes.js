@@ -67,6 +67,7 @@ const version = require("../../version");
 const https = require("https");
 const moment = require("moment");
 const { selectPlayerToAssassinate } = require("./game/assassination");
+const { instrumentSocket } = require("./bandwidth-diagnostics");
 
 let modUserNames = [],
   editorUserNames = [],
@@ -235,6 +236,8 @@ module.exports.socketRoutes = () => {
   gatherStaffUsernames();
 
   io.on("connection", (socket) => {
+    instrumentSocket(socket);
+
     // This 'error' listener MUST NOT exit or do anything destructive. socket.io 2.4.1 does not reserve
     // "error" on the receiving side, so a CLIENT can trigger it directly — `socket.emit("error", <anything>)`
     // is dispatched straight here. A prior version called process.exit(1), which turned this into a remote

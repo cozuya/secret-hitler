@@ -17,6 +17,7 @@ const { DEFAULTTHEMECOLORS } = require("../src/frontend-scripts/node-constants")
 const { checkBadgesAccount } = require("./socket/badges");
 const moment = require("moment");
 const { idQuerySchema, usernameQuerySchema, cardbackBodySchema } = require("./index.schema");
+const bandwidthDiagnostics = require("./bandwidth-diagnostics-state");
 
 /**
  * @param {object} req - express request object.
@@ -31,6 +32,9 @@ const ensureAuthenticated = (req, res, next) => {
 
   res.redirect("/observe/");
 };
+
+const canControlBandwidthDiagnostics = (account) =>
+  account && (account.staffRole === "admin" || account.staffRole === "editor");
 
 module.exports = () => {
   /**
@@ -515,6 +519,41 @@ module.exports = () => {
     res.json({
       count: userList.length,
     });
+  });
+
+  app.post("/admin/bandwidth-diagnostics", ensureAuthenticated, (req, res) => {
+    const action = req.body && typeof req.body.action === "string" ? req.body.action : "status";
+    const durationMinutes =
+      req.body && Number.isFinite(Number(req.body.durationMinutes)) ? Number(req.body.durationMinutes) : undefined;
+
+    Account.findOne({ username: req.user.username })
+      .then((account) => {
+        if (!canControlBandwidthDiagnostics(account)) {
+          res.status(403).json({ message: "Only admins and editors can control bandwidth diagnostics." });
+          return;
+        }
+
+        if (action === "enable") {
+          res.json(
+            bandwidthDiagnostics.enable({
+              durationMs: durationMinutes ? durationMinutes * 60 * 1000 : undefined,
+              userName: req.user.username,
+            })
+          );
+          return;
+        }
+
+        if (action === "disable") {
+          res.json(bandwidthDiagnostics.disable({ userName: req.user.username }));
+          return;
+        }
+
+        res.json(bandwidthDiagnostics.status());
+      })
+      .catch((err) => {
+        console.debug(err);
+        res.status(500).json({ message: "Could not update bandwidth diagnostics." });
+      });
   });
 
   app.get("/viewPatchNotes", ensureAuthenticated, (req, res) => {
