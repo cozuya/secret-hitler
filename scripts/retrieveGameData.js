@@ -1,67 +1,34 @@
 const mongoose = require("mongoose");
 const Game = require("../models/game");
 const moment = require("moment");
-const fs = require("fs");
-const data = {};
+const GameStats = require("../models/gameStats");
 const { CURRENTSEASONNUMBER } = require("../src/frontend-scripts/node-constants");
 
-const allPlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-};
-const fivePlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-};
-const sixPlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  rebalancedFascistWinCount: 0,
-  rebalancedTotalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-  rebalancedFascistWinCountSeason: 0,
-  rebalancedTotalGameCountSeason: 0,
-};
-const sevenPlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  rebalancedFascistWinCount: 0,
-  rebalancedTotalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-  rebalancedFascistWinCountSeason: 0,
-  rebalancedTotalGameCountSeason: 0,
-};
-const eightPlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-};
-const ninePlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  rebalanced2fFascistWinCount: 0,
-  rebalanced2fTotalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-  rebalanced2fFascistWinCountSeason: 0,
-  rebalanced2fTotalGameCountSeason: 0,
-};
-const tenPlayerGameData = {
-  fascistWinCount: 0,
-  totalGameCount: 0,
-  fascistWinCountSeason: 0,
-  totalGameCountSeason: 0,
-};
+// Computes overall + current-season win-rate stats per player count and stores them in a single Mongo
+// document (read by GET /statsData.json). Runs as a Render Cron Job — a SEPARATE service from the web
+// app — so this full `games` collection scan never competes with the memory-constrained game server
+// (mirrors scripts/retrieveLeaderboardData.js). It used to write a data.json file the old VPS's nginx
+// served directly; on Render that path doesn't exist, which is why the stats pages went blank.
+//
+// Usage: MONGO_URL="mongodb+srv://..." node scripts/retrieveGameData.js
+const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/secret-hitler-app";
+
+// Build the accumulator from the model's shape factory (fresh objects) so the served payload and the
+// route's empty fallback can never drift apart. These are references into `data`, so incrementing a
+// bucket below mutates `data` directly — no reassembly needed before the write.
+const data = GameStats.freshStats();
+const {
+  allPlayerGameData,
+  fivePlayerGameData,
+  sixPlayerGameData,
+  sevenPlayerGameData,
+  eightPlayerGameData,
+  ninePlayerGameData,
+  tenPlayerGameData,
+} = data;
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(MONGO_URL);
 
 Game.find({})
   .cursor()
@@ -224,16 +191,18 @@ Game.find({})
       }
     }
   })
-  .then(() => {
-    data.allPlayerGameData = allPlayerGameData;
-    data.fivePlayerGameData = fivePlayerGameData;
-    data.sixPlayerGameData = sixPlayerGameData;
-    data.sevenPlayerGameData = sevenPlayerGameData;
-    data.eightPlayerGameData = eightPlayerGameData;
-    data.ninePlayerGameData = ninePlayerGameData;
-    data.tenPlayerGameData = tenPlayerGameData;
-    fs.writeFile("/var/www/secret-hitler/data/data.json", JSON.stringify(data), () => {
-      console.log("Done.");
-      mongoose.connection.close();
+  .then(async () => {
+    // `data` already holds every bucket (they were destructured out of it above), so just persist it.
+    await GameStats.findByIdAndUpdate("current", { payload: data, updatedAt: new Date() }, { upsert: true });
+    await mongoose.connection.close();
+    console.log("[stats] updated", {
+      totalGames: allPlayerGameData.totalGameCount,
+      seasonGames: allPlayerGameData.totalGameCountSeason,
     });
+    process.exit(0);
+  })
+  .catch((err) => {
+    // Non-zero exit so Render flags the cron run as failed rather than silently serving stale stats.
+    console.log("[stats] fatal:", err);
+    process.exit(1);
   });

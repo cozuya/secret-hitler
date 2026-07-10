@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	// this page/code is total shit but I would need to get a different graphing library to make it better.
 
 	const processWinrateData = (fascistWinCount, totalGameCount) => {
+		// Guard the 0-games case: dividing by 0 yields NaN% labels and a broken pie. Happens for the
+		// empty fallback (before the first stats cron run) and for buckets a young season hasn't filled.
+		if (!totalGameCount) {
+			return { series: [1], labels: ['No games yet'] };
+		}
 		const fWins = Math.round((fascistWinCount / totalGameCount) * 100000) / 1000;
 		const lWins = Math.round(((totalGameCount - fascistWinCount) / totalGameCount) * 100000) / 1000;
 
@@ -12,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	};
 
 	$.ajax({
-		url: 'data',
+		url: 'statsData.json',
 		success: function(data) {
 			new Chartist.Pie('#chart-allplayer-games-winrate', processWinrateData(data.allPlayerGameData.fascistWinCount, data.allPlayerGameData.totalGameCount), {
 				width: '400px',

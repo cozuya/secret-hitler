@@ -52,11 +52,15 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        # In a 512MB container Node auto-caps the V8 old-space heap at ~256MB and leaves the rest
-        # unused; this app's idle baseline (Mongoose models + Jimp + socket.io + game modules) sits
-        # just above that, so it OOMs at boot on the starter plan. Hand V8 400MB of the 512 (leaving
-        # ~112MB for native/young-gen) so it fits without paying for a bigger instance.
+        # Keep the existing production old-space ceiling while the sampler establishes the live
+        # heap floor under load. This is only a ceiling, not a reservation or a guarantee that the
+        # process fits inside the 512MB instance once native memory is included.
         value: --max-old-space-size=400
+      - key: MALLOC_ARENA_MAX
+        # Cap glibc's per-thread malloc arenas. Production RSS has grown far beyond V8 heap +
+        # external memory under load; limiting arenas is a low-risk way to test/reduce allocator
+        # fragmentation without changing application behavior.
+        value: "2"
       - key: CARDBACK_DIR # the disk mount root (static-served at /images/custom-cardbacks)
         value: /var/data/cardbacks
       # A DOT-dir INSIDE the disk mount (NOT a sibling — /var/data isn't writable by the runtime user;
@@ -123,6 +127,27 @@ services:
     schedule: "0 9 * * *" # daily at 09:00 UTC (off-peak); adjust as desired
     buildCommand: pnpm install --prod=false
     startCommand: node scripts/retrieveLeaderboardData.js
+    envVars:
+      - key: MONGO_URL # same Atlas SRV string as the web service (set in the dashboard)
+        sync: false
+      - key: NODE_VERSION
+        value: "24.12.0"
+      - key: HUSKY
+        value: "0" # no-op husky's git-hook install during `pnpm install` on the builder
+
+  # Daily win-rate stats generation for the /stats and /stats-season pages. A SEPARATE Cron service
+  # for the same reasons as the leaderboard cron above: the full `games` collection scan is too heavy
+  # to run in-process on the memory-tight web instance, and it needs no Persistent Disk (output goes to
+  # Mongo — a single `gamestats` doc — which the web serves at GET /statsData.json). Replaces the old
+  # VPS cron that wrote a data.json file nginx served directly.
+  - type: cron
+    name: secret-hitler-stats
+    runtime: node
+    region: virginia # same region as Atlas for low-latency access
+    plan: starter
+    schedule: "30 9 * * *" # daily at 09:30 UTC — offset from the leaderboard cron so they don't scan Atlas at once
+    buildCommand: pnpm install --prod=false
+    startCommand: node scripts/retrieveGameData.js
     envVars:
       - key: MONGO_URL # same Atlas SRV string as the web service (set in the dashboard)
         sync: false

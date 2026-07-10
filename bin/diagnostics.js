@@ -101,36 +101,127 @@ function installSignalMarkers() {
 // One JSONL line per interval: the memory curve plus the live load (games/users) to read it
 // against. This is what settles leak-vs-undersized — a ramp that tracks player count is just load;
 // a ramp that climbs regardless of players is accumulation. ~200KB/day at the default interval.
+const emptyLoadSample = () => ({
+  games: null,
+  users: null,
+  sockets: null,
+  socketWriteBufferPackets: null,
+  maxSocketWriteBufferPackets: null,
+  openModDMs: null,
+  completedGames: null,
+  abandonedGames: null,
+  gameChatEntries: null,
+});
+
 function sampleLoad() {
+  const sample = emptyLoadSample();
   try {
     // Lazy require so we hit the already-initialized module cache (the sampler is started after
     // app boot) and never trigger models' side effects ourselves.
     const models = require("../routes/socket/models");
-    const games = models.games && typeof models.games === "object" ? Object.keys(models.games).length : null;
+    const gameValues =
+      models.games && typeof models.games === "object"
+        ? Object.keys(models.games).map((uid) => models.games[uid])
+        : null;
+    const games = gameValues ? gameValues.length : null;
     const users = Array.isArray(models.userList) ? models.userList.length : null;
-    return { games, users };
+    const openModDMs = models.modDMs && typeof models.modDMs === "object" ? Object.keys(models.modDMs).length : null;
+    const socketValues =
+      global.io && global.io.sockets && global.io.sockets.sockets
+        ? Object.keys(global.io.sockets.sockets).map((id) => global.io.sockets.sockets[id])
+        : null;
+    let socketWriteBufferPackets = null;
+    let maxSocketWriteBufferPackets = null;
+    if (socketValues) {
+      const writeBufferLengths = socketValues.map((socket) =>
+        socket && socket.conn && Array.isArray(socket.conn.writeBuffer) ? socket.conn.writeBuffer.length : 0
+      );
+      socketWriteBufferPackets = writeBufferLengths.reduce((sum, length) => sum + length, 0);
+      maxSocketWriteBufferPackets = writeBufferLengths.reduce((max, length) => Math.max(max, length), 0);
+    }
+
+    let completedGames = null;
+    let abandonedGames = null;
+    let gameChatEntries = null;
+    if (gameValues) {
+      completedGames = gameValues.filter((game) => game && game.gameState && game.gameState.isCompleted).length;
+      abandonedGames = gameValues.filter((game) => game && game.general && game.general.timeAbandoned).length;
+      gameChatEntries = gameValues.reduce((total, game) => {
+        if (!game) return total;
+        const privateState = game.private || {};
+        const seatedPlayerChats = Array.isArray(privateState.seatedPlayers)
+          ? privateState.seatedPlayers.reduce(
+              (sum, player) => sum + (player && Array.isArray(player.gameChats) ? player.gameChats.length : 0),
+              0
+            )
+          : 0;
+        return (
+          total +
+          (Array.isArray(game.chats) ? game.chats.length : 0) +
+          (Array.isArray(privateState.unSeatedGameChats) ? privateState.unSeatedGameChats.length : 0) +
+          (Array.isArray(privateState.replayGameChats) ? privateState.replayGameChats.length : 0) +
+          (Array.isArray(privateState.hiddenInfoChat) ? privateState.hiddenInfoChat.length : 0) +
+          seatedPlayerChats
+        );
+      }, 0);
+    }
+
+    Object.assign(sample, {
+      games,
+      users,
+      sockets: socketValues ? socketValues.length : null,
+      socketWriteBufferPackets,
+      maxSocketWriteBufferPackets,
+      openModDMs,
+      completedGames,
+      abandonedGames,
+      gameChatEntries,
+    });
   } catch {
-    return { games: null, users: null };
+    // Best-effort diagnostics: retain the complete null-shaped schema if live state is unreadable.
   }
+  return sample;
 }
 
 function startMemorySampler(intervalMs = 60000) {
   const tick = () => {
-    const m = process.memoryUsage();
-    const load = sampleLoad();
-    appendLine(
-      "memory.jsonl",
-      JSON.stringify({
-        t: new Date().toISOString(),
-        rss: m.rss,
-        heapUsed: m.heapUsed,
-        heapTotal: m.heapTotal,
-        external: m.external,
-        arrayBuffers: m.arrayBuffers,
-        games: load.games,
-        users: load.users,
-      })
-    );
+    try {
+      const m = process.memoryUsage();
+      const load = sampleLoad();
+      const heapStatistics = v8.getHeapStatistics();
+      const heapSpaces = v8.getHeapSpaceStatistics();
+      const spaceUsed = (name) => {
+        const space = heapSpaces.find((candidate) => candidate.space_name === name);
+        return space ? space.space_used_size : null;
+      };
+      const activeResources =
+        typeof process.getActiveResourcesInfo === "function" ? process.getActiveResourcesInfo() : [];
+      appendLine(
+        "memory.jsonl",
+        JSON.stringify({
+          t: new Date().toISOString(),
+          pid: process.pid,
+          uptime: Math.floor(process.uptime()),
+          mallocArenaMax: process.env.MALLOC_ARENA_MAX || null,
+          rss: m.rss,
+          heapUsed: m.heapUsed,
+          heapTotal: m.heapTotal,
+          external: m.external,
+          arrayBuffers: m.arrayBuffers,
+          oldSpaceUsed: spaceUsed("old_space"),
+          largeObjectSpaceUsed: spaceUsed("large_object_space"),
+          newSpaceUsed: spaceUsed("new_space"),
+          mallocedMemory: heapStatistics.malloced_memory,
+          peakMallocedMemory: heapStatistics.peak_malloced_memory,
+          // Node reports both ref'ed setTimeout and setInterval handles as "Timeout"; the sampler's
+          // own interval is unref'ed below, so it does not create a permanent floor in this count.
+          activeTimeouts: activeResources.filter((resource) => resource === "Timeout").length,
+          ...load,
+        })
+      );
+    } catch {
+      // Sampling is strictly best-effort; diagnostics must never be the reason the process exits.
+    }
   };
   tick(); // baseline at boot
   const timer = setInterval(tick, intervalMs);
