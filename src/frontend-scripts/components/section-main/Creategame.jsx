@@ -48,9 +48,7 @@ export default class Creategame extends React.Component {
       xpSliderValue: [0],
       isEloLimited: false,
       isXPLimited: false,
-      // default ON (owner decision, 2026-07-05): flappy ships as the standard way a
-      // 4-5 board resolves; creators opt OUT via the toggle rather than opting in
-      flappyMode: true,
+      flappyMode: false,
       flappyOnlyMode: false,
       privateAnonymousRemakes: false,
       avalonSH: false,
