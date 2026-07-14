@@ -1,4 +1,4 @@
-const { games, userList, testIP } = require("../models");
+const { games, userList, testIP, userListEmitter } = require("../models");
 const { sendInProgressGameUpdate } = require("../util.js");
 const Account = require("../../../models/account");
 const { sendUserList } = require("../user-requests");
@@ -53,6 +53,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 
         if (bannedUserlistIndex >= 0) {
           userList.splice(bannedUserlistIndex, 1);
+          userListEmitter.markDirty();
         }
 
         // destroySession(username);

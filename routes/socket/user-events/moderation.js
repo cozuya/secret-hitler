@@ -158,6 +158,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
         if (bannedUserlistIndex >= 0) {
           userList.splice(bannedUserlistIndex, 1);
+          userListEmitter.markDirty();
         }
 
         // destroySession(username);
@@ -761,7 +762,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
                 const user = userList.find((u) => u.userName === data.userName);
                 if (user) {
                   user.customCardback = "";
-                  userListEmitter.send = true;
+                  userListEmitter.markDirty();
                 }
                 Object.keys(games).forEach((uid) => {
                   const game = games[uid];

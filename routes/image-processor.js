@@ -108,7 +108,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
                 if (user) {
                   user.customCardback = "png";
                   user.customCardbackUid = account.gameSettings.customCardbackUid;
-                  userListEmitter.send = true;
+                  userListEmitter.markDirty();
                 }
                 Object.keys(games).forEach((uid) => {
                   const game = games[uid];

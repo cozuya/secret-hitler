@@ -166,7 +166,8 @@ const timer = setInterval(() => {
     }))
     .sort((a, b) => b.estimatedBytes - a.estimatedBytes)
     .slice(0, topCount);
-  const hasTransportStats = Object.keys(transportStats.connections).length ||
+  const hasTransportStats =
+    Object.keys(transportStats.connections).length ||
     Object.keys(transportStats.activeAtEnable).length ||
     Object.keys(transportStats.upgrades).length ||
     Object.keys(transportStats.disconnects).length;
@@ -184,7 +185,8 @@ const timer = setInterval(() => {
 
   resetStats();
 }, intervalMs);
-timer.unref();
+// Real Node timers should not keep the process alive; some test timer shims omit unref().
+if (timer.unref) timer.unref();
 
 module.exports.instrumentSocket = (socket) => {
   activeSockets.add(socket);

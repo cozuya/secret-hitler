@@ -2,11 +2,14 @@ const { CURRENTSEASONNUMBER } = require("../../src/frontend-scripts/node-constan
 const Account = require("../../models/account");
 const ModAction = require("../../models/modAction");
 const BannedIP = require("../../models/bannedIP");
+const crypto = require("crypto");
 const redis = require("redis");
 const { promisify } = require("util");
 const version = require("../../version");
 const { doesIPMatchCIDR } = require("./ip-obf");
 const { getRedisClientOptions } = require("../redis-client-options");
+
+const USER_LIST_BROADCAST_MIN_INTERVAL_MS = 10 * 1000;
 
 const fs = require("fs");
 const emotes = {};
@@ -174,9 +177,53 @@ module.exports.formattedUserList = (isAEM) => {
     .filter((user) => isAEM || !user.staffIncognito);
 };
 
+const hashUserListView = (view) => crypto.createHash("sha1").update(JSON.stringify(view)).digest("base64");
+
+const isStaffSocket = (module.exports.isStaffSocket = (socket) => {
+  const userName = socket?.handshake?.session?.passport?.user;
+  return staffList[userName] === "moderator" || staffList[userName] === "admin" || staffList[userName] === "trialmod";
+});
+
+const buildUserListViewCache = () => {
+  // Cache both views together: a direct send often precedes the queued fanout, so this avoids
+  // rebuilding/hashing the same full list again when the broadcast timer drains.
+  const staffView = module.exports.formattedUserList(true);
+  const publicView = module.exports.formattedUserList(false);
+
+  return {
+    staff: {
+      list: staffView,
+      hash: hashUserListView(staffView),
+    },
+    public: {
+      list: publicView,
+      hash: hashUserListView(publicView),
+    },
+  };
+};
+
+const getUserListView = (module.exports.getUserListView = (isStaff) => {
+  if (!userListEmitter.viewCache) userListEmitter.viewCache = buildUserListViewCache();
+  return isStaff ? userListEmitter.viewCache.staff : userListEmitter.viewCache.public;
+});
+
+const emitUserListToSocket = (module.exports.emitUserListToSocket = (socket, list, viewHash) => {
+  socket._lastUserListViewHash = viewHash;
+  socket.emit("userList", { list });
+});
+
+const markUserListDirty = () => {
+  userListEmitter.viewCache = null;
+  userListEmitter.send = true;
+};
+
 const userListEmitter = {
   state: 0,
   send: false,
+  lastBroadcastAt: 0,
+  viewCache: null,
+  // userList is mutated in several modules; always pair a queued broadcast with cache invalidation.
+  markDirty: markUserListDirty,
   timer: setInterval(() => {
     // 0.01s delay per user (1s per 100), always delay
     if (!userListEmitter.send) {
@@ -185,30 +232,35 @@ const userListEmitter = {
     }
     if (userListEmitter.state > 0) userListEmitter.state--;
     else {
-      const staffUserList = Object.keys(staffList).filter(
-        (name) => staffList[name] === "moderator" || staffList[name] === "admin" || staffList[name] === "trialmod"
-      );
-      const staffSocketIds = Object.keys(io.sockets.sockets).filter((id) =>
-        staffUserList.includes(io.sockets.sockets[id].handshake.session.passport?.user)
-      );
-      const nonStaffSocketIds = Object.keys(io.sockets.sockets).filter((id) => !staffSocketIds.includes(id));
+      const now = Date.now();
+      const nextAllowedBroadcastAt = userListEmitter.lastBroadcastAt + USER_LIST_BROADCAST_MIN_INTERVAL_MS;
+      // Diagnostics showed userList fanout dominating socket egress; the extra floor is intentional.
+      // New sockets still get a direct seed, so this only trades global presence freshness for bandwidth.
+      if (userListEmitter.lastBroadcastAt && now < nextAllowedBroadcastAt) return;
 
       userListEmitter.send = false;
 
       // Build each view once and reuse — formattedUserList maps the entire online list, so calling it
       // inside the per-socket loops was O(users × sockets) of throwaway allocations every tick.
-      const staffView = module.exports.formattedUserList(true);
-      const publicView = module.exports.formattedUserList(false);
+      if (!userListEmitter.viewCache) userListEmitter.viewCache = buildUserListViewCache();
+      const { staff: staffView, public: publicView } = userListEmitter.viewCache;
 
-      // Send to staff
-      staffSocketIds.forEach((id) => {
-        io.sockets.sockets[id].emit("userList", { list: staffView });
+      let sentAny = false;
+
+      Object.keys(io.sockets.sockets).forEach((id) => {
+        const socket = io.sockets.sockets[id];
+        if (!socket) return;
+
+        const isStaff = isStaffSocket(socket);
+        const nextView = isStaff ? staffView : publicView;
+
+        if (socket._lastUserListViewHash === nextView.hash) return;
+
+        emitUserListToSocket(socket, nextView.list, nextView.hash);
+        sentAny = true;
       });
 
-      // Send to non-staff
-      nonStaffSocketIds.forEach((id) => {
-        io.sockets.sockets[id].emit("userList", { list: publicView });
-      });
+      if (sentAny) userListEmitter.lastBroadcastAt = now;
     }
   }, 100),
 };

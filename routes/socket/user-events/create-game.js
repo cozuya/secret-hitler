@@ -1,4 +1,4 @@
-const { gameCreationDisabled, limitNewPlayers, userList, games } = require("../models");
+const { gameCreationDisabled, limitNewPlayers, userList, games, userListEmitter } = require("../models");
 const { generateCombination } = require("gfycat-style-urls");
 const { chatReplacements } = require("../chatReplacements");
 const Account = require("../../../models/account");
@@ -335,6 +335,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
   }
 
   user.timeLastGameCreated = currentTime;
+  userListEmitter.markDirty();
   Account.findOne({ username: user.userName }).then((account) => {
     newGame.private = {
       reports: {},

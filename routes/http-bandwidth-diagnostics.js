@@ -81,7 +81,8 @@ const buildMiddleware = () => {
       stats.clear();
     }
   }, intervalMs);
-  timer.unref();
+  // Real Node timers should not keep the process alive; some test timer shims omit unref().
+  if (timer.unref) timer.unref();
 
   return (req, res, next) => {
     if (!diagnosticsState.isEnabled()) {

@@ -68,6 +68,7 @@ const https = require("https");
 const moment = require("moment");
 const { selectPlayerToAssassinate } = require("./game/assassination");
 const { instrumentSocket } = require("./bandwidth-diagnostics");
+const { recordSocketConnection, recordSocketDisconnect, recordUserListRequest } = require("./abuse-monitor");
 
 let modUserNames = [],
   editorUserNames = [],
@@ -237,6 +238,18 @@ module.exports.socketRoutes = () => {
 
   io.on("connection", (socket) => {
     instrumentSocket(socket);
+    recordSocketConnection(socket);
+
+    // Throttle only explicit refresh pulls. The upgrade seed is the client's first usable player list,
+    // so blocking it can leave a new tab blank until an unrelated user-list mutation happens.
+    const sendUserListWithThrottle = (eventName) => {
+      if (recordUserListRequest(socket, eventName)) {
+        // Silent drop: requestUserList is often an implicit UI refresh, and the global fanout will resync.
+        return;
+      }
+
+      sendUserList(socket);
+    };
 
     // This 'error' listener MUST NOT exit or do anything destructive. socket.io 2.4.1 does not reserve
     // "error" on the receiving side, so a CLIENT can trigger it directly — `socket.emit("error", <anything>)`
@@ -360,6 +373,7 @@ module.exports.socketRoutes = () => {
       // Instantly sends the userlist as soon as the websocket is created.
       // For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
       socket.conn.on("upgrade", () => {
+        // Initial seed is deliberately unthrottled; requestUserList/getUserList below handle abusive pulls.
         sendUserList(socket);
         socket.emit("emoteList", emoteList);
 
@@ -402,11 +416,12 @@ module.exports.socketRoutes = () => {
 
       // user-events
       socket.on("disconnect", () => {
+        recordSocketDisconnect(socket);
         handleSocketDisconnect(socket);
       });
 
       socket.on("requestUserList", () => {
-        sendUserList(socket);
+        sendUserListWithThrottle("requestUserList");
       });
 
       socket.on("feedbackForm", (data) => {
@@ -679,8 +694,10 @@ module.exports.socketRoutes = () => {
       socket.on("getGameInfo", (uid) => {
         sendGameInfo(socket, uid);
       });
+      // Legacy/public socket event; the current frontend uses requestUserList, but keep the same
+      // backpressure here because arbitrary clients can still call any registered socket event.
       socket.on("getUserList", () => {
-        sendUserList(socket);
+        sendUserListWithThrottle("getUserList");
       });
       socket.on("getGeneralChats", () => {
         sendGeneralChats(socket);

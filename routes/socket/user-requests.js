@@ -15,10 +15,11 @@ const {
   limitNewPlayers,
   bypassVPNCheck,
   userListEmitter,
-  formattedUserList,
+  emitUserListToSocket,
+  getUserListView,
   gameListEmitter,
   formattedGameList,
-  staffList,
+  isStaffSocket,
 } = require("./models");
 const { sendInProgressGameUpdate } = require("./util");
 const version = require("../../version");
@@ -31,17 +32,10 @@ const { CURRENTSEASONNUMBER } = require("../../src/frontend-scripts/node-constan
 const sendUserList = (module.exports.sendUserList = (socket) => {
   // eslint-disable-line one-var
   if (socket) {
-    const staffUserList = Object.keys(staffList).filter(
-      (name) => staffList[name] === "moderator" || staffList[name] === "admin" || staffList[name] === "trialmod"
-    );
-
-    if (staffUserList.includes(socket?.handshake?.session?.passport?.user)) {
-      socket.emit("userList", { list: formattedUserList(true) });
-    } else {
-      socket.emit("userList", { list: formattedUserList() });
-    }
+    const view = getUserListView(isStaffSocket(socket));
+    emitUserListToSocket(socket, view.list, view.hash);
   } else {
-    userListEmitter.send = true;
+    userListEmitter.markDirty();
   }
 });
 
@@ -234,7 +228,10 @@ module.exports.sendUserGameSettings = (socket) => {
         userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] =
           account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
         userList.push(userListInfo);
+        // The direct send gives this fresh socket its own just-added entry; the queued global send is
+        // throttled/deduped in models.js so everyone else catches up without an immediate fanout storm.
         sendUserList();
+        sendUserList(socket);
       }
 
       socket.emit("version", {
