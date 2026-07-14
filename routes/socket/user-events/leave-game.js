@@ -402,7 +402,9 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
     if (!game.summarySaved && game.gameState.isTracksFlipped) {
       const summary = game.private.summary.publish();
       if (summary && summary.toObject() && game.general.uid !== "devgame" && !game.general.private) {
-        summary.save();
+        // An unhandled rejection here is fatal (bin/dev.js logs and exits), so a failed summary
+        // write would end every live game. Log it instead — the game is already over.
+        summary.save().catch((err) => console.log(err, "err saving summary in handleUserLeaveGame"));
         game.summarySaved = true;
       }
     }

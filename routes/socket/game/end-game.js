@@ -178,7 +178,10 @@ const saveGame = (game) => {
       enhanced = buildEnhancedGameSummary(summary.toObject());
       updateProfiles(game, enhanced);
       if (!game.summarySaved) {
-        summary.save();
+        // A rejected save() is NOT caught by this try/catch (it's async) — and an unhandled
+        // rejection is fatal: bin/dev.js logs and exits, ending every live game. The game is over
+        // by the time we're here, so a failed persist must be logged, not escalated.
+        summary.save().catch((error) => console.log(error, "err saving summary in saveGame"));
         game.summarySaved = true;
       }
     } else {
@@ -189,38 +192,67 @@ const saveGame = (game) => {
   }
 
   debug("Saving game: %O", summary);
-  gameToSave.save();
+  gameToSave.save().catch((error) => console.log(error, "err saving game in saveGame"));
 };
 
 // Save a game and then potentially perform another action (usually deleting the game)
 const saveOrUpdateGame = (gameID, callback) => {
   const gameInMemory = games[gameID];
 
-  Game.findOne({ uid: gameID }).then((game) => {
-    if (game) {
-      const newObject = generateGameObject(gameInMemory); // in theory this should only be chats (as the only time a game is saved and *not* deleted is on game end) but for forwards compatibility all keys are checked
+  Game.findOne({ uid: gameID })
+    .then((game) => {
+      if (game) {
+        const newObject = generateGameObject(gameInMemory); // in theory this should only be chats (as the only time a game is saved and *not* deleted is on game end) but for forwards compatibility all keys are checked
 
-      for (const key in newObject) {
-        if (newObject.hasOwnProperty(key) && game[key] !== newObject[key]) {
-          // check in order to prevent unnecessarily marking fields as modified in mongoose
-          game[key] = newObject[key];
+        for (const key in newObject) {
+          if (newObject.hasOwnProperty(key) && game[key] !== newObject[key]) {
+            // check in order to prevent unnecessarily marking fields as modified in mongoose
+            game[key] = newObject[key];
+          }
         }
+
+        // Backstop for the teardown guard in saveAndDeleteGame: if two writers ever do reach the
+        // same doc, `chats` is an Array, and a wholesale $set on an array makes mongoose put __v in
+        // the where-clause and $inc it — so the loser rejects with a VersionError. Unhandled, that
+        // rejection is fatal (bin/dev.js exits), which is how a save conflict on an already-finished
+        // game ended every live game in production. Both writers persist the same in-memory game, so
+        // the loser's write is redundant: log it and move on.
+        game.save().catch((err) => console.log(err, "err saving game in saveOrUpdateGame"));
+      } else {
+        saveGame(gameInMemory);
       }
 
-      game.save();
-    } else {
-      saveGame(gameInMemory);
-    }
-
-    if (callback) callback();
-  });
+      if (callback) callback();
+    })
+    .catch((err) => {
+      console.log(err, "err in saveOrUpdateGame");
+      // The callback (which deletes the game from memory) never ran, so release the teardown guard:
+      // otherwise a transient DB error strands the game in `games` forever. The 30s garbage
+      // collector still sees it as completed/abandoned and will re-attempt the teardown.
+      if (gameInMemory) gameInMemory.isBeingTornDown = false;
+    });
 };
 
 const saveAndDeleteGame = (gameID) => {
-  clearFlappyTimers(games[gameID]);
+  const game = games[gameID];
+
+  // Teardown must run at most once per game. saveOrUpdateGame does a DB round-trip before its
+  // callback deletes games[gameID], so the game stays in `games` for the whole find — and every
+  // trigger below can fire inside that window and start a *second* teardown of the same game: the
+  // 30s garbage collector (routes.js), the last player leaving (leave-game.js, whose empty-table
+  // branch is re-entrant), a passed remake vote, and a mod deleting the game. Two teardowns race to
+  // save the same doc and the loser throws a fatal VersionError (see saveOrUpdateGame).
+  // Bailing on a missing game also stops a worse outcome: generateGameObject(undefined) yields an
+  // all-undefined object, which would overwrite the stored game record with empty fields.
+  if (!game || game.isBeingTornDown) {
+    return;
+  }
+  game.isBeingTornDown = true;
+
+  clearFlappyTimers(game);
   // clear per-player unvote intervals too — otherwise they keep firing after the game is
   // deleted and their closures pin the whole game object in memory (slow OOM leak).
-  clearVoteSpamTimers(games[gameID]);
+  clearVoteSpamTimers(game);
 
   saveOrUpdateGame(gameID, () => {
     delete games[gameID];
