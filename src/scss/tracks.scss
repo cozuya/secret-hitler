@@ -57,7 +57,8 @@
 		}
 	}
 	.icon.repeat,
-	.icon.remove {
+	.icon.remove,
+	.icon.check.td-out {
 		opacity: 1 !important;
 		position: absolute;
 		bottom: 5px;
@@ -75,6 +76,13 @@
 
 		&.enabled {
 			color: #db2828 !important;
+		}
+	}
+	.icon.check.td-out {
+		left: 34px;
+
+		&.enabled {
+			color: #21ba45 !important;
 		}
 	}
 	.player-count {

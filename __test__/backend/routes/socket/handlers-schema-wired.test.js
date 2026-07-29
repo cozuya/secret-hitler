@@ -54,6 +54,7 @@ describe("every schema-guarded socket handler has its schema wired", () => {
   // game/ handlers
   it.each([
     ["selectVoting", () => election.selectVoting(P, game(), D, null, false)],
+    ["selectTdOut", () => election.selectTdOut(P, game(), D, null)],
     ["selectPresidentVoteOnVeto", () => election.selectPresidentVoteOnVeto(P, game(), D, null)],
     ["selectChancellorVoteOnVeto", () => election.selectChancellorVoteOnVeto(P, game(), D, null)],
     ["selectChancellorPolicy", () => election.selectChancellorPolicy(P, game(), D, false, null)],

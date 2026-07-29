@@ -18,7 +18,13 @@ const _ = require("lodash");
 const { makeReport } = require("../report.js");
 const { assassinateMerlin } = require("./assassination");
 const { completeGame } = require("./end-game");
-const { voteSchema, policySelectionSchema } = require("./election.schema");
+const { voteSchema, policySelectionSchema, tdOutSchema } = require("./election.schema");
+const {
+  clearTdOutVotes,
+  getTdOutPublicState,
+  isTdOutAvailable,
+  pruneTdOutVotes,
+} = require("./td-out-state");
 
 const powerMapping = {
   investigate: [investigateLoyalty, "The president must investigate the party membership of another player."],
@@ -61,6 +67,8 @@ const presidentPowers = [
 const enactPolicy = (game, team, socket) => {
   const index = game.trackState.enactedPolicies.length;
   const { experiencedMode } = game.general;
+
+  clearTdOutVotes(game);
 
   if (game.private.lock.selectChancellor) {
     game.private.lock.selectChancellor = false;
@@ -234,7 +242,7 @@ const enactPolicy = (game, team, socket) => {
           },
           process.env.NODE_ENV === "development" ? 100 : 2000
         );
-      } else if (powerToEnact && game.trackState.electionTrackerCount <= 2) {
+      } else if (powerToEnact && game.gameState.phase !== "tdOut" && game.trackState.electionTrackerCount <= 2) {
         const chat = {
           timestamp: new Date(),
           gameChat: true,
@@ -359,6 +367,11 @@ const enactPolicy = (game, team, socket) => {
           )[Symbol.toPrimitive]();
           sendInProgressGameUpdate(game);
         }
+      } else if (game.gameState.phase === "tdOut") {
+        game.general.status = "TD out is continuing. The next top policy is being enacted.";
+        game.trackState.electionTrackerCount = 3;
+        sendInProgressGameUpdate(game);
+        enactTopdeckPolicy(game, socket, "TD out continues and the next top policy is enacted.");
       } else {
         sendInProgressGameUpdate(game);
         addPreviousGovernmentStatus();
@@ -368,6 +381,86 @@ const enactPolicy = (game, team, socket) => {
       game.trackState.electionTrackerCount = 0;
     },
     process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 1000 : 4000
+  );
+};
+
+const enactTopdeckPolicy = (
+  game,
+  socket,
+  chatText = "The third consecutive election has failed and the top policy is enacted."
+) => {
+  const { experiencedMode } = game.general;
+  const isTdOutInProgress = game.gameState.phase === "tdOut";
+
+  clearTdOutVotes(game);
+
+  if (
+    !isTdOutInProgress &&
+    (game.general.noTopdecking === 1 ||
+      (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1))
+  ) {
+    game.chats.push({
+      timestamp: new Date(),
+      gameChat: true,
+      chat: [
+        {
+          text: "The game was topdecked.",
+        },
+      ],
+    });
+    game.publicPlayersState.forEach((player, i) => {
+      player.cardStatus.cardFront = "secretrole";
+      player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+      player.cardStatus.cardDisplayed = true;
+      player.cardStatus.isFlipped = false;
+    });
+    game.gameState.audioCue = "fascistsWin";
+    sendInProgressGameUpdate(game, true);
+
+    setTimeout(() => {
+      game.publicPlayersState.forEach((player) => {
+        player.cardStatus.isFlipped = true;
+      });
+      game.gameState.audioCue = "";
+
+      completeGame(game, "fascist");
+    }, 2000);
+
+    return;
+  } else if (!isTdOutInProgress && game.general.noTopdecking === 2) {
+    game.trackState.consecutiveTopdecks++;
+  }
+
+  const chat = {
+    timestamp: new Date(),
+    gameChat: true,
+    chat: [
+      {
+        text: chatText,
+      },
+    ],
+  };
+
+  game.gameState.previousElectedGovernment = [];
+
+  if (!game.general.disableGamechat) {
+    game.private.seatedPlayers.forEach((player) => {
+      player.gameChats.push(chat);
+    });
+
+    game.private.unSeatedGameChats.push(chat);
+  }
+
+  if (!game.gameState.undrawnPolicyCount) {
+    shufflePolicies(game);
+  }
+
+  game.gameState.undrawnPolicyCount--;
+  setTimeout(
+    () => {
+      enactPolicy(game, game.private.policies.shift(), socket);
+    },
+    process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 500 : 2000
   );
 };
 
@@ -1400,6 +1493,127 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 
 module.exports.selectPresidentPolicy = selectPresidentPolicy;
 
+const clearActiveElectionForTdOut = (game) => {
+  if (game.general.timedMode && game.private.timerId) {
+    clearTimeout(game.private.timerId);
+    game.private.timerId = null;
+  }
+
+  game.gameState.timedModeEnabled = false;
+  game.gameState.pendingChancellorIndex = null;
+
+  if (game.private.voteSpamData) {
+    game.private.voteSpamData.forEach((voteSpamData) => {
+      if (voteSpamData.unvoteTimer !== -1) {
+        clearInterval(voteSpamData.unvoteTimer);
+        voteSpamData.unvoteTimer = -1;
+      }
+    });
+  }
+
+  game.private.lock.selectChancellor = false;
+  game.private.lock.tdOut = true;
+
+  game.publicPlayersState.forEach((player) => {
+    player.isLoader = false;
+    player.governmentStatus = "";
+    player.cardStatus.cardDisplayed = false;
+    player.cardStatus.isFlipped = false;
+  });
+
+  game.private.seatedPlayers.forEach((player) => {
+    player.cardFlingerState = [];
+    player.voteStatus = {
+      hasVoted: false,
+    };
+  });
+};
+
+const selectTdOut = (passport, game, data, socket) => {
+  const parsed = tdOutSchema.safeParse(data);
+  if (!parsed.success) return;
+  data = parsed.data;
+
+  if (game.gameState.isGameFrozen) {
+    if (socket) {
+      socket.emit("sendAlert", "A staff member has prevented this game from proceeding. Please wait.");
+    }
+    return;
+  }
+
+  if (game.general.isRemade) {
+    if (socket) {
+      socket.emit("sendAlert", "This game has been remade and is now no longer playable.");
+    }
+    return;
+  }
+
+  if (!isTdOutAvailable(game)) {
+    return;
+  }
+
+  const playerIndex = game.private.seatedPlayers.findIndex((player) => player.userName === passport.user);
+  const player = game.private.seatedPlayers[playerIndex];
+
+  if (!player || player.isDead) {
+    return;
+  }
+
+  const votes = pruneTdOutVotes(game);
+  const hadTdOutVote = Boolean(votes[player.userName]);
+
+  if (hadTdOutVote === data.tdOutStatus) {
+    if (socket) {
+      socket.emit("updateTdOutVoting", hadTdOutVote);
+    }
+    return;
+  }
+
+  if (data.tdOutStatus) {
+    votes[player.userName] = true;
+  } else {
+    delete votes[player.userName];
+  }
+
+  const tdOutState = getTdOutPublicState(game);
+
+  if (socket) {
+    socket.emit("updateTdOutVoting", Boolean(votes[player.userName]));
+  }
+
+  game.chats.push({
+    timestamp: new Date(),
+    gameChat: true,
+    chat: [
+      {
+        text: game.general.blindMode ? "Seat " : "Player ",
+      },
+      {
+        text: game.general.blindMode ? `{${playerIndex + 1}}` : `${passport.user} {${playerIndex + 1}}`,
+        type: "player",
+      },
+      {
+        text: data.tdOutStatus
+          ? ` has voted to TD out this game. (${tdOutState.voteCount}/${tdOutState.requiredVotes})`
+          : ` has rescinded their vote to TD out this game. (${tdOutState.voteCount}/${tdOutState.requiredVotes})`,
+      },
+    ],
+  });
+
+  if (tdOutState.voteCount >= tdOutState.requiredVotes) {
+    clearActiveElectionForTdOut(game);
+    game.trackState.electionTrackerCount = 3;
+    game.gameState.phase = "tdOut";
+    game.general.status = "All living players voted to TD out. The top policy is being enacted.";
+    sendInProgressGameUpdate(game, true);
+    enactTopdeckPolicy(game, socket, "All living players voted to TD out the game and the top policy is enacted.");
+  } else {
+    sendInProgressGameUpdate(game);
+  }
+};
+
+module.exports.selectTdOut = selectTdOut;
+
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
@@ -1435,6 +1649,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
     const { gameState } = game;
     const { presidentIndex } = gameState;
     const chancellorIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === "isChancellor");
+    clearTdOutVotes(game);
     game.trackState.consecutiveTopdecks = 0;
 
     game.private._chancellorPlayerName = game.private.seatedPlayers[chancellorIndex].userName;
@@ -1644,75 +1859,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
   };
   const failedElection = () => {
     game.trackState.electionTrackerCount++;
+    clearTdOutVotes(game);
 
     if (game.trackState.electionTrackerCount >= 3) {
-      if (
-        game.general.noTopdecking === 1 ||
-        (game.general.noTopdecking === 2 && game.trackState.consecutiveTopdecks >= 1)
-      ) {
-        game.chats.push({
-          timestamp: new Date(),
-          gameChat: true,
-          chat: [
-            {
-              text: "The game was topdecked.",
-            },
-          ],
-        });
-        game.publicPlayersState.forEach((player, i) => {
-          player.cardStatus.cardFront = "secretrole";
-          player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-          player.cardStatus.cardDisplayed = true;
-          player.cardStatus.isFlipped = false;
-        });
-        game.gameState.audioCue = "fascistsWin";
-        sendInProgressGameUpdate(game, true);
-
-        setTimeout(() => {
-          game.publicPlayersState.forEach((player, i) => {
-            player.cardStatus.isFlipped = true;
-          });
-          game.gameState.audioCue = "";
-
-          completeGame(game, "fascist");
-        }, 2000);
-
-        return;
-      } else if (game.general.noTopdecking === 2) {
-        game.trackState.consecutiveTopdecks++;
-      }
-
-      const chat = {
-        timestamp: new Date(),
-        gameChat: true,
-        chat: [
-          {
-            text: "The third consecutive election has failed and the top policy is enacted.",
-          },
-        ],
-      };
-
-      game.gameState.previousElectedGovernment = [];
-
-      if (!game.general.disableGamechat) {
-        game.private.seatedPlayers.forEach((player) => {
-          player.gameChats.push(chat);
-        });
-
-        game.private.unSeatedGameChats.push(chat);
-      }
-
-      if (!game.gameState.undrawnPolicyCount) {
-        shufflePolicies(game);
-      }
-
-      game.gameState.undrawnPolicyCount--;
-      setTimeout(
-        () => {
-          enactPolicy(game, game.private.policies.shift(), socket);
-        },
-        process.env.NODE_ENV === "development" ? 100 : experiencedMode ? 500 : 2000
-      );
+      enactTopdeckPolicy(game, socket);
     } else {
       if (game.general.timedMode) {
         if (game.private.timerId) {

@@ -6,5 +6,6 @@ const { voteSchema } = require("./wire-schemas");
 // depth boundary (3 is the highest valid value, the chancellor's enact); the per-context validity stays
 // in the handler, before the value indexes currentElectionPolicies / currentChancellorOptions.
 const policySelectionSchema = z.object({ selection: z.number().int().min(0).max(3) }).passthrough();
+const tdOutSchema = z.object({ tdOutStatus: z.boolean() }).passthrough();
 
-module.exports = { voteSchema, policySelectionSchema };
+module.exports = { voteSchema, policySelectionSchema, tdOutSchema };

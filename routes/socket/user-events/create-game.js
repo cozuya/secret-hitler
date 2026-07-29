@@ -327,6 +327,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
       lock: {},
       votesPeeked: false,
       remakeVotesPeeked: false,
+      tdOutVotes: {},
       invIndex: -1,
       hiddenInfoChat: [],
       hiddenInfoSubscriptions: [],

@@ -6,6 +6,7 @@ describe("Tracks", () => {
   it("should initialize correctly", () => {
     const initialState = {
       remakeStatus: false,
+      tdOutStatus: false,
       minutes: 0,
       seconds: 0,
       timedMode: false,

@@ -210,6 +210,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
       replayGameChats: [],
       lock: {},
       votesPeeked: false,
+      tdOutVotes: {},
       invIndex: -1,
       privatePassword: game.private.privatePassword,
       hiddenInfoChat: [],
