@@ -1,4 +1,5 @@
 const { newStaff } = require("./models");
+const { getTdOutPublicState, hasTdOutVote } = require("./game/td-out-state");
 const util = require("util");
 const { Webhook } = require("discord-webhook-node");
 const tempy = require("tempy");
@@ -56,6 +57,13 @@ const secureGame = (game) => {
   return _game;
 };
 
+const addTdOutState = (_game, game, userName) => {
+  _game.gameState = Object.assign({}, _game.gameState, {
+    tdOutVote: getTdOutPublicState(game),
+  });
+  _game.tdOutStatus = hasTdOutVote(game, userName);
+};
+
 const combineInProgressChats = (game, userName) =>
   userName && game.gameState.isTracksFlipped
     ? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(game.chats)
@@ -99,6 +107,8 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
     const _game = Object.assign({}, game);
     const { user } = sock.handshake.session.passport;
 
+    addTdOutState(_game, game, user);
+
     if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
       const privatePlayer = _game.private.seatedPlayers.find((player) => user === player.userName);
 
@@ -129,6 +139,8 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
     observerSockets.forEach((sock) => {
       const _game = Object.assign({}, game);
       const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
+
+      addTdOutState(_game, game, user);
 
       if (
         user &&

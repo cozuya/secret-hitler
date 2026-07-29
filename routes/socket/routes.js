@@ -44,6 +44,7 @@ const {
 } = require("./user-requests");
 const {
   selectVoting,
+  selectTdOut,
   selectPresidentPolicy,
   selectChancellorPolicy,
   selectChancellorVoteOnVeto,
@@ -783,6 +784,13 @@ module.exports.socketRoutes = () => {
         const game = findGame(data);
         if (authenticated && ensureInGame(passport, game)) {
           selectVoting(passport, game, data, socket);
+        }
+      });
+      socket.on("updateTdOut", (data) => {
+        if (isRestricted) return;
+        const game = findGame(data);
+        if (authenticated && ensureInGame(passport, game)) {
+          selectTdOut(passport, game, data, socket);
         }
       });
       socket.on("selectedPresidentPolicy", (data) => {

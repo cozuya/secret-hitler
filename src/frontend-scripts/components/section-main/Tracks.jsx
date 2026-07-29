@@ -12,6 +12,7 @@ class Tracks extends React.Component {
     super();
     this.state = {
       remakeStatus: false,
+      tdOutStatus: false,
       minutes: 0,
       seconds: 0,
       timedMode: false,
@@ -36,6 +37,11 @@ class Tracks extends React.Component {
           remakeStatus: status,
         });
       });
+      this.props.socket.on("updateTdOutVoting", (status) => {
+        this.setState({
+          tdOutStatus: status,
+        });
+      });
     }
   }
 
@@ -47,6 +53,10 @@ class Tracks extends React.Component {
 
     if (Notification && Notification.permission === "granted" && this.props.socket) {
       this.props.socket.off("pingPlayer");
+    }
+
+    if (this.props.socket) {
+      this.props.socket.off("updateTdOutVoting");
     }
   }
 
@@ -64,9 +74,20 @@ class Tracks extends React.Component {
       return;
     }
 
+    if (
+      nextProps.gameInfo &&
+      typeof nextProps.gameInfo.tdOutStatus === "boolean" &&
+      nextProps.gameInfo.tdOutStatus !== this.state.tdOutStatus
+    ) {
+      this.setState({
+        tdOutStatus: nextProps.gameInfo.tdOutStatus,
+      });
+    }
+
     if (!gameInfo.gameState.isStarted) {
       this.setState({
         remakeStatus: false,
+        tdOutStatus: false,
       });
     }
 
@@ -464,6 +485,15 @@ class Tracks extends React.Component {
         uid: gameInfo.general.uid,
       });
     };
+    const tdOutVote = gameInfo.gameState.tdOutVote || {};
+    const tdOutStatus =
+      typeof gameInfo.tdOutStatus === "boolean" ? gameInfo.tdOutStatus : this.state.tdOutStatus;
+    const updateTdOut = () => {
+      this.props.socket.emit("updateTdOut", {
+        tdOutStatus: !tdOutStatus,
+        uid: gameInfo.general.uid,
+      });
+    };
 
     const renderFasTrack = () => {
       if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -755,6 +785,13 @@ class Tracks extends React.Component {
                 }
               />
             )}
+          {userInfo.userName && userInfo.isSeated && tdOutVote.isAvailable && (
+            <i
+              className={`icon check td-out ${tdOutStatus ? "enabled" : ""}`}
+              onClick={updateTdOut}
+              title={`Vote to TD out this game (${tdOutVote.voteCount || 0}/${tdOutVote.requiredVotes || 0})`}
+            />
+          )}
           {!showTimer && (minutes || seconds >= 15) && timedMode ? (
             <i title="Click to view Timer." className="hourglass half timer icon" onClick={this.toggleTimer}></i>
           ) : timedMode ? (

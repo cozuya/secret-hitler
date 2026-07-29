@@ -930,6 +930,7 @@ module.exports = (game) => {
   });
   game.gameState.audioCue = "";
   game.private.policies = [];
+  game.private.tdOutVotes = {};
   game.private.voteSpamData = game.private.seatedPlayers.map((player) => ({
     unvoteTimer: -1,
   }));

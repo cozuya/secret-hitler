@@ -1,6 +1,6 @@
 import { assassinateSchema } from "../../../../routes/socket/game/assassination.schema";
 import { selectChancellorSchema } from "../../../../routes/socket/game/election-util.schema";
-import { voteSchema, policySelectionSchema } from "../../../../routes/socket/game/election.schema";
+import { voteSchema, policySelectionSchema, tdOutSchema } from "../../../../routes/socket/game/election.schema";
 import { playerIndexSchema, voteSchema as ppVoteSchema } from "../../../../routes/socket/game/policy-powers.schema";
 
 // Each game handler used to deref a wire field directly (seatedPlayers[data.playerIndex],
@@ -64,5 +64,19 @@ describe("policySelectionSchema (integer selection field)", () => {
     expect(policySelectionSchema.safeParse({ selection: {} }).success).toBe(false);
     expect(policySelectionSchema.safeParse({ selection: 1.5 }).success).toBe(false);
     expect(policySelectionSchema.safeParse({ uid: "g" }).success).toBe(false);
+  });
+});
+
+describe("tdOutSchema (boolean tdOutStatus field)", () => {
+  it("accepts boolean TD-out toggles from the client", () => {
+    expect(tdOutSchema.safeParse({ tdOutStatus: true, uid: "g" }).success).toBe(true);
+    expect(tdOutSchema.safeParse({ tdOutStatus: false, uid: "g" }).success).toBe(true);
+  });
+
+  it("rejects non-boolean / missing tdOutStatus and non-object data", () => {
+    expect(tdOutSchema.safeParse({ tdOutStatus: "yes" }).success).toBe(false);
+    expect(tdOutSchema.safeParse({ tdOutStatus: 1 }).success).toBe(false);
+    expect(tdOutSchema.safeParse({ uid: "g" }).success).toBe(false);
+    expect(tdOutSchema.safeParse(undefined).success).toBe(false);
   });
 });
