@@ -151,7 +151,7 @@ export default function buildReplay(game) {
 
   // given the current turn and phase, returns the next (or same) turn and phase
   function step(tick) {
-    const { avalonSH, noTopdecking } = game.summary.gameSetting;
+    const { avalonSH, noTopdecking, flappyWinner } = game.summary.gameSetting;
     const { turnNum, phase } = tick;
 
     const {
@@ -208,6 +208,9 @@ export default function buildReplay(game) {
           return next("policyEnaction");
         }
       case "policyEnaction":
+        // Flappy ends at match point, before the usual power/next election. Earlier policy
+        // turns still replay normally; the recorded winner applies only to the final turn.
+        if (flappyWinner && turnNum === game.turns.size - 1) return gameOver();
         if (isGameEndingPolicyEnacted) return avalonSH && isAssassination ? next("assassination") : gameOver();
         else if (isInvestigation) return next("investigation");
         else if (isPolicyPeek) return next("policyPeek");

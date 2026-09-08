@@ -16,6 +16,7 @@ const routesIndex = require("./routes/index");
 const Account = require("./models/account");
 const Leaderboard = require("./models/leaderboard");
 const GameStats = require("./models/gameStats");
+const cachedJson = require("./routes/cached-json");
 const { expandAndSimplify } = require("./routes/socket/ip-obf");
 const { CARDBACK_DIR } = require("./routes/cardback-store");
 const { getRedisClientOptions } = require("./routes/redis-client-options");
@@ -98,22 +99,16 @@ app.use(cookieParser());
 // every Leaderboards view (plus any scraper) would otherwise hit Mongo — an avoidable amplifier on a
 // memory-constrained web instance. Short TTL so a fresh cron run still shows up within the minute with
 // no explicit invalidation hook; on a Mongo error we serve the last good payload if we have one.
-let leaderboardCache = null;
-let leaderboardCacheAt = 0;
-const LEADERBOARD_CACHE_TTL_MS = 60 * 1000;
-app.get("/leaderboardData.json", (req, res) => {
-  if (leaderboardCache && Date.now() - leaderboardCacheAt < LEADERBOARD_CACHE_TTL_MS) {
-    return res.json(leaderboardCache);
-  }
-  Leaderboard.findById("current")
-    .lean()
-    .then((doc) => {
-      leaderboardCache = (doc && doc.payload) || Leaderboard.freshBoard();
-      leaderboardCacheAt = Date.now();
-      res.json(leaderboardCache);
-    })
-    .catch(() => res.json(leaderboardCache || Leaderboard.freshBoard()));
-});
+app.get(
+  "/leaderboardData.json",
+  cachedJson(
+    () =>
+      Leaderboard.findById("current")
+        .lean()
+        .then((doc) => (doc && doc.payload) || Leaderboard.freshBoard()),
+    () => Leaderboard.freshBoard()
+  )
+);
 // Serve the daily-generated win-rate stats from Mongo (written by the Render Cron Job
 // scripts/retrieveGameData.js), read by the /stats and /stats-season chart scripts. Same story as the
 // leaderboard route above: the old host generated a data.json file its nginx served at /data; on
@@ -121,22 +116,16 @@ app.get("/leaderboardData.json", (req, res) => {
 // old-host data file can't shadow it. Cached in module memory — the charts fetch this on every stats
 // page view — with a short TTL so a fresh cron run still shows up within the minute, and a
 // correctly-shaped empty fallback until the first cron run (or the last good payload on a Mongo error).
-let statsCache = null;
-let statsCacheAt = 0;
-const STATS_CACHE_TTL_MS = 60 * 1000;
-app.get("/statsData.json", (req, res) => {
-  if (statsCache && Date.now() - statsCacheAt < STATS_CACHE_TTL_MS) {
-    return res.json(statsCache);
-  }
-  GameStats.findById("current")
-    .lean()
-    .then((doc) => {
-      statsCache = (doc && doc.payload) || GameStats.freshStats();
-      statsCacheAt = Date.now();
-      res.json(statsCache);
-    })
-    .catch(() => res.json(statsCache || GameStats.freshStats()));
-});
+app.get(
+  "/statsData.json",
+  cachedJson(
+    () =>
+      GameStats.findById("current")
+        .lean()
+        .then((doc) => (doc && doc.payload) || GameStats.freshStats()),
+    () => GameStats.freshStats()
+  )
+);
 // Serve user-uploaded cardbacks from CARDBACK_DIR (a Render Persistent Disk in prod, the in-repo
 // public/ path in dev). Mounted before the general static handler so it stays authoritative even
 // though it maps to the same /images/custom-cardbacks/ URL the frontend already requests.

@@ -167,7 +167,7 @@ export default class Game extends React.Component {
           <div className="row">
             <div className="sixteen wide column tracks-container">
               {isFlappy ? (
-                <Flappy userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+                <Flappy key={gameInfo.general.uid} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
               ) : (
                 <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
               )}

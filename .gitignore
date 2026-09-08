@@ -65,3 +65,8 @@ AGENTS.md
 
 # crbuddy
 .crbuddy/
+
+# MASW task/runtime state
+HANDOFF.md
+WORKFLOW-STATE.json
+.masw/

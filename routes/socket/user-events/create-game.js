@@ -119,12 +119,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
         // NOTE: flappyMode deliberately does NOT force casual - rated flappyMode games
         // are an explicit product decision (owner call, 2026-07-04): players opt into
         // the mode at creation, and its match-point minigame may decide ELO.
-        // ALSO INTENTIONAL (owner call, 2026-07-05): the create UI DEFAULT-CHECKS
-        // flappyMode, so ordinary ranked games divert to flappy at the 4-5 board
-        // unless the creator opts out. Signed off with data: 4-5 occurs in ~23% of
-        // 7p games, and its historical 44% blue winrate is FARTHER from fair than
-        // the ~50% race that replaces it. Do not re-flag default-on-ranked as a
-        // defect - it is the ship decision.
+        // The create UI and presets leave flappyMode unchecked; ranked flappy is opt-in.
         data.noTopdecking > 0) && !customGame;
   // Silent (playerChats === "disabled") games are no longer forced to practice; they follow the
   // chosen gameType so a silent game can be ranked (and thus compute Elo) like any other.

@@ -45,4 +45,8 @@ const Game = new Schema({
   completed: Boolean,
 });
 
+// The large archive's uid index is provisioned explicitly by scripts/createGameUidIndex.js.
+// Keep automatic creation off in web and cron processes; existing indexes remain in use.
+Game.set("autoIndex", false);
+
 module.exports = mongoose.model("Game", Game);

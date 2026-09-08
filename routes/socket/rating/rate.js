@@ -12,7 +12,7 @@
 
 const { rate } = require("openskill");
 const { biasMuPerFascist } = require("./bias.js");
-const { DEFAULT_SIGMA, displayRating, seedMuFromLegacy, freshRating } = require("./display.js");
+const { DEFAULT_MU, DEFAULT_SIGMA, displayRating, seedMuFromLegacy, freshRating } = require("./display.js");
 
 // Rainbow games historically moved ratings ~2.25x faster (legacy k was size*9 vs size*4). We
 // preserve that as a product behavior by scaling the mu delta only — sigma (uncertainty) still
@@ -104,11 +104,18 @@ const computeRatingUpdates = (game, accounts, winningPlayerNames, seatedUsername
   // (placeholders for absent accounts) so OpenSkill sees correct sizes, and only real accounts are
   // emitted. rank 1 = winner (lower is better); [fascist, liberal] order matches the offset.
   const rateTrack = (track) => {
+    // The head-count offset is calibrated at DEFAULT_MU. Recenter this lobby there before
+    // rating: otherwise raising everyone's skill equally favors the larger liberal team.
+    // Apply only the resulting deltas below, retaining each player's original rating scale.
+    const center = roster.reduce((sum, n) => sum + ratingFor(n, track).mu, 0) / roster.length - DEFAULT_MU;
     const fasInput = fascistNames.map((n) => {
       const { mu, sigma } = ratingFor(n, track);
-      return { mu: mu + offsetPerFascist, sigma };
+      return { mu: mu - center + offsetPerFascist, sigma };
     });
-    const libInput = liberalNames.map((n) => ratingFor(n, track));
+    const libInput = liberalNames.map((n) => {
+      const { mu, sigma } = ratingFor(n, track);
+      return { mu: mu - center, sigma };
+    });
     const [fasOut, libOut] = rate([fasInput, libInput], { rank: fascistWon ? [1, 2] : [2, 1] });
 
     const out = {};

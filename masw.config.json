@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "controller": {
+    "provider": "claude",
+    "model": "opus",
+    "effort": "xhigh"
+  },
+  "worker": {
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "effort": "xhigh"
+  },
+  "protectedPaths": [],
+  "autonomy": {
+    "maxCycles": 25,
+    "maxNoProgressCycles": 3,
+    "maxSameAssignmentAttempts": 4,
+    "maxSameAssignmentContentAttempts": 4,
+    "maxRepositoryOscillations": 1
+  }
+}

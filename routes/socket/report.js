@@ -8,7 +8,7 @@ function sendReport(game, report, data, type) {
   // regatherAEMUsernames event. With that cache a demoted staffer would linger in it and keep their
   // games' auto-reports buffered instead of sent. Same role set as before (admins included;
   // veteran/contributor excluded by the filter below).
-  Account.find({ staffRole: { $exists: true } }, "username staffRole")
+  return Account.find({ staffRole: { $exists: true } }, "username staffRole")
     .lean()
     .then((accounts) => {
       const staffUserNames = accounts
@@ -52,6 +52,7 @@ function sendReport(game, report, data, type) {
               "Content-Length": Buffer.byteLength(report),
             },
           });
+          req.on("error", (err) => console.log(err, "err sending Discord report"));
           req.end(report);
         } catch (e) {
           console.log(e);
@@ -60,7 +61,8 @@ function sendReport(game, report, data, type) {
         const text = JSON.stringify(report);
         console.log(`${text}\n${game.general.uid}`);
       }
-    });
+    })
+    .catch((err) => console.log(err, "err preparing Discord report"));
 }
 
 module.exports.makeReport = (data, game, type = "report") => {
@@ -104,6 +106,7 @@ module.exports.makeReport = (data, game, type = "report") => {
             "Content-Length": Buffer.byteLength(report),
           },
         });
+        req.on("error", (err) => console.log(err, "err sending Discord mod ping"));
         req.end(report);
       } catch (e) {
         console.log(e);
@@ -144,6 +147,7 @@ module.exports.makeReport = (data, game, type = "report") => {
           accounts.forEach((account) => {
             let ip;
             if (account) ip = account.lastConnectedIP || account.signupIP;
+            if (typeof ip !== "string" || typeof throwerIP !== "string") return;
 
             const seat = game.private.seatedPlayers.findIndex((elem) => elem.userName === account.username);
             if (ip === throwerIP) {
@@ -177,8 +181,9 @@ module.exports.makeReport = (data, game, type = "report") => {
             report.content += `\n__**Matching IPs**__: ${sortedMatches.join(", ")}`;
           }
           report.content += `\n**<https://secrethitler.io/game/#/table/${uid}>**`;
-          sendReport(game, report, data, type);
-        });
+          return sendReport(game, report, data, type);
+        })
+        .catch((err) => console.log(err, "err preparing report IP matches"));
     });
   }
 
@@ -190,6 +195,6 @@ module.exports.makeReport = (data, game, type = "report") => {
       allowed_mentions: { roles: [process.env.DISCORDMODID] },
       avatar_url: "https://cdn.discordapp.com/emojis/230161421311148043.png?v=1",
     };
-    sendReport(game, report, data, type);
+    return sendReport(game, report, data, type);
   }
 };

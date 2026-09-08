@@ -9,10 +9,10 @@ import PropTypes from "prop-types";
 // subscription) so both boards render an identical button; only one is ever mounted at a
 // time (Game.jsx picks Tracks XOR Flappy), so there is no double subscription.
 class RemakeButton extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      remakeStatus: false,
+      remakeStatus: Boolean(props.gameInfo && props.gameInfo.remakeStatus),
     };
   }
 
@@ -38,16 +38,16 @@ class RemakeButton extends React.Component {
     }
   }
 
-  componentWillReceiveProps() {
-    // mirrors Tracks' old reset: clear a stale local vote flag once the game is no longer
-    // running (e.g. a remade game resetting). Reads current props like the original did.
-    const { gameInfo } = this.props;
+  componentWillReceiveProps(nextProps) {
+    const { gameInfo } = nextProps;
 
-    if (!gameInfo.gameState || !gameInfo.general) {
+    if (!gameInfo || !gameInfo.gameState || !gameInfo.general) {
       return;
     }
 
-    if (!gameInfo.gameState.isStarted) {
+    if (typeof gameInfo.remakeStatus === "boolean") {
+      this.setState({ remakeStatus: gameInfo.remakeStatus });
+    } else if (!gameInfo.gameState.isStarted || gameInfo.general.uid !== this.props.gameInfo?.general?.uid) {
       this.setState({ remakeStatus: false });
     }
   }

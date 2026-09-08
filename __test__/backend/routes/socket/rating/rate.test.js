@@ -70,6 +70,46 @@ describe("rating/bias", () => {
 });
 
 describe("rating/rate computeRatingUpdates", () => {
+  it.each([
+    5, 6, 7, 8, 9, 10,
+  ])("keeps faction deltas invariant when equal-skill %ip lobbies shift in rating", (count) => {
+    for (const won of [false, true]) {
+      const baseline = run(count, won, DEFAULT_MU, 2.5).updates;
+      for (const mu of [DEFAULT_MU - 20, DEFAULT_MU + 800 / 24]) {
+        const shifted = run(count, won, mu, 2.5).updates;
+        for (const name of Object.keys(baseline)) {
+          expect(shifted[name].overall.mu - mu).toBeCloseTo(baseline[name].overall.mu - DEFAULT_MU, 10);
+          expect(shifted[name].overall.sigma).toBeCloseTo(baseline[name].overall.sigma, 10);
+          expect(shifted[name].season.mu - mu).toBeCloseTo(baseline[name].season.mu - DEFAULT_MU, 10);
+        }
+      }
+    }
+  });
+
+  it("preserves unequal player skills and centers the season and overall tracks separately", () => {
+    const { libs, fascists } = teamFor(7, DEFAULT_MU, 2.5);
+    const accounts = [...libs, ...fascists];
+    accounts[0].rating.overall.mu += 10;
+    accounts[4].rating.season.mu -= 8;
+    accounts[1].rating.overall.sigma = DEFAULT_SIGMA;
+    const winners = fascists.map((a) => a.username);
+    const game = gameFor(7, true);
+    const baseline = computeRatingUpdates(game, accounts, winners);
+    const shiftedAccounts = accounts.map((a) => ({
+      ...a,
+      rating: {
+        overall: { ...a.rating.overall, mu: a.rating.overall.mu + 30 },
+        season: { ...a.rating.season, mu: a.rating.season.mu - 15 },
+      },
+    }));
+    const shifted = computeRatingUpdates(game, shiftedAccounts, winners);
+    for (const a of accounts) {
+      expect(shifted[a.username].overall.mu - 30).toBeCloseTo(baseline[a.username].overall.mu, 10);
+      expect(shifted[a.username].season.mu + 15).toBeCloseTo(baseline[a.username].season.mu, 10);
+    }
+    expect(baseline.L2.overall.mu - DEFAULT_MU).toBeLessThan(baseline.L3.overall.mu - DEFAULT_MU);
+  });
+
   it("moves winners up and losers down", () => {
     const { updates, libs, fascists } = run(7, true);
     for (const f of fascists) expect(updates[f.username].change).toBeGreaterThan(0);

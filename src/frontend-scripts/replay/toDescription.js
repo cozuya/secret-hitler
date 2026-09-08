@@ -50,6 +50,9 @@ export default function (snapshot, game, userInfo, hideHand) {
       return [text("normal", "The veto"), text("player", snapshot.isVetoSuccessful ? "succeeds" : "fails")];
     case "policyEnaction":
       if (snapshot.gameOver) {
+        if (game.summary.gameSetting.flappyWinner) {
+          return gameOverText([text("normal", "Flappy Hitler ends.")]);
+        }
         return gameOverText([
           text("normal", "The last"),
           text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),

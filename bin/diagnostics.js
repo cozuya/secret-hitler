@@ -10,6 +10,12 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 const v8 = require("v8");
+const isPublicDiagnosticsDir = require("./diagnostics-path");
+
+// Match both static mounts, including the default cardback root when the env var is unset.
+const publicDir = path.resolve(__dirname, "..", "public");
+const cardbackDir = process.env.CARDBACK_DIR || path.join(publicDir, "images", "custom-cardbacks");
+const staticRoots = [publicDir, cardbackDir];
 
 // Persist on the mounted disk so these survive the instance dying. On Render the persistent disk is
 // mounted AT CARDBACK_DIR (/var/data/cardbacks) — NOT at its parent /var/data, which is a root-owned
@@ -32,8 +38,13 @@ let baseDir = null;
 let warned = false;
 function ensureDir() {
   if (baseDir) return true;
-  for (const dir of candidateDirs) {
+  for (const candidate of candidateDirs) {
     try {
+      const dir = path.resolve(candidate);
+      if (isPublicDiagnosticsDir(dir, staticRoots)) {
+        console.error("diagnostics: refusing publicly served directory", dir);
+        continue;
+      }
       fs.mkdirSync(dir, { recursive: true });
       baseDir = dir;
       return true;
