@@ -29,11 +29,11 @@ const { CURRENTSEASONNUMBER } = require("../../src/frontend-scripts/node-constan
 /**
  * @param {object} socket - user socket reference.
  */
-const sendUserList = (module.exports.sendUserList = (socket) => {
+const sendUserList = (module.exports.sendUserList = (socket, force = false) => {
   // eslint-disable-line one-var
   if (socket) {
     const view = getUserListView(isStaffSocket(socket));
-    emitUserListToSocket(socket, view.list, view.hash);
+    if (force || socket._lastUserListViewHash !== view.hash) emitUserListToSocket(socket, view);
   } else {
     userListEmitter.markDirty();
   }
@@ -176,15 +176,20 @@ module.exports.sendModInfo = (games, socket, count, isTrial, isAEM) => {
 /**
  * @param {object} socket - user socket reference.
  */
-module.exports.sendUserGameSettings = (socket) => {
+module.exports.sendUserGameSettings = (socket, loadedAccount) => {
   const { passport } = socket.handshake.session;
 
   if (!passport || !passport.user) {
     return;
   }
 
-  Account.findOne({ username: passport.user })
+  const accountRequest = loadedAccount ? Promise.resolve(loadedAccount) : Account.findOne({ username: passport.user });
+
+  return accountRequest
     .then((account) => {
+      // Account reads can finish after disconnect cleanup or a newer tab taking ownership.
+      // Neither stale connection may recreate presence, including explicit settings refreshes.
+      if (socket.disconnected || socket._replacedBySocketId) return;
       socket.emit("gameSettings", account.gameSettings);
 
       const userListNames = userList.map((user) => user.userName);
@@ -228,10 +233,7 @@ module.exports.sendUserGameSettings = (socket) => {
         userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] =
           account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
         userList.push(userListInfo);
-        // The direct send gives this fresh socket its own just-added entry; the queued global send is
-        // throttled/deduped in models.js so everyone else catches up without an immediate fanout storm.
         sendUserList();
-        sendUserList(socket);
       }
 
       socket.emit("version", {

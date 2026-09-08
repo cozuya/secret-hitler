@@ -5,6 +5,7 @@ import {
   UPDATE_GAMELIST,
   UPDATE_GAMEINFO,
   UPDATE_USERLIST,
+  UPDATE_USERLIST_DELTA,
   UPDATE_GENERALCHATS,
   TOGGLE_NOTES,
   TOGGLE_PLAYER_NOTES,
@@ -64,11 +65,18 @@ const gameInfo = (state = {}, action) => {
   return state;
 };
 
-const userList = (state = {}, action) => {
+export const userList = (state = {}, action) => {
   switch (action.type) {
     case UPDATE_USERLIST:
       state = action.userList;
       break;
+    case UPDATE_USERLIST_DELTA: {
+      const users = new Map((state.list || []).map((user) => [user.userName, user]));
+      action.delta.removals.forEach((userName) => users.delete(userName));
+      action.delta.upserts.forEach((user) => users.set(user.userName, user));
+      state = { list: [...users.values()], hash: action.delta.hash };
+      break;
+    }
   }
   return state;
 };

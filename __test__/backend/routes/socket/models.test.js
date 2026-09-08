@@ -6,6 +6,7 @@ import {
   ipbansNotEnforced,
   gameCreationDisabled,
   formattedUserList,
+  buildUserListDelta,
   userListEmitter,
 } from "../../../../routes/socket/models";
 
@@ -40,5 +41,19 @@ describe("models", () => {
 
   it("has a userListEmitter object", () => {
     expect(typeof userListEmitter).toBe("object");
+  });
+
+  it("builds user-list upserts and removals", () => {
+    const unchanged = { userName: "Ada", status: { type: "none" } };
+    const changedBefore = { userName: "Grace", status: { type: "none" } };
+    const changedAfter = { userName: "Grace", status: { type: "playing", gameId: "abc" } };
+    const added = { userName: "Linus", status: { type: "none" } };
+
+    expect(
+      buildUserListDelta([unchanged, changedBefore, { userName: "Removed" }], [unchanged, changedAfter, added])
+    ).toEqual({
+      upserts: [changedAfter, added],
+      removals: ["Removed"],
+    });
   });
 });

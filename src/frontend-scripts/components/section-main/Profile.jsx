@@ -785,7 +785,6 @@ class ProfileWrapper extends React.Component {
                               gameSettings.blacklist.splice(getBlacklistIndex(userName, gameSettings.blacklist), 1);
 
                               this.props.socket.emit("updateGameSettings", { blacklist: gameSettings.blacklist });
-                              this.props.socket.emit("requestUserList"); // To force a new playerlist pull
                               setTimeout(() => {
                                 this.forceUpdate();
                               }, 500);

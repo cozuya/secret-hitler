@@ -9,6 +9,7 @@ import {
   updateGameList,
   updateGameInfo,
   updateUserList,
+  updateUserListDelta,
   updateGeneralChats,
   updateVersion,
   fetchProfile,
@@ -89,7 +90,24 @@ export class App extends React.Component {
     };
 
     this.prevHash = "";
-    this.lastReconnectAttempt = new Date();
+    this.userListViewHash = null;
+    this.userListResyncPending = false;
+    this.socketReady = false;
+    this.routingStarted = false;
+    this.routeAwaitingReady = false;
+    this.routeFallbackTimer = null;
+  }
+
+  // Routing is normally driven by the server's socketReady signal, because router() reads userInfo
+  // (staffRole, isSeated) that isn't on props until the dispatch in componentDidMount has rendered.
+  // The fallback may render before server listeners exist. Replay that initial route once ready,
+  // without treating the replay as navigation away from a seat or suppressing it via prevHash.
+  startRouting() {
+    if (this.routingStarted && !this.routeAwaitingReady) return;
+    this.routingStarted = true;
+    this.routeAwaitingReady = !this.socketReady;
+    clearTimeout(this.routeFallbackTimer);
+    this.router(true);
   }
 
   compononentDidUpdate() {
@@ -100,8 +118,10 @@ export class App extends React.Component {
     const { dispatch } = this.props;
     const { classList } = document.getElementById("game-container");
 
-    window.addEventListener("hashchange", this.router.bind(this));
-    this.router.call(this); // uh..?
+    window.addEventListener("hashchange", () => {
+      // Before the first route the hash is simply read by startRouting, so dropping it here loses nothing.
+      if (this.routingStarted) this.router(!this.socketReady);
+    });
 
     if (classList.length) {
       const username = classList[0].split("username-")[1];
@@ -112,9 +132,6 @@ export class App extends React.Component {
         hasNotDismissedSignupModal: window.hasNotDismissedSignupModal,
         isTournamentMod: window.isTournamentMod,
       };
-
-      socket.emit("getUserGameSettings");
-      socket.emit("requestUserList");
 
       // ** begin devhelpers **
       //			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
@@ -247,19 +264,26 @@ export class App extends React.Component {
     });
 
     socket.on("userList", (list) => {
+      this.userListViewHash = list.hash;
+      this.userListResyncPending = false;
       dispatch(updateUserList(list));
-      const now = new Date();
-      const since = now - this.lastReconnectAttempt;
-      if (since > 1000 * 5) {
-        this.lastReconnectAttempt = now;
-        const { userInfo } = this.props;
-        if (userInfo && userInfo.userName) {
-          if (!list.list.map((user) => user.userName).includes(userInfo.userName)) {
-            console.log("Detected own user not in list, attempting to reconnect...");
-            socket.emit("getUserGameSettings");
-          }
+    });
+
+    socket.on("userListDelta", (delta) => {
+      if (!delta || delta.baseHash !== this.userListViewHash) {
+        // A revision gap means this tab missed an update. Ask once and stay quiet until the snapshot
+        // lands: the server keeps advancing its idea of our hash as it sends, so every later delta also
+        // fails this check, and asking each time would burn the per-socket request budget in about a
+        // minute and get resyncs blocked outright — freezing the list we're trying to repair.
+        if (!this.userListResyncPending) {
+          this.userListResyncPending = true;
+          socket.emit("requestUserList");
         }
+        return;
       }
+
+      this.userListViewHash = delta.hash;
+      dispatch(updateUserListDelta(delta));
     });
 
     socket.on("updateSeatForUser", () => {
@@ -295,6 +319,24 @@ export class App extends React.Component {
     socket.on("checkRestrictions", () => {
       socket.emit("receiveRestrictions");
     });
+
+    socket.on("socketReady", () => {
+      this.socketReady = true;
+      this.startRouting();
+    });
+
+    socket.connect();
+
+    // socketReady is the happy path, but a blocked transport, a restarting server, or a connect-time
+    // failure server-side would otherwise pin the app to the lobby forever — deep links to #/table/,
+    // #/profile/ and #/replay/ would silently render the wrong view and hash nav would do nothing.
+    // Route anyway once it's clear the signal isn't coming.
+    this.routeFallbackTimer = setTimeout(() => {
+      if (!this.routingStarted) {
+        console.log("socketReady never arrived, routing without it");
+        this.startRouting();
+      }
+    }, 5000);
   }
 
   touConfirmButton(e) {
@@ -311,7 +353,7 @@ export class App extends React.Component {
     }
   }
 
-  router() {
+  router(initialRoute = false) {
     const { hash } = window.location;
     const { userInfo, dispatch, gameInfo } = this.props;
     const isAuthed = Boolean(document.getElementById("game-container").classList.length);
@@ -326,7 +368,7 @@ export class App extends React.Component {
       }
     };
 
-    if (hash === this.prevHash) {
+    if (!initialRoute && hash === this.prevHash) {
       return;
     }
 
@@ -337,10 +379,10 @@ export class App extends React.Component {
       gameInfo.publicPlayersState.length &&
       gameInfo.publicPlayersState.find((player) => player.userName === userInfo.userName)
     ) {
-      if (hash === "#/") {
+      if (hash === "#/" && !initialRoute) {
         this.handleLeaveGame();
       } else if (!gameInfo.gameState.isCompleted) {
-        if (this.prevHash !== "#/table/" + gameInfo.general.uid) {
+        if (initialRoute || this.prevHash !== "#/table/" + gameInfo.general.uid) {
           // Force player to rejoin the game if it's not finished and they are still seated
           socket.emit("getGameInfo", gameInfo.general.uid);
         } else {
@@ -352,7 +394,7 @@ export class App extends React.Component {
         this.prevHash = "#/table/" + gameInfo.general.uid;
         return;
       }
-    } else if (this.prevHash.substr(0, 8) === "#/table/") {
+    } else if (!initialRoute && this.prevHash.substr(0, 8) === "#/table/") {
       this.handleLeaveGame(this.prevHash.split("#/table/")[1]);
     }
 

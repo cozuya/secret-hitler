@@ -53,11 +53,19 @@ export function updateGameInfo(gameInfo) {
 }
 
 export const UPDATE_USERLIST = "UPDATE_USERLIST";
+export const UPDATE_USERLIST_DELTA = "UPDATE_USERLIST_DELTA";
 
 export function updateUserList(userList) {
   return {
     type: UPDATE_USERLIST,
     userList,
+  };
+}
+
+export function updateUserListDelta(delta) {
+  return {
+    type: UPDATE_USERLIST_DELTA,
+    delta,
   };
 }
 

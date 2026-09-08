@@ -198,6 +198,8 @@ const checkStartConditions = (game) => {
  * @param {object} socket - user socket reference.
  */
 const handleSocketDisconnect = (socket) => {
+  if (socket._replacedBySocketId) return;
+
   const { passport } = socket.handshake.session;
 
   let listUpdate = false;

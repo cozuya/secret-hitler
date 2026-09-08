@@ -1,4 +1,4 @@
-const { games, userList, testIP, userListEmitter } = require("../models");
+const { games, testIP } = require("../models");
 const { sendInProgressGameUpdate } = require("../util.js");
 const Account = require("../../../models/account");
 const { sendUserList } = require("../user-requests");
@@ -30,6 +30,9 @@ module.exports.checkUserStatus = (socket, callback) => {
     );
 
     if (oldSocketID && sockets[oldSocketID]) {
+      // The replacement owns presence now; a delayed disconnect from this socket must not remove the
+      // new tab from userList or mark its in-progress game seat disconnected.
+      sockets[oldSocketID]._replacedBySocketId = socket.id;
       sockets[oldSocketID].emit("manualDisconnection");
       delete sockets[oldSocketID];
     }
@@ -45,26 +48,27 @@ module.exports.checkUserStatus = (socket, callback) => {
 
     if (user) {
       // Double-check the user isn't sneaking past IP bans.
-      const logOutUser = (username) => {
-        const bannedUserlistIndex = userList.findIndex((user) => user.userName === username);
-
+      const logOutUser = () => {
         socket.emit("manualDisconnection");
+        // The connection's disconnect listener owns presence cleanup, including rejected connections.
         socket.disconnect(true);
-
-        if (bannedUserlistIndex >= 0) {
-          userList.splice(bannedUserlistIndex, 1);
-          userListEmitter.markDirty();
-        }
-
-        // destroySession(username);
       };
 
       Account.findOne({ username: user }, function (err, account) {
+        if (socket.disconnected || socket._replacedBySocketId) return;
+        if (err) {
+          console.log(err, "err in checkUserStatus account lookup");
+          // A failed lookup cannot authorize initialization. Close the transport without logging out
+          // the session, so a transient database failure can recover on a fresh connection.
+          socket.disconnect(true);
+          return;
+        }
         if (account) {
           if (account.isBanned || (account.isTimeout && new Date() < account.isTimeout)) {
-            logOutUser(user);
+            logOutUser();
           } else {
             testIP(account.lastConnectedIP, (banType) => {
+              if (socket.disconnected || socket._replacedBySocketId) return;
               if (
                 banType &&
                 banType != "new" &&
@@ -72,7 +76,7 @@ module.exports.checkUserStatus = (socket, callback) => {
                 banType != "fragbanLarge" &&
                 !account.gameSettings.ignoreIPBans
               )
-                logOutUser(user);
+                logOutUser();
               else {
                 sendUserList();
                 // Pass the loaded account to the connection callback so it doesn't re-query the same
@@ -81,6 +85,8 @@ module.exports.checkUserStatus = (socket, callback) => {
               }
             });
           }
+        } else {
+          logOutUser();
         }
       });
     } else callback();

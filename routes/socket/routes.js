@@ -239,16 +239,28 @@ module.exports.socketRoutes = () => {
   io.on("connection", (socket) => {
     instrumentSocket(socket);
     recordSocketConnection(socket);
+    // Keep queued fanout from racing account-backed presence setup for this new connection.
+    socket._userListReady = false;
 
-    // Throttle only explicit refresh pulls. The upgrade seed is the client's first usable player list,
-    // so blocking it can leave a new tab blank until an unrelated user-list mutation happens.
+    // Registered here rather than inside checkUserStatus's callback on purpose. checkUserStatus marks the
+    // socket it replaces with _replacedBySocketId synchronously, which suppresses that older socket's
+    // cleanup — but its own callback is gated behind an async account lookup that can be slow or never
+    // fire. A socket dying in that window would leave nobody to release the user's userList entry or
+    // their in-progress seat. handleSocketDisconnect no-ops on sockets with no passport, so this is safe
+    // for every connection.
+    socket.on("disconnect", () => {
+      recordSocketDisconnect(socket);
+      handleSocketDisconnect(socket);
+    });
+
+    // Explicit resync pulls force a snapshot because the client only asks after detecting a revision gap.
     const sendUserListWithThrottle = (eventName) => {
       if (recordUserListRequest(socket, eventName)) {
-        // Silent drop: requestUserList is often an implicit UI refresh, and the global fanout will resync.
+        // Silent drop after the abuse threshold; a genuinely out-of-sync client retries on a later gap.
         return;
       }
 
-      sendUserList(socket);
+      sendUserList(socket, true);
     };
 
     // This 'error' listener MUST NOT exit or do anything destructive. socket.io 2.4.1 does not reserve
@@ -265,6 +277,7 @@ module.exports.socketRoutes = () => {
       }
     });
     checkUserStatus(socket, (initialAccount) => {
+      if (socket.disconnected || socket._replacedBySocketId) return;
       socket.emit("version", { current: version });
 
       // defensively check if game exists
@@ -370,26 +383,6 @@ module.exports.socketRoutes = () => {
         });
       }
 
-      // Instantly sends the userlist as soon as the websocket is created.
-      // For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
-      socket.conn.on("upgrade", () => {
-        // Initial seed is deliberately unthrottled; requestUserList/getUserList below handle abusive pulls.
-        sendUserList(socket);
-        socket.emit("emoteList", emoteList);
-
-        // sockets should not be unauthenticated but let's make sure anyway
-        if (passport && passport.user) {
-          const dmID = Object.keys(modDMs).find((x) => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
-          if (dmID) {
-            socket.emit("preOpenModDMs");
-            socket.emit(
-              "openModDMs",
-              handleAEMMessages(modDMs[dmID], passport.user, modUserNames, editorUserNames, adminUserNames)
-            );
-          }
-        }
-      });
-
       socket.on("receiveRestrictions", () => {
         Account.findOne({ username: passport.user }).then((account) => {
           isRestricted = checkRestriction(account);
@@ -415,11 +408,6 @@ module.exports.socketRoutes = () => {
       });
 
       // user-events
-      socket.on("disconnect", () => {
-        recordSocketDisconnect(socket);
-        handleSocketDisconnect(socket);
-      });
-
       socket.on("requestUserList", () => {
         sendUserListWithThrottle("requestUserList");
       });
@@ -703,7 +691,7 @@ module.exports.socketRoutes = () => {
         sendGeneralChats(socket);
       });
       socket.on("getUserGameSettings", () => {
-        sendUserGameSettings(socket);
+        Promise.resolve(sendUserGameSettings(socket)).then(() => sendUserList(socket));
       });
       socket.on("selectedChancellorVoteOnVeto", (data) => {
         if (isRestricted) return;
@@ -899,6 +887,28 @@ module.exports.socketRoutes = () => {
         if (authenticated && ensureInGame(passport, game)) {
           selectPlayerToAssassinate(passport, game, data, socket);
         }
+      });
+
+      socket.emit("emoteList", emoteList);
+      if (passport && passport.user) {
+        const dmID = Object.keys(modDMs).find((x) => modDMs[x].subscribedPlayers.indexOf(passport.user) !== -1);
+        if (dmID) {
+          socket.emit("preOpenModDMs");
+          socket.emit(
+            "openModDMs",
+            handleAEMMessages(modDMs[dmID], passport.user, modUserNames, editorUserNames, adminUserNames)
+          );
+        }
+      }
+
+      // The client connects only after installing its listeners. Finish account-backed presence setup
+      // before the first snapshot, then signal that inbound route/status requests are safe to send.
+      const initialUserSetup = passport && passport.user ? sendUserGameSettings(socket, initialAccount) : undefined;
+      Promise.resolve(initialUserSetup).then(() => {
+        if (socket.disconnected || socket._replacedBySocketId) return;
+        socket._userListReady = true;
+        sendUserList(socket);
+        socket.emit("socketReady");
       });
     });
   });

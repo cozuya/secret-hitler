@@ -9,7 +9,13 @@ const version = require("../../version");
 const { doesIPMatchCIDR } = require("./ip-obf");
 const { getRedisClientOptions } = require("../redis-client-options");
 
-const USER_LIST_BROADCAST_MIN_INTERVAL_MS = 10 * 1000;
+const USER_LIST_BROADCAST_MIN_INTERVAL_MS = 1000;
+// Deltas are sent optimistically: the server advances its record of what a socket holds at send time,
+// so it can't tell that a client dropped one. Without a ceiling, a client that never applies deltas is
+// desynced permanently — which is the normal state of any tab still running the pre-delta bundle right
+// after a deploy, since it has no userListDelta listener at all. Periodically re-seeding a full snapshot
+// caps that staleness at this many broadcasts for ~5% of the pre-delta bandwidth.
+const USER_LIST_MAX_DELTA_STREAK = 20;
 
 const fs = require("fs");
 const emotes = {};
@@ -179,6 +185,18 @@ module.exports.formattedUserList = (isAEM) => {
 
 const hashUserListView = (view) => crypto.createHash("sha1").update(JSON.stringify(view)).digest("base64");
 
+const buildUserListDelta = (module.exports.buildUserListDelta = (previousList, nextList) => {
+  const previousUsers = new Map(previousList.map((user) => [user.userName, user]));
+  const nextUsers = new Map(nextList.map((user) => [user.userName, user]));
+  const upserts = nextList.filter((user) => {
+    const previousUser = previousUsers.get(user.userName);
+    return !previousUser || JSON.stringify(previousUser) !== JSON.stringify(user);
+  });
+  const removals = previousList.filter((user) => !nextUsers.has(user.userName)).map((user) => user.userName);
+
+  return { upserts, removals };
+});
+
 const isStaffSocket = (module.exports.isStaffSocket = (socket) => {
   const userName = socket?.handshake?.session?.passport?.user;
   return staffList[userName] === "moderator" || staffList[userName] === "admin" || staffList[userName] === "trialmod";
@@ -207,12 +225,28 @@ const getUserListView = (module.exports.getUserListView = (isStaff) => {
   return isStaff ? userListEmitter.viewCache.staff : userListEmitter.viewCache.public;
 });
 
-const emitUserListToSocket = (module.exports.emitUserListToSocket = (socket, list, viewHash) => {
-  socket._lastUserListViewHash = viewHash;
-  socket.emit("userList", { list });
+const emitUserListToSocket = (module.exports.emitUserListToSocket = (socket, view) => {
+  socket._lastUserListViewHash = view.hash;
+  socket._userListDeltaStreak = 0;
+  socket.emit("userList", view);
 });
 
+const emitUserListDeltaToSocket = (socket, baseView, nextView, delta) => {
+  socket._lastUserListViewHash = nextView.hash;
+  socket._userListDeltaStreak = (socket._userListDeltaStreak || 0) + 1;
+  socket.emit("userListDelta", {
+    baseHash: baseView.hash,
+    hash: nextView.hash,
+    ...delta,
+  });
+};
+
 const markUserListDirty = () => {
+  // Capture the view clients currently have before invalidating it. Further mutations may build
+  // intermediate direct-send views, but the queued broadcast must stay based on the last settled view.
+  if (!userListEmitter.send && userListEmitter.viewCache) {
+    userListEmitter.baseViewCache = userListEmitter.viewCache;
+  }
   userListEmitter.viewCache = null;
   userListEmitter.send = true;
 };
@@ -222,6 +256,7 @@ const userListEmitter = {
   send: false,
   lastBroadcastAt: 0,
   viewCache: null,
+  baseViewCache: null,
   // userList is mutated in several modules; always pair a queued broadcast with cache invalidation.
   markDirty: markUserListDirty,
   timer: setInterval(() => {
@@ -244,22 +279,42 @@ const userListEmitter = {
       // inside the per-socket loops was O(users × sockets) of throwaway allocations every tick.
       if (!userListEmitter.viewCache) userListEmitter.viewCache = buildUserListViewCache();
       const { staff: staffView, public: publicView } = userListEmitter.viewCache;
+      const baseViews = userListEmitter.baseViewCache;
+      const deltas = baseViews
+        ? {
+            staff: buildUserListDelta(baseViews.staff.list, staffView.list),
+            public: buildUserListDelta(baseViews.public.list, publicView.list),
+          }
+        : null;
 
       let sentAny = false;
 
       Object.keys(io.sockets.sockets).forEach((id) => {
         const socket = io.sockets.sockets[id];
-        if (!socket) return;
+        if (!socket || !socket._userListReady) return;
 
         const isStaff = isStaffSocket(socket);
         const nextView = isStaff ? staffView : publicView;
 
         if (socket._lastUserListViewHash === nextView.hash) return;
 
-        emitUserListToSocket(socket, nextView.list, nextView.hash);
+        const baseView = baseViews && (isStaff ? baseViews.staff : baseViews.public);
+        const canDelta =
+          baseView &&
+          socket._lastUserListViewHash === baseView.hash &&
+          (socket._userListDeltaStreak || 0) < USER_LIST_MAX_DELTA_STREAK;
+
+        if (canDelta) {
+          emitUserListDeltaToSocket(socket, baseView, nextView, isStaff ? deltas.staff : deltas.public);
+        } else {
+          // A new or out-of-sync socket has no known base for the delta, and a socket at the streak
+          // ceiling gets re-seeded whether or not it looks in sync. Either way: fresh snapshot.
+          emitUserListToSocket(socket, nextView);
+        }
         sentAny = true;
       });
 
+      userListEmitter.baseViewCache = userListEmitter.viewCache;
       if (sentAny) userListEmitter.lastBroadcastAt = now;
     }
   }, 100),
