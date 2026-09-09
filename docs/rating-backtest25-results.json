@@ -1,0 +1,2523 @@
+{
+  "evidence": "SYNTHETIC ONLY: MONGO_URL absent. No empirical/corpus result was measured.",
+  "seed": 250925,
+  "configuration": {
+    "seed": 250925,
+    "population": 240,
+    "games": 12000,
+    "trials": 32,
+    "careerGames": 10000,
+    "corpusLimit": 5000
+  },
+  "engineSha256": {
+    "ranked.js": "8cf188f9a618ec150a6bf3eb8ac938bd0cf9371c80d6ec7e691ef1adfed200b1",
+    "predict.js": "245d54b67208938b167607214287726d8e6550f2ffcc5ca0fcda85008eacb0a6",
+    "public-ladder.js": "d3c4e2deca380c726a1cc24fe16eb804068602721a641c9a6218f59b61507a02",
+    "bias.js": "780f1b472d90fb93d94bbf6904aafbe36a32fe4c6e4f0c091f47eb364463ac79",
+    "hidden-rating.js": "72e38bd3c339a068b3ace6095c0762e64446d42041af68725deb0dc5930d745b",
+    "xp.js": "87db7e802cd0b4f8059adadcd9596b52873aea37d62d7b940395efa648dc99c5"
+  },
+  "corpus": {
+    "status": "unavailable",
+    "evidence": "MONGO_URL absent; no corpus connection/read attempted"
+  },
+  "synthetic": {
+    "assumptions": "SYNTHETIC throughout: fixed latent skills generate Bernoulli outcomes via the production predictor at sigma=0; rating updates are the unmodified production engine. This favors the estimator by matching its assumed model.",
+    "population": {
+      "evidence": "SYNTHETIC",
+      "games": 12000,
+      "players": 240,
+      "invariantViolations": 0,
+      "publicDeltas": {
+        "count": 93717,
+        "min": -24,
+        "max": 24,
+        "mean": -0.03629010745115614,
+        "histogram": {
+          "16": 23768,
+          "17": 3950,
+          "18": 3602,
+          "19": 3338,
+          "20": 3018,
+          "21": 2523,
+          "22": 2003,
+          "23": 1569,
+          "24": 2958,
+          "-21": 2443,
+          "-19": 3316,
+          "-20": 3051,
+          "-22": 1977,
+          "-18": 3681,
+          "-17": 4040,
+          "-16": 24014,
+          "-23": 1582,
+          "-24": 2884
+        }
+      },
+      "finalPublicRating": {
+        "n": 240,
+        "min": -2350,
+        "p10": -407,
+        "median": 1486,
+        "p90": 3264,
+        "max": 5490,
+        "mean": 1485.8291666666667
+      },
+      "gamesPerPlayer": {
+        "n": 240,
+        "min": 143,
+        "p10": 165,
+        "median": 334,
+        "p90": 679,
+        "max": 706,
+        "mean": 390.4875
+      },
+      "checkpointRatings": {
+        "10": {
+          "publicRating": {
+            "n": 240,
+            "min": 1314,
+            "p10": 1399,
+            "median": 1497,
+            "p90": 1605,
+            "max": 1684,
+            "mean": 1496.4541666666667
+          },
+          "sigma": {
+            "n": 240,
+            "min": 6.049920440786061,
+            "p10": 6.48538074729085,
+            "median": 6.861543431693674,
+            "p90": 7.131235495127,
+            "max": 7.267302513295293,
+            "mean": 6.8172188697324625
+          }
+        },
+        "20": {
+          "publicRating": {
+            "n": 240,
+            "min": 1261,
+            "p10": 1354,
+            "median": 1497,
+            "p90": 1644,
+            "max": 1749,
+            "mean": 1496.8833333333334
+          },
+          "sigma": {
+            "n": 240,
+            "min": 5.22409068161256,
+            "p10": 5.548119512104465,
+            "median": 5.869781875600403,
+            "p90": 6.18348969507906,
+            "max": 6.3882072294864525,
+            "mean": 5.873710742542106
+          }
+        },
+        "25": {
+          "publicRating": {
+            "n": 240,
+            "min": 1212,
+            "p10": 1342,
+            "median": 1505,
+            "p90": 1666,
+            "max": 1773,
+            "mean": 1500.0125
+          },
+          "sigma": {
+            "n": 240,
+            "min": 4.825022000085817,
+            "p10": 5.21174809659252,
+            "median": 5.521328216057007,
+            "p90": 5.8416460149555665,
+            "max": 6.008997026150074,
+            "mean": 5.514229403857279
+          }
+        },
+        "50": {
+          "publicRating": {
+            "n": 240,
+            "min": 1058,
+            "p10": 1202,
+            "median": 1504,
+            "p90": 1781,
+            "max": 1966,
+            "mean": 1497.275
+          },
+          "sigma": {
+            "n": 240,
+            "min": 3.7721686056731913,
+            "p10": 4.10350093128884,
+            "median": 4.3587462720771475,
+            "p90": 4.586907613484245,
+            "max": 4.9004330918828,
+            "mean": 4.352924076473718
+          }
+        },
+        "100": {
+          "publicRating": {
+            "n": 240,
+            "min": 668,
+            "p10": 964,
+            "median": 1507,
+            "p90": 2020,
+            "max": 2365,
+            "mean": 1495.3666666666666
+          },
+          "sigma": {
+            "n": 240,
+            "min": 2.9429324655834317,
+            "p10": 3.1255501973715933,
+            "median": 3.2655160058669077,
+            "p90": 3.4186249843763505,
+            "max": 3.5674841332573406,
+            "mean": 3.268291026177191
+          }
+        },
+        "300": {
+          "publicRating": {
+            "n": 160,
+            "min": -426,
+            "p10": -149,
+            "median": 1542,
+            "p90": 2991,
+            "max": 3364,
+            "mean": 1496.15
+          },
+          "sigma": {
+            "n": 160,
+            "min": 1.8453708327903389,
+            "p10": 1.8869744376183304,
+            "median": 1.9732863105303389,
+            "p90": 2.0473499560468036,
+            "max": 2.1363377985972365,
+            "mean": 1.9721360080094605
+          }
+        },
+        "1000": {
+          "publicRating": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          },
+          "sigma": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        "3000": {
+          "publicRating": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          },
+          "sigma": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        "10000": {
+          "publicRating": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          },
+          "sigma": {
+            "n": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null
+          }
+        }
+      },
+      "subsequentWinRate": {
+        "observation": "Score after game 25 vs wins in games 26–50; no future outcomes used in the score",
+        "samples": 240,
+        "correlation": 0.5592951900787125,
+        "quintiles": [
+          {
+            "quintile": 1,
+            "players": 48,
+            "ratingAt25": 1325,
+            "subsequentWinRate26to50": 0.3775
+          },
+          {
+            "quintile": 2,
+            "players": 48,
+            "ratingAt25": 1416.2708333333333,
+            "subsequentWinRate26to50": 0.45
+          },
+          {
+            "quintile": 3,
+            "players": 48,
+            "ratingAt25": 1498.5625,
+            "subsequentWinRate26to50": 0.49000000000000005
+          },
+          {
+            "quintile": 4,
+            "players": 48,
+            "ratingAt25": 1581.625,
+            "subsequentWinRate26to50": 0.5733333333333331
+          },
+          {
+            "quintile": 5,
+            "players": 48,
+            "ratingAt25": 1678.6041666666667,
+            "subsequentWinRate26to50": 0.5933333333333335
+          }
+        ]
+      },
+      "winRateTrajectories": {
+        "selection": "Retrospective bottom/top final-WR quartile among players reaching 100 games; descriptive, not prospective",
+        "low": {
+          "players": 60,
+          "finalWinRate": 0.3448558319417293,
+          "ratings": {
+            "10": {
+              "n": 60,
+              "min": 1314,
+              "p10": 1380,
+              "median": 1451,
+              "p90": 1502,
+              "max": 1619,
+              "mean": 1441.9166666666667
+            },
+            "25": {
+              "n": 60,
+              "min": 1212,
+              "p10": 1270,
+              "median": 1365,
+              "p90": 1454,
+              "max": 1767,
+              "mean": 1372.1333333333334
+            },
+            "50": {
+              "n": 60,
+              "min": 1058,
+              "p10": 1102,
+              "median": 1227,
+              "p90": 1358,
+              "max": 1574,
+              "mean": 1241.3
+            },
+            "100": {
+              "n": 60,
+              "min": 668,
+              "p10": 793,
+              "median": 996,
+              "p90": 1194,
+              "max": 1314,
+              "mean": 995.2833333333333
+            }
+          }
+        },
+        "high": {
+          "players": 60,
+          "finalWinRate": 0.6492489278413831,
+          "ratings": {
+            "10": {
+              "n": 60,
+              "min": 1385,
+              "p10": 1469,
+              "median": 1570,
+              "p90": 1611,
+              "max": 1684,
+              "mean": 1555.2333333333333
+            },
+            "25": {
+              "n": 60,
+              "min": 1421,
+              "p10": 1518,
+              "median": 1631,
+              "p90": 1737,
+              "max": 1773,
+              "mean": 1627.0333333333333
+            },
+            "50": {
+              "n": 60,
+              "min": 1477,
+              "p10": 1608,
+              "median": 1727,
+              "p90": 1875,
+              "max": 1966,
+              "mean": 1739.6166666666666
+            },
+            "100": {
+              "n": 60,
+              "min": 1699,
+              "p10": 1815,
+              "median": 1979,
+              "p90": 2142,
+              "max": 2365,
+              "mean": 1983.9166666666667
+            }
+          }
+        }
+      },
+      "factionAndPlayerCount": {
+        "6p-fascist": {
+          "appearances": 4048,
+          "winRate": 0.4797430830039526,
+          "meanDelta": -0.6699604743083004
+        },
+        "6p-liberal": {
+          "appearances": 8096,
+          "winRate": 0.5202569169960475,
+          "meanDelta": 0.6699604743083004
+        },
+        "9p-fascist": {
+          "appearances": 19580,
+          "winRate": 0.530949948927477,
+          "meanDelta": 0.8996935648621042
+        },
+        "9p-liberal": {
+          "appearances": 24475,
+          "winRate": 0.46905005107252296,
+          "meanDelta": -0.8996935648621042
+        },
+        "10p-fascist": {
+          "appearances": 4052,
+          "winRate": 0.5281342546890424,
+          "meanDelta": 0.8005923000987167
+        },
+        "10p-liberal": {
+          "appearances": 6078,
+          "winRate": 0.47186574531095754,
+          "meanDelta": -0.8005923000987167
+        },
+        "5p-fascist": {
+          "appearances": 2074,
+          "winRate": 0.49662487945998074,
+          "meanDelta": -0.20154291224686596
+        },
+        "5p-liberal": {
+          "appearances": 3111,
+          "winRate": 0.5033751205400193,
+          "meanDelta": 0.20154291224686596
+        },
+        "8p-fascist": {
+          "appearances": 2958,
+          "winRate": 0.5050709939148073,
+          "meanDelta": 0.268762677484787
+        },
+        "8p-liberal": {
+          "appearances": 4930,
+          "winRate": 0.4949290060851927,
+          "meanDelta": -0.268762677484787
+        },
+        "7p-fascist": {
+          "appearances": 6135,
+          "winRate": 0.4982885085574572,
+          "meanDelta": -0.11442542787286064
+        },
+        "7p-liberal": {
+          "appearances": 8180,
+          "winRate": 0.5017114914425428,
+          "meanDelta": 0.11442542787286064
+        }
+      },
+      "predictionBrierScore": 0.1487817206956853,
+      "fixed20ApproximationError": {
+        "n": 240,
+        "min": -1245,
+        "p10": -572,
+        "median": 4,
+        "p90": 560,
+        "max": 1150,
+        "mean": 7.4125
+      },
+      "finalSigma": {
+        "n": 240,
+        "min": 1.2629102088974655,
+        "p10": 1.3124498244178024,
+        "median": 1.8535343468322736,
+        "p90": 2.6081546480296,
+        "max": 2.859879966018951,
+        "mean": 1.9196102360847866
+      },
+      "hiddenCenteredMae": 1.9010924838398386,
+      "knownSkillRatingCorrelation": 0.8697229521553859,
+      "assumptions": "Fixed true mu 10/20/30/40 crossed with scheduling weights 1/2/4; everyone starts hidden fresh and public 1500",
+      "bySkillAndActivity": [
+        {
+          "trueMu": 10,
+          "schedulingWeight": 1,
+          "players": 20,
+          "meanGames": 174.15,
+          "meanWinRate": 0.3457823697122481,
+          "meanPublicRating": 620.75
+        },
+        {
+          "trueMu": 10,
+          "schedulingWeight": 2,
+          "players": 20,
+          "meanGames": 331.95,
+          "meanWinRate": 0.35115126066903135,
+          "meanPublicRating": -37.65
+        },
+        {
+          "trueMu": 10,
+          "schedulingWeight": 4,
+          "players": 20,
+          "meanGames": 664.75,
+          "meanWinRate": 0.3440110132053379,
+          "meanPublicRating": -1705.45
+        },
+        {
+          "trueMu": 20,
+          "schedulingWeight": 1,
+          "players": 20,
+          "meanGames": 166.75,
+          "meanWinRate": 0.44293119072705095,
+          "meanPublicRating": 1193.55
+        },
+        {
+          "trueMu": 20,
+          "schedulingWeight": 2,
+          "players": 20,
+          "meanGames": 333.8,
+          "meanWinRate": 0.4511270434266688,
+          "meanPublicRating": 983.35
+        },
+        {
+          "trueMu": 20,
+          "schedulingWeight": 4,
+          "players": 20,
+          "meanGames": 669.2,
+          "meanWinRate": 0.4494868439705567,
+          "meanPublicRating": 463.95
+        },
+        {
+          "trueMu": 30,
+          "schedulingWeight": 1,
+          "players": 20,
+          "meanGames": 176.85,
+          "meanWinRate": 0.5377999125534279,
+          "meanPublicRating": 1721.5
+        },
+        {
+          "trueMu": 30,
+          "schedulingWeight": 2,
+          "players": 20,
+          "meanGames": 339.7,
+          "meanWinRate": 0.5507956936615624,
+          "meanPublicRating": 2034.1
+        },
+        {
+          "trueMu": 30,
+          "schedulingWeight": 4,
+          "players": 20,
+          "meanGames": 663,
+          "meanWinRate": 0.5519901554244193,
+          "meanPublicRating": 2560.7
+        },
+        {
+          "trueMu": 40,
+          "schedulingWeight": 1,
+          "players": 20,
+          "meanGames": 167.8,
+          "meanWinRate": 0.6406728803715558,
+          "meanPublicRating": 2275.25
+        },
+        {
+          "trueMu": 40,
+          "schedulingWeight": 2,
+          "players": 20,
+          "meanGames": 337.7,
+          "meanWinRate": 0.6524871848950673,
+          "meanPublicRating": 3104.95
+        },
+        {
+          "trueMu": 40,
+          "schedulingWeight": 4,
+          "players": 20,
+          "meanGames": 660.2,
+          "meanWinRate": 0.6508587981877871,
+          "meanPublicRating": 4614.95
+        }
+      ],
+      "lowerSkillHigherVolumeReversals": {
+        "comparisons": 10770,
+        "reversals": 455,
+        "rate": 0.04224698235840297
+      }
+    },
+    "activityVsSkill": {
+      "evidence": "SYNTHETIC",
+      "design": "Independent trials: true mu 30 vs 35, hidden initially calibrated at sigma 2.5; public 1500; rotating mu-25 peer populations",
+      "rows": [
+        {
+          "volumeRatio": 1,
+          "lowGames": 100,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 6,
+          "reversalRate": 0.1875,
+          "lowerSkillMeanRating": 1773.125,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.606875,
+          "higherSkillMeanWinRate": 0.6934375
+        },
+        {
+          "volumeRatio": 1.25,
+          "lowGames": 125,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 10,
+          "reversalRate": 0.3125,
+          "lowerSkillMeanRating": 1848.03125,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.6082500000000002,
+          "higherSkillMeanWinRate": 0.6934375
+        },
+        {
+          "volumeRatio": 1.5,
+          "lowGames": 150,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 13,
+          "reversalRate": 0.40625,
+          "lowerSkillMeanRating": 1916.5625,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.6083333333333333,
+          "higherSkillMeanWinRate": 0.6934375
+        },
+        {
+          "volumeRatio": 2,
+          "lowGames": 200,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 20,
+          "reversalRate": 0.625,
+          "lowerSkillMeanRating": 2059.15625,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.6092187500000001,
+          "higherSkillMeanWinRate": 0.6934375
+        },
+        {
+          "volumeRatio": 3,
+          "lowGames": 300,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 28,
+          "reversalRate": 0.875,
+          "lowerSkillMeanRating": 2361.125,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.6116666666666667,
+          "higherSkillMeanWinRate": 0.6934375
+        },
+        {
+          "volumeRatio": 5,
+          "lowGames": 500,
+          "highGames": 100,
+          "comparisons": 32,
+          "reversals": 32,
+          "reversalRate": 1,
+          "lowerSkillMeanRating": 2740.75,
+          "higherSkillMeanRating": 1983.625,
+          "lowerSkillMeanWinRate": 0.6021875000000001,
+          "higherSkillMeanWinRate": 0.6934375
+        }
+      ],
+      "firstTestedRatioWithMajorityReversal": 2
+    },
+    "failureModes": {
+      "freshEliteAlt": {
+        "evidence": "SYNTHETIC",
+        "setup": {
+          "trueMu": 45,
+          "gamesPerTrial": 100,
+          "configuration": "7p-rebalanced",
+          "peerPopulation": 239
+        },
+        "trials": 32,
+        "finalPublic": {
+          "n": 32,
+          "min": 2365,
+          "p10": 2377,
+          "median": 2505,
+          "p90": 2663,
+          "max": 2846,
+          "mean": 2522.6875
+        },
+        "winRate": {
+          "n": 32,
+          "min": 0.79,
+          "p10": 0.81,
+          "median": 0.84,
+          "p90": 0.88,
+          "max": 0.93,
+          "mean": 0.8437500000000002
+        },
+        "checkpoints": {
+          "10": {
+            "publicRating": {
+              "n": 32,
+              "min": 1530,
+              "p10": 1568,
+              "median": 1616,
+              "p90": 1648,
+              "max": 1682,
+              "mean": 1618.21875
+            },
+            "mu": {
+              "n": 32,
+              "min": 28.747200933439327,
+              "p10": 30.14236792341599,
+              "median": 34.17277206310025,
+              "p90": 36.748254095062514,
+              "max": 39.211666912924684,
+              "mean": 34.32816110105681
+            },
+            "sigma": {
+              "n": 32,
+              "min": 5.876659014731793,
+              "p10": 5.953337913339004,
+              "median": 6.096537899444545,
+              "p90": 6.1947825181541365,
+              "max": 6.371696838673959,
+              "mean": 6.086377657574305
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 28.748528520513194,
+              "p10": 30.144259060321147,
+              "median": 34.17810149965376,
+              "p90": 36.7539719204282,
+              "max": 39.21874577550721,
+              "mean": 34.33274478907971
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 5.781254224492791,
+              "p10": 6.1471534916198465,
+              "median": 9.659810931532071,
+              "p90": 14.464856945228604,
+              "max": 16.251471479486806,
+              "mean": 10.667255210920278
+            },
+            "wins": {
+              "n": 32,
+              "min": 6,
+              "p10": 7,
+              "median": 8,
+              "p90": 9,
+              "max": 10,
+              "mean": 8.3125
+            }
+          },
+          "20": {
+            "publicRating": {
+              "n": 32,
+              "min": 1599,
+              "p10": 1680,
+              "median": 1724,
+              "p90": 1799,
+              "max": 1811,
+              "mean": 1728.46875
+            },
+            "mu": {
+              "n": 32,
+              "min": 31.82451754868086,
+              "p10": 33.950414407706376,
+              "median": 37.79312985697815,
+              "p90": 41.935231249307044,
+              "max": 42.77027251346934,
+              "mean": 37.90223774623001
+            },
+            "sigma": {
+              "n": 32,
+              "min": 4.889742894190998,
+              "p10": 4.971316447682163,
+              "median": 5.057088772395358,
+              "p90": 5.241775759747206,
+              "max": 5.33983709720565,
+              "mean": 5.087306226824708
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 31.828943525848633,
+              "p10": 33.95693140212213,
+              "median": 37.79983315004448,
+              "p90": 41.94607564734822,
+              "max": 42.780692168929846,
+              "mean": 37.9098469888158
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 2.2193078310701537,
+              "p10": 2.933704518892341,
+              "median": 6.797713329179679,
+              "p90": 9.733779396465401,
+              "max": 13.171056474151367,
+              "mean": 7.090153011184204
+            },
+            "wins": {
+              "n": 32,
+              "min": 13,
+              "p10": 15,
+              "median": 17,
+              "p90": 19,
+              "max": 19,
+              "mean": 16.8125
+            }
+          },
+          "25": {
+            "publicRating": {
+              "n": 32,
+              "min": 1648,
+              "p10": 1705,
+              "median": 1774,
+              "p90": 1814,
+              "max": 1889,
+              "mean": 1768.9375
+            },
+            "mu": {
+              "n": 32,
+              "min": 33.02251989825271,
+              "p10": 35.425938444214225,
+              "median": 38.003052592459674,
+              "p90": 40.79143074766426,
+              "max": 44.71810061298511,
+              "mean": 38.50561198382376
+            },
+            "sigma": {
+              "n": 32,
+              "min": 4.543560652069687,
+              "p10": 4.6294513366313526,
+              "median": 4.715441143902248,
+              "p90": 4.857281607566405,
+              "max": 5.035846319553457,
+              "mean": 4.745192881755104
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 33.023289134861386,
+              "p10": 35.43395566548061,
+              "median": 38.011674430497706,
+              "p90": 40.800014112472844,
+              "max": 44.731163147626276,
+              "mean": 38.51389759025744
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.2688368523737239,
+              "p10": 3.7040881675883313,
+              "median": 6.256375374305371,
+              "p90": 9.273576228061017,
+              "max": 11.976710865138614,
+              "mean": 6.486102409742571
+            },
+            "wins": {
+              "n": 32,
+              "min": 17,
+              "p10": 19,
+              "median": 21,
+              "p90": 22,
+              "max": 24,
+              "mean": 20.75
+            }
+          },
+          "50": {
+            "publicRating": {
+              "n": 32,
+              "min": 1870,
+              "p10": 1929,
+              "median": 2015,
+              "p90": 2096,
+              "max": 2249,
+              "mean": 2020.03125
+            },
+            "mu": {
+              "n": 32,
+              "min": 36.91932185044287,
+              "p10": 38.29473683345037,
+              "median": 41.398338852501396,
+              "p90": 43.148112548993964,
+              "max": 49.14386005873363,
+              "mean": 41.57321947893482
+            },
+            "sigma": {
+              "n": 32,
+              "min": 3.5974416650653334,
+              "p10": 3.6176843802442398,
+              "median": 3.71221824725933,
+              "p90": 3.864985159171633,
+              "max": 4.040717493252477,
+              "mean": 3.7431143830913256
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 36.925870889148456,
+              "p10": 38.30769363729789,
+              "median": 41.40835769434401,
+              "p90": 43.162777155176165,
+              "max": 49.16314256744778,
+              "mean": 41.58601986347699
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.493951008373827,
+              "p10": 1.8719793183423548,
+              "median": 3.591642305655988,
+              "p90": 6.292476120880153,
+              "max": 8.074129110851544,
+              "mean": 3.871559621196188
+            },
+            "wins": {
+              "n": 32,
+              "min": 38,
+              "p10": 39,
+              "median": 42,
+              "p90": 44,
+              "max": 48,
+              "mean": 41.875
+            }
+          },
+          "100": {
+            "publicRating": {
+              "n": 32,
+              "min": 2365,
+              "p10": 2377,
+              "median": 2505,
+              "p90": 2663,
+              "max": 2846,
+              "mean": 2522.6875
+            },
+            "mu": {
+              "n": 32,
+              "min": 40.79745692533159,
+              "p10": 41.126304712769645,
+              "median": 43.222284431595355,
+              "p90": 45.73678571414496,
+              "max": 50.68272261807299,
+              "mean": 43.903649537528544
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.7673859793388416,
+              "p10": 2.7742703016367574,
+              "median": 2.846098479226691,
+              "p90": 2.9807044213668648,
+              "max": 3.072492779039672,
+              "mean": 2.8644481808908746
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 40.817224327859805,
+              "p10": 41.143856621155095,
+              "median": 43.238311902712326,
+              "p90": 45.75404737340108,
+              "max": 50.710307372501354,
+              "mean": 43.92205966507598
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.3467590427919731,
+              "p10": 0.6508587112389748,
+              "median": 1.8208654956307768,
+              "p90": 3.856143378844905,
+              "max": 5.7103073725013545,
+              "mean": 2.060895672316218
+            },
+            "wins": {
+              "n": 32,
+              "min": 79,
+              "p10": 81,
+              "median": 84,
+              "p90": 88,
+              "max": 93,
+              "mean": 84.375
+            }
+          }
+        },
+        "distinctOpponents": {
+          "n": 32,
+          "min": 174,
+          "p10": 177,
+          "median": 182,
+          "p90": 189,
+          "max": 192,
+          "mean": 183.1875
+        },
+        "earliestPublic2000": {
+          "n": 32,
+          "min": 35,
+          "p10": 42,
+          "median": 48,
+          "p90": 57,
+          "max": 63,
+          "mean": 49.28125
+        },
+        "winsAtFirstPublic2000": {
+          "n": 32,
+          "min": 33,
+          "p10": 37,
+          "median": 41,
+          "p90": 46,
+          "max": 49,
+          "mean": 41.09375
+        },
+        "reached2000": 32,
+        "worstOpponentLoss": -21,
+        "publicWinMin": 16,
+        "publicWinMax": 21,
+        "publicLossMin": -24,
+        "publicLossMax": -20
+      },
+      "settledHighRanked": {
+        "evidence": "SYNTHETIC",
+        "setup": {
+          "trueMu": 45,
+          "initialMu": 45,
+          "initialSigma": 2.5,
+          "initialPublic": 2200,
+          "gamesPerTrial": 100,
+          "configuration": "7p-rebalanced",
+          "peerPopulation": 239
+        },
+        "trials": 32,
+        "finalPublic": {
+          "n": 32,
+          "min": 2960,
+          "p10": 3040,
+          "median": 3160,
+          "p90": 3320,
+          "max": 3520,
+          "mean": 3175
+        },
+        "winRate": {
+          "n": 32,
+          "min": 0.79,
+          "p10": 0.81,
+          "median": 0.84,
+          "p90": 0.88,
+          "max": 0.93,
+          "mean": 0.8437500000000002
+        },
+        "checkpoints": {
+          "10": {
+            "publicRating": {
+              "n": 32,
+              "min": 2200,
+              "p10": 2240,
+              "median": 2280,
+              "p90": 2320,
+              "max": 2360,
+              "mean": 2292.5
+            },
+            "mu": {
+              "n": 32,
+              "min": 44.19906880197024,
+              "p10": 44.26323371839838,
+              "median": 45.01730354970062,
+              "p90": 45.44878897313838,
+              "max": 45.87380358613266,
+              "mean": 45.07069716376158
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.4099774029869536,
+              "p10": 2.4173214829156797,
+              "median": 2.4273867787159027,
+              "p90": 2.434523048098329,
+              "max": 2.4432159439654173,
+              "mean": 2.4274557701586295
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 44.19565695733878,
+              "p10": 44.260175268176305,
+              "median": 45.017443406185514,
+              "p90": 45.45076617586362,
+              "max": 45.877535068319084,
+              "mean": 45.0709993779068
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.012739583066831983,
+              "p10": 0.15251835587996965,
+              "median": 0.44121276765473283,
+              "p90": 0.8043430426612233,
+              "max": 0.8775350683190837,
+              "mean": 0.4557590762063146
+            },
+            "wins": {
+              "n": 32,
+              "min": 6,
+              "p10": 7,
+              "median": 8,
+              "p90": 9,
+              "max": 10,
+              "mean": 8.3125
+            }
+          },
+          "20": {
+            "publicRating": {
+              "n": 32,
+              "min": 2240,
+              "p10": 2320,
+              "median": 2400,
+              "p90": 2480,
+              "max": 2480,
+              "mean": 2392.5
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.859053874228245,
+              "p10": 44.33565562878344,
+              "median": 45.098422506847776,
+              "p90": 46.04519608611753,
+              "max": 46.24280768655166,
+              "mean": 45.16416711621634
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.3387191232783615,
+              "p10": 2.346606239886974,
+              "median": 2.3594889190403303,
+              "p90": 2.375849506816047,
+              "max": 2.3783562983571978,
+              "mean": 2.3603700713528446
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.85410898707676,
+              "p10": 44.332963720469635,
+              "median": 45.09875882942355,
+              "p90": 46.049657666124055,
+              "max": 46.248289477596636,
+              "mean": 45.16490356064635
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.039393461925889994,
+              "p10": 0.09875882942355219,
+              "median": 0.46156028087359857,
+              "p90": 1.0842413752824882,
+              "max": 1.2482894775966358,
+              "mean": 0.5802004642164473
+            },
+            "wins": {
+              "n": 32,
+              "min": 13,
+              "p10": 15,
+              "median": 17,
+              "p90": 19,
+              "max": 19,
+              "mean": 16.8125
+            }
+          },
+          "25": {
+            "publicRating": {
+              "n": 32,
+              "min": 2280,
+              "p10": 2360,
+              "median": 2440,
+              "p90": 2480,
+              "max": 2560,
+              "mean": 2430
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.65146871146703,
+              "p10": 44.34047309386105,
+              "median": 45.04821067247477,
+              "p90": 45.69853498535007,
+              "max": 46.60672844054742,
+              "mean": 45.08903654863141
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.3067446345262317,
+              "p10": 2.3145173590486845,
+              "median": 2.3245468876996815,
+              "p90": 2.3395483407016378,
+              "max": 2.35149239410194,
+              "mean": 2.3278017727546585
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.64476802626218,
+              "p10": 44.337472784004454,
+              "median": 45.04868475937169,
+              "p90": 45.70156437542887,
+              "max": 46.613972281615965,
+              "mean": 45.089421423392174
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.04868475937168881,
+              "p10": 0.06789243787922317,
+              "median": 0.4678553416874749,
+              "p90": 1.0471801114858934,
+              "max": 1.6139722816159647,
+              "mean": 0.5567894492608718
+            },
+            "wins": {
+              "n": 32,
+              "min": 17,
+              "p10": 19,
+              "median": 21,
+              "p90": 22,
+              "max": 24,
+              "mean": 20.75
+            }
+          },
+          "50": {
+            "publicRating": {
+              "n": 32,
+              "min": 2520,
+              "p10": 2560,
+              "median": 2680,
+              "p90": 2760,
+              "max": 2920,
+              "mean": 2675
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.5767711985525,
+              "p10": 44.19346635377348,
+              "median": 45.30217287109861,
+              "p90": 45.823672283701136,
+              "max": 47.74851846483142,
+              "mean": 45.29207629672293
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.1605119888856823,
+              "p10": 2.1689125365584383,
+              "median": 2.185269611479904,
+              "p90": 2.2077961041243572,
+              "max": 2.229649111771739,
+              "mean": 2.188637811567132
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.569676762716796,
+              "p10": 44.19024245468425,
+              "median": 45.30326645609439,
+              "p90": 45.827764019089045,
+              "max": 47.76154189654766,
+              "mean": 45.29351602869106
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.010804250857624709,
+              "p10": 0.02367952618661917,
+              "median": 0.5124186983383012,
+              "p90": 1.4303232372832042,
+              "max": 2.761541896547662,
+              "mean": 0.6937540291397633
+            },
+            "wins": {
+              "n": 32,
+              "min": 38,
+              "p10": 39,
+              "median": 42,
+              "p90": 44,
+              "max": 48,
+              "mean": 41.875
+            }
+          },
+          "100": {
+            "publicRating": {
+              "n": 32,
+              "min": 2960,
+              "p10": 3040,
+              "median": 3160,
+              "p90": 3320,
+              "max": 3520,
+              "mean": 3175
+            },
+            "mu": {
+              "n": 32,
+              "min": 44.1301203215899,
+              "p10": 44.34357865353869,
+              "median": 45.42033753194469,
+              "p90": 46.55985097884938,
+              "max": 48.707211865290525,
+              "mean": 45.66911431154466
+            },
+            "sigma": {
+              "n": 32,
+              "min": 1.9443655485627351,
+              "p10": 1.9539930255715254,
+              "median": 1.9699743972759036,
+              "p90": 2.0005679511284806,
+              "max": 2.021214792504968,
+              "mean": 1.97465030935485
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 44.124478777994554,
+              "p10": 44.34138583257879,
+              "median": 45.422437750529,
+              "p90": 46.56850398472011,
+              "max": 48.726998077049984,
+              "mean": 45.672795956632015
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.021706430183243697,
+              "p10": 0.179073239053551,
+              "median": 0.6586141674212129,
+              "p90": 1.5685039847201097,
+              "max": 3.726998077049984,
+              "mean": 0.8911648514845723
+            },
+            "wins": {
+              "n": 32,
+              "min": 79,
+              "p10": 81,
+              "median": 84,
+              "p90": 88,
+              "max": 93,
+              "mean": 84.375
+            }
+          }
+        },
+        "distinctOpponents": {
+          "n": 32,
+          "min": 174,
+          "p10": 177,
+          "median": 182,
+          "p90": 189,
+          "max": 192,
+          "mean": 183.1875
+        },
+        "earliestPublic2000": {
+          "n": 32,
+          "min": 1,
+          "p10": 1,
+          "median": 1,
+          "p90": 1,
+          "max": 1,
+          "mean": 1
+        },
+        "winsAtFirstPublic2000": {
+          "n": 32,
+          "min": 0,
+          "p10": 0,
+          "median": 1,
+          "p90": 1,
+          "max": 1,
+          "mean": 0.84375
+        },
+        "reached2000": 32,
+        "worstOpponentLoss": -16,
+        "publicWinMin": 16,
+        "publicWinMax": 16,
+        "publicLossMin": -24,
+        "publicLossMax": -24
+      },
+      "settledHighBalanced": {
+        "evidence": "SYNTHETIC",
+        "setup": {
+          "trueMu": 45,
+          "initialMu": 45,
+          "initialSigma": 2.5,
+          "initialPublic": 2200,
+          "peerMu": 45,
+          "gamesPerTrial": 100,
+          "configuration": "7p-rebalanced",
+          "peerPopulation": 239
+        },
+        "trials": 32,
+        "finalPublic": {
+          "n": 32,
+          "min": 1702,
+          "p10": 2021,
+          "median": 2238,
+          "p90": 2428,
+          "max": 2512,
+          "mean": 2215.5625
+        },
+        "winRate": {
+          "n": 32,
+          "min": 0.36,
+          "p10": 0.45,
+          "median": 0.51,
+          "p90": 0.56,
+          "max": 0.58,
+          "mean": 0.504375
+        },
+        "checkpoints": {
+          "10": {
+            "publicRating": {
+              "n": 32,
+              "min": 2080,
+              "p10": 2120,
+              "median": 2200,
+              "p90": 2280,
+              "max": 2320,
+              "mean": 2204.96875
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.68918111177212,
+              "p10": 44.18876735565938,
+              "median": 45.06043153135216,
+              "p90": 45.75433050921746,
+              "max": 46.381680072873294,
+              "mean": 45.076240337244364
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.382491296592237,
+              "p10": 2.387774052474627,
+              "median": 2.3990201413642276,
+              "p90": 2.4048003227558965,
+              "max": 2.410607959009944,
+              "mean": 2.3969401819275777
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.683527859205235,
+              "p10": 44.185176626215146,
+              "median": 45.06064551570219,
+              "p90": 45.75765799046239,
+              "max": 46.387717079575836,
+              "mean": 45.07656793398673
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.002126157209943358,
+              "p10": 0.06687142163727344,
+              "median": 0.44388763365364525,
+              "p90": 1.1226641171295952,
+              "max": 1.387717079575836,
+              "mean": 0.5520572363741323
+            },
+            "wins": {
+              "n": 32,
+              "min": 2,
+              "p10": 3,
+              "median": 5,
+              "p90": 7,
+              "max": 8,
+              "mean": 5.125
+            }
+          },
+          "20": {
+            "publicRating": {
+              "n": 32,
+              "min": 2040,
+              "p10": 2080,
+              "median": 2200,
+              "p90": 2315,
+              "max": 2399,
+              "mean": 2203.75
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.32634372099846,
+              "p10": 43.62217965345717,
+              "median": 44.9318101271995,
+              "p90": 46.14311222733789,
+              "max": 46.97563184790993,
+              "mean": 45.04139033543625
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.2846219390880345,
+              "p10": 2.293872961254647,
+              "median": 2.305330943853705,
+              "p90": 2.314634266533424,
+              "max": 2.3304805169643954,
+              "mean": 2.3057827065448073
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.31882579034971,
+              "p10": 43.615857832587075,
+              "median": 44.93164748228148,
+              "p90": 46.14795447251316,
+              "max": 46.984979243976376,
+              "mean": 45.0415688735541
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.04966253931394249,
+              "p10": 0.11384756640889293,
+              "median": 0.8081980184033881,
+              "p90": 1.4587475064880167,
+              "max": 1.984979243976376,
+              "mean": 0.8477509865653283
+            },
+            "wins": {
+              "n": 32,
+              "min": 6,
+              "p10": 7,
+              "median": 10,
+              "p90": 13,
+              "max": 15,
+              "mean": 10.09375
+            }
+          },
+          "25": {
+            "publicRating": {
+              "n": 32,
+              "min": 2021,
+              "p10": 2100,
+              "median": 2215,
+              "p90": 2300,
+              "max": 2419,
+              "mean": 2203.71875
+            },
+            "mu": {
+              "n": 32,
+              "min": 43.27889539257091,
+              "p10": 43.77091641005216,
+              "median": 44.96717656064196,
+              "p90": 45.88447408338218,
+              "max": 46.900303364811734,
+              "mean": 45.05018845624253
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.2444399004525972,
+              "p10": 2.249350968988482,
+              "median": 2.2635399010157453,
+              "p90": 2.273215865815756,
+              "max": 2.298374336924408,
+              "mean": 2.263860784121092
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 43.27075551449595,
+              "p10": 43.765260979168765,
+              "median": 44.966760940800555,
+              "p90": 45.88855121096009,
+              "max": 46.90911198962438,
+              "mean": 45.050392930827925
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.033239059199445364,
+              "p10": 0.1724833520421214,
+              "median": 0.6149383767411223,
+              "p90": 1.6328718940357874,
+              "max": 1.9091119896243782,
+              "mean": 0.7984081365830418
+            },
+            "wins": {
+              "n": 32,
+              "min": 8,
+              "p10": 10,
+              "median": 13,
+              "p90": 15,
+              "max": 18,
+              "mean": 12.59375
+            }
+          },
+          "50": {
+            "publicRating": {
+              "n": 32,
+              "min": 1941,
+              "p10": 2080,
+              "median": 2160,
+              "p90": 2358,
+              "max": 2473,
+              "mean": 2204.125
+            },
+            "mu": {
+              "n": 32,
+              "min": 42.41033456820327,
+              "p10": 44.02675633087617,
+              "median": 44.632316673562435,
+              "p90": 46.262573476487475,
+              "max": 47.54833840993659,
+              "mean": 45.03374232662694
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.061150338436199,
+              "p10": 2.0719052648326826,
+              "median": 2.0796071785702774,
+              "p90": 2.097963750242938,
+              "max": 2.1266406026838562,
+              "mean": 2.08414797661202
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 42.397448257713336,
+              "p10": 44.020759241413245,
+              "median": 44.630096952608824,
+              "p90": 46.268683682762855,
+              "max": 47.561030556635984,
+              "mean": 45.033892712870866
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.004591835714435888,
+              "p10": 0.13059582665142955,
+              "median": 0.6483649173992987,
+              "p90": 2.0024132880709686,
+              "max": 2.602551742286664,
+              "mean": 0.9148425398138906
+            },
+            "wins": {
+              "n": 32,
+              "min": 18,
+              "p10": 22,
+              "median": 24,
+              "p90": 29,
+              "max": 32,
+              "mean": 25.09375
+            }
+          },
+          "100": {
+            "publicRating": {
+              "n": 32,
+              "min": 1702,
+              "p10": 2021,
+              "median": 2238,
+              "p90": 2428,
+              "max": 2512,
+              "mean": 2215.5625
+            },
+            "mu": {
+              "n": 32,
+              "min": 41.354535812166716,
+              "p10": 43.454746337542645,
+              "median": 44.97510911757459,
+              "p90": 46.498226467797686,
+              "max": 47.20189381774802,
+              "mean": 45.09033279956831
+            },
+            "sigma": {
+              "n": 32,
+              "min": 1.796117962292986,
+              "p10": 1.8104702853467565,
+              "median": 1.8226600608977441,
+              "p90": 1.8415278324223456,
+              "max": 1.8538975176209052,
+              "mean": 1.8245114862627525
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 41.333642900107364,
+              "p10": 43.446611940349364,
+              "median": 44.975950277934494,
+              "p90": 46.50507649316704,
+              "max": 47.21308431725824,
+              "mean": 45.09066711706632
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.02404972206550582,
+              "p10": 0.14435656216163295,
+              "median": 1.0643471274480305,
+              "p90": 1.9721707529349146,
+              "max": 3.666357099892636,
+              "mean": 1.1049258352417113
+            },
+            "wins": {
+              "n": 32,
+              "min": 36,
+              "p10": 45,
+              "median": 51,
+              "p90": 56,
+              "max": 58,
+              "mean": 50.4375
+            }
+          }
+        },
+        "distinctOpponents": {
+          "n": 32,
+          "min": 174,
+          "p10": 177,
+          "median": 182,
+          "p90": 189,
+          "max": 192,
+          "mean": 183.1875
+        },
+        "earliestPublic2000": {
+          "n": 32,
+          "min": 1,
+          "p10": 1,
+          "median": 1,
+          "p90": 1,
+          "max": 1,
+          "mean": 1
+        },
+        "winsAtFirstPublic2000": {
+          "n": 32,
+          "min": 0,
+          "p10": 0,
+          "median": 0,
+          "p90": 1,
+          "max": 1,
+          "mean": 0.5
+        },
+        "reached2000": 32,
+        "worstOpponentLoss": -22,
+        "publicWinMin": 18,
+        "publicWinMax": 22,
+        "publicLossMin": -22,
+        "publicLossMax": -19
+      },
+      "ordinaryBalanced": {
+        "evidence": "SYNTHETIC",
+        "setup": {
+          "trueMu": 25,
+          "initialMu": 25,
+          "initialSigma": 2.5,
+          "gamesPerTrial": 100,
+          "configuration": "7p-rebalanced",
+          "peerPopulation": 239
+        },
+        "trials": 32,
+        "finalPublic": {
+          "n": 32,
+          "min": 1002,
+          "p10": 1321,
+          "median": 1538,
+          "p90": 1728,
+          "max": 1812,
+          "mean": 1515.5625
+        },
+        "winRate": {
+          "n": 32,
+          "min": 0.36,
+          "p10": 0.45,
+          "median": 0.51,
+          "p90": 0.56,
+          "max": 0.58,
+          "mean": 0.504375
+        },
+        "checkpoints": {
+          "10": {
+            "publicRating": {
+              "n": 32,
+              "min": 1380,
+              "p10": 1420,
+              "median": 1500,
+              "p90": 1580,
+              "max": 1620,
+              "mean": 1504.96875
+            },
+            "mu": {
+              "n": 32,
+              "min": 23.689181111772122,
+              "p10": 24.18876735565939,
+              "median": 25.06043153135216,
+              "p90": 25.754330509217453,
+              "max": 26.38168007287329,
+              "mean": 25.076240337244368
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.382491296592237,
+              "p10": 2.387774052474627,
+              "median": 2.3990201413642276,
+              "p90": 2.4048003227558965,
+              "max": 2.410607959009944,
+              "mean": 2.3969401819275777
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 23.683527859205235,
+              "p10": 24.185176626215156,
+              "median": 25.0606455157022,
+              "p90": 25.75765799046238,
+              "max": 26.38771707957583,
+              "mean": 25.07656793398673
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.002126157209943358,
+              "p10": 0.06687142163727344,
+              "median": 0.4438876336536559,
+              "p90": 1.1226641171295917,
+              "max": 1.387717079575829,
+              "mean": 0.5520572363741338
+            },
+            "wins": {
+              "n": 32,
+              "min": 2,
+              "p10": 3,
+              "median": 5,
+              "p90": 7,
+              "max": 8,
+              "mean": 5.125
+            }
+          },
+          "20": {
+            "publicRating": {
+              "n": 32,
+              "min": 1340,
+              "p10": 1380,
+              "median": 1500,
+              "p90": 1615,
+              "max": 1699,
+              "mean": 1503.75
+            },
+            "mu": {
+              "n": 32,
+              "min": 23.326343720998455,
+              "p10": 23.622179653457163,
+              "median": 24.931810127199483,
+              "p90": 26.143112227337898,
+              "max": 26.975631847909934,
+              "mean": 25.041390335436244
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.2846219390880345,
+              "p10": 2.293872961254647,
+              "median": 2.305330943853705,
+              "p90": 2.314634266533424,
+              "max": 2.3304805169643954,
+              "mean": 2.3057827065448073
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 23.31882579034971,
+              "p10": 23.615857832587075,
+              "median": 24.931647482281463,
+              "p90": 26.147954472513174,
+              "max": 26.98497924397638,
+              "mean": 25.041568873554095
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.049662539313938936,
+              "p10": 0.11384756640890004,
+              "median": 0.8081980184033881,
+              "p90": 1.4587475064880167,
+              "max": 1.9849792439763796,
+              "mean": 0.8477509865653322
+            },
+            "wins": {
+              "n": 32,
+              "min": 6,
+              "p10": 7,
+              "median": 10,
+              "p90": 13,
+              "max": 15,
+              "mean": 10.09375
+            }
+          },
+          "25": {
+            "publicRating": {
+              "n": 32,
+              "min": 1321,
+              "p10": 1400,
+              "median": 1515,
+              "p90": 1600,
+              "max": 1719,
+              "mean": 1503.71875
+            },
+            "mu": {
+              "n": 32,
+              "min": 23.278895392570906,
+              "p10": 23.770916410052163,
+              "median": 24.96717656064195,
+              "p90": 25.88447408338219,
+              "max": 26.900303364811734,
+              "mean": 25.05018845624253
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.2444399004525972,
+              "p10": 2.249350968988482,
+              "median": 2.2635399010157453,
+              "p90": 2.273215865815756,
+              "max": 2.298374336924408,
+              "mean": 2.263860784121092
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 23.27075551449595,
+              "p10": 23.765260979168765,
+              "median": 24.966760940800544,
+              "p90": 25.8885512109601,
+              "max": 26.909111989624375,
+              "mean": 25.05039293082793
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.03323905919945602,
+              "p10": 0.1724833520421356,
+              "median": 0.6149383767411223,
+              "p90": 1.6328718940357767,
+              "max": 1.9091119896243747,
+              "mean": 0.798408136583045
+            },
+            "wins": {
+              "n": 32,
+              "min": 8,
+              "p10": 10,
+              "median": 13,
+              "p90": 15,
+              "max": 18,
+              "mean": 12.59375
+            }
+          },
+          "50": {
+            "publicRating": {
+              "n": 32,
+              "min": 1241,
+              "p10": 1380,
+              "median": 1460,
+              "p90": 1658,
+              "max": 1773,
+              "mean": 1504.125
+            },
+            "mu": {
+              "n": 32,
+              "min": 22.41033456820327,
+              "p10": 24.02675633087617,
+              "median": 24.63231667356245,
+              "p90": 26.2625734764875,
+              "max": 27.548338409936594,
+              "mean": 25.03374232662694
+            },
+            "sigma": {
+              "n": 32,
+              "min": 2.061150338436199,
+              "p10": 2.0719052648326826,
+              "median": 2.0796071785702774,
+              "p90": 2.097963750242938,
+              "max": 2.1266406026838562,
+              "mean": 2.08414797661202
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 22.397448257713343,
+              "p10": 24.020759241413252,
+              "median": 24.630096952608838,
+              "p90": 26.268683682762877,
+              "max": 27.561030556635984,
+              "mean": 25.033892712870855
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.0045918357144287825,
+              "p10": 0.13059582665143665,
+              "median": 0.6483649173993058,
+              "p90": 2.002413288070951,
+              "max": 2.602551742286657,
+              "mean": 0.9148425398138883
+            },
+            "wins": {
+              "n": 32,
+              "min": 18,
+              "p10": 22,
+              "median": 24,
+              "p90": 29,
+              "max": 32,
+              "mean": 25.09375
+            }
+          },
+          "100": {
+            "publicRating": {
+              "n": 32,
+              "min": 1002,
+              "p10": 1321,
+              "median": 1538,
+              "p90": 1728,
+              "max": 1812,
+              "mean": 1515.5625
+            },
+            "mu": {
+              "n": 32,
+              "min": 21.354535812166706,
+              "p10": 23.454746337542645,
+              "median": 24.97510911757459,
+              "p90": 26.49822646779771,
+              "max": 27.201893817748026,
+              "mean": 25.090332799568316
+            },
+            "sigma": {
+              "n": 32,
+              "min": 1.796117962292986,
+              "p10": 1.8104702853467565,
+              "median": 1.8226600608977441,
+              "p90": 1.8415278324223456,
+              "max": 1.8538975176209058,
+              "mean": 1.8245114862627525
+            },
+            "alignedMu": {
+              "n": 32,
+              "min": 21.333642900107353,
+              "p10": 23.446611940349367,
+              "median": 24.975950277934498,
+              "p90": 26.50507649316706,
+              "max": 27.213084317258247,
+              "mean": 25.090667117066303
+            },
+            "absoluteSkillError": {
+              "n": 32,
+              "min": 0.024049722065502266,
+              "p10": 0.14435656216166137,
+              "median": 1.0643471274480305,
+              "p90": 1.972170752934943,
+              "max": 3.6663570998926467,
+              "mean": 1.1049258352417148
+            },
+            "wins": {
+              "n": 32,
+              "min": 36,
+              "p10": 45,
+              "median": 51,
+              "p90": 56,
+              "max": 58,
+              "mean": 50.4375
+            }
+          }
+        },
+        "distinctOpponents": {
+          "n": 32,
+          "min": 174,
+          "p10": 177,
+          "median": 182,
+          "p90": 189,
+          "max": 192,
+          "mean": 183.1875
+        },
+        "earliestPublic2000": {
+          "n": 0,
+          "min": null,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "max": null,
+          "mean": null
+        },
+        "winsAtFirstPublic2000": {
+          "n": 0,
+          "min": null,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "max": null,
+          "mean": null
+        },
+        "reached2000": 0,
+        "worstOpponentLoss": -22,
+        "publicWinMin": 18,
+        "publicWinMax": 22,
+        "publicLossMin": -22,
+        "publicLossMax": -19
+      }
+    },
+    "configurationProbes": [
+      {
+        "configuration": "5p",
+        "prior": 0.518,
+        "equalSkillFascistPrediction": 0.5179999999999941,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "6p",
+        "prior": 0.455,
+        "equalSkillFascistPrediction": 0.4549999999999993,
+        "fascistWinDelta": 21,
+        "fascistLossDelta": -19,
+        "liberalWinDelta": 19,
+        "liberalLossDelta": -21
+      },
+      {
+        "configuration": "7p",
+        "prior": 0.525,
+        "equalSkillFascistPrediction": 0.524999999999991,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "8p",
+        "prior": 0.478,
+        "equalSkillFascistPrediction": 0.47799999999999015,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "9p",
+        "prior": 0.604,
+        "equalSkillFascistPrediction": 0.604000000000003,
+        "fascistWinDelta": 18,
+        "fascistLossDelta": -22,
+        "liberalWinDelta": 22,
+        "liberalLossDelta": -18
+      },
+      {
+        "configuration": "10p",
+        "prior": 0.543,
+        "equalSkillFascistPrediction": 0.5430000000000015,
+        "fascistWinDelta": 19,
+        "fascistLossDelta": -21,
+        "liberalWinDelta": 21,
+        "liberalLossDelta": -19
+      },
+      {
+        "configuration": "6p-rebalanced",
+        "prior": 0.5,
+        "equalSkillFascistPrediction": 0.5,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "7p-rebalanced",
+        "prior": 0.5,
+        "equalSkillFascistPrediction": 0.5,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "9p-rebalanced",
+        "prior": 0.5,
+        "equalSkillFascistPrediction": 0.5,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "9p-rerebalanced",
+        "prior": 0.5,
+        "equalSkillFascistPrediction": 0.5,
+        "fascistWinDelta": 20,
+        "fascistLossDelta": -20,
+        "liberalWinDelta": 20,
+        "liberalLossDelta": -20
+      },
+      {
+        "configuration": "9p-2f-deck",
+        "prior": 0.55,
+        "equalSkillFascistPrediction": 0.5500000000000034,
+        "fascistWinDelta": 19,
+        "fascistLossDelta": -21,
+        "liberalWinDelta": 21,
+        "liberalLossDelta": -19
+      },
+      {
+        "configuration": "9p-2f-deck-rerebalanced",
+        "prior": 0.55,
+        "equalSkillFascistPrediction": 0.5500000000000034,
+        "fascistWinDelta": 19,
+        "fascistLossDelta": -21,
+        "liberalWinDelta": 21,
+        "liberalLossDelta": -19
+      }
+    ],
+    "prescribed60Percent": {
+      "evidence": "SYNTHETIC: prescribed exactly 180 wins / 120 losses, shuffled order; not a latent-skill sample",
+      "final": {
+        "games": 300,
+        "wins": 180,
+        "winRate": 0.6,
+        "publicRating": 2482,
+        "mu": 30.35405679103507,
+        "sigma": 1.5474611583160716
+      },
+      "milestones": {
+        "10": {
+          "games": 10,
+          "wins": 4,
+          "winRate": 0.4,
+          "publicRating": 1463,
+          "mu": 22.940030040939135,
+          "sigma": 5.683019634393848,
+          "alignedMu": 22.93889934954129,
+          "absoluteSkillError": 2.061100650458709
+        },
+        "20": {
+          "games": 20,
+          "wins": 7,
+          "winRate": 0.35,
+          "publicRating": 1393,
+          "mu": 19.69793420617854,
+          "sigma": 4.808382946192974,
+          "alignedMu": 19.69394505291405,
+          "absoluteSkillError": 5.306054947085951
+        },
+        "25": {
+          "games": 25,
+          "wins": 10,
+          "winRate": 0.4,
+          "publicRating": 1423,
+          "mu": 20.918017857909163,
+          "sigma": 4.436834681687151,
+          "alignedMu": 20.91570049088315,
+          "absoluteSkillError": 4.08429950911685
+        },
+        "50": {
+          "games": 50,
+          "wins": 28,
+          "winRate": 0.56,
+          "publicRating": 1660,
+          "mu": 27.095234083814614,
+          "sigma": 3.3807508145965857,
+          "alignedMu": 27.10531777589906,
+          "absoluteSkillError": 2.10531777589906
+        },
+        "100": {
+          "games": 100,
+          "wins": 54,
+          "winRate": 0.54,
+          "publicRating": 1665,
+          "mu": 26.691850589777456,
+          "sigma": 2.5239028110673356,
+          "alignedMu": 26.699918757905397,
+          "absoluteSkillError": 1.6999187579053974
+        },
+        "300": {
+          "games": 300,
+          "wins": 180,
+          "winRate": 0.6,
+          "publicRating": 2482,
+          "mu": 30.35405679103507,
+          "sigma": 1.5474611583160716,
+          "alignedMu": 30.38473451590656,
+          "absoluteSkillError": 5.384734515906558
+        }
+      },
+      "adaptation": {},
+      "firstSigmaBelowOne": null,
+      "distinctOpponents": 235,
+      "firstPublic2000": {
+        "games": 157,
+        "wins": 92,
+        "winRate": 0.5859872611464968,
+        "publicRating": 2000,
+        "mu": 29.005961176151427,
+        "sigma": 2.072042046194142
+      },
+      "opponentLosses": {
+        "count": 610,
+        "min": -22,
+        "max": -18,
+        "mean": -19.29672131147541,
+        "histogram": {
+          "-21": 50,
+          "-20": 118,
+          "-22": 17,
+          "-19": 337,
+          "-18": 88
+        }
+      },
+      "focusDeltas": {
+        "count": 300,
+        "min": -22,
+        "max": 22,
+        "mean": 3.2733333333333334,
+        "histogram": {
+          "18": 24,
+          "19": 101,
+          "20": 36,
+          "21": 14,
+          "22": 5,
+          "-20": 16,
+          "-19": 13,
+          "-18": 2,
+          "-21": 68,
+          "-22": 21
+        }
+      },
+      "allDeltas": {
+        "count": 2100,
+        "min": -22,
+        "max": 22,
+        "mean": 0.08857142857142856,
+        "histogram": {
+          "18": 88,
+          "19": 417,
+          "20": 187,
+          "21": 274,
+          "22": 90,
+          "-20": 177,
+          "-21": 300,
+          "-19": 381,
+          "-22": 92,
+          "-18": 94
+        }
+      },
+      "fixed20NetWinsReference": 2700,
+      "actualMinusReference": -218
+    },
+    "sigmaCareer": {
+      "evidence": "SYNTHETIC",
+      "stableGames": 10000,
+      "trueMuBefore": 25,
+      "trueMuAfter": 45,
+      "adaptationGames": 1000,
+      "uncertaintyModel": "Production tau=0, unmodified. Focus rotates through a settled peer population; every participant is updated.",
+      "careerCheckpoints": {
+        "10": {
+          "games": 10,
+          "wins": 6,
+          "winRate": 0.6,
+          "publicRating": 1545,
+          "mu": 27.852738611293248,
+          "sigma": 6.097487368398765,
+          "alignedMu": 27.8553671443472,
+          "absoluteSkillError": 2.8553671443471984
+        },
+        "20": {
+          "games": 20,
+          "wins": 12,
+          "winRate": 0.6,
+          "publicRating": 1577,
+          "mu": 28.39974157573562,
+          "sigma": 4.879944005045084,
+          "alignedMu": 28.40322098382698,
+          "absoluteSkillError": 3.40322098382698
+        },
+        "25": {
+          "games": 25,
+          "wins": 14,
+          "winRate": 0.56,
+          "publicRating": 1552,
+          "mu": 27.75220637554928,
+          "sigma": 4.531592635923498,
+          "alignedMu": 27.75498432467861,
+          "absoluteSkillError": 2.7549843246786097
+        },
+        "50": {
+          "games": 50,
+          "wins": 26,
+          "winRate": 0.52,
+          "publicRating": 1510,
+          "mu": 25.57970445882939,
+          "sigma": 3.4348160522145474,
+          "alignedMu": 25.578238336617254,
+          "absoluteSkillError": 0.5782383366172539
+        },
+        "100": {
+          "games": 100,
+          "wins": 43,
+          "winRate": 0.43,
+          "publicRating": 1210,
+          "mu": 21.628401826563366,
+          "sigma": 2.5857440248769112,
+          "alignedMu": 21.615251469482423,
+          "absoluteSkillError": 3.3847485305175766
+        },
+        "300": {
+          "games": 300,
+          "wins": 134,
+          "winRate": 0.44666666666666666,
+          "publicRating": 1025,
+          "mu": 21.902291499923347,
+          "sigma": 1.5019291751326687,
+          "alignedMu": 21.88981009428464,
+          "absoluteSkillError": 3.110189905715359
+        },
+        "1000": {
+          "games": 1000,
+          "wins": 485,
+          "winRate": 0.485,
+          "publicRating": 1387,
+          "mu": 24.101685868121923,
+          "sigma": 0.8362611540816735,
+          "alignedMu": 24.122822345006163,
+          "absoluteSkillError": 0.8771776549938366
+        },
+        "3000": {
+          "games": 3000,
+          "wins": 1491,
+          "winRate": 0.497,
+          "publicRating": 1635,
+          "mu": 24.7252302175856,
+          "sigma": 0.48159850014439715,
+          "alignedMu": 24.75873406606757,
+          "absoluteSkillError": 0.24126593393242857
+        },
+        "10000": {
+          "games": 10000,
+          "wins": 4970,
+          "winRate": 0.497,
+          "publicRating": 1137,
+          "mu": 24.84545881929658,
+          "sigma": 0.2621830993081614,
+          "alignedMu": 24.890961992393624,
+          "absoluteSkillError": 0.10903800760637594
+        }
+      },
+      "firstSigmaBelowOne": 702,
+      "agedAdaptation": {
+        "10": {
+          "games": 10010,
+          "wins": 4977,
+          "winRate": 0.4972027972027972,
+          "publicRating": 1219,
+          "mu": 24.858018910061315,
+          "sigma": 0.26203645672689574,
+          "alignedMu": 24.90496567074533,
+          "absoluteSkillError": 20.09503432925467
+        },
+        "20": {
+          "games": 10020,
+          "wins": 4985,
+          "winRate": 0.49750499001996007,
+          "publicRating": 1337,
+          "mu": 24.874029954918417,
+          "sigma": 0.26190589476129655,
+          "alignedMu": 24.922899127015793,
+          "absoluteSkillError": 20.077100872984207
+        },
+        "25": {
+          "games": 10025,
+          "wins": 4987,
+          "winRate": 0.4974563591022444,
+          "publicRating": 1316,
+          "mu": 24.870997393979433,
+          "sigma": 0.26183409866646784,
+          "alignedMu": 24.919478216231077,
+          "absoluteSkillError": 20.080521783768923
+        },
+        "50": {
+          "games": 10050,
+          "wins": 5007,
+          "winRate": 0.4982089552238806,
+          "publicRating": 1622,
+          "mu": 24.915942030845535,
+          "sigma": 0.26147673821562634,
+          "alignedMu": 24.969607412489918,
+          "absoluteSkillError": 20.030392587510082
+        },
+        "100": {
+          "games": 10100,
+          "wins": 5044,
+          "winRate": 0.4994059405940594,
+          "publicRating": 2109,
+          "mu": 24.98109283188778,
+          "sigma": 0.26081275082383387,
+          "alignedMu": 25.042921750942178,
+          "absoluteSkillError": 19.957078249057822
+        },
+        "300": {
+          "games": 10300,
+          "wins": 5202,
+          "winRate": 0.5050485436893204,
+          "publicRating": 4417,
+          "mu": 25.2849388836066,
+          "sigma": 0.2582079349915577,
+          "alignedMu": 25.382282963041458,
+          "absoluteSkillError": 19.617717036958542
+        },
+        "1000": {
+          "games": 11000,
+          "wins": 5798,
+          "winRate": 0.527090909090909,
+          "publicRating": 13999,
+          "mu": 26.41857357376754,
+          "sigma": 0.249890833320823,
+          "alignedMu": 26.650146400952934,
+          "absoluteSkillError": 18.349853599047066
+        }
+      },
+      "freshComparison": {
+        "10": {
+          "games": 10,
+          "wins": 8,
+          "winRate": 0.8,
+          "publicRating": 1610,
+          "mu": 32.752454504612956,
+          "sigma": 6.135456865851256,
+          "alignedMu": 32.75654989221014,
+          "absoluteSkillError": 12.243450107789862
+        },
+        "20": {
+          "games": 20,
+          "wins": 15,
+          "winRate": 0.75,
+          "publicRating": 1667,
+          "mu": 34.28455995286878,
+          "sigma": 4.971721271076676,
+          "alignedMu": 34.29019138162086,
+          "absoluteSkillError": 10.709808618379142
+        },
+        "25": {
+          "games": 25,
+          "wins": 17,
+          "winRate": 0.68,
+          "publicRating": 1635,
+          "mu": 31.744415007812425,
+          "sigma": 4.582971435612332,
+          "alignedMu": 31.747203882101477,
+          "absoluteSkillError": 13.252796117898523
+        },
+        "50": {
+          "games": 50,
+          "wins": 39,
+          "winRate": 0.78,
+          "publicRating": 1946,
+          "mu": 38.10002989255039,
+          "sigma": 3.5990248695640825,
+          "alignedMu": 38.11282814925254,
+          "absoluteSkillError": 6.887171850747457
+        },
+        "100": {
+          "games": 100,
+          "wins": 83,
+          "winRate": 0.83,
+          "publicRating": 2510,
+          "mu": 42.62486887795488,
+          "sigma": 2.8152371781525356,
+          "alignedMu": 42.64850257043439,
+          "absoluteSkillError": 2.3514974295656117
+        },
+        "300": {
+          "games": 300,
+          "wins": 248,
+          "winRate": 0.8266666666666667,
+          "publicRating": 4311,
+          "mu": 44.45868721511812,
+          "sigma": 1.7352795608722849,
+          "alignedMu": 44.4988320653491,
+          "absoluteSkillError": 0.5011679346509013
+        },
+        "1000": {
+          "games": 1000,
+          "wins": 800,
+          "winRate": 0.8,
+          "publicRating": 9612,
+          "mu": 43.10486713121052,
+          "sigma": 0.9682468415148757,
+          "alignedMu": 43.132902748651844,
+          "absoluteSkillError": 1.8670972513481559
+        }
+      },
+      "comparisonLimit": "Fresh comparator is a separate seeded population, not a paired causal estimate of a proposed parameter change. Means are aligned to peer drift because only relative skill is identifiable."
+    }
+  }
+}
