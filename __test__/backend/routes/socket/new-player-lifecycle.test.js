@@ -2,6 +2,7 @@ const { EventEmitter } = require("events");
 
 let mongoose, realConnection, Account, Game, ModAction, models, lobbies, endGame, socketRoutes;
 let updateSeatedUser, handleUserLeaveGame, handleSocketDisconnect, handleModerationAction, handleUpdatedRemakeGame;
+let handleAddNewGameChat, sendCommandChatsUpdate, sendInProgressGameUpdate;
 const originalIo = global.io;
 
 // Reload the real handlers/emitter under fake timers; persistence and transport are the only substitutes.
@@ -33,6 +34,8 @@ beforeAll(() => {
   ({ handleUserLeaveGame, handleSocketDisconnect } = require("../../../../routes/socket/user-events/leave-game"));
   ({ handleModerationAction } = require("../../../../routes/socket/user-events/moderation"));
   ({ handleUpdatedRemakeGame } = require("../../../../routes/socket/user-events/remake-game"));
+  ({ handleAddNewGameChat } = require("../../../../routes/socket/user-events/chat"));
+  ({ sendCommandChatsUpdate, sendInProgressGameUpdate } = require("../../../../routes/socket/util"));
 });
 
 // Teardown and restoration each cross promise boundaries; drain them without real-time sleeps.
@@ -342,16 +345,43 @@ describe("ordinary teardown remains available", () => {
     expect(Game.findOne).toHaveBeenCalledTimes(1);
   });
 
-  it("collects a completed New Player game without recreating it", async () => {
+  it.each([
+    ["New Player", false],
+    ["Practice", false],
+    ["ranked", false],
+    ["casual", false],
+    ["ranked", true],
+  ])("collects a completed %s game without redirecting (abandoned: %s)", async (type, abandoned) => {
     const game = startedGame(true);
+    if (type !== "New Player") {
+      delete game.general.systemLobby;
+      game.general.practiceGame = type === "Practice";
+      game.general.casualGame = type === "casual";
+    }
     const socket = makeSocket(game, "Grey", false);
     game.gameState.timeCompleted = Date.now() - 300000;
+    // Completed results stay visible even if the game also has an expired abandonment timestamp.
+    if (abandoned) game.general.timeAbandoned = new Date(Date.now() - 300000);
     socketRoutes();
     jest.advanceTimersByTime(30000);
     await settle();
     expect(Object.keys(models.games)).toHaveLength(0);
     expect(endGame.saveAndDeleteGame).toHaveBeenCalledWith(game.general.uid);
     expect(Game.findOne).toHaveBeenCalledTimes(1);
+    expect(socket.emit).not.toHaveBeenCalledWith("toLobby", expect.anything());
+    expect(socket.emit).not.toHaveBeenCalledWith("gameUpdate", {});
+    expect(socket.leave).toHaveBeenCalledWith(game.general.uid);
+  });
+
+  it.each(["New Player", "human"])("still redirects from an abandoned, unfinished %s game", async (type) => {
+    const game = startedGame();
+    if (type === "human") delete game.general.systemLobby;
+    const socket = makeSocket(game, "Grey", false);
+    game.general.timeAbandoned = new Date(Date.now() - 300000);
+    socketRoutes();
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(models.games[game.general.uid]).toBeUndefined();
     expect(socket.emit).toHaveBeenCalledWith("toLobby", game.general.uid);
     expect(socket.leave).toHaveBeenCalledWith(game.general.uid);
   });
@@ -362,6 +392,100 @@ describe("ordinary teardown remains available", () => {
     await settle();
     expect(Object.keys(models.games)).toHaveLength(0);
     expect(Game.findOne).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("waiting New Player chat retention", () => {
+  const seedChats = (game, count) => {
+    game.chats = Array.from({ length: count }, (_, index) => ({ chat: `Earlier message ${index}` }));
+  };
+
+  const chat = (game, socket, message, admins = []) =>
+    handleAddNewGameChat(
+      socket,
+      socket.handshake.session.passport,
+      { uid: game.general.uid, chat: message },
+      game,
+      [],
+      [],
+      admins,
+      jest.fn(),
+      false
+    );
+
+  it.each([0, 1, 5, 6])("retains and broadcasts the newest 100 chats with %s players seated", async (seats) => {
+    const game = waitingGame();
+    const sender = makeSocket(game);
+    const observer = makeSocket(game, "Observer");
+    // An empty lobby can still receive ordinary Rainbow observer chat.
+    models.userList[0].xpOverall = seats ? 0 : 10;
+    models.userList[0].isRainbowOverall = seats === 0;
+    game.publicPlayersState = Array.from({ length: seats }, (_, index) => ({
+      userName: index ? `Player${index}` : "Grey",
+    }));
+    game.gameState.isStarted = seats >= 5; // Countdown sets this before tracks flip.
+    seedChats(game, 98);
+
+    for (let index = 0; index < 4; index++) {
+      models.userList[0].lastMessage = { timestamp: Date.now() - 1000 };
+      await chat(game, sender, `New message ${index}`);
+      expect(game.chats).toHaveLength(Math.min(99 + index, 100));
+      expect(game.chats[game.chats.length - 1].chat).toBe(`New message ${index}`);
+      for (const socket of [sender, observer]) {
+        expect(socket.emit).toHaveBeenLastCalledWith("gameUpdate", expect.objectContaining({ chats: game.chats }));
+      }
+    }
+    expect(game.chats[0].chat).toBe("Earlier message 2");
+  });
+
+  it("also caps public command output during the countdown", async () => {
+    const game = waitingGame();
+    game.gameState.isStarted = true;
+    const moderator = makeSocket(game, "Moderator");
+    seedChats(game, 100);
+    await chat(game, moderator, "/forcerigdeck B", ["Moderator"]);
+    expect(game.chats).toHaveLength(100);
+    expect(game.chats[0].chat).toBe("Earlier message 1");
+    expect(game.chats[99]).toMatchObject({
+      gameChat: true,
+      chat: [{ text: "A staff member has changed the deck to " }, { text: "B", type: "liberal" }, { text: "." }],
+    });
+    expect(moderator.emit).toHaveBeenLastCalledWith("gameUpdate", expect.objectContaining({ chats: game.chats }));
+  });
+
+  it.each(["command", "full"])("bounds stored history even without room sockets (%s update)", (type) => {
+    const game = waitingGame();
+    seedChats(game, 200);
+    const update = type === "command" ? sendCommandChatsUpdate : sendInProgressGameUpdate;
+    update(game);
+    expect(game.chats).toHaveLength(100);
+    expect(game.chats[0].chat).toBe("Earlier message 100");
+  });
+
+  it("caps a full update sent to a newly joined observer", () => {
+    const game = waitingGame();
+    const observer = makeSocket(game, "Observer");
+    seedChats(game, 200);
+    sendInProgressGameUpdate(game);
+    expect(game.chats).toHaveLength(100);
+    expect(observer.emit).toHaveBeenCalledWith("gameUpdate", expect.objectContaining({ chats: game.chats }));
+  });
+
+  it.each(["started", "completed", "human public", "human private"])("preserves %s chat retention", async (type) => {
+    const game = type === "started" || type === "completed" ? startedGame(type === "completed") : waitingGame();
+    if (type.startsWith("human")) {
+      delete game.general.systemLobby;
+      game.general.private = type === "human private";
+      game.publicPlayersState.push({ userName: "Grey" });
+    }
+    const sender = makeSocket(game);
+    seedChats(game, 150);
+    await chat(game, sender, "Latest message");
+    expect(game.chats).toHaveLength(type === "human private" ? 31 : 151);
+    expect(game.chats[game.chats.length - 1].chat).toBe("Latest message");
+    // Later full broadcasts must also keep the started game's history intact.
+    sendInProgressGameUpdate(game);
+    expect(game.chats).toHaveLength(type === "human private" ? 31 : 151);
   });
 });
 

@@ -3,12 +3,7 @@ const Game = require("../../../models/game");
 const { games, gameCreationDisabled } = require("../models");
 const { chatReplacements } = require("../chatReplacements");
 const { sendGameList } = require("../user-requests");
-
-const isNewPlayerLobby = (game) => game?.general?.systemLobby === "new-player";
-
-// Countdown still owns intake; completed/started cohorts must retain ordinary teardown behavior.
-const shouldSurviveEmptyPregame = (game) =>
-  isNewPlayerLobby(game) && !game.gameState.isTracksFlipped && !game.gameState.isCompleted;
+const { isNewPlayerLobby, shouldSurviveEmptyPregame } = require("./new-player-state");
 
 // Keep the human lobby's scaffold without inventing a creator, account, or socket.
 const buildNewPlayerLobby = (uid, timeCreated = new Date()) => ({

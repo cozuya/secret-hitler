@@ -2,6 +2,7 @@ const { newStaff } = require("./models");
 const util = require("util");
 const { Webhook } = require("discord-webhook-node");
 const tempy = require("tempy");
+const { trimNewPlayerLobbyChats } = require("./system-lobbies/new-player-state");
 
 /**
  * Debugging function to send a game to Discord after it's been identified to be cyclic
@@ -71,6 +72,7 @@ module.exports.combineCommandChats = combineCommandChats;
  * @param {boolean} noChats - remove chats for client to handle.
  */
 module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
+  trimNewPlayerLobbyChats(game);
   if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
     return;
   }
@@ -205,6 +207,7 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 };
 
 module.exports.sendCommandChatsUpdate = (game) => {
+  trimNewPlayerLobbyChats(game);
   if (!io.sockets.adapter.rooms[game.general.uid]) {
     return;
   }
