@@ -5,6 +5,7 @@ const { shufflePolicies } = require("./common.js");
 const GameSummaryBuilder = require("../../../models/game-summary/GameSummaryBuilder");
 const Account = require("../../../models/account.js");
 const { STARTING_PUBLIC_RATING } = require("../rating/public-ladder");
+const { isNewPlayerLobby, ensureNewPlayerLobby } = require("../system-lobbies/new-player");
 
 /**
  * @param {object} game - game to act on.
@@ -911,4 +912,11 @@ module.exports = (game) => {
   game.private.voteSpamData = game.private.seatedPlayers.map((player) => ({
     unvoteTimer: -1,
   }));
+
+  // Both countdown expiry and a full table reach here. Tracks have flipped, releasing this cohort's intake.
+  if (isNewPlayerLobby(game)) {
+    ensureNewPlayerLobby().catch((err) => {
+      console.error("Could not create the next New Player Game after a cohort started:", err);
+    });
+  }
 };

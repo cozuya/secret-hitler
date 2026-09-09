@@ -69,6 +69,8 @@ const moment = require("moment");
 const { selectPlayerToAssassinate } = require("./game/assassination");
 const { instrumentSocket } = require("./bandwidth-diagnostics");
 const { recordSocketConnection, recordSocketDisconnect, recordUserListRequest } = require("./abuse-monitor");
+const mongoose = require("mongoose");
+const { ensureNewPlayerLobby, shouldSurviveEmptyPregame } = require("./system-lobbies/new-player");
 
 let modUserNames = [],
   editorUserNames = [],
@@ -80,6 +82,8 @@ const gamesGarbageCollector = () => {
     let toDelete = false;
     const currentGame = games[gameName];
     if (!currentGame) return;
+    // Empty intake is intentional, even with stale abandonment metadata; started cohorts are not exempt.
+    if (shouldSurviveEmptyPregame(currentGame)) return;
 
     const completedTimer =
       currentGame.gameState &&
@@ -912,4 +916,12 @@ module.exports.socketRoutes = () => {
       });
     });
   });
+
+  // app.js starts connecting before registering routes; don't rely on buffered UID queries at boot.
+  const createNewPlayerLobby = () =>
+    ensureNewPlayerLobby().catch((err) => {
+      console.error("Could not create the New Player Game at startup:", err);
+    });
+  if (mongoose.connection.readyState === 1) createNewPlayerLobby();
+  else mongoose.connection.once("open", createNewPlayerLobby);
 };

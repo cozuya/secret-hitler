@@ -548,8 +548,23 @@ const DisplayLobbies = (props) => {
                 <div className="gamename-column">
                   {renderFlag()}
                   {game.name}
+                  {game.systemLobby === "new-player" && game.gameStatus === "notStarted" && (
+                    <span
+                      className="ui mini teal label"
+                      data-tooltip="Earn XP toward Rainbow in this new-player Practice game."
+                      data-inverted=""
+                    >
+                      Path to Rainbow
+                    </span>
+                  )}
                   {userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran" && (
-                    <span style={{ color: "lightblue" }}>{` Created by: ${game.gameCreatorName}`}</span>
+                    <span style={{ color: "lightblue" }}>
+                      {game.gameCreatorName
+                        ? ` Created by: ${game.gameCreatorName}`
+                        : game.systemLobby === "new-player"
+                          ? " System lobby"
+                          : " Creator unavailable"}
+                    </span>
                   )}
                 </div>
                 <div className="options-column experienced">{optionIcons()}</div>
@@ -564,7 +579,8 @@ const DisplayLobbies = (props) => {
                 )}
                 <div className="player-count-column">
                   <span className="seatedcount" style={{ fontWeight: "bold" }}>
-                    {game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{" "}
+                    {/* Empty intake has a real zero count; keep the tournament queue fallback ahead of that zero. */}
+                    {(game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)) ?? 0}{" "}
                   </span>
                   <span className="divider">/</span>
                   <span className="allowed-players"> {playerCount(game)}</span>

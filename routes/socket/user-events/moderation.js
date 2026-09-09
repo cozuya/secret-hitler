@@ -27,6 +27,7 @@ const { cardbackPath } = require("../../cardback-store");
 const { sendCommandChatsUpdate } = require("../util");
 const { removeBadge, checkBadgesAccount } = require("../badges");
 const { moderationActionSchema } = require("./moderation.schema");
+const { ensureNewPlayerLobby } = require("../system-lobbies/new-player");
 let lagTest = [];
 
 /**
@@ -809,6 +810,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
           break;
         case "enableGameCreation":
           gameCreationDisabled.status = false;
+          ensureNewPlayerLobby().catch((err) => {
+            console.error("Could not restore the New Player Game after enabling game creation:", err);
+          });
           break;
         case "enableLimitNewPlayers":
           limitNewPlayers.status = true;

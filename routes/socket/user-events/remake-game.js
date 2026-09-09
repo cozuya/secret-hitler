@@ -8,6 +8,7 @@ const { sendGameList, sendGameInfo } = require("../user-requests");
 const { updateSeatedUser } = require("./join-game");
 const { checkStartConditions } = require("./leave-game");
 const { remakeSchema } = require("./remake-game.schema");
+const { isNewPlayerLobby } = require("../system-lobbies/new-player");
 
 /**
  * @param {object} passport - socket authentication.
@@ -86,6 +87,8 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
     const _game = Object.assign({}, game);
     delete _game.private;
     const newGame = _.cloneDeep(_game);
+    // A remake continues this cohort; it must not become a second intake room or inherit empty-lobby survival.
+    if (isNewPlayerLobby(newGame)) delete newGame.general.systemLobby;
     const remakePlayerNames = remakeData.filter((player) => player.isRemaking).map((player) => player.userName);
     const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
       (socketId) =>

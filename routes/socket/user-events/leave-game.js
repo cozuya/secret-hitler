@@ -9,6 +9,7 @@ const adjectives = require("../../../utils/adjectives");
 const animals = require("../../../utils/animals");
 const startGame = require("../game/start-game.js");
 const { leaveGameSchema } = require("./leave-game.schema");
+const { shouldSurviveEmptyPregame } = require("../system-lobbies/new-player");
 
 /**
  * @param {object} game - game to act on.
@@ -221,10 +222,12 @@ const handleSocketDisconnect = (socket) => {
         const playerIndex = publicPlayersState.findIndex((player) => player.userName === passport.user);
 
         if (
-          (!gameState.isStarted && publicPlayersState.length === 1) ||
-          (gameState.isCompleted &&
-            publicPlayersState.filter((player) => !player.connected || player.leftGame).length ===
-              game.general.playerCount - 1)
+          // Waiting system intake keeps its UID; fall through to remove the seat and update status.
+          !shouldSurviveEmptyPregame(game) &&
+          ((!gameState.isStarted && publicPlayersState.length === 1) ||
+            (gameState.isCompleted &&
+              publicPlayersState.filter((player) => !player.connected || player.leftGame).length ===
+                game.general.playerCount - 1))
         ) {
           saveAndDeleteGame(gameName);
         } else if (!gameState.isTracksFlipped && playerIndex > -1) {
@@ -397,8 +400,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
   }
 
   if (
-    (!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
-    (game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
+    // Only waiting system intake survives empty seats; started cohorts still use normal teardown.
+    !shouldSurviveEmptyPregame(game) &&
+    ((!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
+      (game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length))
   ) {
     io.sockets.in(game.general.uid).emit("gameUpdate", {});
     if (!game.summarySaved && game.gameState.isTracksFlipped) {

@@ -5,6 +5,7 @@ const { sendCommandChatsUpdate } = require("../util");
 const { checkStartConditions } = require("./leave-game"); // this used to be a separate game-countdown.js but that isn't really helpful tbh
 const { userInBlacklist } = require("../../../utils");
 const { updateSeatedUserSchema } = require("./join-game.schema");
+const { isNewPlayerLobby } = require("../system-lobbies/new-player");
 
 /**
  * @param {object} socket - user socket reference.
@@ -39,6 +40,12 @@ const updateSeatedUser = (socket, passport, data) => {
   }
 
   Account.findOne({ username: passport.user }).then((account) => {
+    // The canonical Rainbow flag alone determines eligibility; staff and creators have no exception.
+    if (isNewPlayerLobby(game) && account.isRainbowOverall) {
+      socket.emit("gameJoinStatusUpdate", { status: "newPlayerOnly" });
+      return;
+    }
+
     const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
     const isNotInGame = !game.publicPlayersState.find((player) => player.userName === passport.user);
     const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.isRainbowOverall);

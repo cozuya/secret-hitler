@@ -182,6 +182,14 @@ export class GamesList extends React.Component {
 
     const thisUser = userInfo.userName && userList.list && userList.list.find((u) => u.userName == userInfo.userName);
     const sortTypeThenName = (a, b) => {
+      // The outer comparator keeps the current game and status first; only non-Rainbow users get intake priority.
+      if (thisUser && !thisUser.isRainbowOverall) {
+        const newPlayerFirst =
+          Number(b.systemLobby === "new-player" && b.gameStatus === "notStarted") -
+          Number(a.systemLobby === "new-player" && a.gameStatus === "notStarted");
+        if (newPlayerFirst) return newPlayerFirst;
+      }
+
       const isRainbow = thisUser && !thisUser.isPrivate && thisUser.isRainbowOverall;
       const isPrivate = thisUser && thisUser.isPrivate;
 

@@ -18,6 +18,7 @@ const { makeReport } = require("../report.js");
 const { CURRENT_SEASON_NUMBER: CURRENTSEASONNUMBER, CURRENT_SEASON_FIELDS } = require("../../../src/shared/season");
 const { LineGuess } = require("../util");
 const { checkBadgesELO, checkBadgesXP } = require("../badges");
+const { shouldSurviveEmptyPregame, ensureNewPlayerLobby } = require("../system-lobbies/new-player");
 
 // XP award + rainbow promotion, shared by the ranked and silent/practice end-game paths so the
 // amount and the >=10 rainbow threshold can't drift apart between them again. The amount comes from
@@ -48,6 +49,7 @@ const applyXpAndRainbow = (player, won, isRainbow = false) => {
 };
 
 const generateGameObject = (game) => {
+  // systemLobby is live intake metadata; saved games/replays need only the ordinary Practice flags.
   const casualBool = Boolean(game?.general?.casualGame); // Because Mongo is explicitly typed and integers are not truthy according to it
   const practiceBool = Boolean(game?.general?.practiceGame);
   const unlistedBool = Boolean(game?.general?.unlistedGame);
@@ -258,6 +260,12 @@ const saveAndDeleteGame = (gameID) => {
   saveOrUpdateGame(gameID, () => {
     delete games[gameID];
     sendGameList();
+    // Moderation may delete waiting intake. Restore only after removal, or ensure would find this old room.
+    if (shouldSurviveEmptyPregame(game)) {
+      ensureNewPlayerLobby().catch((err) => {
+        console.error("Could not restore the New Player Game after deletion:", err);
+      });
+    }
   });
 };
 
