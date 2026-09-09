@@ -13,8 +13,8 @@ class Changelog extends React.Component {
 
         <div className="ui header">
           <p>
-            Welcome to Season 24! The ranking system has been rebuilt — ratings now track individual skill more
-            accurately.
+            Welcome to Season 25! Ranked wins now earn 16–24 points and losses cost 16–24 points, adjusted for the
+            matchup. Seasonal ratings start at 1500; overall ratings carry forward.
           </p>
         </div>
 

@@ -9,6 +9,8 @@ jest.mock("../../routes/socket/rating/ranked", () => {
 });
 const { MongoClient } = require("mongodb");
 const { computeRankedUpdates } = require("../../routes/socket/rating/ranked");
+const { fascistWinPrior } = require("../../routes/socket/rating/bias");
+const GameSummary = require("../../models/game-summary");
 const {
   DEFAULTS,
   CONFIGURATIONS,
@@ -111,6 +113,64 @@ it("does not relabel a failed requested corpus as a successful measurement", asy
 });
 
 const summary = (overrides = {}) => ({ ...clone(original), date: new Date("2025-01-01T00:00:00Z"), ...overrides });
+
+const ninePlayerSummary = (deckState, rerebalance9p = false) => {
+  const row = new GameSummary(
+    summary({
+      gameSetting: { rerebalance9p },
+      customGameSettings: { enabled: false, deckState },
+      players: Array.from({ length: 9 }, (_, i) => ({
+        username: `player${i}`,
+        role: i === 0 ? "hitler" : i < 4 ? "fascist" : "liberal",
+      })),
+      logs: Array.from({ length: 4 }, (_, i) => ({
+        presidentId: 4,
+        chancellorId: 5,
+        votes: Array(9).fill(true),
+        enactedPolicy: "fascist",
+        ...(i === 3 ? { execution: 0 } : {}),
+      })),
+    })
+  );
+  expect(row.validateSync()).toBeUndefined();
+  // Exercise the strict stored shape, which has the deck but no rebalance9p2f setting.
+  return row.toObject();
+};
+
+it.each([
+  [10, false, 0.55, -21],
+  [10, true, 0.55, -21],
+  [11, false, 0.604, -22],
+  [11, true, 0.5, -20],
+])("recovers the nine-player prior from the persisted deck (%i fascist cards, rerebalanced=%p)", (fas, flag, prior, delta) => {
+  const row = ninePlayerSummary({ lib: 6, fas }, flag);
+  const before = clone(row);
+  expect(row.gameSetting).not.toHaveProperty("rebalance9p2f");
+  const match = decodeSummary(row);
+  expect(match.excluded).toBeUndefined();
+  expect(match.game.general.rebalance9p2f).toBe(fas === 10);
+  expect(fascistWinPrior(match.game)).toBe(prior);
+  expect(match.roster.filter((p) => p.role.team === "fascist")).toHaveLength(4);
+  expect(match.game.gameState.isCompleted).toBe("liberal");
+  expect(row).toEqual(before);
+
+  match.players = match.roster.map((seat) => createPlayer(seat.userName));
+  const stats = tracker();
+  const updates = play(match, null, stats, "liberal");
+  expect(stats.predictions[0].p).toBeCloseTo(prior, 5);
+  expect(updates[match.roster[0].userName].change).toBe(delta);
+});
+
+it.each([
+  undefined,
+  {},
+  { lib: 6 },
+  { fas: 10 },
+  { lib: 5, fas: 10 },
+  { lib: 6, fas: 9 },
+])("excludes a nine-player summary whose deck variant cannot be established (%p)", (deck) => {
+  expect(decodeSummary(ninePlayerSummary(deck)).excluded).toBe("unknown nine-player deck configuration");
+});
 
 it("decodes real summary structure and respects authoritative Flappy outcomes", () => {
   const row = summary();
@@ -218,6 +278,20 @@ it("replays ordered corpus reads without writes or exported identities and repor
   expect(report.subsequentWinRate.correlation).toBeNull();
   expect(report.hiddenCenteredMae).toBeNull();
   expect(JSON.stringify(report)).not.toMatch(/Jaina|Thrall|Rexxar/);
+});
+
+it("counts unknown nine-player configurations as exclusions without updating their ratings", async () => {
+  const { collection } = collectionFixture([ninePlayerSummary({ lib: 6, fas: 10 }), ninePlayerSummary()]);
+  const report = await replayCorpus(collection, DEFAULTS);
+  expect(report).toMatchObject({
+    scanned: 2,
+    games: 1,
+    players: 9,
+    excluded: { "unknown nine-player deck configuration": 1 },
+  });
+  expect(computeRankedUpdates).toHaveBeenCalledTimes(1);
+  expect(report.gamesPerPlayer.min).toBe(1);
+  expect(report.gamesPerPlayer.max).toBe(1);
 });
 
 it("closes the read cursor when a read fails", async () => {

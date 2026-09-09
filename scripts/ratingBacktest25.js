@@ -601,10 +601,19 @@ const decodeSummary = (summary) => {
       return { excluded: "no confirmed terminal outcome" };
     const fas = roster.filter((p) => p.role.team === "fascist").length;
     if (!fas || fas === roster.length) return { excluded: "empty faction" };
+    const general = { ...settings, playerCount: roster.length };
+    if (roster.length === 9 && typeof general.rebalance9p2f !== "boolean") {
+      // Nine-player summaries omit this flag, but start-game saves the original deck even for
+      // standard games. Require that evidence instead of silently assuming the base 9p prior.
+      const deck = summary.customGameSettings?.deckState;
+      if (deck?.lib !== 6 || ![10, 11].includes(deck?.fas))
+        return { excluded: "unknown nine-player deck configuration" };
+      general.rebalance9p2f = deck.fas === 10;
+    }
     return {
       date: summary.date,
       roster,
-      game: { general: { ...settings, playerCount: roster.length }, gameState: { isCompleted: enhanced.winningTeam } },
+      game: { general, gameState: { isCompleted: enhanced.winningTeam } },
     };
   } catch {
     return { excluded: "malformed/unreadable logs" };

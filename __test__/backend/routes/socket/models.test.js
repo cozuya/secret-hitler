@@ -39,6 +39,35 @@ describe("models", () => {
     expect(typeof formattedUserList).toBe("function");
   });
 
+  it.each([
+    [0, 0],
+    [-20, -20],
+    [1500.9, 1500],
+    [undefined, undefined],
+    [null, undefined],
+    [NaN, undefined],
+    [Infinity, undefined],
+    [-Infinity, undefined],
+    ["1500", undefined],
+  ])("serializes finite Elo scores without pruning zero (%p)", (value, expected) => {
+    const user = { userName: "rating-serialization", eloOverall: value, eloSeason: value };
+    userList.push(user);
+    try {
+      const serialized = JSON.parse(JSON.stringify(formattedUserList(false))).find(
+        (entry) => entry.userName === user.userName
+      );
+      if (expected !== undefined) {
+        expect(serialized.eloOverall).toBe(expected);
+        expect(serialized.eloSeason).toBe(expected);
+      } else {
+        expect(serialized).not.toHaveProperty("eloOverall");
+        expect(serialized).not.toHaveProperty("eloSeason");
+      }
+    } finally {
+      userList.splice(userList.indexOf(user), 1);
+    }
+  });
+
   it("has a userListEmitter object", () => {
     expect(typeof userListEmitter).toBe("object");
   });

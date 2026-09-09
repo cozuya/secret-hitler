@@ -270,8 +270,8 @@ module.exports.saveGame = saveGame;
 // table now instead of leaving it to throw again on the next broadcast/collection tick. Save only
 // recoverable replay data; an absent roster must never be reconstructed for rating purposes.
 const endMalformedGame = (game, winningTeamName) => {
-  console.log("Invalid game containers in completeGame; ending game without account updates");
   if (!game || typeof game !== "object" || game.isBeingTornDown) return;
+  console.log("Invalid game containers in completeGame; ending game without account updates");
   game.isBeingTornDown = true;
   game.gameState = game.gameState || {};
   game.gameState.isCompleted = winningTeamName || true;
