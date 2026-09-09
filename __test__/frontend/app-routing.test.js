@@ -1,5 +1,6 @@
 import { App } from "../../src/frontend-scripts/components/App";
 import socket from "../../src/frontend-scripts/socket";
+import Swal from "sweetalert2";
 
 describe("App startup routing", () => {
   let app;
@@ -74,5 +75,40 @@ describe("App startup routing", () => {
     app.socketReady = true;
     app.startRouting();
     expect(socket.emit.mock.calls).toEqual([["getGameInfo", "live-game"]]);
+  });
+
+  describe("deleted-game notification", () => {
+    let toLobby;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.spyOn(socket, "on").mockImplementation((event, handler) => {
+        if (event === "toLobby") toLobby = handler;
+        return socket;
+      });
+      jest.spyOn(socket, "connect").mockImplementation(() => socket);
+      jest.spyOn(window, "addEventListener").mockImplementation(() => {});
+      jest.spyOn(Swal, "fire").mockResolvedValue();
+      app.componentDidMount();
+    });
+
+    afterEach(() => {
+      jest.clearAllTimers();
+      jest.useRealTimers();
+    });
+
+    it("returns a player viewing the deleted table to the lobby and explains why", () => {
+      window.history.replaceState(null, "", "/game#/table/deleted-game");
+      toLobby("deleted-game");
+      expect(window.location.hash).toBe("#/");
+      expect(Swal.fire).toHaveBeenCalledWith("The game you were previously in was deleted automatically.");
+    });
+
+    it.each(["#/table/another-game", "#/profile/Ada", "#/"])("leaves an unrelated page unchanged (%s)", (hash) => {
+      window.history.replaceState(null, "", `/game${hash}`);
+      toLobby("deleted-game");
+      expect(window.location.hash).toBe(hash);
+      expect(Swal.fire).not.toHaveBeenCalled();
+    });
   });
 });

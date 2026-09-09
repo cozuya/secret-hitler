@@ -1087,12 +1087,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
                       : parseInt(number);
 
                     if (!data.action.isNonSeason) {
+                      // Relative deductions can cross zero; an empty seasonal counter must preserve the sign too.
                       account[CURRENT_SEASON_FIELDS[setType]] = isPlusOrMinus
                         ? account[CURRENT_SEASON_FIELDS[setType]]
                           ? number.charAt(0) === "+"
                             ? account[CURRENT_SEASON_FIELDS[setType]] + parseInt(number.substr(1, number.length))
                             : account[CURRENT_SEASON_FIELDS[setType]] - parseInt(number.substr(1, number.length))
-                          : parseInt(number.substr(1, number.length))
+                          : parseInt(number)
                         : parseInt(number);
                     }
                     account.save();
