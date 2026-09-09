@@ -1,5 +1,6 @@
 const cn = require("classnames");
 const REPORT_REASONS = require("./report-reasons.json");
+const { STARTING_PUBLIC_RATING } = require("../../routes/socket/rating/public-ladder");
 
 export { REPORT_REASONS };
 
@@ -88,7 +89,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
     const w = isSeasonal ? user.winsSeason : user.wins;
     const l = isSeasonal ? user.lossesSeason : user.losses;
     const rainbow = isSeasonal ? user.isRainbowSeason : user.isRainbowOverall;
-    const elo = isSeasonal ? user.eloSeason : user.eloOverall;
+    const rating = isSeasonal ? user.eloSeason : user.eloOverall;
+    const elo = Number.isFinite(rating) ? rating : STARTING_PUBLIC_RATING;
     let grade;
     if (elo < 1500) {
       grade = 0;

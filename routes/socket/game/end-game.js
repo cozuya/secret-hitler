@@ -682,6 +682,15 @@ module.exports.completeGame = (game, winningTeamName) => {
           // isRainbow omitted on purpose: casual/practice keeps its historical flat +2/+1 (no rainbow
           // XP scaling on this path).
           applyXpAndRainbow(player, winningPlayerNames.includes(player.username));
+          // Daily XP uses general completion activity; ranked activity stays exclusive to ranked games.
+          player.lastCompletedGame = new Date();
+          const listUser = userList.find((user) => user.userName === player.username);
+          if (listUser) {
+            listUser.xpOverall = player.xpOverall;
+            listUser.xpSeason = player.xpSeason;
+            listUser.isRainbowOverall = player.isRainbowOverall;
+            listUser.isRainbowSeason = player.isRainbowSeason;
+          }
           checkBadgesXP(player, game.general.uid);
           // Callback form (not a bare promise) so a transient save rejection can't become an
           // unhandled rejection — the process-level handler turns those into an exit, dropping every
@@ -690,6 +699,7 @@ module.exports.completeGame = (game, winningTeamName) => {
             if (err) console.log(err, "error saving account in silent/practice XP path");
           });
         }
+        sendUserList(); // Publish graduation once for the whole cohort, as in the ranked branch.
       })
       // Mirror the ranked branch: a rejected find or a throw in the loop must not crash the process.
       .catch((err) => {

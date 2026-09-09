@@ -301,19 +301,36 @@ describe("New Player countdown and actual-start replacement", () => {
     expect(Game.findOne).toHaveBeenCalledTimes(1);
   });
 
-  it("logs a replacement lookup failure while allowing the original cohort to start", async () => {
+  it("keeps the cohort running after a failed replacement lookup and recovers intake on the collector tick", async () => {
     const game = initialLobby();
     const error = new Error("next lobby lookup failed");
     const log = jest.spyOn(console, "error").mockImplementation(() => {});
-    Game.findOne.mockRejectedValueOnce(error);
-    await fill(game, 7);
-    jest.advanceTimersByTime(1000);
-    await settle();
-    expect(game.gameState.isTracksFlipped).toBe(true);
-    expect(game.private.seatedPlayers).toHaveLength(7);
-    expect(waitingLobbies()).toEqual([]);
-    expect(log).toHaveBeenCalledWith("Could not create the next New Player Game after a cohort started:", error);
-    log.mockRestore();
+    const mongoose = require("mongoose");
+    const { socketRoutes } = require("../../../../routes/socket/routes");
+    const connection = jest.spyOn(mongoose, "connection", "get").mockReturnValue({ readyState: 1 });
+    global.io.on = jest.fn();
+    try {
+      socketRoutes();
+      Game.findOne.mockRejectedValueOnce(error);
+      await fill(game, 7);
+      jest.advanceTimersByTime(1000);
+      await settle();
+      expect(game.gameState.isTracksFlipped).toBe(true);
+      expect(game.private.seatedPlayers).toHaveLength(7);
+      expect(waitingLobbies()).toEqual([]);
+      expect(log).toHaveBeenCalledWith("Could not create the next New Player Game after a cohort started:", error);
+      jest.advanceTimersByTime(29000);
+      await settle();
+      const [replacement] = waitingLobbies();
+      expect(waitingLobbies()).toHaveLength(1);
+      expect(replacement.publicPlayersState).toEqual([]);
+      expect(models.games.CohortA).toBe(game);
+      expect(game.gameState.isCompleted).toBeFalsy();
+      expect(Game.findOne).toHaveBeenCalledTimes(2);
+    } finally {
+      connection.mockRestore();
+      log.mockRestore();
+    }
   });
 
   it.each([

@@ -54,8 +54,9 @@ beforeEach(() => {
     },
   };
   // GC registration is independent of boot's Mongo-open event.
-  mongoose.connection = new EventEmitter();
-  mongoose.connection.readyState = 0;
+  const connection = new EventEmitter();
+  connection.readyState = 0;
+  jest.spyOn(mongoose, "connection", "get").mockReturnValue(connection);
   jest.spyOn(Account, "findOne").mockImplementation((query, callback) => {
     if (callback) return callback(null, null);
     return Promise.resolve({ username: query.username, isRainbowOverall: false, wins: 0, losses: 0, gameSettings: {} });
@@ -343,6 +344,7 @@ describe("ordinary teardown remains available", () => {
 
   it("collects a completed New Player game without recreating it", async () => {
     const game = startedGame(true);
+    const socket = makeSocket(game, "Grey", false);
     game.gameState.timeCompleted = Date.now() - 300000;
     socketRoutes();
     jest.advanceTimersByTime(30000);
@@ -350,6 +352,8 @@ describe("ordinary teardown remains available", () => {
     expect(Object.keys(models.games)).toHaveLength(0);
     expect(endGame.saveAndDeleteGame).toHaveBeenCalledWith(game.general.uid);
     expect(Game.findOne).toHaveBeenCalledTimes(1);
+    expect(socket.emit).toHaveBeenCalledWith("toLobby", game.general.uid);
+    expect(socket.leave).toHaveBeenCalledWith(game.general.uid);
   });
 
   it("deletes a started New Player game through moderation without the waiting-room recovery hook", async () => {
@@ -357,6 +361,58 @@ describe("ordinary teardown remains available", () => {
     moderatorDelete(game);
     await settle();
     expect(Object.keys(models.games)).toHaveLength(0);
+    expect(Game.findOne).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("periodic New Player intake recovery", () => {
+  it("retries a failed lookup on the next collector tick without duplicating an in-flight retry", async () => {
+    const cohort = startedGame();
+    const error = new Error("Mongo temporarily unavailable");
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    Game.findOne.mockRejectedValueOnce(error);
+    socketRoutes();
+    mongoose.connection.readyState = 1;
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Object.values(models.games)).toEqual([cohort]);
+    expect(Game.findOne).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith("Could not restore the New Player Game during collection:", error);
+
+    let resolveLookup;
+    Game.findOne.mockReturnValueOnce(new Promise((resolve) => (resolveLookup = resolve)));
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Game.findOne).toHaveBeenCalledTimes(2);
+    jest.advanceTimersByTime(60000);
+    await settle();
+    expect(Game.findOne).toHaveBeenCalledTimes(2);
+    resolveLookup(null);
+    await settle();
+    const intake = models.games.ReplacementLobby;
+    expect(intake.publicPlayersState).toEqual([]);
+    expect(Object.values(models.games)).toEqual([cohort, intake]);
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Object.values(models.games).filter(lobbies.shouldSurviveEmptyPregame)).toEqual([intake]);
+    expect(Game.findOne).toHaveBeenCalledTimes(2);
+    log.mockRestore();
+  });
+
+  it("waits for a connected database and respects disabled creation on later ticks", async () => {
+    socketRoutes();
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Game.findOne).not.toHaveBeenCalled();
+    mongoose.connection.readyState = 1;
+    models.gameCreationDisabled.status = true;
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Game.findOne).not.toHaveBeenCalled();
+    models.gameCreationDisabled.status = false;
+    jest.advanceTimersByTime(30000);
+    await settle();
+    expect(Object.values(models.games).filter(lobbies.shouldSurviveEmptyPregame)).toHaveLength(1);
     expect(Game.findOne).toHaveBeenCalledTimes(1);
   });
 });

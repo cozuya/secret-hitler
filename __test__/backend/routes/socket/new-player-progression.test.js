@@ -1,5 +1,6 @@
 let Account, Game, GameSummary, Profile, models, lobbies, completeGame, updateSeatedUser, handleUpdatedRemakeGame;
 let fields, rankedSeasonEligibility, _, summaryBuilder, List;
+let handleNewGeneralChat, refreshLeaderboards, Leaderboard;
 let storedAccounts, storedProfiles, writes, profileWrites, saves;
 const originalIo = global.io;
 const OriginalDate = Date;
@@ -41,6 +42,9 @@ beforeAll(() => {
   ({ completeGame } = require("../../../../routes/socket/game/end-game"));
   ({ updateSeatedUser } = require("../../../../routes/socket/user-events/join-game"));
   ({ handleUpdatedRemakeGame } = require("../../../../routes/socket/user-events/remake-game"));
+  ({ handleNewGeneralChat } = require("../../../../routes/socket/user-events/chat"));
+  ({ refreshLeaderboards } = require("../../../../scripts/retrieveLeaderboardData"));
+  Leaderboard = require("../../../../models/leaderboard");
   ({ CURRENT_SEASON_FIELDS: fields } = require("../../../../src/shared/season"));
   ({ rankedSeasonEligibility } = require("../../../../src/shared/ranked-eligibility"));
   // Compile Mongoose's schemas with the native Date type before replacing the runtime clock.
@@ -305,6 +309,7 @@ it.each([
     expect(after.xpSeason).toBe(before.xpSeason + gain);
     expect(after.isRainbowOverall).toBe(after.xpOverall >= 10);
     expect(after.isRainbowSeason).toBe(after.xpSeason >= 10);
+    expect(after.lastCompletedGame).toEqual(new Date(now));
     expect(after.badges.some((badge) => badge.id === "xp10")).toBe(after.xpOverall >= 10);
     expect(after.badges.some((badge) => badge.id === "games100")).toBe(true);
     if (after.isRainbowOverall) expect(after.dateRainbowOverall).toEqual(new Date(now));
@@ -371,6 +376,96 @@ const sit = async (game, socket) => {
   updateSeatedUser(socket, socket.handshake.session.passport, { uid: game.general.uid });
   await settle();
 };
+
+it("publishes live Practice graduation and unlocks general chat without reconnecting", async () => {
+  const initial = seeds();
+  seedStore(initial);
+  const socket = connect("Player2");
+  const liveUser = models.userList[0];
+  Object.assign(liveUser, { xpOverall: 9, xpSeason: 9, isRainbowOverall: false, isRainbowSeason: false });
+  models.userListEmitter.viewCache = null;
+  const previousView = models.getUserListView(false);
+  const markDirty = jest.spyOn(models.userListEmitter, "markDirty");
+  const previousEnv = process.env.NODE_ENV;
+  const chatCount = models.generalChats.list.length;
+  process.env.NODE_ENV = "production";
+  try {
+    const chat = () =>
+      handleNewGeneralChat(socket, socket.handshake.session.passport, { chat: "Hello everyone" }, [], [], []);
+    await chat();
+    expect(models.generalChats.list).toHaveLength(chatCount);
+    await finish(completionFixture(true, "liberal"), "liberal");
+    expect(markDirty).toHaveBeenCalledTimes(1);
+    expect(models.userListEmitter.send).toBe(true);
+    const nextView = models.getUserListView(false);
+    expect(nextView.hash).not.toBe(previousView.hash);
+    expect(nextView.list[0]).toMatchObject({
+      xpOverall: 11,
+      xpSeason: 11,
+      isRainbowOverall: true,
+      isRainbowSeason: true,
+    });
+    expect(models.userList[0]).toBe(liveUser);
+    await chat();
+    expect(models.generalChats.list[chatCount]).toMatchObject({ userName: "Player2", chat: "Hello everyone" });
+    expect(global.io.sockets.emit).toHaveBeenCalledWith("generalChats", models.generalChats);
+  } finally {
+    if (previousEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousEnv;
+    models.generalChats.list.splice(chatCount);
+    markDirty.mockRestore();
+  }
+});
+
+it("includes Practice-only XP in the daily refresh and rolls its baseline without ranked eligibility", async () => {
+  const initial = seeds();
+  for (const account of initial) {
+    account.previousDayXP = account.xpSeason;
+    for (const path of ["eloOverall", "eloSeason", "rating", "lastRankedGameAt", ...Object.values(fields)]) {
+      _.unset(account, path);
+    }
+  }
+  seedStore(initial);
+  await finish(completionFixture(true, "liberal"), "liberal");
+  // Run the real cron over schema-persisted completion output, replacing only query transport.
+  Account.find.mockImplementation((filter, projection) => {
+    const rows = [...storedAccounts.values()].filter((account) =>
+      filter.lastCompletedGame ? account.lastCompletedGame >= filter.lastCompletedGame.$gte : !account.isBanned
+    );
+    const query = {
+      lean: () => query,
+      cursor: () => ({
+        eachAsync: async (visit) => {
+          for (const row of rows)
+            await visit(projection ? _.pick(row, Object.keys(projection)) : Account.hydrate(_.cloneDeep(row)));
+        },
+      }),
+    };
+    return query;
+  });
+  const publish = jest.spyOn(Leaderboard, "findByIdAndUpdate").mockResolvedValue({});
+  try {
+    const first = await refreshLeaderboards({ nowMs: now, log: jest.fn() });
+    expect(first.dailyLeaderboardXP).toHaveLength(5);
+    for (const [index, account] of initial.entries()) {
+      expect(first.dailyLeaderboardXP.find((row) => row.userName === account.username).dailyXPDifference).toBe(
+        index < 2 ? 1 : 2
+      );
+      const stored = storedAccounts.get(account.username);
+      expect(stored.previousDayXP).toBe(stored.xpSeason);
+      expect(stored).not.toHaveProperty("lastRankedGameAt");
+      expect(stored).not.toHaveProperty("eloOverall");
+      expect(stored).not.toHaveProperty("eloSeason");
+    }
+    expect(first.seasonalLeaderboardElo).toEqual([]);
+    const second = await refreshLeaderboards({ nowMs: now, log: jest.fn() });
+    expect(second.dailyLeaderboardXP).toHaveLength(5);
+    expect(second.dailyLeaderboardXP.every((row) => row.dailyXPDifference === 0)).toBe(true);
+    expect(second.seasonalLeaderboardElo).toEqual([]);
+  } finally {
+    publish.mockRestore();
+  }
+});
 
 it("promotes only at completion, rejects the next intake seat, and keeps the graduate in the real cohort remake", async () => {
   const initial = seeds();

@@ -139,7 +139,7 @@ const gamesGarbageCollector = () => {
 
         // I'm entirely unsure why socketio seems to misbehave with these combined so often - probably just bad timing
         if (io.sockets.sockets && io.sockets.sockets[affectedSocketId])
-          io.sockets.sockets[affectedSocketId].emit("toLobby", currentGame.uid);
+          io.sockets.sockets[affectedSocketId].emit("toLobby", gameName);
         if (io.sockets.sockets && io.sockets.sockets[affectedSocketId])
           io.sockets.sockets[affectedSocketId].leave(gameName);
       }
@@ -150,6 +150,13 @@ const gamesGarbageCollector = () => {
 
   // also clone in global settings from redis
   cloneSettingsFromRedis();
+  // Reconcile every 30s so a failed boot/start/deletion lookup recovers after Mongo returns.
+  // The manager honors disabled creation and shares any in-flight UID lookup.
+  if (mongoose.connection.readyState === 1) {
+    ensureNewPlayerLobby().catch((err) => {
+      console.error("Could not restore the New Player Game during collection:", err);
+    });
+  }
 };
 
 const ensureAuthenticated = (socket) => {

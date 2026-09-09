@@ -73,7 +73,6 @@ const rankedState = (account) => {
       "maxElo",
       "pastElo",
       "lastRankedGameAt",
-      "lastCompletedGame",
       "games",
       "wins",
       "losses",
@@ -261,12 +260,28 @@ describe("S25 completeGame integration", () => {
     game.customGameSettings.enabled = custom;
     const accounts = makeAccounts();
     const before = accounts.map(rankedState);
+    userList.push(...accounts.map((account) => ({ userName: account.username })));
     await finish(game, accounts);
     accounts.forEach((account, i) => {
       expect(rankedState(account)).toEqual(before[i]);
       expect(account.xpOverall).toBe(8 + (getsXp ? (i >= 2 ? 2 : 1) : 0));
       expect(account.xpSeason).toBe(account.xpOverall);
+      if (getsXp) {
+        expect(account.lastCompletedGame.getTime()).toBeGreaterThan(oldDate.getTime());
+        expect(userList[i]).toMatchObject({
+          xpOverall: account.xpOverall,
+          xpSeason: account.xpSeason,
+          isRainbowOverall: account.isRainbowOverall,
+          isRainbowSeason: account.isRainbowSeason,
+        });
+        expect(userList[i]).not.toHaveProperty("eloOverall");
+        expect(userList[i]).not.toHaveProperty("eloSeason");
+      } else {
+        expect(account.lastCompletedGame).toEqual(oldDate);
+        expect(userList[i]).toEqual({ userName: account.username });
+      }
     });
+    expect(sendUserList).toHaveBeenCalledTimes(getsXp ? 1 : 0);
     expect(Account.prototype.save).toHaveBeenCalledTimes(getsXp ? 5 : 0);
     expect(deltaLines(game.private.replayGameChats)).toHaveLength(0);
     expect(console.log).not.toHaveBeenCalled();
