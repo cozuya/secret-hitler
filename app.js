@@ -94,7 +94,7 @@ app.use(cookieParser());
 // Serve the daily-generated leaderboards from Mongo (written by the Render Cron Job). Registered
 // BEFORE express.static on purpose: the old host's generator wrote a public/leaderboardData.json
 // file, and if any such stale file is present the static handler would otherwise shadow this route
-// and serve outdated data. Falls back to empty (correctly-shaped) boards until the first cron run.
+// and serve outdated data. Distinguish a missing cron result from a failed read for the client.
 // Cached in module memory: the cron rewrites this once/day, but the frontend fetches it no-store, so
 // every Leaderboards view (plus any scraper) would otherwise hit Mongo — an avoidable amplifier on a
 // memory-constrained web instance. Short TTL so a fresh cron run still shows up within the minute with
@@ -105,8 +105,8 @@ app.get(
     () =>
       Leaderboard.findById("current")
         .lean()
-        .then((doc) => (doc && doc.payload) || Leaderboard.freshBoard()),
-    () => Leaderboard.freshBoard()
+        .then((doc) => Leaderboard.toResponse(doc)),
+    () => ({ ...Leaderboard.freshBoard(), updatedAt: null, status: "unavailable" })
   )
 );
 // Serve the daily-generated win-rate stats from Mongo (written by the Render Cron Job

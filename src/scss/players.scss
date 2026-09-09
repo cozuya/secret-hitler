@@ -125,7 +125,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		max-width: 70px;
 		min-width: 25px;
 		height: 95px;
-		margin: 18px 0.5% 0;
+		margin: 40px 0.5% 0;
 		border-radius: 4px;
 		background-image: url('../../public/images/tweed.png');
 		background-repeat: no-repeat;
@@ -151,7 +151,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			cursor: pointer;
 			overflow: hidden;
 			white-space: nowrap;
-			margin-top: -21px;
+			margin-top: -41px;
 			font-family: $headerfont;
 			color: var(--theme-text-2);
 			text-align: center;
@@ -171,8 +171,24 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			z-index: 1;
 		}
 		.previous-government-token {
-			top: 0;
-			opacity: 0.2;
+			position: absolute;
+			top: -22px;
+			left: 0;
+			width: 100%;
+			height: 18px;
+			border: 1px solid #8a6914;
+			border-radius: 3px;
+			background: #f6df93;
+			color: #282016;
+			font: bold 10px/16px Arial, sans-serif;
+			text-align: center;
+			white-space: nowrap;
+			z-index: 2;
+			@media screen and (max-width: 950px) {
+				.previous-government-prefix {
+					display: none;
+				}
+			}
 		}
 		.government-token.isPendingPresident,
 		.government-token.isPendingChancellor {
@@ -495,6 +511,11 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 	.policy-card.offscreen {
 		top: 120px;
+	}
+	.draw,
+	.discard {
+		// Hide animated cards at the pile boundary, independently of the taller player row.
+		overflow: hidden;
 	}
 	.draw {
 		background: url('../../public/images/cards/draw.png') no-repeat;

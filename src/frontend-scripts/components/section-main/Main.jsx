@@ -346,6 +346,7 @@ export class Main extends React.Component {
     if (midSection === "game" || midSection === "replay") {
       classes += " game";
     }
+    if (midSection === "replay") classes += " replay";
 
     return (
       <section className={classes}>

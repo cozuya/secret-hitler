@@ -11,12 +11,23 @@ class Leaderboard extends React.Component {
       dailyLeaderboardElo: [],
       dailyLeaderboardXP: [],
       rainbowLeaderboard: [],
+      loading: true,
+      updatedAt: null,
+      status: null,
     };
   }
 
   componentDidMount() {
-    fetch("../leaderboardData.json", { cache: "no-store" })
-      .then((res) => res.json())
+    this.loadLeaderboard();
+  }
+
+  loadLeaderboard = () => {
+    this.setState({ loading: true, errored: false });
+    return fetch("/leaderboardData.json", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Leaderboard request failed (${res.status})`);
+        return res.json();
+      })
       .then((data) => {
         this.setState({
           seasonalLeaderboardElo: data.seasonalLeaderboardElo || [],
@@ -24,16 +35,20 @@ class Leaderboard extends React.Component {
           dailyLeaderboardElo: data.dailyLeaderboardElo || [],
           dailyLeaderboardXP: data.dailyLeaderboardXP || [],
           rainbowLeaderboard: data.rainbowLeaderboard || [],
-          errored: false,
+          updatedAt: data.updatedAt || null,
+          status: data.status || null,
+          errored: data.status === "unavailable",
+          loading: false,
         });
       })
       .catch((e) => {
         console.log("Error in Getting Current Leaderboard", e);
         this.setState({
           errored: true,
+          loading: false,
         });
       });
-  }
+  };
 
   render() {
     // Show the boards if ANY of them has data — early in a season seasonalLeaderboardElo can be
@@ -44,12 +59,26 @@ class Leaderboard extends React.Component {
       this.state.dailyLeaderboardElo.length ||
       this.state.dailyLeaderboardXP.length ||
       this.state.rainbowLeaderboard.length;
+    const updatedAt = this.state.updatedAt && moment(this.state.updatedAt);
+    const hasUpdateTime = updatedAt && updatedAt.isValid();
     return (
       <section className="leaderboards">
         <a href="#/">
           <i className="remove icon" style={{ marginTop: "30px" }} />
         </a>
-        {hasLeaderboardData && !this.state.errored ? (
+        {hasUpdateTime && (
+          <p className="leaderboard-updated" role="status">
+            Last updated{" "}
+            <time dateTime={updatedAt.toISOString()} title={updatedAt.format("LLLL")}>
+              {updatedAt.fromNow()}
+            </time>
+            . Standings refresh daily.
+            {moment().diff(updatedAt, "hours", true) > 36 && " These standings are waiting for a fresh update."}
+          </p>
+        )}
+        {this.state.loading ? (
+          <p role="status">Loading leaderboards...</p>
+        ) : hasLeaderboardData && !this.state.errored ? (
           <>
             <div className="ui grid">
               <div className="eight wide column">
@@ -150,12 +179,20 @@ class Leaderboard extends React.Component {
             </div>
           </>
         ) : this.state.errored ? (
-          <h2 className="ui header">Leaderboard Error</h2>
+          <div role="alert">
+            <h2 className="ui header">Leaderboards are temporarily unavailable</h2>
+            <button className="ui button" onClick={this.loadLeaderboard}>
+              Try again
+            </button>
+          </div>
         ) : (
           <>
-            <h2 className="ui header">No Leaderboard Data</h2>
-            <br />
-            <h2 className="ui header">Check back tomorrow!</h2>
+            <h2 className="ui header">No leaderboard results yet</h2>
+            <p>
+              {this.state.status === "pending"
+                ? "Standings have not been published yet."
+                : "Standings appear after the next daily update when players qualify."}
+            </p>
           </>
         )}
       </section>

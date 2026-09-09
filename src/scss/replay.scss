@@ -1,5 +1,13 @@
+// Replays have no Scrollbars wrapper. Keep controls and seats reachable when the content grows taller than the app.
+#game-container .section-main.replay {
+	min-height: 0;
+	min-width: 0;
+	overflow-y: auto;
+}
+
 #replay {
 	margin-top: 0px;
+	min-width: 0;
 	border: 0;
 	border-radius: 0;
 	background-color: var(--theme-background-2);
@@ -114,28 +122,21 @@
 		margin-top: 150px;
 	}
 
-	.exit {
-		position: absolute;
-		right: 0px;
-		z-index: 110;
+	.replay-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 6px;
+		padding: 8px;
+		.button {
+			margin: 0;
+			min-height: 40px;
+		}
 	}
 
-	.displaychats {
-		position: absolute;
-		right: 140px;
-		z-index: 110;
-	}
-
-	.displayroles {
-		position: absolute;
-		right: 265px;
-		z-index: 110;
-	}
-
-	.displaydeck {
-		position: absolute;
-		right: 433px;
-		z-index: 110;
+	.turn-select,
+	.phase-shortcuts {
+		display: none;
 	}
 
 	.ui.grid > .column {
@@ -143,15 +144,9 @@
 	}
 
 	.right-side {
-		width: calc(100vw - 650px - 250px - 20px);
-
-		@media screen and (min-width: 1080px) and (max-width: 1182px) {
-			width: calc(100vw - 650px);
-		}
-
-		@media screen and (max-width: 1079px) {
-			width: 100%;
-		}
+		// Use the available panel width; the optional user sidebar is not always present.
+		flex: 1 1 320px;
+		min-width: 0;
 
 		.replay-controls {
 			padding: 20px 30px 10px 30px;
@@ -283,9 +278,9 @@
 		overflow: hidden !important;
 		position: relative;
 
-		@media screen and (min-width: 650px) {
-			height: 440px;
-		}
+		// Keep overlay percentages aligned with the board inside the available panel width.
+		aspect-ratio: 650 / 440;
+		align-self: flex-start;
 
 		.card-group {
 			height: 50%;
@@ -526,6 +521,79 @@
 			.playback > .ui.horizontal.segments {
 				margin-top: 0px;
 				margin-bottom: 0px;
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 1182px) {
+	#replay {
+		.right-side {
+			flex-basis: 100%;
+			.replay-controls {
+				padding: 12px;
+				.turn-nav {
+					min-height: 0;
+					.slider {
+						display: none;
+					}
+				}
+				.description-container .content {
+					white-space: normal;
+					overflow-wrap: anywhere;
+					padding: 10px;
+				}
+			}
+		}
+		.turn-select {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			select {
+				min-width: 70px;
+				min-height: 40px;
+				font-size: 16px;
+				color: var(--theme-text-2);
+				background: var(--theme-background-2);
+			}
+		}
+		.phase-shortcuts {
+			display: flex;
+			gap: 6px;
+			.button {
+				flex: 1;
+				min-width: 0;
+				min-height: 40px;
+				margin: 0;
+				padding: 10px 6px;
+			}
+		}
+		.playback .button {
+			min-height: 44px;
+			padding: 10px 6px;
+		}
+		.players-container {
+			min-width: 0;
+			.players {
+				overflow-x: auto;
+				overflow-y: hidden;
+				.player-container {
+					flex: 0 0 70px;
+					min-width: 70px;
+					margin: 64px 20px 0;
+					.player-number {
+						width: 110px;
+						height: 36px;
+						margin-top: -62px;
+						margin-left: -20px;
+						white-space: normal;
+						overflow-wrap: anywhere;
+						line-height: 18px;
+					}
+					.previous-government-prefix {
+						display: inline;
+					}
+				}
 			}
 		}
 	}

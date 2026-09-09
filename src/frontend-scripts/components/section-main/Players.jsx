@@ -10,6 +10,7 @@ import { togglePlayerNotes } from "../../actions/actions";
 import { getNumberWithOrdinal, PLAYERCOLORS, REPORT_REASONS } from "../../constants";
 import UserPopup from "../reusable/UserPopup.jsx";
 import { capitalize } from "../../../../utils";
+import { canScrollHorizontally } from "../../scrolling";
 
 $.fn.dropdown = Dropdown;
 
@@ -26,10 +27,28 @@ class Players extends React.Component {
     playerNoteSeatEnabled: false,
     reportLength: 0,
     reportReasonMissing: false,
+    canScrollReplaySeats: false,
+  };
+
+  playersRow = React.createRef();
+
+  updateReplayScrollability = () => {
+    const canScrollReplaySeats = Boolean(this.props.isReplay && canScrollHorizontally(this.playersRow.current));
+    if (canScrollReplaySeats !== this.state.canScrollReplaySeats) this.setState({ canScrollReplaySeats });
   };
 
   componentDidMount() {
     const { socket, userInfo, gameInfo } = this.props;
+
+    if (this.props.isReplay) {
+      this.updateReplayScrollability();
+      window.addEventListener("resize", this.updateReplayScrollability);
+      // Sidebar/content changes can resize the row without resizing the window.
+      if (window.ResizeObserver && this.playersRow.current) {
+        this.seatsResizeObserver = new window.ResizeObserver(this.updateReplayScrollability);
+        this.seatsResizeObserver.observe(this.playersRow.current);
+      }
+    }
 
     if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
       socket.on("notesUpdate", (notes) => {
@@ -58,8 +77,14 @@ class Players extends React.Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener("resize", this.updateReplayScrollability);
+    this.seatsResizeObserver?.disconnect();
     this.props.socket.off("notesUpdate");
     this.props.socket.off("gameJoinStatusUpdate");
+  }
+
+  componentDidUpdate() {
+    this.updateReplayScrollability();
   }
 
   handleReportReasonChange = () => {
@@ -179,15 +204,16 @@ class Players extends React.Component {
 
   renderPreviousGovtToken(i) {
     const { publicPlayersState } = this.props.gameInfo;
+    const status = publicPlayersState?.[i]?.previousGovernmentStatus;
+    const role = status === "wasPresident" ? "president" : status === "wasChancellor" ? "chancellor" : null;
 
-    if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
+    // Describe the previous office, not eligibility: the previous president is eligible again in a 5p game.
+    if (role) {
       return (
-        <div
-          className={classnames(
-            "government-token previous-government-token",
-            publicPlayersState[i].previousGovernmentStatus
-          )}
-        />
+        <span className={classnames("previous-government-token", status)} title={`Previous ${role}`}>
+          <span className="previous-government-prefix">Prev. </span>
+          {role === "president" ? "P" : "C"}
+        </span>
       );
     }
   }
@@ -732,7 +758,14 @@ class Players extends React.Component {
     const isBlind = this.props.gameInfo.general?.blindMode && !this.props.gameInfo.gameState?.isCompleted;
 
     return (
-      <section className="players">
+      <section
+        className="players"
+        ref={this.playersRow}
+        tabIndex={this.state.canScrollReplaySeats ? 0 : undefined}
+        aria-label={
+          this.state.canScrollReplaySeats ? "Replay players, scroll horizontally to see every seat" : undefined
+        }
+      >
         {this.renderTakeSeat()}
         {this.renderPlayers()}
 

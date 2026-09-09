@@ -22,3 +22,10 @@ module.exports.freshBoard = () => ({
   dailyLeaderboardXP: [],
   rainbowLeaderboard: [],
 });
+
+// Keep the five existing boards compatible with older clients while exposing whether the cron has published.
+module.exports.toResponse = (doc) => ({
+  ...(doc && doc.payload ? doc.payload : module.exports.freshBoard()),
+  updatedAt: doc && doc.payload ? doc.updatedAt || null : null,
+  status: doc && doc.payload ? "ready" : "pending",
+});

@@ -5,6 +5,7 @@ import classnames from "classnames";
 import Slider from "rc-slider";
 import { capitalize, text, policyToString } from "../../../../../utils";
 import GameText from "../../reusable/GameText.jsx";
+import { canScrollHorizontally } from "../../../scrolling";
 
 const TurnNav = ({ position, size, toTurn }) => {
   const marks = Map(
@@ -20,6 +21,16 @@ const TurnNav = ({ position, size, toTurn }) => {
   return (
     <div className="turn-nav">
       <h1>Turn</h1>
+      <label className="turn-select">
+        Jump to turn
+        <select value={position + 1} onChange={(event) => toTurn(Number(event.target.value) - 1)}>
+          {Range(1, size + 1).map((turn) => (
+            <option key={turn} value={turn}>
+              {turn}
+            </option>
+          ))}
+        </select>
+      </label>
       <Slider
         onChange={(value) => toTurn(value - 1)}
         className="slider"
@@ -158,10 +169,18 @@ const Description = ({ description, deck, deckShown, userInfo }) => {
 
 const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => {
   const onKeyDown = (event) => {
-    // ignore typing in textboxes
+    // Reserve plain arrows for actual seat scrolling; keep the other replay shortcuts available.
     const leftKeyCode = 37;
     const rightKeyCode = 39;
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+    const focused = document.activeElement;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(focused.tagName)) return;
+    if (
+      focused.classList.contains("players") &&
+      canScrollHorizontally(focused) &&
+      !event.shiftKey &&
+      (event.keyCode === leftKeyCode || event.keyCode === rightKeyCode)
+    )
+      return;
     const char = String.fromCharCode(event.keyCode);
     if ((char === "H" || (event.shiftKey && event.keyCode == leftKeyCode)) && hasPrev) {
       return backward();
@@ -185,22 +204,58 @@ const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, 
     <div className="playback">
       <h1>Playback Controls</h1>
       <div className="ui horizontal segments">
-        <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={beginning}>
+        <button
+          title="First turn"
+          aria-label="First turn"
+          disabled={!hasPrev}
+          className={classnames("ui icon", { disabled: !hasPrev }, "button segment")}
+          onClick={beginning}
+        >
           <i className="fast backward icon" />
         </button>
-        <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={backward}>
+        <button
+          title="Previous turn"
+          aria-label="Previous turn"
+          disabled={!hasPrev}
+          className={classnames("ui icon", { disabled: !hasPrev }, "button segment")}
+          onClick={backward}
+        >
           <i className="backward icon" />
         </button>
-        <button className={classnames("ui icon", { disabled: !hasPrev }, "button segment")} onClick={prev}>
+        <button
+          title="Previous action"
+          aria-label="Previous action"
+          disabled={!hasPrev}
+          className={classnames("ui icon", { disabled: !hasPrev }, "button segment")}
+          onClick={prev}
+        >
           <i className="flipped play icon" />
         </button>
-        <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={next}>
+        <button
+          title="Next action"
+          aria-label="Next action"
+          disabled={!hasNext}
+          className={classnames("ui icon", { disabled: !hasNext }, "button segment")}
+          onClick={next}
+        >
           <i className="play icon" />
         </button>
-        <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={forward}>
+        <button
+          title="Next turn"
+          aria-label="Next turn"
+          disabled={!hasNext}
+          className={classnames("ui icon", { disabled: !hasNext }, "button segment")}
+          onClick={forward}
+        >
           <i className="forward icon" />
         </button>
-        <button className={classnames("ui icon", { disabled: !hasNext }, "button segment")} onClick={end}>
+        <button
+          title="Last turn"
+          aria-label="Last turn"
+          disabled={!hasNext}
+          className={classnames("ui icon", { disabled: !hasNext }, "button segment")}
+          onClick={end}
+        >
           <i className="fast forward icon" />
         </button>
       </div>
@@ -229,6 +284,17 @@ const ReplayControls = ({ turnsSize, turnNum, phase, description, playback, deck
   return (
     <section className="replay-controls">
       <TurnNav position={turnNum} size={turnsSize} toTurn={toTurn} />
+      <div className="phase-shortcuts">
+        <button className="ui button" onClick={toElection}>
+          Election
+        </button>
+        <button className="ui button" onClick={toLegislation} disabled={!hasLegislation}>
+          Policies
+        </button>
+        <button className="ui button" onClick={toAction} disabled={!hasAction}>
+          Power
+        </button>
+      </div>
       <PhaseNav
         phase={phase}
         hasLegislation={hasLegislation}

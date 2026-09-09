@@ -7,6 +7,19 @@ import Transition from "semantic-ui-transition";
 $.fn.transition = Transition;
 
 export default () => {
+  const desktopLayout = window.matchMedia("(min-width: 951px)");
+  const restoreDesktopChat = ({ matches }) => {
+    // The mobile Chat button disappears on desktop, so its hidden/animating state cannot survive that switch.
+    if (matches) {
+      $(".game > .ui.grid .chat-container")
+        .transition("stop all")
+        .transition("reset")
+        .removeClass("hidden visible")
+        .css("display", "");
+    }
+  };
+  desktopLayout.addListener(restoreDesktopChat);
+
   $("body").on("click", "#chatsidebar", (event) => {
     event.preventDefault();
 
@@ -29,4 +42,9 @@ export default () => {
       });
     }
   });
+
+  return () => {
+    desktopLayout.removeListener(restoreDesktopChat);
+    $("body").off("click", "#chatsidebar");
+  };
 };

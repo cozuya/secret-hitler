@@ -225,7 +225,7 @@ const Replay = ({
   );
 };
 
-class ReplayWrapper extends React.Component {
+export class ReplayWrapper extends React.Component {
   constructor() {
     super();
 
@@ -337,21 +337,23 @@ class ReplayWrapper extends React.Component {
 
     return (
       <section id="replay" className="ui segment">
-        {!this.state.legacyReplay && (
-          <button className="displaydeck ui inverted green button" onClick={toggleDeck}>
-            {this.state.deckShown ? "Hide deck" : "Show deck"}
+        <div className="replay-actions">
+          {!this.state.legacyReplay && (
+            <button className="displaydeck ui inverted green button" onClick={toggleDeck}>
+              {this.state.deckShown ? "Hide deck" : "Show deck"}
+            </button>
+          )}
+          <button className="displayroles ui inverted purple button" onClick={toggleHiddenInfo}>
+            {this.state.hiddenInfoShown ? "Hide roles/hands" : "Show roles/hands"}
           </button>
-        )}
-        <button className="displayroles ui inverted purple button" onClick={toggleHiddenInfo}>
-          {this.state.hiddenInfoShown ? "Hide roles/hands" : "Show roles/hands"}
-        </button>
-        <button className="displaychats ui inverted blue button" onClick={toggleChats}>
-          {this.state.chatsShown ? "Hide chats" : "Show chats"}
-        </button>
-        <button className="exit ui inverted red button" onClick={toExit}>
-          <i className="sign out icon" />
-          Exit Replay
-        </button>
+          <button className="displaychats ui inverted blue button" onClick={toggleChats}>
+            {this.state.chatsShown ? "Hide chats" : "Show chats"}
+          </button>
+          <button className="exit ui inverted red button" onClick={toExit}>
+            <i className="sign out icon" />
+            Exit Replay
+          </button>
+        </div>
         {children}
       </section>
     );
