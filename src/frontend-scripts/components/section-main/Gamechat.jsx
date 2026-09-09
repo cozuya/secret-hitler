@@ -795,16 +795,20 @@ class Gamechat extends React.Component {
             break;
           }
           const chat = list[i];
+          // Styled neighbor rows belong exclusively to the Player filter.
+          const isNeighborChat = chat.chat?.[1]?.type === "neighbor-chat";
           if (
-            chat.isBroadcast ||
-            (showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
-            (showGameChat && (chat.gameChat || chat.isClaim)) ||
-            (showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
-            (!seatedUserNames.includes(chat.userName) &&
-              chat.staffRole &&
-              chat.staffRole !== "trialmod" &&
-              chat.staffRole !== "altmod" &&
-              chat.staffRole !== "veteran")
+            isNeighborChat
+              ? showPlayerChat
+              : chat.isBroadcast ||
+                (showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
+                (showGameChat && (chat.gameChat || chat.isClaim)) ||
+                (showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
+                (!seatedUserNames.includes(chat.userName) &&
+                  chat.staffRole &&
+                  chat.staffRole !== "trialmod" &&
+                  chat.staffRole !== "altmod" &&
+                  chat.staffRole !== "veteran")
           ) {
             listAcc.unshift(chat);
           }
@@ -845,7 +849,9 @@ class Gamechat extends React.Component {
 
                     return (
                       <span key={index} className={classes}>
-                        {chatSegment.text}
+                        {chatSegment.type === "neighbor-chat"
+                          ? processEmotes(chatSegment.text, isMod, this.props.allEmotes)
+                          : chatSegment.text}
                       </span>
                     );
                   }

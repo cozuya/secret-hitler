@@ -99,6 +99,8 @@ const DisplayLobbies = (props) => {
     let flappyModeTooltip;
     let flappyOnlyMode;
     let flappyOnlyModeTooltip;
+    let neighborChat;
+    let neighborChatTooltip;
     let unlistedGame;
     let unlistedGameTooltip;
 
@@ -241,6 +243,12 @@ const DisplayLobbies = (props) => {
       flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
     }
 
+    if (game.neighborChat) {
+      neighborChat = <i className="exchange icon" />;
+      neighborChatTooltip =
+        "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards.";
+    }
+
     if (game.isUnlisted) {
       unlistedGame = <i className="lock icon green" />;
       unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
@@ -356,6 +364,11 @@ const DisplayLobbies = (props) => {
         {flappyOnlyMode && (
           <span data-tooltip={flappyOnlyModeTooltip} data-inverted="">
             {flappyOnlyMode}
+          </span>
+        )}
+        {neighborChat && (
+          <span data-tooltip={neighborChatTooltip} data-inverted="">
+            {neighborChat}
           </span>
         )}
         {unlistedGame && (

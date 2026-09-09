@@ -6,6 +6,7 @@ const Game = new Schema({
   flag: String,
   date: Date,
   playerChats: String, // silent vs emote vs regular
+  neighborChat: Boolean,
   playerCount: Number,
   winningPlayers: Array,
   losingPlayers: Array,

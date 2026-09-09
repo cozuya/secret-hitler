@@ -39,6 +39,7 @@ const buildNewPlayerLobby = (uid, timeCreated = new Date()) => ({
     timedMode: false,
     flappyMode: false,
     flappyOnlyMode: false,
+    neighborChat: false,
     casualGame: false,
     practiceGame: true,
     rebalance6p: false,

@@ -186,8 +186,10 @@ class ReplayGamechat extends React.Component {
         .sort((a, b) =>
           a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
         )
-        .filter(
-          (chat) =>
+        .filter((chat) => {
+          // Match live chat: styling as gameChat must not bypass the Player filter.
+          if (chat.chat?.[1]?.type === "neighbor-chat") return showPlayerChat;
+          return (
             chat.isBroadcast ||
             (showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
             (showGameChat && (chat.gameChat || chat.isClaim)) ||
@@ -198,7 +200,8 @@ class ReplayGamechat extends React.Component {
               chat.staffRole !== "trialmod" &&
               chat.staffRole !== "altmod" &&
               chat.staffRole !== "veteran")
-        );
+          );
+        });
       if (!showFullChat) list = list.slice(-250);
       return list.reduce((acc, chat, i) => {
         const playerListPlayer = Object.keys(userList).length
@@ -228,7 +231,9 @@ class ReplayGamechat extends React.Component {
 
                     return (
                       <span key={index} className={classes}>
-                        {chatSegment.text}
+                        {chatSegment.type === "neighbor-chat"
+                          ? processEmotes(chatSegment.text, isMod, this.props.allEmotes)
+                          : chatSegment.text}
                       </span>
                     );
                   }

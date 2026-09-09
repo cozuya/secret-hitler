@@ -1,6 +1,7 @@
 import { App } from "../../src/frontend-scripts/components/App";
 import socket from "../../src/frontend-scripts/socket";
 import Swal from "sweetalert2";
+import { updateGameInfo } from "../../src/frontend-scripts/actions/actions";
 
 describe("App startup routing", () => {
   let app;
@@ -75,6 +76,48 @@ describe("App startup routing", () => {
     app.socketReady = true;
     app.startRouting();
     expect(socket.emit.mock.calls).toEqual([["getGameInfo", "live-game"]]);
+  });
+
+  describe("private chat deltas", () => {
+    let handlers;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      handlers = {};
+      jest.spyOn(socket, "on").mockImplementation((event, handler) => {
+        handlers[event] = handler;
+        return socket;
+      });
+      jest.spyOn(socket, "connect").mockImplementation(() => socket);
+      jest.spyOn(window, "addEventListener").mockImplementation(() => {});
+      app.componentDidMount();
+    });
+
+    afterEach(() => {
+      jest.clearAllTimers();
+      jest.useRealTimers();
+    });
+
+    it.each([
+      "playerChatUpdate",
+      "gameModChat",
+    ])("appends a styled %s message once and accepts later history", (event) => {
+      const game = { general: { uid: "live-game" }, gameState: { isTracksFlipped: true }, chats: [] };
+      const message = {
+        gameChat: true,
+        timestamp: new Date(),
+        chat: [{ text: "Neighbor Chat: " }, { text: " :ja: ", type: "neighbor-chat" }],
+      };
+      app.props.gameInfo = game;
+      handlers[event](message);
+      const expectedGame = { ...game, chats: [message] };
+      expect(app.props.dispatch).toHaveBeenLastCalledWith(updateGameInfo(expectedGame));
+      app.props.gameInfo = expectedGame;
+      const snapshot = { ...expectedGame, chats: [{ ...message }] };
+      handlers.gameUpdate(snapshot);
+      expect(snapshot.chats).toHaveLength(1);
+      expect(app.props.dispatch).toHaveBeenLastCalledWith(updateGameInfo(snapshot));
+    });
   });
 
   describe("deleted-game notification", () => {

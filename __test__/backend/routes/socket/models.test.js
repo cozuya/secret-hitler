@@ -6,6 +6,7 @@ import {
   ipbansNotEnforced,
   gameCreationDisabled,
   formattedUserList,
+  formattedGameList,
   buildUserListDelta,
   userListEmitter,
 } from "../../../../routes/socket/models";
@@ -37,6 +38,34 @@ describe("models", () => {
 
   it("has a formattedUserList function", () => {
     expect(typeof formattedUserList).toBe("function");
+  });
+
+  it.each([
+    [{ neighborChat: true }, true],
+    [{ neighborChat: false }, undefined],
+    [{}, undefined],
+  ])("projects Neighbor Chat only when enabled (%j)", (options, expected) => {
+    const uid = "NeighborChatProjection";
+    games[uid] = {
+      general: { uid, ...options },
+      publicPlayersState: [],
+      private: {},
+      gameState: {},
+      trackState: {},
+      customGameSettings: { enabled: false },
+    };
+    try {
+      const row = formattedGameList().find((entry) => entry.uid === uid);
+      expect(row.neighborChat).toBe(expected);
+      const serialized = JSON.parse(JSON.stringify(row));
+      if (expected) {
+        expect(serialized.neighborChat).toBe(true);
+      } else {
+        expect(serialized).not.toHaveProperty("neighborChat");
+      }
+    } finally {
+      delete games[uid];
+    }
   });
 
   it.each([

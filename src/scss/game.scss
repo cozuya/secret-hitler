@@ -191,6 +191,20 @@
 					font-weight: 700;
 					color: $darkfascistteam;
 				}
+				.item.neighbor-chat {
+					border-left: 3px solid $lteal;
+					background: rgba($lteal, 0.12);
+					padding-left: 6px;
+
+					// Let the row tint show through the shared game-chat background.
+					> .game-chat {
+						background: transparent;
+					}
+				}
+				.chat-role--neighbor-chat {
+					color: var(--theme-text-1);
+					font-style: italic;
+				}
 				.chat-role--morgana {
 					font-weight: 700;
 					color: $morgana;

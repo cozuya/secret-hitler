@@ -40,6 +40,25 @@ describe("DisplayLobbies", () => {
     expect(row.text()).not.toMatch(/NaN|undefined|null/);
   });
 
+  it("shows the Neighbor Chat icon and explains live privacy and public replays", () => {
+    const row = renderRow(newPlayerRow({ neighborChat: true }));
+    const icon = row.find(".options-icons-container .exchange.icon");
+    expect(icon).toHaveLength(1);
+    expect(icon.parent().prop("data-tooltip")).toBe(
+      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards."
+    );
+    expect(icon.parent().prop("data-inverted")).toBe("");
+  });
+
+  it.each([false, undefined])("omits the Neighbor Chat icon and tooltip when the flag is %s", (neighborChat) => {
+    const row = renderRow(newPlayerRow({ neighborChat }));
+    expect(row.find(".exchange.icon")).toHaveLength(0);
+    expect(row.find("[data-tooltip]").someWhere((span) => span.prop("data-tooltip").includes("Neighbor Chat"))).toBe(
+      false
+    );
+    expect(row.html()).toBe(renderRow().html());
+  });
+
   it.each([0, undefined])("preserves the tournament queue fallback with seatedCount %s", (seatedCount) => {
     const row = renderRow(
       newPlayerRow({

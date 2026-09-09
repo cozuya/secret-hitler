@@ -8,6 +8,7 @@ const {
 } = require("../models");
 const { makeReport } = require("../report.js");
 const { chatReplacements } = require("../chatReplacements");
+const { filterEmoteChat } = require("../emote-chat");
 const { runCommand } = require("../commands");
 const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require("../util.js");
 const { emoteList, getPrivateChatTruncate } = require("../models");
@@ -490,25 +491,13 @@ module.exports.handleAddNewGameChat = async (
     if (game.general.playerChats === "emotes" && !(AEM && playerIndex === -1)) {
       // emote games
       if (!emoteList || !data.chat) return;
-      let newChatSplit = data.chat.toLowerCase().split(/(:[a-z]*?:)/g);
-      const emotes = Object.keys(emoteList);
+      const newChat = filterEmoteChat(data.chat, emoteList);
       // Attempts to cut down on overloading server resources
       const privateChatTruncate = await getPrivateChatTruncate(); // positive integer to represent the chats to truncate at or any falsy value to disable
       if (privateChatTruncate && game.general.private && game.chats.length >= privateChatTruncate) {
         game.chats = game.chats.slice(game.chats.length - privateChatTruncate, game.chats.length);
       }
 
-      // filter valid in-game :emotes: and numbers
-      newChatSplit = newChatSplit.map((block) => {
-        if (block.length <= 2 || !block.startsWith(":") || !block.endsWith(":")) {
-          return block.replace(/[^0-9]/g, "");
-        }
-        if (emotes.includes(block)) {
-          return ` ${block} `;
-        }
-      });
-
-      const newChat = newChatSplit.join("");
       if (!newChat.length) return;
       data.chat = newChat;
     }

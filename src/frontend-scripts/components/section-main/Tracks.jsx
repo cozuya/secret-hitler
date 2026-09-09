@@ -149,6 +149,8 @@ class Tracks extends React.Component {
     let flappyModeTooltip;
     let flappyOnlyMode;
     let flappyOnlyModeTooltip;
+    let neighborChat;
+    let neighborChatTooltip;
     let unlistedGame;
     let unlistedGameTooltip;
     const customgameactiveTooltip = "Custom Game";
@@ -294,6 +296,12 @@ class Tracks extends React.Component {
       flappyOnlyModeTooltip = "Flappy Only Mode: no policies, just play flappy";
     }
 
+    if (game.neighborChat) {
+      neighborChat = <i className="exchange icon" />;
+      neighborChatTooltip =
+        "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards.";
+    }
+
     if (game.unlistedGame) {
       unlistedGame = <i className="lock icon green" />;
       unlistedGameTooltip = "Unlisted Game - Not Visible in Game List";
@@ -399,6 +407,11 @@ class Tracks extends React.Component {
         {flappyOnlyMode && (
           <span>
             <Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
+          </span>
+        )}
+        {neighborChat && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={neighborChat} content={neighborChatTooltip} />
           </span>
         )}
         {unlistedGame && (

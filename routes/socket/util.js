@@ -206,6 +206,30 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
   });
 };
 
+// Use the same audience as full game updates, but send only the new private chat to each in-room session.
+module.exports.sendPrivateChatUpdate = (game, chatsByUser, hiddenInfoChat) => {
+  const room = io.sockets.adapter.rooms[game.general.uid];
+  if (!room) return;
+
+  for (const socketId of Object.keys(room.sockets)) {
+    const socket = io.sockets.connected[socketId];
+    const userName = socket?.handshake?.session?.passport?.user;
+    if (!userName) continue;
+
+    const chat = chatsByUser.get(userName);
+    if (chat) {
+      socket.emit("playerChatUpdate", chat);
+    } else if (
+      hiddenInfoChat &&
+      !game.publicPlayersState.some((player) => player.userName === userName) &&
+      game.private.hiddenInfoSubscriptions.includes(userName)
+    ) {
+      // Seated subscribers must never receive the observer-only view (including unmasked blind names).
+      socket.emit("gameModChat", hiddenInfoChat);
+    }
+  }
+};
+
 module.exports.sendCommandChatsUpdate = (game) => {
   trimNewPlayerLobbyChats(game);
   if (!io.sockets.adapter.rooms[game.general.uid]) {

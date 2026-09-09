@@ -104,6 +104,7 @@ describe("New Player Game construction and ensure", () => {
       timedMode: false,
       flappyMode: false,
       flappyOnlyMode: false,
+      neighborChat: false,
       noTopdecking: 0,
       rebalance6p: false,
       rebalance7p: false,

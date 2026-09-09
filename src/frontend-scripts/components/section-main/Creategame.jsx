@@ -50,6 +50,7 @@ export default class Creategame extends React.Component {
       isXPLimited: false,
       flappyMode: false,
       flappyOnlyMode: false,
+      neighborChat: false,
       privateAnonymousRemakes: false,
       avalonSH: false,
       withPercival: false,
@@ -534,6 +535,7 @@ export default class Creategame extends React.Component {
           // Silent (disabled) games may now be ranked, so selecting it no longer forces practice.
           this.setState({
             playerChats: inputValue.value,
+            neighborChat: inputValue.value === "disabled" ? false : this.state.neighborChat,
           });
         }}
         menuPlacement={"auto"}
@@ -736,6 +738,7 @@ export default class Creategame extends React.Component {
           sliderValues: [7, 7],
           experiencedmode: true,
           playerChats: "disabled",
+          neighborChat: false,
           disablegameChat: false,
           disableobserverlobby: false,
           disableobserver: true,
@@ -779,6 +782,7 @@ export default class Creategame extends React.Component {
           sliderValues: [7, 7],
           experiencedmode: true,
           playerChats: "disabled",
+          neighborChat: false,
           disablegameChat: false,
           disableobserverlobby: true,
           disableobserver: true,
@@ -951,6 +955,7 @@ export default class Creategame extends React.Component {
           sliderValues: [7, 7],
           experiencedmode: true,
           playerChats: "enabled",
+          neighborChat: false,
           disablegameChat: false,
           disableobserverlobby: false,
           disableobserver: false,
@@ -1112,6 +1117,7 @@ export default class Creategame extends React.Component {
         noVoteReveal: this.state.noVoteReveal,
         flappyMode: this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode,
         flappyOnlyMode: this.state.flappyOnlyMode,
+        neighborChat: this.state.neighborChat && this.state.playerChats !== "disabled",
         timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
         rebalance6p: this.state.checkedRebalanceValues[0],
         rebalance7p: this.state.checkedRebalanceValues[1],
@@ -2505,6 +2511,32 @@ export default class Creategame extends React.Component {
                   this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode
                 }
                 disabled={this.state.avalonSH || this.state.monarchistSH || this.state.blindMode}
+                onColor="#627cc8"
+                offColor="#444444"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={21}
+                width={48}
+                handleDiameter={21}
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="four wide column">
+              <i className="big exchange icon" />
+              <h4 className="ui header">
+                Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are
+                visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the
+                replay afterwards.
+              </h4>
+              {this.state.playerChats === "disabled" && <p>Enable player chat to use Neighbor Chat.</p>}
+              <Switch
+                className="create-game-switch"
+                onChange={(checked) => {
+                  this.setState({ neighborChat: checked });
+                }}
+                checked={this.state.neighborChat && this.state.playerChats !== "disabled"}
+                disabled={this.state.playerChats === "disabled"}
                 onColor="#627cc8"
                 offColor="#444444"
                 uncheckedIcon={false}

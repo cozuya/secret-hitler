@@ -349,6 +349,7 @@ module.exports.formattedGameList = () => {
     timedMode: games[gameName].general.timedMode || undefined,
     flappyMode: games[gameName].general.flappyMode || undefined,
     flappyOnlyMode: games[gameName].general.flappyOnlyMode || undefined,
+    neighborChat: games[gameName].general.neighborChat || undefined,
     tournyStatus: (() => {
       if (games[gameName].general.isTourny) {
         if (

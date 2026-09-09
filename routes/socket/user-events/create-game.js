@@ -174,6 +174,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
       flappyOnlyMode: Boolean(
         data.flappyMode && !data.blindMode && !data.avalonSH && !data.monarchistSH && data.flappyOnlyMode
       ),
+      // Like flappyMode, Neighbor Chat deliberately stays rankable: players opt in at creation.
+      neighborChat: Boolean(data.neighborChat && data.playerChats !== "disabled"),
       casualGame,
       practiceGame,
       rebalance6p: data.rebalance6p,

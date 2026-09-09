@@ -55,8 +55,7 @@ const customGameSettingsSchema = z
   .refine((s) => s.deckState.lib + s.deckState.fas >= 13, { message: "deck needs at least 13 cards" });
 
 // ---- top-level create-game payload ------------------------------------------
-// Only fields that previously had inline type/shape guards are typed here; all
-// other flags flow through via .passthrough() and are consumed as-is downstream.
+// Legacy flags without inline type guards still pass through unchanged; new flags are typed explicitly.
 
 const createGameSchema = z
   .object({
@@ -74,6 +73,7 @@ const createGameSchema = z
     // typed XP box; the handler parseInts it. Accept all three so a normal create-game isn't rejected.
     xpSliderValue: z.union([z.string(), z.number()]).nullable().optional(),
     noTopdecking: notObject.optional(),
+    neighborChat: z.boolean().optional(),
     // Client sends the password string for private games, or the literal `false` sentinel for
     // public/unlisted games (Creategame.jsx / App.jsx). Both must pass; the handler treats
     // `false` as "not private" in boolean/sentinel contexts downstream.

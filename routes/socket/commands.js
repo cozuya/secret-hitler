@@ -1,11 +1,13 @@
 const { makeReport } = require("./report");
 const { selectChancellor } = require("./game/election-util");
 const { selectVoting } = require("./game/election");
-const { sendInProgressGameUpdate, sendCommandChatsUpdate, gameReportHeader } = require("./util");
+const { sendInProgressGameUpdate, sendCommandChatsUpdate, sendPrivateChatUpdate, gameReportHeader } = require("./util");
 const { LineGuess } = require("./util");
 const Account = require("../../models/account");
 const { selectPlayerToAssassinate } = require("./game/assassination");
-const { canStartFlappy, startFlappy } = require("./game/flappy");
+const { canStartFlappy, startFlappy, isFlappyPreLock } = require("./game/flappy");
+const { emoteList } = require("./models");
+const { filterEmoteChat } = require("./emote-chat");
 
 const sendMessage = (game, user, s, date = new Date()) =>
   game.private.commandChats[user.userName].push({
@@ -91,6 +93,28 @@ module.exports.commands = [
     description: "Pings a player",
     examples: ["/ping 5"],
     argumentsFormat: /^(\d{1,2})$/,
+    aemOnly: false,
+    observerOnly: false,
+    seatedOnly: true,
+    gameStartedOnly: true,
+  },
+  {
+    name: ["l"],
+    neighborChatOnly: true,
+    description: "Messages your nearest living left neighbor; messages are public in the replay afterwards.",
+    examples: ["/l <message>"],
+    argumentsFormat: /^(.+)$/,
+    aemOnly: false,
+    observerOnly: false,
+    seatedOnly: true,
+    gameStartedOnly: true,
+  },
+  {
+    name: ["r"],
+    neighborChatOnly: true,
+    description: "Messages your nearest living right neighbor; messages are public in the replay afterwards.",
+    examples: ["/r <message>"],
+    argumentsFormat: /^(.+)$/,
     aemOnly: false,
     observerOnly: false,
     seatedOnly: true,
@@ -215,12 +239,16 @@ module.exports.parseCommand = (msg) => {
  * @param {boolean} isSeated - whether the user is sat in the game.
  */
 module.exports.runCommand = (socket, passport, user, game, msg, AEM, isSeated) => {
+  let neighborChatOnly = false;
+  let previousCommandChatCount;
   try {
     if (!game.private.commandChats[user.userName]) {
       game.private.commandChats[user.userName] = [];
     }
+    previousCommandChatCount = game.private.commandChats[user.userName].length;
 
     const { name, command, args } = module.exports.parseCommand(msg);
+    neighborChatOnly = Boolean(command?.neighborChatOnly);
 
     if (!command) {
       sendMessage(game, user, `Unknown command /${name}. Use /help for a list of commands.`);
@@ -254,7 +282,12 @@ module.exports.runCommand = (socket, passport, user, game, msg, AEM, isSeated) =
 
     command.run(socket, passport, user, game, args, AEM, isSeated);
   } finally {
-    if (game.gameState.isTracksFlipped) {
+    if (neighborChatOnly) {
+      // Neighbor delivery already emits deltas. Refusals/usage errors also only need the caller's new feedback.
+      for (const chat of game.private.commandChats[user.userName].slice(previousCommandChatCount)) {
+        sendPrivateChatUpdate(game, new Map([[user.userName, chat]]));
+      }
+    } else if (game.gameState.isTracksFlipped) {
       sendInProgressGameUpdate(game, false);
     } else {
       sendCommandChatsUpdate(game);
@@ -270,6 +303,7 @@ module.exports.commands.getCommand("help").run = (socket, passport, user, game, 
       (command.aemOnly && !AEM) ||
       (command.observerOnly && isSeated) ||
       (command.seatedOnly && !isSeated) ||
+      (command.neighborChatOnly && !game.general.neighborChat) ||
       (command.gameStartedOnly && (!game.gameState.isStarted || game.gameState.isCompleted));
 
     if (!isNotUsable) {
@@ -471,6 +505,120 @@ module.exports.commands.getCommand("ping").run = (socket, passport, user, game, 
   } else {
     sendMessage(game, user, "Unable to ping that user right now");
   }
+};
+
+// Left players are deliberately excluded so messages route to someone present; reconnect restores eligibility.
+const isNeighborChatEligible = (player) => Boolean(player) && !player.isDead && !player.leftGame;
+
+const appendNeighborChat = (game, history, chat) => {
+  history.push(chat);
+  if (!game.general.private) return;
+
+  // Like private public chat, keep recent conversation bounded. These mixed histories also hold
+  // roles/policies needed for gameplay and replays, so only Neighbor Chat rows may be removed.
+  let remaining = 30;
+  for (let index = history.length - 1; index >= 0; index--) {
+    if (history[index].chat?.[1]?.type === "neighbor-chat") {
+      if (remaining > 0) remaining--;
+      else history.splice(index, 1);
+    }
+  }
+};
+
+const sendNeighborChat = (game, user, senderName, message, direction) => {
+  if (!game.general.neighborChat) {
+    sendMessage(game, user, "Neighbor Chat is not enabled in this game.");
+    return;
+  }
+
+  const players = game.publicPlayersState;
+  const senderIndex = players.findIndex((player) => player?.userName === senderName);
+  if (!isNeighborChatEligible(players[senderIndex])) {
+    sendMessage(game, user, "Only living players who have not left can use Neighbor Chat.");
+    return;
+  }
+
+  if (game.general.playerChats === "disabled") {
+    sendMessage(game, user, "Chat is disabled in this game.");
+    return;
+  }
+
+  if (isFlappyPreLock(game)) {
+    sendMessage(game, user, "Chat is disabled until a bird clears the first gate.");
+    return;
+  }
+
+  const step = direction === "right" ? 1 : -1;
+  let recipientIndex = -1;
+  for (let offset = 1; offset < players.length; offset++) {
+    const index = (senderIndex + step * offset + players.length) % players.length;
+    if (isNeighborChatEligible(players[index])) {
+      recipientIndex = index;
+      break;
+    }
+  }
+
+  if (recipientIndex === -1) {
+    sendMessage(game, user, "There is no one left to talk to.");
+    return;
+  }
+
+  if (game.general.playerChats === "emotes") {
+    message = filterEmoteChat(message, emoteList);
+    if (!message.length) {
+      sendMessage(game, user, "Only emotes and numbers are allowed in this game.");
+      return;
+    }
+  }
+
+  const senderChats = game.private.seatedPlayers?.[senderIndex]?.gameChats;
+  const recipientChats = game.private.seatedPlayers?.[recipientIndex]?.gameChats;
+  // isStarted becomes true during the countdown, before private player chat arrays are initialized.
+  if (
+    !Array.isArray(senderChats) ||
+    !Array.isArray(recipientChats) ||
+    !Array.isArray(game.private.replayGameChats) ||
+    !Array.isArray(game.private.hiddenInfoChat)
+  ) {
+    sendMessage(game, user, "Neighbor Chat is not ready yet.");
+    return;
+  }
+
+  const namedSeat = (index) => `(#${index + 1} ${players[index].userName})`;
+  const liveSeat = (index) => (game.general.blindMode ? `{${index + 1}}` : namedSeat(index));
+  const timestamp = new Date();
+  const makeChat = (prefix) => ({
+    gameChat: true,
+    timestamp: new Date(timestamp),
+    chat: [{ text: prefix }, { text: message, type: "neighbor-chat" }],
+  });
+  // Invert the sent direction, rather than scanning again: wrap-around can make the pair non-symmetric.
+  const fromDirection = direction === "right" ? "← from left" : "→ from right";
+  const replayPrefix = `Neighbor Chat - ${namedSeat(senderIndex)} to ${direction} ${namedSeat(recipientIndex)}: `;
+
+  const senderChat = makeChat(`to ${direction} ${liveSeat(recipientIndex)}: `);
+  const recipientChat = makeChat(`${fromDirection} ${liveSeat(senderIndex)}: `);
+  const moderatorChat = makeChat(replayPrefix);
+  appendNeighborChat(game, senderChats, senderChat);
+  appendNeighborChat(game, recipientChats, recipientChat);
+  appendNeighborChat(game, game.private.replayGameChats, makeChat(replayPrefix));
+  appendNeighborChat(game, game.private.hiddenInfoChat, moderatorChat);
+  sendPrivateChatUpdate(
+    game,
+    new Map([
+      [senderName, senderChat],
+      [players[recipientIndex].userName, recipientChat],
+    ]),
+    moderatorChat
+  );
+};
+
+module.exports.commands.getCommand("l").run = (socket, passport, user, game, args) => {
+  sendNeighborChat(game, user, passport.user, args[0], "left");
+};
+
+module.exports.commands.getCommand("r").run = (socket, passport, user, game, args) => {
+  sendNeighborChat(game, user, passport.user, args[0], "right");
 };
 
 module.exports.commands.getCommand("forcerigdeck").run = (socket, passport, user, game, args) => {
