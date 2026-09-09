@@ -1,3 +1,5 @@
+> **Historical S24 document — superseded for current implementation and deployment.** The S24 design and old commands below are retained as a historical record; they are not an S25 runbook and do not establish what production ran. The old seasonCutover24.js entry point has been retired. Use the [Season 25 plan](season-25-plan.md), [S25 operator runbook](season-25-cutover-runbook.md), and [acceptance record](season-25-acceptance.md). S24 closing awards remain a separate operator decision.
+
 # Ranked System Overhaul + Season 24 Cutover
 
 > **Status:** DEFERRED PLAN / handoff. No code changed yet.

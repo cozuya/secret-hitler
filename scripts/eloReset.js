@@ -1,10 +1,9 @@
 // HISTORICAL one-off reset, kept as prior art only (see
 // docs/ranked-overhaul-and-season-24-cutover-plan.md §6.6).
-// WARNING: this predates the OpenSkill engine. It resets ONLY the deprecated eloOverall/eloSeason
-// mirrors, NOT the authoritative rating.{overall,season}.{mu,sigma} that getRating() reads first —
-// so after the Season 24 cutover running it is a silent no-op for matchmaking/deltas (veterans keep
-// their prior skill). Do NOT use it for recurring season resets; the Season 24 migration script owns
-// the rating.* fields (overall soft-reset, season cold). It also hardcodes localhost.
+// This historical reset overwrites public Elo/XP and old season/profile data. It is not an S25
+// reset: it neither archives closing accounts nor applies the S25 bootstrap and reset policy.
+// Retained for historical-data support only; use seasonCutover25.js for the reviewed S25 cutover.
+// It also hardcodes localhost.
 const mongoose = require("mongoose");
 const Account = require("../models/account");
 const Profile = require("../models/profile/index");
@@ -247,8 +246,7 @@ Account.find({ "games.0": { $exists: true } })
         }
       }
 
-      // == RESET ACCOUNT STATS == (legacy mirrors only — does NOT touch rating.{overall,season}.*;
-      // see the header warning. The Season 24 migration owns the authoritative rating fields.)
+      // Historical reset values; deliberately not adapted into an S25 migration.
       acc.eloSeason = 1600;
       acc.eloOverall = 1600;
       acc.xpOverall = preResetGameCount;

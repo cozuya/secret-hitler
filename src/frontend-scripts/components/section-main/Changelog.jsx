@@ -17,10 +17,6 @@ class Changelog extends React.Component {
             accurately.
           </p>
         </div>
-        {/* TODO(cutover): before going live, add here:
-              <h4>The top 10 players of season 23 are:</h4>
-              <ol>...the 10 entries printed by scripts/seasonCutover24.js...</ol>
-            Omitted until then so an accidental deploy doesn't render a placeholder list. */}
 
         <hr style={{ width: "100%" }} />
 

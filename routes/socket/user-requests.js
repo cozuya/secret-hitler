@@ -24,7 +24,7 @@ const {
 const { sendInProgressGameUpdate } = require("./util");
 const version = require("../../version");
 const { obfIP } = require("./ip-obf");
-const { CURRENTSEASONNUMBER } = require("../../src/frontend-scripts/node-constants");
+const { CURRENT_SEASON_FIELDS } = require("../../src/shared/season");
 
 /**
  * @param {object} socket - user socket reference.
@@ -227,11 +227,10 @@ module.exports.sendUserGameSettings = (socket, loadedAccount) => {
           },
         };
 
-        userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
-        userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
-        userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-        userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] =
-          account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
+        userListInfo[CURRENT_SEASON_FIELDS.wins] = account[CURRENT_SEASON_FIELDS.wins];
+        userListInfo[CURRENT_SEASON_FIELDS.losses] = account[CURRENT_SEASON_FIELDS.losses];
+        userListInfo[CURRENT_SEASON_FIELDS.rainbowWins] = account[CURRENT_SEASON_FIELDS.rainbowWins];
+        userListInfo[CURRENT_SEASON_FIELDS.rainbowLosses] = account[CURRENT_SEASON_FIELDS.rainbowLosses];
         userList.push(userListInfo);
         sendUserList();
       }

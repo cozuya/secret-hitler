@@ -4,6 +4,7 @@ const { startElection } = require("./election.js");
 const { shufflePolicies } = require("./common.js");
 const GameSummaryBuilder = require("../../../models/game-summary/GameSummaryBuilder");
 const Account = require("../../../models/account.js");
+const { STARTING_PUBLIC_RATING } = require("../rating/public-ladder");
 
 /**
  * @param {object} game - game to act on.
@@ -232,43 +233,20 @@ const beginGame = (game) => {
   const fasPlayers = game.private.seatedPlayers.filter((player) => player.role.team !== "liberal");
   const lib = libPlayers.map((player) => player.userName);
   const fas = fasPlayers.map((player) => player.userName);
-  const libElo = { overall: 1600, season: 1600 };
-  const fasElo = { overall: 1600, season: 1600 };
+  const libElo = { overall: STARTING_PUBLIC_RATING, season: STARTING_PUBLIC_RATING };
+  const fasElo = { overall: STARTING_PUBLIC_RATING, season: STARTING_PUBLIC_RATING };
   Account.find({
     username: { $in: game.private.seatedPlayers.map((player) => player.userName) },
   }).then((accounts) => {
-    libElo.overall =
-      lib.reduce(
-        (prev, curr) =>
-          (accounts.find((account) => account.username === curr).eloOverall
-            ? accounts.find((account) => account.username === curr).eloOverall
-            : 1600) + prev,
-        0
-      ) / lib.length;
-    libElo.season =
-      lib.reduce(
-        (prev, curr) =>
-          (accounts.find((account) => account.username === curr).eloSeason
-            ? accounts.find((account) => account.username === curr).eloSeason
-            : 1600) + prev,
-        0
-      ) / lib.length;
-    fasElo.overall =
-      fas.reduce(
-        (prev, curr) =>
-          (accounts.find((account) => account.username === curr).eloOverall
-            ? accounts.find((account) => account.username === curr).eloOverall
-            : 1600) + prev,
-        0
-      ) / fas.length;
-    fasElo.season =
-      fas.reduce(
-        (prev, curr) =>
-          (accounts.find((account) => account.username === curr).eloSeason
-            ? accounts.find((account) => account.username === curr).eloSeason
-            : 1600) + prev,
-        0
-      ) / fas.length;
+    const publicValue = (username, field) => {
+      const value = accounts.find((account) => account.username === username)?.[field];
+      // A missing account retains its seat in these public summary averages; zero is a valid score.
+      return Number.isFinite(value) ? value : STARTING_PUBLIC_RATING;
+    };
+    libElo.overall = lib.reduce((sum, name) => sum + publicValue(name, "eloOverall"), 0) / lib.length;
+    libElo.season = lib.reduce((sum, name) => sum + publicValue(name, "eloSeason"), 0) / lib.length;
+    fasElo.overall = fas.reduce((sum, name) => sum + publicValue(name, "eloOverall"), 0) / fas.length;
+    fasElo.season = fas.reduce((sum, name) => sum + publicValue(name, "eloSeason"), 0) / fas.length;
   });
 
   game.private.summary = new GameSummaryBuilder(

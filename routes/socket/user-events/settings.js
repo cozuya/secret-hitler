@@ -1,5 +1,6 @@
 const Account = require("../../../models/account");
-const { userList, currentSeasonNumber } = require("../models");
+const { userList } = require("../models");
+const { CURRENT_SEASON_FIELDS } = require("../../../src/shared/season");
 const { sendUserList } = require("../user-requests");
 const {
   themeSchema,
@@ -135,11 +136,10 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
             },
           };
 
-          userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-          userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-          userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-          userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] =
-            account[`rainbowLossesSeason${currentSeasonNumber}`];
+          userListInfo[CURRENT_SEASON_FIELDS.wins] = account[CURRENT_SEASON_FIELDS.wins];
+          userListInfo[CURRENT_SEASON_FIELDS.losses] = account[CURRENT_SEASON_FIELDS.losses];
+          userListInfo[CURRENT_SEASON_FIELDS.rainbowWins] = account[CURRENT_SEASON_FIELDS.rainbowWins];
+          userListInfo[CURRENT_SEASON_FIELDS.rainbowLosses] = account[CURRENT_SEASON_FIELDS.rainbowLosses];
           if (userIdx !== -1) userList.splice(userIdx, 1);
           userList.push(userListInfo);
           sendUserList();

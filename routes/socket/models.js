@@ -1,4 +1,4 @@
-const { CURRENTSEASONNUMBER } = require("../../src/frontend-scripts/node-constants");
+const { CURRENT_SEASON_FIELDS } = require("../../src/shared/season");
 const Account = require("../../models/account");
 const ModAction = require("../../models/modAction");
 const BannedIP = require("../../models/bannedIP");
@@ -168,10 +168,10 @@ module.exports.formattedUserList = (isAEM) => {
       isRainbowOverall: user.isRainbowOverall,
       isRainbowSeason: user.isRainbowSeason,
       status: user.status && user.status.type && user.status.type != "none" ? user.status : undefined,
-      winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-      lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-      rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-      rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
+      winsSeason: prune(user[CURRENT_SEASON_FIELDS.wins]),
+      lossesSeason: prune(user[CURRENT_SEASON_FIELDS.losses]),
+      rainbowWinsSeason: prune(user[CURRENT_SEASON_FIELDS.rainbowWins]),
+      rainbowLossesSeason: prune(user[CURRENT_SEASON_FIELDS.rainbowLosses]),
       previousSeasonAward: user.previousSeasonAward,
       specialTournamentStatus: user.specialTournamentStatus,
       timeLastGameCreated: user.timeLastGameCreated,

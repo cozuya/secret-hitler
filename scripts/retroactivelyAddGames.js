@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const Game = require("../models/game");
 const Account = require("../models/account");
+const { seasonCounterFields } = require("../src/shared/season");
 
 let count = 0;
 const season = 17;
+const SEASON_FIELDS = seasonCounterFields(season);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
@@ -22,11 +24,9 @@ Game.find({
       Account.findOne({ username: username.userName })
         .cursor()
         .eachAsync((user) => {
-          user[`winsSeason${season}`] = user[`winsSeason${season}`] ? user[`winsSeason${season}`] + 1 : 1;
+          user[SEASON_FIELDS.wins] = user[SEASON_FIELDS.wins] ? user[SEASON_FIELDS.wins] + 1 : 1;
           if (game.isRainbow)
-            user[`rainbowWinsSeason${season}`] = user[`rainbowWinsSeason${season}`]
-              ? user[`rainbowWinsSeason${season}`] + 1
-              : 1;
+            user[SEASON_FIELDS.rainbowWins] = user[SEASON_FIELDS.rainbowWins] ? user[SEASON_FIELDS.rainbowWins] + 1 : 1;
           user.save();
         });
     });
@@ -35,10 +35,10 @@ Game.find({
       Account.findOne({ username: username.userName })
         .cursor()
         .eachAsync((user) => {
-          user[`lossesSeason${season}`] = user[`lossesSeason${season}`] ? user[`lossesSeason${season}`] + 1 : 1;
+          user[SEASON_FIELDS.losses] = user[SEASON_FIELDS.losses] ? user[SEASON_FIELDS.losses] + 1 : 1;
           if (game.isRainbow)
-            user[`rainbowLossesSeason${season}`] = user[`rainbowLossesSeason${season}`]
-              ? user[`rainbowLossesSeason${season}`] + 1
+            user[SEASON_FIELDS.rainbowLosses] = user[SEASON_FIELDS.rainbowLosses]
+              ? user[SEASON_FIELDS.rainbowLosses] + 1
               : 1;
           user.save();
         });

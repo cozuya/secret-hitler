@@ -1,47 +1,64 @@
 const mongoose = require("mongoose");
 const Account = require("../models/account");
 const Leaderboard = require("../models/leaderboard");
+const { STARTING_PUBLIC_RATING } = require("../routes/socket/rating/public-ladder");
+const { CURRENT_SEASON_FIELDS } = require("../src/shared/season");
+const { rankedSeasonEligibility } = require("../src/shared/ranked-eligibility");
 
-// Computes the daily / seasonal / rainbow leaderboards and stores them in a single Mongo document
-// (read by GET /leaderboardData.json). Runs as a Render Cron Job — a SEPARATE service from the web
-// app — so this heavy account scan never competes with the memory-constrained game server, and it
-// doesn't need the web service's Persistent Disk (a Render disk attaches to one service only). It
-// also rolls the daily baselines (previousDayElo / previousDayXP) forward for the next run.
-//
+// Standalone Render cron: persist the existing five-board payload for /leaderboardData.json.
+// Re-entry is visible after the next cron refresh (R2), without changing the web service/cache.
 // Usage: MONGO_URL="mongodb+srv://..." node scripts/retrieveLeaderboardData.js
+const BOARD_LIMIT = 20;
+const BOARD_FIELDS = {
+  username: 1,
+  isBanned: 1,
+  eloSeason: 1,
+  xpSeason: 1,
+  isRainbowOverall: 1,
+  dateRainbowOverall: 1,
+  lastRankedGameAt: 1,
+  [CURRENT_SEASON_FIELDS.wins]: 1,
+  [CURRENT_SEASON_FIELDS.losses]: 1,
+};
 
-const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/secret-hitler-app";
+// Stream the account scan and retain only each board's top rows, not the full eligible population.
+const addLeader = (board, entry, field) => {
+  board.push(entry);
+  board.sort((a, b) => b[field] - a[field]);
+  if (board.length > BOARD_LIMIT) board.pop();
+};
 
-const main = async () => {
-  mongoose.Promise = global.Promise;
-  await mongoose.connect(MONGO_URL);
-
+const refreshLeaderboards = async ({ nowMs = Date.now(), log = console.log } = {}) => {
+  if (!Number.isFinite(nowMs)) throw new Error("Leaderboard clock must be finite epoch milliseconds");
   const data = Leaderboard.freshBoard();
 
-  // Daily movement: accounts active in the last 24h, vs their stored baseline. Roll the baseline
-  // forward HERE — for the active set whose deltas we actually report — so 1-2 game accounts (which
-  // the >= 3-game seasonal scan below would never roll) don't re-report the same non-advancing delta
-  // every day. Exclude banned from the board like the other leaderboards (the roll still applies to
-  // them, harmlessly). Awaited — the old script fire-and-forgot these baseline writes.
-  await Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
+  // R7: daily Elo/XP movement uses general completion activity, including casual/practice XP.
+  // Only the ranked seasonal board below requires lastRankedGameAt. Roll daily baselines even for
+  // players absent from that board, so their movement does not repeat on the next refresh.
+  await Account.find({ lastCompletedGame: { $gte: new Date(nowMs - 24 * 60 * 60 * 1000) } })
     .cursor()
     .eachAsync(async (account) => {
       if (!account.isBanned) {
-        // Mirror the seasonal scan's finiteness guard: an account active in the last 24h may still have
-        // an unset eloSeason/xpSeason (e.g. only casual games), which would otherwise push a NaN delta
-        // onto the served board. Skip just the offending row rather than the whole account.
+        // Zero/negative public accumulators are valid; only absent/nonfinite baselines start fresh.
         if (Number.isFinite(account.eloSeason)) {
-          data.dailyLeaderboardElo.push({
-            userName: account.username,
-            dailyEloDifference: account.eloSeason - (account.previousDayElo || 1600),
-          });
+          const baseline = Number.isFinite(account.previousDayElo) ? account.previousDayElo : STARTING_PUBLIC_RATING;
+          const difference = account.eloSeason - baseline;
+          if (Number.isFinite(difference))
+            addLeader(
+              data.dailyLeaderboardElo,
+              { userName: account.username, dailyEloDifference: difference },
+              "dailyEloDifference"
+            );
         }
         if (Number.isFinite(account.xpSeason)) {
-          data.dailyLeaderboardXP.push({
-            userName: account.username,
-            // XP baseline is 0 — the 1600 used for ELO above is an ELO rating baseline, not XP.
-            dailyXPDifference: account.xpSeason - (account.previousDayXP || 0),
-          });
+          const baseline = Number.isFinite(account.previousDayXP) ? account.previousDayXP : 0;
+          const difference = account.xpSeason - baseline;
+          if (Number.isFinite(difference))
+            addLeader(
+              data.dailyLeaderboardXP,
+              { userName: account.username, dailyXPDifference: difference },
+              "dailyXPDifference"
+            );
         }
       }
       account.previousDayElo = account.eloSeason;
@@ -49,53 +66,66 @@ const main = async () => {
       try {
         await account.save();
       } catch (err) {
-        // One bad doc (e.g. a validation failure) must not abort the whole run — that would reject
-        // main(), skip the Mongo upsert, and leave the served leaderboard stale site-wide. Log + skip.
-        console.log(err, `[leaderboard] failed to roll daily baseline for ${account.username}`);
+        // Preserve the existing per-account failure isolation; one failed baseline must not abort
+        // publication for everyone else. A failed account may report its movement again on retry.
+        log(err, `[leaderboard] failed to roll daily baseline for ${account.username}`);
       }
     });
 
-  // Seasonal + rainbow boards over accounts with >= 3 games (read-only — baselines are rolled above).
-  // TODO: the 1600 baseline (daily scan) and 1620 seasonal floor below are the legacy DISPLAY_BASE and
-  // its +20 floor; import DISPLAY_BASE from routes/socket/rating/display.js so a DISPLAY_SCALE/anchor
-  // re-tune doesn't leave these stale and mis-report daily deltas / the seasonal cutoff.
-  await Account.find({ "games.2": { $exists: true } })
+  // R7: the ranked Season board reads dedicated ranked activity through the pure predicate.
+  // XP and recent Rainbow are progression boards, so casual XP remains meaningful there. Neither
+  // the old lifetime games-array gate nor the ranked activity window governs those boards.
+  await Account.find({ isBanned: { $ne: true } }, BOARD_FIELDS)
+    .lean()
     .cursor()
     .eachAsync((account) => {
-      if (account.eloSeason > 1620 && !account.isBanned) {
-        data.seasonalLeaderboardElo.push({ userName: account.username, elo: account.eloSeason });
+      if (account.isBanned) return;
+      if (rankedSeasonEligibility(account, nowMs).eligible && Number.isFinite(account.eloSeason)) {
+        addLeader(data.seasonalLeaderboardElo, { userName: account.username, elo: account.eloSeason }, "elo");
       }
-      if (account.xpSeason > 10 && !account.isBanned) {
-        data.seasonalLeaderboardXP.push({ userName: account.username, xp: account.xpSeason });
+      // Keep the existing XP cutoff independent of the provisional ranked-game count.
+      if (Number.isFinite(account.xpSeason) && account.xpSeason > 10) {
+        addLeader(data.seasonalLeaderboardXP, { userName: account.username, xp: account.xpSeason }, "xp");
       }
-      if (account.isRainbowOverall && !account.isBanned) {
-        data.rainbowLeaderboard.push({ userName: account.username, date: account.dateRainbowOverall || new Date(0) });
+      if (account.isRainbowOverall) {
+        const date = account.dateRainbowOverall;
+        addLeader(
+          data.rainbowLeaderboard,
+          {
+            userName: account.username,
+            date: date instanceof Date && Number.isFinite(date.getTime()) ? date : new Date(0),
+          },
+          "date"
+        );
       }
     });
 
-  data.dailyLeaderboardElo = data.dailyLeaderboardElo
-    .sort((a, b) => b.dailyEloDifference - a.dailyEloDifference)
-    .slice(0, 20);
-  data.dailyLeaderboardXP = data.dailyLeaderboardXP
-    .sort((a, b) => b.dailyXPDifference - a.dailyXPDifference)
-    .slice(0, 20);
-  data.seasonalLeaderboardElo = data.seasonalLeaderboardElo.sort((a, b) => b.elo - a.elo).slice(0, 20);
-  data.seasonalLeaderboardXP = data.seasonalLeaderboardXP.sort((a, b) => b.xp - a.xp).slice(0, 20);
-  data.rainbowLeaderboard = data.rainbowLeaderboard.sort((a, b) => b.date - a.date).slice(0, 20);
-
-  await Leaderboard.findByIdAndUpdate("current", { payload: data, updatedAt: new Date() }, { upsert: true });
-
-  await mongoose.connection.close();
-  console.log("[leaderboard] updated", {
+  await Leaderboard.findByIdAndUpdate("current", { payload: data, updatedAt: new Date(nowMs) }, { upsert: true });
+  log("[leaderboard] updated", {
     seasonalElo: data.seasonalLeaderboardElo.length,
     seasonalXP: data.seasonalLeaderboardXP.length,
     dailyElo: data.dailyLeaderboardElo.length,
     rainbow: data.rainbowLeaderboard.length,
   });
-  process.exit(0);
+  return data;
 };
 
-main().catch((err) => {
-  console.log("[leaderboard] fatal:", err);
-  process.exit(1);
-});
+const main = async () => {
+  mongoose.Promise = global.Promise;
+  try {
+    await mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/secret-hitler-app");
+    await refreshLeaderboards();
+  } finally {
+    await mongoose.connection.close();
+  }
+};
+
+// Importing the refresh for tests must not start a connection or exit the hosting process.
+if (require.main === module) {
+  main().catch((err) => {
+    console.log("[leaderboard] fatal:", err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { refreshLeaderboards };

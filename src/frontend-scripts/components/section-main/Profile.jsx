@@ -13,6 +13,7 @@ import CollapsibleSegment from "../reusable/CollapsibleSegment.jsx";
 import UserPopup from "../reusable/UserPopup.jsx";
 import { getBlacklistIndex, userInBlacklist } from "../../../../utils";
 import _ from "lodash";
+import { STARTING_PUBLIC_RATING } from "../../../../routes/socket/rating/public-ladder";
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = (dispatch) => ({
@@ -76,8 +77,16 @@ class ProfileWrapper extends React.Component {
         rows={[
           [
             "Elo",
-            this.props.profile.staffDisableVisibleElo ? "---" : this.props.profile.eloSeason || 1600,
-            this.props.profile.staffDisableVisibleElo ? "---" : this.props.profile.eloOverall || 1600,
+            this.props.profile.staffDisableVisibleElo
+              ? "---"
+              : Number.isFinite(this.props.profile.eloSeason)
+                ? this.props.profile.eloSeason
+                : STARTING_PUBLIC_RATING,
+            this.props.profile.staffDisableVisibleElo
+              ? "---"
+              : Number.isFinite(this.props.profile.eloOverall)
+                ? this.props.profile.eloOverall
+                : STARTING_PUBLIC_RATING,
           ],
           [
             "XP",

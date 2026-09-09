@@ -3,12 +3,8 @@ const moment = require("moment");
 
 const gameTypeCount = 500;
 
-// These thresholds are on the LEGACY Elo scale. They are intentionally NOT yet retuned for the
-// OpenSkill display scale (routes/socket/rating/display.js: 1600 + 24*(mu-25)), on which an organic
-// settled player tops out ~1840 so the 2000+ badges are effectively unreachable, while migrated
-// veterans seed in above them. Retuning DISPLAY_SCALE and/or these thresholds against the real
-// seeded distribution is a deliberate part of the Season-24 cutover (see the cutover plan), not an
-// oversight — do not "fix" it here in isolation.
+// These existing thresholds read the public Elo accumulators. Retuning them requires the S25
+// distribution review; hidden skill has no display scale and does not set badge eligibility.
 const ELO_BADGES = [
   // ELO to badge
   [1800, "elo1800"],

@@ -12,8 +12,8 @@ const {
   ipbansNotEnforced,
   gameCreationDisabled,
   limitNewPlayers,
-  currentSeasonNumber,
 } = require("../models");
+const { CURRENT_SEASON_FIELDS } = require("../../../src/shared/season");
 const PlayerReport = require("../../../models/playerReport");
 const { sendUserReports, getModInfo, sendGameList, sendUserList } = require("../user-requests");
 const ModAction = require("../../../models/modAction");
@@ -1087,13 +1087,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
                       : parseInt(number);
 
                     if (!data.action.isNonSeason) {
-                      account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus
-                        ? account[`${setType}Season${currentSeasonNumber}`]
+                      account[CURRENT_SEASON_FIELDS[setType]] = isPlusOrMinus
+                        ? account[CURRENT_SEASON_FIELDS[setType]]
                           ? number.charAt(0) === "+"
-                            ? account[`${setType}Season${currentSeasonNumber}`] +
-                              parseInt(number.substr(1, number.length))
-                            : account[`${setType}Season${currentSeasonNumber}`] -
-                              parseInt(number.substr(1, number.length))
+                            ? account[CURRENT_SEASON_FIELDS[setType]] + parseInt(number.substr(1, number.length))
+                            : account[CURRENT_SEASON_FIELDS[setType]] - parseInt(number.substr(1, number.length))
                           : parseInt(number.substr(1, number.length))
                         : parseInt(number);
                     }

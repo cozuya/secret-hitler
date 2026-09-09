@@ -39,7 +39,7 @@ export const TOU_CHANGES = [
   },
 ];
 
-export const CURRENTSEASONNUMBER = 24;
+export { CURRENT_SEASON_NUMBER as CURRENTSEASONNUMBER } from "../shared/season";
 
 const ALPHANUMERIC = [..."abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"];
 const SYMBOLS = [..." -_=+!\"£$%^&*()\\/.,<>?#~'@;:[]{}"];

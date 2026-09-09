@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
+const { CURRENT_SEASON_NUMBER, seasonCounterFields } = require("../src/shared/season");
+const { STARTING_PUBLIC_RATING } = require("../routes/socket/rating/public-ladder");
 const { Schema } = mongoose;
+
+// Keep every historical season while automatically admitting the next season's strict-schema fields.
+const seasonalCounters = {};
+for (let season = 1; season <= CURRENT_SEASON_NUMBER; season++) {
+  for (const field of Object.values(seasonCounterFields(season))) seasonalCounters[field] = Number;
+}
 const Account = new Schema({
   username: {
     type: String,
@@ -93,133 +101,29 @@ const Account = new Schema({
   losses: Number,
   rainbowWins: Number,
   rainbowLosses: Number,
-  winsSeason1: Number,
-  lossesSeason1: Number,
-  rainbowWinsSeason1: Number,
-  rainbowLossesSeason1: Number,
-  winsSeason2: Number,
-  lossesSeason2: Number,
-  rainbowWinsSeason2: Number,
-  rainbowLossesSeason2: Number,
-  winsSeason3: Number,
-  lossesSeason3: Number,
-  rainbowWinsSeason3: Number,
-  rainbowLossesSeason3: Number,
-  winsSeason4: Number,
-  lossesSeason4: Number,
-  rainbowWinsSeason4: Number,
-  rainbowLossesSeason4: Number,
-  winsSeason5: Number,
-  lossesSeason5: Number,
-  rainbowWinsSeason5: Number,
-  rainbowLossesSeason5: Number,
-  winsSeason6: Number,
-  lossesSeason6: Number,
-  rainbowWinsSeason6: Number,
-  rainbowLossesSeason6: Number,
-  winsSeason7: Number,
-  lossesSeason7: Number,
-  rainbowWinsSeason7: Number,
-  rainbowLossesSeason7: Number,
-  winsSeason8: Number,
-  lossesSeason8: Number,
-  rainbowWinsSeason8: Number,
-  rainbowLossesSeason8: Number,
-  winsSeason9: Number,
-  lossesSeason9: Number,
-  rainbowWinsSeason9: Number,
-  rainbowLossesSeason9: Number,
-  winsSeason10: Number,
-  lossesSeason10: Number,
-  rainbowWinsSeason10: Number,
-  rainbowLossesSeason10: Number,
-  winsSeason11: Number,
-  lossesSeason11: Number,
-  rainbowWinsSeason11: Number,
-  rainbowLossesSeason11: Number,
-  winsSeason12: Number,
-  lossesSeason12: Number,
-  rainbowWinsSeason12: Number,
-  rainbowLossesSeason12: Number,
-  winsSeason13: Number,
-  lossesSeason13: Number,
-  rainbowWinsSeason13: Number,
-  rainbowLossesSeason13: Number,
-  winsSeason14: Number,
-  lossesSeason14: Number,
-  rainbowWinsSeason14: Number,
-  rainbowLossesSeason14: Number,
-  winsSeason15: Number,
-  lossesSeason15: Number,
-  rainbowWinsSeason15: Number,
-  rainbowLossesSeason15: Number,
-  winsSeason16: Number,
-  lossesSeason16: Number,
-  rainbowWinsSeason16: Number,
-  rainbowLossesSeason16: Number,
-  winsSeason17: Number,
-  lossesSeason17: Number,
-  rainbowWinsSeason17: Number,
-  rainbowLossesSeason17: Number,
-  winsSeason18: Number,
-  lossesSeason18: Number,
-  rainbowWinsSeason18: Number,
-  rainbowLossesSeason18: Number,
-  winsSeason19: Number,
-  lossesSeason19: Number,
-  rainbowWinsSeason19: Number,
-  rainbowLossesSeason19: Number,
-  winsSeason20: Number,
-  lossesSeason20: Number,
-  rainbowWinsSeason20: Number,
-  rainbowLossesSeason20: Number,
-  winsSeason21: Number,
-  lossesSeason21: Number,
-  rainbowWinsSeason21: Number,
-  rainbowLossesSeason21: Number,
-  winsSeason22: Number,
-  lossesSeason22: Number,
-  rainbowWinsSeason22: Number,
-  rainbowLossesSeason22: Number,
-  winsSeason23: Number,
-  lossesSeason23: Number,
-  rainbowWinsSeason23: Number,
-  rainbowLossesSeason23: Number,
-  winsSeason24: Number,
-  lossesSeason24: Number,
-  rainbowWinsSeason24: Number,
-  rainbowLossesSeason24: Number,
+  ...seasonalCounters,
   previousDayElo: Number,
   previousDayXP: Number,
   created: Date,
   isOnFire: Boolean,
   lastCompletedGame: Date,
+  // Only ranked S25 games qualify; older/general completion timestamps must not stand in for this.
+  lastRankedGameAt: Date,
   lastVersionSeen: String,
   isFixed: Boolean,
   eloSeason: Number,
   eloOverall: Number,
-  // Season-24 cutover bookkeeping: pre-cutover Elo snapshots (so the migration is reversible) and a
-  // version marker that makes the migration idempotent/resumable (see scripts/seasonCutover24.js).
+  // Retain historical snapshots and the cutover marker for offline migration evidence.
   legacyEloOverallS23: Number,
   legacyEloSeasonS23: Number,
   ratingVersion: Number,
-  // OpenSkill per-player rating (authoritative). `display` is the Elo-flavored rescale
-  // (see routes/socket/rating/display.js). eloSeason/eloOverall above are kept as deprecated
-  // mirrors of `display` for cutover safety (lobby restrictions, colors, badges, profiles,
-  // leaderboards, scripts still read them).
-  // No schema defaults on purpose: an unmigrated/never-rated account must read as "unset" so the
-  // rating engine detects it and seeds mu from the legacy Elo mirror (rather than treating a
-  // veteran as a fresh 1600 player). The migration and the first rated game populate these.
+  // One lifetime hidden estimator; eloOverall/eloSeason are independent public accumulators.
+  // Leave the pair unset so R1 can seed a missing estimate from legacy Elo instead of treating a
+  // veteran as fresh. Old Mongo season/display fields may still hydrate, but are no longer written.
   rating: {
     overall: {
       mu: Number,
       sigma: Number,
-      display: Number,
-    },
-    season: {
-      mu: Number,
-      sigma: Number,
-      display: Number,
     },
   },
   hashUid: String,
@@ -246,7 +150,7 @@ const Account = new Schema({
   xpSeason: { type: Number, default: 0 },
   dateRainbowOverall: Date,
   badges: [{ id: String, text: String, title: String, dateAwarded: Date }],
-  maxElo: { type: Number, default: 1600 },
+  maxElo: { type: Number, default: STARTING_PUBLIC_RATING },
   pastElo: [{ date: Date, value: Number }],
   isTournamentMod: Boolean,
 });

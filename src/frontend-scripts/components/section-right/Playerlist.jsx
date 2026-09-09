@@ -9,6 +9,9 @@ import PropTypes from "prop-types";
 import { Scrollbars } from "react-custom-scrollbars";
 import UserPopup from "../reusable/UserPopup.jsx";
 import { userInBlacklist } from "../../../../utils";
+import { PROVISIONAL_RANKED_GAMES } from "../../../shared/season";
+import { rankedProgress } from "../../../shared/ranked-eligibility";
+import { STARTING_PUBLIC_RATING } from "../../../../routes/socket/rating/public-ladder";
 
 $.fn.modal = Modal;
 
@@ -107,7 +110,8 @@ class Playerlist extends React.Component {
     );
     const userList = this.props.userList && Array.isArray(this.props.userList.list) ? this.props.userList.list : [];
     const currentUser = userList.find((user) => user.userName === this.props.userInfo.userName);
-    const elo = Number(disableSeasonal ? currentUser?.eloOverall : currentUser?.eloSeason) || 1600;
+    const publicRating = disableSeasonal ? currentUser?.eloOverall : currentUser?.eloSeason;
+    const elo = Number.isFinite(publicRating) ? publicRating : STARTING_PUBLIC_RATING;
     const eloClass = `elo${Math.round((Math.max(1500, Math.min(2100, elo)) - 1500) / 5)}`;
     const seasonalClick = () => this.props.socket?.emit?.("updateGameSettings", { disableSeasonal: !disableSeasonal });
 
@@ -233,6 +237,28 @@ class Playerlist extends React.Component {
           <span title="This player was 5th highest player of the previous season" className="season-award gold5" />
         );
     }
+  }
+
+  renderPublicRating(user, field) {
+    // The wire aliases are current-season totals, including Rainbow games; XP/Rainbow status and
+    // the selected win-rate filter do not determine ranked provisional status.
+    const provisional = field === "eloSeason" && rankedProgress(user.winsSeason, user.lossesSeason).provisional;
+    return (
+      <span className="userlist-stats">
+        {Number.isFinite(user[field]) ? user[field] : STARTING_PUBLIC_RATING}
+        {provisional && (
+          <>
+            {" "}
+            <abbr
+              title={`Provisional: fewer than ${PROVISIONAL_RANKED_GAMES} ranked games this season.`}
+              aria-label="Provisional seasonal rating"
+            >
+              P
+            </abbr>
+          </>
+        )}
+      </span>
+    );
   }
 
   renderPlayerlist() {
@@ -449,7 +475,7 @@ class Playerlist extends React.Component {
                 Boolean(!user.staffDisableVisibleElo) &&
                 (() => {
                   return elo ? (
-                    <span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
+                    this.renderPublicRating(user, elo)
                   ) : (
                     <span>
                       (<span className="userlist-stats">{user[w] ? user[w] : "0"}</span> /{" "}
@@ -717,9 +743,7 @@ class Playerlist extends React.Component {
               Boolean(!user.staffDisableVisibleElo) &&
               (() => {
                 return elo ? (
-                  <div className="userlist-stats-container">
-                    <span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
-                  </div>
+                  <div className="userlist-stats-container">{this.renderPublicRating(user, elo)}</div>
                 ) : (
                   <div className="userlist-stats-container">
                     (<span className="userlist-stats">{user[w] ? user[w] : "0"}</span> /{" "}

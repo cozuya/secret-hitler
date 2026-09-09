@@ -2,6 +2,7 @@ import React, { useState } from "react"; // eslint-disable-line
 import { connect } from "react-redux";
 import { Popup, List, Grid, Button, Form } from "semantic-ui-react";
 import { getBlacklistIndex, userInBlacklist } from "../../../../utils";
+import { STARTING_PUBLIC_RATING } from "../../../../routes/socket/rating/public-ladder";
 
 const mapStateToProps = (state) => state;
 
@@ -237,11 +238,11 @@ const UserPopup = ({ socket, userInfo, gameInfo, userList, children, userName, p
                     <Grid.Row>
                       <Grid.Column textAlign="center" data-tooltip="Overall Elo">
                         <List.Icon name="chart line" />
-                        {user.eloOverall || 1600}
+                        {Number.isFinite(user.eloOverall) ? user.eloOverall : STARTING_PUBLIC_RATING}
                       </Grid.Column>
                       <Grid.Column textAlign="center" data-tooltip="Seasonal Elo">
                         <List.Icon name="calendar alternate outline" />
-                        {user.eloSeason || 1600}
+                        {Number.isFinite(user.eloSeason) ? user.eloSeason : STARTING_PUBLIC_RATING}
                       </Grid.Column>
                     </Grid.Row>
                   </Grid>

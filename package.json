@@ -141,6 +141,7 @@
       "<rootDir>/__test__/test-setup.js"
     ],
     "moduleNameMapper": {
+      "^openskill/models$": "<rootDir>/node_modules/openskill/dist/models/index.cjs",
       "\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
     },
     "transform": {

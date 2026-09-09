@@ -1,4 +1,6 @@
-// Team-balance bias for the OpenSkill rating engine.
+// Shared empirical priors plus historical raw-sum OpenSkill calibration.
+// S25 uses fascistWinPrior with normalized teams in predict.js; the raw-sum helpers below are
+// retained as historical calibration support, not used by the S25 update.
 //
 // This is the OpenSkill re-expression of the legacy `winnerBiasPoints`. Secret Hitler is
 // not balanced 50/50 per role: each player count has a known good-vs-evil skew, and the
@@ -22,7 +24,7 @@
 //    10   |   0.54             |   0.543
 
 const { predictWin } = require("openskill");
-const { DEFAULT_MU, DEFAULT_SIGMA, freshRating } = require("./display.js");
+const { DEFAULT_MU, DEFAULT_SIGMA, freshRating } = require("./hidden-rating.js");
 
 // Equal-skill fascist win probability per player count (base, non-rebalanced setups).
 const FASCIST_WIN_PRIOR = {

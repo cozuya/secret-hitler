@@ -18,6 +18,7 @@ const { checkBadgesAccount } = require("./socket/badges");
 const moment = require("moment");
 const { idQuerySchema, usernameQuerySchema, cardbackBodySchema } = require("./index.schema");
 const bandwidthDiagnostics = require("./bandwidth-diagnostics-state");
+const { STARTING_PUBLIC_RATING } = require("./socket/rating/public-ladder");
 
 /**
  * @param {object} req - express request object.
@@ -296,24 +297,31 @@ module.exports = () => {
             _profile.eloPercentile = Object.keys(account.eloPercentile).length ? account.eloPercentile : undefined;
             _profile.maxElo = account.gameSettings.staffDisableVisibleElo
               ? undefined
-              : Math.round(Number.parseFloat(account.maxElo || 1600));
+              : Math.round(Number.isFinite(account.maxElo) ? account.maxElo : STARTING_PUBLIC_RATING);
             _profile.pastElo = account.gameSettings.staffDisableVisibleElo
               ? undefined
               : account.pastElo.toObject().length
                 ? account.pastElo.toObject()
-                : [{ date: new Date(), value: Math.round(Number.parseFloat(account.eloOverall || 1600)) }];
+                : [
+                    {
+                      date: new Date(),
+                      value: Math.round(
+                        Number.isFinite(account.eloOverall) ? account.eloOverall : STARTING_PUBLIC_RATING
+                      ),
+                    },
+                  ];
             _profile.xpOverall = account.gameSettings.staffDisableVisibleXP
               ? undefined
               : Math.floor(account.xpOverall || 0);
             _profile.eloOverall = account.gameSettings.staffDisableVisibleElo
               ? undefined
-              : Math.floor(account.eloOverall || 1600);
+              : Math.floor(Number.isFinite(account.eloOverall) ? account.eloOverall : STARTING_PUBLIC_RATING);
             _profile.xpSeason = account.gameSettings.staffDisableVisibleXP
               ? undefined
               : Math.floor(account.xpSeason || 0);
             _profile.eloSeason = account.gameSettings.staffDisableVisibleElo
               ? undefined
-              : Math.floor(account.eloSeason || 1600);
+              : Math.floor(Number.isFinite(account.eloSeason) ? account.eloSeason : STARTING_PUBLIC_RATING);
             _profile.isRainbowOverall = account.isRainbowOverall;
             _profile.isRainbowSeason = account.isRainbowSeason;
             _profile.staffRole = account.staffRole;
