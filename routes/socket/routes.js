@@ -27,6 +27,7 @@ const {
   handleAddNewModDMChat,
 } = require("./user-events");
 const { handleAEMMessages } = require("./util");
+const { handleMuteNeighborChat, handleReportNeighborChat } = require("./user-events/neighbor-chat");
 const {
   sendPlayerNotes,
   sendUserReports,
@@ -671,6 +672,23 @@ module.exports.socketRoutes = () => {
         if (authenticated) {
           handlePlayerReport(passport, data, callback);
         }
+      });
+      // gameUid deliberately differs from uid: archived-message reports must survive room collection.
+      socket.on("muteNeighborChat", (data, callback) => {
+        if (!authenticated || isRestricted) {
+          if (typeof callback === "function")
+            callback({ success: false, error: "Sign in and resolve account restrictions first." });
+          return;
+        }
+        handleMuteNeighborChat(passport, data, callback);
+      });
+      socket.on("reportNeighborChat", (data, callback) => {
+        if (!authenticated || isRestricted) {
+          if (typeof callback === "function")
+            callback({ success: false, error: "Sign in and resolve account restrictions first." });
+          return;
+        }
+        handleReportNeighborChat(passport, data, callback);
       });
       socket.on("updateRemake", (data) => {
         const game = findGame(data);

@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 const Account = require("../models/account");
 const Game = require("../models/game");
+const { replayForViewer } = require("../routes/socket/neighbor-chat");
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
@@ -21,7 +22,9 @@ Game.find()
   .limit(25000)
   .lean()
   .cursor()
-  .eachAsync((game) => {
+  .eachAsync((savedGame) => {
+    // Anonymizing names is not permission to publish private conversations.
+    const game = replayForViewer(savedGame);
     // first collect all usernames
     const playersByName = new Map(); // cache players here for removing pii later
     const usernames = [].concat(

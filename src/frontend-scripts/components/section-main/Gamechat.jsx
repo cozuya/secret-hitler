@@ -9,6 +9,7 @@ import { loadReplay, toggleNotes, updateUser } from "../../actions/actions";
 import { PLAYERCOLORS, getBadWord, getNumberWithOrdinal } from "../../constants";
 import { renderEmotesButton, processEmotes } from "../../emotes";
 import Swal from "sweetalert2";
+import NeighborChatReport from "../reusable/NeighborChatReport";
 
 const mapDispatchToProps = (dispatch) => ({
   loadReplay: (summary) => dispatch(loadReplay(summary)),
@@ -859,6 +860,9 @@ class Gamechat extends React.Component {
                   return chatSegment.text;
                 })}
               </span>
+              {chat.neighborChat?.id && (
+                <NeighborChatReport chat={chat} username={userInfo.userName} gameUid={gameInfo.general?.uid} />
+              )}
             </div>
           ) : chat.isClaim ? (
             <div className="item claim-item" key={i}>
@@ -1249,6 +1253,31 @@ class Gamechat extends React.Component {
 
     return (
       <section className={isStaff ? "gamechat aem" : "gamechat"}>
+        {gameInfo.general?.neighborChat &&
+          gameInfo.gameState?.isTracksFlipped &&
+          !gameInfo.gameState.isCompleted &&
+          userInfo.isSeated && (
+            <button
+              type="button"
+              className="ui mini basic button"
+              title="Stop sending and receiving Neighbor Chat for this game. Public chat is unchanged."
+              aria-pressed={Boolean(gameInfo.neighborChatMuted)}
+              onClick={() =>
+                socket.emit(
+                  "muteNeighborChat",
+                  {
+                    gameUid: gameInfo.general.uid,
+                    muted: !gameInfo.neighborChatMuted,
+                  },
+                  (result) => {
+                    if (!result?.success) Swal.fire(result?.error || "Unable to change Neighbor Chat settings.");
+                  }
+                )
+              }
+            >
+              {gameInfo.neighborChatMuted ? "Unmute Neighbor Chat" : "Mute Neighbor Chat"}
+            </button>
+          )}
         <section className="ui pointing menu">
           <a className={"item"} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: "5px" }}>
             <i

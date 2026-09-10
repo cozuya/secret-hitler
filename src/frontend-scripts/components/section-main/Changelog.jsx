@@ -11,12 +11,53 @@ class Changelog extends React.Component {
           <h2>Changelog</h2>
         </div>
 
+        <p>
+          New optional game mode: <strong>neighbor chat!</strong> When on, living players can message their nearest
+          living neighbor using <code>{"/l <message>"}</code> for left and <code>{"/r <message>"}</code> for right (it
+          wraps). If a player is shot or leaves, it skips them — so it&apos;s possible, but unlikely, you could have
+          private conversations with four different players over the course of a game.
+        </p>
+        <p>
+          <strong>Important note:</strong> messages stay private to you and your neighbor, including after the game.
+          They are saved and authorized moderators can review them. You can mute Neighbor Chat without hiding public
+          chat, and report a received message using its Report button — please be kind while using this. Your own
+          conversations are available in the replay; other players&apos; conversations are not. Other private
+          communication remains against site rules.
+        </p>
+        <p>
+          If there&apos;s tweaks or issues here, I&apos;ll address them as they come up. Hopefully this is better than
+          flappy -_-
+        </p>
+
         <div className="ui header">
           <p>
             Welcome to Season 25! Ranked wins now earn 16–24 points and losses cost 16–24 points, adjusted for the
             matchup. Seasonal ratings start at 1500; overall ratings carry forward.
           </p>
         </div>
+
+        <ul>
+          <li>
+            <strong>New Player Games:</strong> There&apos;s now a dedicated public Practice lobby for players who
+            haven&apos;t reached Rainbow. Games use standard rules and start with <strong>5–7 players</strong>, using
+            the normal countdown. A fresh lobby opens when each game starts. Earn the usual XP toward Rainbow without
+            affecting your ranked ratings.
+          </li>
+          <li>
+            <strong>Better mobile replays:</strong> Player names have more room, seats scroll horizontally, and turn and
+            phase controls are easier to use on smaller screens. Taller replay layouts now scroll vertically so controls
+            remain reachable.
+          </li>
+          <li>
+            <strong>Clearer game displays:</strong> Previous-president and previous-chancellor markers are easier to see
+            above player cards. Game chat also returns correctly when you widen the window after hiding it on mobile.
+          </li>
+          <li>
+            <strong>Leaderboard feedback:</strong> Leaderboards now show when they last refreshed, distinguish empty
+            standings from unavailable data, and offer a retry when loading fails. The seasonal Elo board requires
+            <strong> 20 ranked season games</strong> and ranked activity within the past <strong>14 days</strong>.
+          </li>
+        </ul>
 
         <hr style={{ width: "100%" }} />
 

@@ -46,6 +46,7 @@ beforeEach(() => {
       commandChats: {},
       unSeatedGameChats: [],
       replayGameChats: [],
+      neighborChats: [],
       hiddenInfoChat: [],
       hiddenInfoSubscriptions: ["Moderator"],
     },
@@ -78,6 +79,7 @@ afterEach(() => {
 describe.each([true, false])("replay setting persistence (completed: %s)", (completed) => {
   it.each([true, false, undefined])("preserves neighborChat=%s through the archive schema", async (neighborChat) => {
     game.general.neighborChat = neighborChat;
+    if (neighborChat) run("/r private archive");
     game.gameState.isCompleted = completed ? "liberal" : false;
     let storedGame;
     const insert = jest.spyOn(Game.collection, "insertOne").mockImplementation((document, options, callback) => {
@@ -90,6 +92,10 @@ describe.each([true, false])("replay setting persistence (completed: %s)", (comp
       expect(insert).toHaveBeenCalledTimes(1);
       expect(storedGame.completed).toBe(completed);
       expect(storedGame.neighborChat).toBe(neighborChat);
+      expect(storedGame.neighborChats).toHaveLength(neighborChat ? 1 : 0);
+      expect(storedGame.chats).toEqual([]);
+      if (neighborChat)
+        expect(storedGame.neighborChats[0].neighborChat).toMatchObject({ sender: "Player1", recipient: "Player2" });
       const replay = JSON.parse(JSON.stringify(Game.hydrate(storedGame)));
       expect(replay.neighborChat).toBe(neighborChat);
       if (neighborChat === undefined) expect(replay).not.toHaveProperty("neighborChat");
@@ -103,6 +109,28 @@ afterAll(() => {
   jest.clearAllTimers();
   jest.useRealTimers();
   jest.restoreAllMocks();
+});
+
+it("persists report evidence independently of saving the game archive", async () => {
+  const PlayerReport = require("../../../../models/playerReport");
+  run("/r reported message");
+  const message = game.private.neighborChats[0];
+  let stored;
+  const insert = jest.spyOn(PlayerReport.collection, "insertOne").mockImplementation((document, options, callback) => {
+    stored = document;
+    callback(null, { insertedId: document._id });
+  });
+  try {
+    await new PlayerReport({
+      gameUid: game.general.uid,
+      neighborMessageId: message.neighborChat.id,
+      neighborChatContext: [message],
+    }).save();
+    expect(stored.neighborMessageId).toBe(message.neighborChat.id);
+    expect(stored.neighborChatContext[0]).toEqual(message);
+  } finally {
+    insert.mockRestore();
+  }
 });
 
 const textOf = (chat) => chat.chat.map((segment) => segment.text).join("");
@@ -141,7 +169,7 @@ const expectRefusal = (message, name = "Player1") => {
   expect(game.private.commandChats[name].map(textOf)).toEqual([message]);
   expect(game.private.seatedPlayers.flatMap((player) => player.gameChats)).toEqual([]);
   expect(game.chats).toEqual([]);
-  expect(game.private.replayGameChats).toEqual([]);
+  expect(game.private.neighborChats).toEqual([]);
   expect(game.private.hiddenInfoChat).toEqual([]);
   expect(deliveredChats(name).map(textOf)).toEqual([message]);
   expect(sockets[name].emit).toHaveBeenCalledTimes(1);
@@ -163,13 +191,13 @@ const expectDelivery = (senderSeat, recipientSeat, direction, message = "hello")
     if (player !== sender && player !== recipient) expect(player.gameChats).toEqual([]);
   }
   expect(game.chats).toEqual([]);
-  expect(game.private.replayGameChats.map(textOf)).toEqual([
+  expect(game.private.neighborChats.map(textOf)).toEqual([
     `Neighbor Chat - (#${senderSeat} Player${senderSeat}) to ${direction} (#${recipientSeat} Player${recipientSeat}): ${message}`,
   ]);
-  expect(game.private.hiddenInfoChat).toEqual(game.private.replayGameChats);
+  expect(game.private.hiddenInfoChat).toEqual(game.private.neighborChats);
   expect(deliveredChats("Moderator")).toEqual(game.private.hiddenInfoChat);
   for (const name of ["Observer", "Anonymous", "UnsubscribedMod"]) expect(deliveredChats(name)).toEqual([]);
-  for (const chat of [...sender.gameChats, ...recipient.gameChats, ...game.private.replayGameChats]) {
+  for (const chat of [...sender.gameChats, ...recipient.gameChats, ...game.private.neighborChats]) {
     expect(chat).toMatchObject({ gameChat: true, timestamp: expect.any(Date) });
     expect(chat.chat[1]).toEqual({ text: message, type: "neighbor-chat" });
   }
@@ -187,7 +215,7 @@ const expectDelivery = (senderSeat, recipientSeat, direction, message = "hello")
 describe("Neighbor Chat routing and delivery", () => {
   it("keeps edits to moderation history separate from replay history", () => {
     run("/r hello");
-    const replay = game.private.replayGameChats[0];
+    const replay = game.private.neighborChats[0];
     const originalTime = replay.timestamp.getTime();
     const moderation = game.private.hiddenInfoChat[0];
     moderation.chat[1].text = "redacted";
@@ -237,7 +265,7 @@ describe("Neighbor Chat routing and delivery", () => {
     run("/r second");
     expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): second"]);
     expect(game.private.seatedPlayers[2].gameChats).toHaveLength(1);
-    expect(game.private.replayGameChats).toHaveLength(2);
+    expect(game.private.neighborChats).toHaveLength(2);
   });
 
   it.each([
@@ -277,13 +305,14 @@ describe("Neighbor Chat routing and delivery", () => {
     for (const player of game.publicPlayersState) {
       expect(JSON.stringify(deliveredChats(player.userName))).not.toMatch(/Player[1-7]/);
     }
-    expect(game.private.replayGameChats.map(textOf)).toEqual([
+    expect(game.private.neighborChats.map(textOf)).toEqual([
       `Neighbor Chat - (#1 Player1) to ${direction} (#${seat} Player${seat}): hello`,
     ]);
-    expect(deliveredChats("Moderator")).toEqual(game.private.replayGameChats);
+    expect(deliveredChats("Moderator")).toEqual(game.private.neighborChats);
     game.gameState.isCompleted = "liberal";
     const archive = generateGameObject(game);
-    expect(archive.chats).toEqual(game.private.replayGameChats);
+    expect(archive.chats).toEqual([]);
+    expect(archive.neighborChats).toEqual(game.private.neighborChats);
     expect(archive.hiddenInfoChat).toEqual(game.private.hiddenInfoChat);
   });
 });
@@ -353,7 +382,8 @@ describe("Neighbor Chat incremental delivery", () => {
     expect(sockets.Player3.emit.mock.calls[0][1].chats).toEqual([]);
     expect(sockets.Moderator.emit.mock.calls[0][1].chats).toEqual(game.private.hiddenInfoChat);
     game.gameState.isCompleted = "liberal";
-    expect(generateGameObject(game).chats).toEqual(game.private.replayGameChats);
+    expect(generateGameObject(game).chats).toEqual([]);
+    expect(generateGameObject(game).neighborChats).toEqual(game.private.neighborChats);
   });
 
   it("keeps per-message payload size independent of accumulated history", () => {
@@ -389,7 +419,6 @@ describe("private Neighbor Chat retention", () => {
   const histories = () => [
     game.private.seatedPlayers[0].gameChats,
     game.private.seatedPlayers[1].gameChats,
-    game.private.replayGameChats,
     game.private.hiddenInfoChat,
   ];
   const neighbors = (history) => history.filter((chat) => chat.chat?.[1]?.type === "neighbor-chat");
@@ -397,7 +426,7 @@ describe("private Neighbor Chat retention", () => {
   it.each([
     "enabled",
     "emotes",
-  ])("bounds all four private histories with %s chat without removing gameplay records", (chatMode) => {
+  ])("bounds live private histories with %s chat without removing gameplay records", (chatMode) => {
     game.general.private = true;
     game.general.playerChats = chatMode;
     const role = { gameChat: true, chat: [{ text: "Your role is " }, { text: "liberal", type: "liberal" }] };
@@ -424,9 +453,10 @@ describe("private Neighbor Chat retention", () => {
     expect(neighbors(snapshot.chats)).toHaveLength(30);
     game.gameState.isCompleted = "liberal";
     const archive = generateGameObject(game);
-    expect(archive.chats).toEqual(game.private.replayGameChats);
+    expect(archive.chats).toEqual([]);
+    expect(archive.neighborChats).toEqual(game.private.neighborChats);
     expect(archive.hiddenInfoChat).toEqual(game.private.hiddenInfoChat);
-    expect(neighbors(archive.chats)).toHaveLength(30);
+    expect(archive.neighborChats).toHaveLength(75);
     expect(neighbors(archive.hiddenInfoChat)).toHaveLength(30);
   });
 
@@ -438,6 +468,45 @@ describe("private Neighbor Chat retention", () => {
 });
 
 describe("Neighbor Chat guards", () => {
+  it("refuses a muted sender without recording or delivering a message", () => {
+    game.private.seatedPlayers[0].neighborChatMuted = true;
+    run("/r hello");
+    expectRefusal("Unmute Neighbor Chat before sending a message.");
+  });
+
+  it("refuses a muted recipient without redirecting the message to another neighbor", () => {
+    game.private.seatedPlayers[1].neighborChatMuted = true;
+    run("/r hello");
+    expectRefusal("This neighbor is not accepting Neighbor Chat.");
+    game.private.seatedPlayers[1].neighborChatMuted = false;
+    jest.clearAllMocks();
+    run("/r hello");
+    expectDelivery(1, 2, "right");
+  });
+
+  it("restores only the viewer's mute preference in reconnect snapshots", () => {
+    game.private.seatedPlayers[0].neighborChatMuted = true;
+    sendInProgressGameUpdate(game);
+    expect(sockets.Player1.emit.mock.calls[0][1].neighborChatMuted).toBe(true);
+    expect(sockets.Player2.emit.mock.calls[0][1].neighborChatMuted).toBe(false);
+    expect(sockets.Observer.emit.mock.calls[0][1]).not.toHaveProperty("neighborChatMuted");
+  });
+
+  it("caps accepted messages while retaining earlier evidence", () => {
+    const { MAX_NEIGHBOR_MESSAGES } = require("../../../../routes/socket/neighbor-chat");
+    game.private.neighborChats = Array.from({ length: MAX_NEIGHBOR_MESSAGES - 1 }, () => ({ chat: "old evidence" }));
+    run("/r last allowed message");
+    expect(game.private.neighborChats).toHaveLength(MAX_NEIGHBOR_MESSAGES);
+    const history = JSON.stringify(game.private.neighborChats);
+    jest.clearAllMocks();
+    run("/r over limit");
+    expect(JSON.stringify(game.private.neighborChats)).toBe(history);
+    expect(sockets.Player2.emit).not.toHaveBeenCalled();
+    expect(deliveredChats("Player1").map(textOf)).toEqual([
+      "Neighbor Chat has reached this game's message limit. Please use public chat.",
+    ]);
+  });
+
   it.each([false, undefined])("refuses when the mode flag is %s", (flag) => {
     game.general.neighborChat = flag;
     run("/r hello");
@@ -472,7 +541,7 @@ describe("Neighbor Chat guards", () => {
     delete game.private.seatedPlayers;
     expect(() => run("/r hello")).not.toThrow();
     expect(game.private.commandChats.Player1.map(textOf)).toEqual(["Neighbor Chat is not ready yet."]);
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
     expect(game.private.hiddenInfoChat).toEqual([]);
     expect(deliveredChats("Player1").map(textOf)).toEqual(["Neighbor Chat is not ready yet."]);
   });
@@ -506,8 +575,8 @@ describe("Neighbor Chat guards", () => {
     run("/help");
     expect(game.private.commandChats.Player1.map(textOf)).toEqual(
       expect.arrayContaining([
-        "/l - Messages your nearest living left neighbor; messages are public in the replay afterwards.",
-        "/r - Messages your nearest living right neighbor; messages are public in the replay afterwards.",
+        "/l - Messages your nearest living left neighbor; visible only to participants and authorized moderators, including afterwards.",
+        "/r - Messages your nearest living right neighbor; visible only to participants and authorized moderators, including afterwards.",
       ])
     );
     // Other commands retain their existing full update path.
@@ -546,13 +615,13 @@ describe("Neighbor Chat through the existing chat handler", () => {
 
   it.each([null, 42, {}, []])("rejects non-string wire chat %j without throwing", async (chat) => {
     await expect(addChat(chat)).resolves.toBeUndefined();
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
     expect(sockets.Player1.emit).not.toHaveBeenCalled();
   });
 
   it("preserves the 300-character cap including the command prefix", async () => {
     await addChat(`/r ${"x".repeat(298)}`);
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
     await addChat(`/r ${"x".repeat(297)}`);
     expectDelivery(1, 2, "right", "x".repeat(297));
   });
@@ -560,10 +629,10 @@ describe("Neighbor Chat through the existing chat handler", () => {
   it("preserves the per-user command rate limit", async () => {
     await addChat("/r first");
     await addChat("/l second");
-    expect(game.private.replayGameChats).toHaveLength(1);
+    expect(game.private.neighborChats).toHaveLength(1);
     models.userList.find((user) => user.userName === "Player1").lastMessage.timestamp = Date.now() - 1000;
     await addChat("/l second");
-    expect(game.private.replayGameChats).toHaveLength(2);
+    expect(game.private.neighborChats).toHaveLength(2);
   });
 
   it.each([
@@ -575,7 +644,7 @@ describe("Neighbor Chat through the existing chat handler", () => {
     game.gameState.phase = phase;
     game.publicPlayersState[0].governmentStatus = governmentStatus;
     await addChat("/r hello");
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
     expect(sockets.Player1.emit).not.toHaveBeenCalled();
   });
 
@@ -584,7 +653,7 @@ describe("Neighbor Chat through the existing chat handler", () => {
     else game.general.private = true;
     await addChat("/r hello", "Observer");
     expect(game.private.commandChats.Observer).toBeUndefined();
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
     expect(sockets.Observer.emit).not.toHaveBeenCalled();
   });
 });
@@ -599,7 +668,7 @@ describe("public emote-chat extraction preserves the existing call site", () => 
     await addChat("text :JA: 12 :notarealemote:");
     expect(game.chats).toHaveLength(1);
     expect(game.chats[0].chat).toBe(" :ja: 12");
-    expect(game.private.replayGameChats).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
   });
 
   it("keeps the AEM observer carve-out", async () => {

@@ -151,7 +151,26 @@ export default class Reports extends React.Component {
                   </td>
                   <td>{report.reportedPlayer}</td>
                   <td>{report.reason}</td>
-                  <td>{report.comment}</td>
+                  <td>
+                    {report.comment}
+                    {report.neighborMessageId &&
+                      (report.neighborChatContext ? (
+                        <details>
+                          <summary>Neighbor Chat evidence</summary>
+                          {report.neighborChatContext.map((chat) => (
+                            <p key={chat.neighborChat.id}>
+                              {chat.neighborChat.id === report.neighborMessageId ? (
+                                <strong>{chat.chat.map((segment) => segment.text).join("")}</strong>
+                              ) : (
+                                chat.chat.map((segment) => segment.text).join("")
+                              )}
+                            </p>
+                          ))}
+                        </details>
+                      ) : (
+                        <p>Chat evidence is available after the game.</p>
+                      ))}
+                  </td>
                   <td>{report.reportingPlayer}</td>
                   <td>{report.gameType}</td>
                   <td>

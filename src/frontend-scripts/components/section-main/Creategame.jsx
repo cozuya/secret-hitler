@@ -2526,8 +2526,7 @@ export default class Creategame extends React.Component {
               <i className="big exchange icon" />
               <h4 className="ui header">
                 Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are
-                visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the
-                replay afterwards.
+                visible only to you, your neighbor, and authorized moderators, including after the game.
               </h4>
               {this.state.playerChats === "disabled" && <p>Enable player chat to use Neighbor Chat.</p>}
               <Switch

@@ -45,7 +45,7 @@ describe("DisplayLobbies", () => {
     const icon = row.find(".options-icons-container .exchange.icon");
     expect(icon).toHaveLength(1);
     expect(icon.parent().prop("data-tooltip")).toBe(
-      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards."
+      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible only to you, your neighbor, and authorized moderators, including after the game."
     );
     expect(icon.parent().prop("data-inverted")).toBe("");
   });

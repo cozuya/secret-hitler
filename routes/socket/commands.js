@@ -8,6 +8,8 @@ const { selectPlayerToAssassinate } = require("./game/assassination");
 const { canStartFlappy, startFlappy, isFlappyPreLock } = require("./game/flappy");
 const { emoteList } = require("./models");
 const { filterEmoteChat } = require("./emote-chat");
+const { randomUUID } = require("crypto");
+const { MAX_NEIGHBOR_MESSAGES } = require("./neighbor-chat");
 
 const sendMessage = (game, user, s, date = new Date()) =>
   game.private.commandChats[user.userName].push({
@@ -101,7 +103,8 @@ module.exports.commands = [
   {
     name: ["l"],
     neighborChatOnly: true,
-    description: "Messages your nearest living left neighbor; messages are public in the replay afterwards.",
+    description:
+      "Messages your nearest living left neighbor; visible only to participants and authorized moderators, including afterwards.",
     examples: ["/l <message>"],
     argumentsFormat: /^(.+)$/,
     aemOnly: false,
@@ -112,7 +115,8 @@ module.exports.commands = [
   {
     name: ["r"],
     neighborChatOnly: true,
-    description: "Messages your nearest living right neighbor; messages are public in the replay afterwards.",
+    description:
+      "Messages your nearest living right neighbor; visible only to participants and authorized moderators, including afterwards.",
     examples: ["/r <message>"],
     argumentsFormat: /^(.+)$/,
     aemOnly: false,
@@ -596,12 +600,36 @@ const sendNeighborChat = (game, user, senderName, message, direction) => {
   const fromDirection = direction === "right" ? "← from left" : "→ from right";
   const replayPrefix = `Neighbor Chat - ${namedSeat(senderIndex)} to ${direction} ${namedSeat(recipientIndex)}: `;
 
-  const senderChat = makeChat(`to ${direction} ${liveSeat(recipientIndex)}: `);
-  const recipientChat = makeChat(`${fromDirection} ${liveSeat(senderIndex)}: `);
-  const moderatorChat = makeChat(replayPrefix);
+  if (game.private.seatedPlayers[senderIndex].neighborChatMuted) {
+    sendMessage(game, user, "Unmute Neighbor Chat before sending a message.");
+    return;
+  }
+  if (game.private.seatedPlayers[recipientIndex].neighborChatMuted) {
+    sendMessage(game, user, "This neighbor is not accepting Neighbor Chat.");
+    return;
+  }
+  const history = game.private.neighborChats || (game.private.neighborChats = []);
+  if (history.length >= MAX_NEIGHBOR_MESSAGES) {
+    sendMessage(game, user, "Neighbor Chat has reached this game's message limit. Please use public chat.");
+    return;
+  }
+  const id = randomUUID();
+  // Live metadata deliberately omits identities: blind games reveal only seat numbers.
+  const senderChat = {
+    ...makeChat(`to ${direction} ${liveSeat(recipientIndex)}: `),
+    neighborChat: { id, incoming: false },
+  };
+  const recipientChat = {
+    ...makeChat(`${fromDirection} ${liveSeat(senderIndex)}: `),
+    neighborChat: { id, incoming: true },
+  };
+  const moderatorChat = {
+    ...makeChat(replayPrefix),
+    neighborChat: { id, sender: senderName, recipient: players[recipientIndex].userName },
+  };
   appendNeighborChat(game, senderChats, senderChat);
   appendNeighborChat(game, recipientChats, recipientChat);
-  appendNeighborChat(game, game.private.replayGameChats, makeChat(replayPrefix));
+  history.push({ ...makeChat(replayPrefix), neighborChat: { ...moderatorChat.neighborChat } });
   appendNeighborChat(game, game.private.hiddenInfoChat, moderatorChat);
   sendPrivateChatUpdate(
     game,

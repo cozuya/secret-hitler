@@ -3,6 +3,8 @@ const ModAction = require("../../models/modAction");
 const PlayerReport = require("../../models/playerReport");
 const PlayerNote = require("../../models/playerNote");
 const Game = require("../../models/game");
+const { replayUidSchema } = require("./user-requests.schema");
+const { replayForViewer, isChatReviewer } = require("./neighbor-chat");
 const Signups = require("../../models/signups");
 
 const {
@@ -267,18 +269,25 @@ module.exports.sendPlayerNotes = (socket, data) => {
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendReplayGameData = (socket, uid) => {
-  Game.findOne({ uid })
-    .select({ _id: 0, _v: 0 })
-    .then((game, err) => {
-      if (err) {
-        console.log(err, "game err retrieving for replay");
-      }
-
-      if (game) {
-        socket.emit("replayGameData", game);
-      }
-    });
+module.exports.sendReplayGameData = async (socket, uid) => {
+  const parsed = replayUidSchema.safeParse(uid);
+  if (!parsed.success) return;
+  try {
+    const username = socket.handshake?.session?.passport?.user;
+    const [game, account] = await Promise.all([
+      Game.findOne({ uid: parsed.data }).select({ _id: 0, _v: 0 }).lean(),
+      typeof username === "string" ? Account.findOne({ username }).select("username staffRole").lean() : null,
+    ]);
+    if (!game) return;
+    const live = games[uid];
+    // A saved snapshot of a still-running table must not expose live identities, roles, or other conversations.
+    if (live && !live.gameState?.isCompleted) return;
+    // Read current DB authorization; a demoted reviewer must not retain access through a connected socket.
+    socket.emit("replayGameData", replayForViewer(game, account?.username, isChatReviewer(account)));
+  } catch (err) {
+    console.log(err, "err retrieving replay chat");
+    socket.emit("sendAlert", "Unable to load replay chat right now.");
+  }
 };
 
 /**
@@ -299,13 +308,32 @@ module.exports.sendGameList = (socket, isAEM) => {
 /**
  * @param {object} socket - user socket reference.
  */
-module.exports.sendUserReports = (socket) => {
-  PlayerReport.find()
-    .sort({ $natural: -1 })
-    .limit(500)
-    .then((reports) => {
-      socket.emit("reportInfo", reports);
-    });
+module.exports.sendUserReports = async (socket) => {
+  const username = socket.handshake?.session?.passport?.user;
+  if (typeof username !== "string") return;
+  try {
+    const account = await Account.findOne({ username }).select("staffRole").lean();
+    if (!isChatReviewer(account)) return;
+    const reports = await PlayerReport.find().sort({ $natural: -1 }).limit(500).lean();
+    socket.emit(
+      "reportInfo",
+      reports.map((report) => {
+        const live = games[report.gameUid];
+        if (!live || live.gameState?.isCompleted) return report;
+        // Reports must not bypass the live hidden-info subscription/seated-staff restrictions.
+        const { neighborChatContext, ...summary } = report;
+        if (report.neighborMessageId) {
+          summary.comment = "Neighbor Chat evidence is available after the game.";
+          summary.reportedPlayer = "Hidden during play";
+          summary.reportingPlayer = "Hidden during play";
+        }
+        return summary;
+      })
+    );
+  } catch (err) {
+    console.log(err, "err retrieving player reports");
+    socket.emit("sendAlert", "Unable to load reports right now.");
+  }
 };
 
 /**

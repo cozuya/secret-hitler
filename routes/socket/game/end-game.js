@@ -19,6 +19,7 @@ const { CURRENT_SEASON_NUMBER: CURRENTSEASONNUMBER, CURRENT_SEASON_FIELDS } = re
 const { LineGuess } = require("../util");
 const { checkBadgesELO, checkBadgesXP } = require("../badges");
 const { shouldSurviveEmptyPregame, ensureNewPlayerLobby } = require("../system-lobbies/new-player");
+const { publicChats } = require("../neighbor-chat");
 
 // XP award + rainbow promotion, shared by the ranked and silent/practice end-game paths so the
 // amount and the >=10 rainbow threshold can't drift apart between them again. The amount comes from
@@ -64,7 +65,8 @@ const generateGameObject = (game) => {
       merlinGuesses: objMap(game?.merlinGuesses, (_, g) => g),
       playerChats: game?.general?.playerChats,
       neighborChat: game?.general?.neighborChat,
-      chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
+      chats: publicChats(game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats)),
+      neighborChats: game?.private?.neighborChats || [],
       hiddenInfoChat: game?.private?.hiddenInfoChat,
       isVerifiedOnly: game?.general?.isVerifiedOnly,
       season: CURRENTSEASONNUMBER,
@@ -117,7 +119,8 @@ const generateGameObject = (game) => {
     merlinGuesses: objMap(game?.merlinGuesses, (_, g) => g),
     playerChats: game?.general?.playerChats,
     neighborChat: game?.general?.neighborChat,
-    chats: game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats),
+    chats: publicChats(game?.chats?.concat(game?.private?.unSeatedGameChats)?.concat(game?.private?.replayGameChats)),
+    neighborChats: game?.private?.neighborChats || [],
     isVerifiedOnly: game?.general?.isVerifiedOnly,
     season: CURRENTSEASONNUMBER,
     losingPlayers: game?.publicPlayersState?.map((player) => ({

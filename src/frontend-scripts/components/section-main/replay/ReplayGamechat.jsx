@@ -5,6 +5,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 import { loadReplay, updateUser } from "../../../actions/actions";
 import { processEmotes } from "../../../emotes";
 import { PLAYERCOLORS } from "../../../constants";
+import NeighborChatReport from "../../reusable/NeighborChatReport";
 
 const mapDispatchToProps = (dispatch) => ({
   loadReplay: (summary) => dispatch(loadReplay(summary)),
@@ -241,6 +242,9 @@ class ReplayGamechat extends React.Component {
                   return chatSegment.text;
                 })}
               </span>
+              {chat.neighborChat?.id && (
+                <NeighborChatReport chat={chat} username={userInfo.userName} gameUid={gameInfo.general?.uid} />
+              )}
             </div>
           ) : chat.isRemainingPolicies ? (
             <div className={"item game-chat"} key={i}>

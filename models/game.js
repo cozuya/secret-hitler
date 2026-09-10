@@ -28,6 +28,7 @@ const Game = new Schema({
   isVerifiedOnly: Boolean,
   chats: Array,
   hiddenInfoChat: Array,
+  neighborChats: Array, // Restricted conversation history; never emit the raw archive to a replay viewer.
   guesses: {
     type: Map,
     of: String,

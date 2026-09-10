@@ -21,7 +21,7 @@ describe("Creategame", () => {
     expect(component.state("neighborChat")).toBe(false);
     expect(option().find(Switch).prop("checked")).toBe(false);
     expect(option().find("h4").text()).toBe(
-      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards."
+      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible only to you, your neighbor, and authorized moderators, including after the game."
     );
     component.instance().createNewGame();
     expect(socket.emit).toHaveBeenLastCalledWith("addNewGame", expect.objectContaining({ neighborChat: false }));

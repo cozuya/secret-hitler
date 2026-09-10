@@ -52,6 +52,42 @@ describe("Gamechat", () => {
     expect(neighbor.find(".chat-role--neighbor-chat").text().trim()).toBe("hello");
     expect(chats.find(".item.game-chat").not(".neighbor-chat").text()).toBe("An ordinary game message.");
   });
+
+  it("mutes Neighbor Chat separately from public chat filters", () => {
+    const socket = { on: jest.fn(), emit: jest.fn() };
+    const component = shallowWithStore(
+      <Gamechat
+        userInfo={{ userName: "Recipient", isSeated: true, gameSettings: {} }}
+        userList={{ list: [] }}
+        allEmotes={{}}
+        socket={socket}
+        gameInfo={{
+          general: { uid: "table", neighborChat: true },
+          gameState: { isTracksFlipped: true },
+          publicPlayersState: [],
+          chats: [],
+        }}
+      />,
+      createMockStore({ notesActive: false })
+    ).dive({ disableLifecycleMethods: true });
+    const button = component.find("button[aria-pressed]");
+    expect(button.text()).toBe("Mute Neighbor Chat");
+    button.simulate("click");
+    expect(socket.emit).toHaveBeenCalledWith(
+      "muteNeighborChat",
+      { gameUid: "table", muted: true },
+      expect.any(Function)
+    );
+    expect(component.state("showPlayerChat")).toBe(true);
+    component.setProps({ gameInfo: { ...component.instance().props.gameInfo, neighborChatMuted: true } });
+    expect(component.find("button[aria-pressed]").text()).toBe("Unmute Neighbor Chat");
+    component.find("button[aria-pressed]").simulate("click");
+    expect(socket.emit).toHaveBeenLastCalledWith(
+      "muteNeighborChat",
+      { gameUid: "table", muted: false },
+      expect.any(Function)
+    );
+  });
 });
 
 describe.each([

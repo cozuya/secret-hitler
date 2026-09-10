@@ -299,7 +299,7 @@ class Tracks extends React.Component {
     if (game.neighborChat) {
       neighborChat = <i className="exchange icon" />;
       neighborChatTooltip =
-        "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards.";
+        "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible only to you, your neighbor, and authorized moderators, including after the game.";
     }
 
     if (game.unlistedGame) {

@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 
 const GameSummary = require("../models/game-summary");
 const Game = require("../models/game");
+const { replayForViewer } = require("../routes/socket/neighbor-chat");
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
@@ -37,7 +38,9 @@ GameSummary.find(JSON.parse(process.argv[4]) || {})
       .lean()
       .limit(1)
       .cursor()
-      .eachAsync((game) => {
+      .eachAsync((savedGame) => {
+        // Public downloads must obey the same private-chat boundary as the replay endpoint.
+        const game = replayForViewer(savedGame);
         delete game._id;
         delete game.__v;
         const usernameToSeat = {};

@@ -100,6 +100,9 @@ module.exports.sendInProgressGameUpdate = (game, noChats = false) => {
   playerSockets.forEach((sock) => {
     const _game = Object.assign({}, game);
     const { user } = sock.handshake.session.passport;
+    _game.neighborChatMuted = Boolean(
+      game.private.seatedPlayers?.find((player) => player.userName === user)?.neighborChatMuted
+    );
     // Send only this player's vote so a board remount or reconnect can restore the control.
     _game.remakeStatus = Boolean(game.remakeData && game.remakeData.find((p) => p.userName === user)?.isRemaking);
 

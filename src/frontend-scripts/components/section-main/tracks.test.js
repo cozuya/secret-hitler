@@ -32,7 +32,7 @@ describe("Tracks", () => {
     expect(popup.prop("trigger").type).toBe("i");
     expect(popup.prop("inverted")).toBe(true);
     expect(popup.prop("content")).toBe(
-      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible to you, your neighbor, and authorized moderators during the live game, and to everyone in the replay afterwards."
+      "Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are visible only to you, your neighbor, and authorized moderators, including after the game."
     );
   });
 
