@@ -82,7 +82,7 @@
     "semantic-ui-transition": "^2.2.9",
     "semantic-ui-visibility": "^2.2.9",
     "serve-favicon": "^2.4.2",
-    "socket.io": "2.4.1",
+    "socket.io": "2.5.1",
     "socket.io-client": "2.5.0",
     "sweetalert2": "9.10.9",
     "tempy": "^1.0.1",
