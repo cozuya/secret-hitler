@@ -109,7 +109,7 @@
     "oxlint": "^1.61.0",
     "redux-test-utils": "^0.3.0",
     "sass": "^1.90.0",
-    "vite": "^8.0.16"
+    "vite": "^8.1.6"
   },
   "scripts": {
     "prepare": "husky && npm-run-all --parallel build-css:dark build-css:web",
