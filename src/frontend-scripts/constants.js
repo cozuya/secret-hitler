@@ -77,6 +77,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
       vig: user.userName === "Vig" && user.staffRole === "admin",
       carl: user.userName === "carlgauss" && user.staffRole === "admin",
       rose: user.userName === "Sorrose" && user.staffRole === "admin",
+      nixon: user.userName === "SadNixon" && user.staffRole === "admin",
     });
   } else if (
     user.isContributor &&
