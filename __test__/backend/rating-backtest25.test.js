@@ -10,6 +10,7 @@ jest.mock("../../routes/socket/rating/ranked", () => {
 const { MongoClient } = require("mongodb");
 const { computeRankedUpdates } = require("../../routes/socket/rating/ranked");
 const { fascistWinPrior } = require("../../routes/socket/rating/bias");
+const { STARTING_PUBLIC_RATING } = require("../../routes/socket/rating/public-ladder");
 const GameSummary = require("../../models/game-summary");
 const {
   DEFAULTS,
@@ -44,7 +45,7 @@ it("drives production updates and persists exactly their public/hidden outputs i
   expect(computeRankedUpdates).toHaveBeenCalledTimes(1);
   expect(computeRankedUpdates.mock.results[0].value).toBe(updates);
   for (const player of players) {
-    expect(player.elo).toBe(1500 + updates[player.username].change);
+    expect(player.elo).toBe(STARTING_PUBLIC_RATING + updates[player.username].change);
     expect(player.rating.overall).toEqual(updates[player.username].overall);
     expect(player.games).toBe(1);
   }
@@ -89,7 +90,7 @@ it("keeps a balanced elite lobby's public movement equal to an ordinary lobby at
   const ordinary = focusTrial({ ...options, trueMu: 25, initialMu: 25 });
   const elite = focusTrial({ ...options, trueMu: 45, initialMu: 45, peerMu: 45, initialPublic: 2200 });
   expect(elite.focusDeltas).toEqual(ordinary.focusDeltas);
-  expect(elite.final.publicRating - ordinary.final.publicRating).toBe(700);
+  expect(elite.final.publicRating - ordinary.final.publicRating).toBe(2200 - STARTING_PUBLIC_RATING);
   expect(elite.final.wins).toBe(ordinary.final.wins);
   expect(elite.focusDeltas.count).toBe(100);
 });

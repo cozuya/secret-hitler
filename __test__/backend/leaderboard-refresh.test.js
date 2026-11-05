@@ -7,7 +7,7 @@ const day = 24 * 60 * 60 * 1000;
 
 const player = (username, overrides = {}) => ({
   username,
-  eloSeason: 1500,
+  eloSeason: 1600,
   eloOverall: 2200,
   xpSeason: 0,
   [fields.wins]: 10,
@@ -115,13 +115,13 @@ it("restores the seasonal row on the next refresh after ranked play, but not aft
   expect(names((await refresh()).seasonalLeaderboardElo)).toEqual([row.username]);
 });
 
-it("uses 1500/0 absent baselines, preserves zero/negative baselines and rolls before publication", async () => {
+it("uses 1600/0 absent baselines, preserves zero/negative baselines and rolls before publication", async () => {
   const rows = [
     player("launch"),
-    player("first-win", { eloSeason: 1520, xpSeason: 2 }),
+    player("first-win", { eloSeason: 1620, xpSeason: 2 }),
     player("zero-baseline", { eloSeason: 20, previousDayElo: 0 }),
     player("negative-baseline", { eloSeason: -80, previousDayElo: -100 }),
-    player("bad-baseline", { eloSeason: 1520, previousDayElo: NaN, xpSeason: 1, previousDayXP: Infinity }),
+    player("bad-baseline", { eloSeason: 1620, previousDayElo: NaN, xpSeason: 1, previousDayXP: Infinity }),
     player("banned", { isBanned: true }),
     player("old-activity", { lastCompletedGame: new Date(nowMs - day - 1), previousDayElo: 1200 }),
   ];
@@ -216,7 +216,7 @@ it("publishes an empty seasonal snapshot at cutover instead of retaining the S24
       [fields.wins]: 0,
       [fields.losses]: 0,
       lastRankedGameAt: undefined,
-      previousDayElo: 1500,
+      previousDayElo: 1600,
       previousDayXP: 0,
     }),
   ];

@@ -15,8 +15,8 @@ This is the current runbook. The [S24 runbook](season-24-cutover-runbook.md) is 
 1. Restore the backup to an isolated staging database. Disable game creation **and remakes**, drain all live games, then stop every writer: game servers, registration, administrative account changes, moderation jobs and the leaderboard cron. Run only one cutover process. Do not rely on the migration's comparison checks as a substitute for this drain.
 2. Run read-only rehearsal in the foreground:
 
-   ~~~powershell
-   rtk node scripts/seasonCutover25.js --dry-run
+   ~~~sh
+   node scripts/seasonCutover25.js --dry-run
    ~~~
 
    Dry-run is also the default. It creates no archive, index or marker and performs no database writes. Unknown/repeated/conflicting flags fail before connection.
@@ -24,8 +24,8 @@ This is the current runbook. The [S24 runbook](season-24-cutover-runbook.md) is 
 4. Inspect the **report-only** award scenario for existing 1737 / 1767 / 1822 thresholds, with exclusive bronze/silver/gold counts and banned/invalid exclusions. This adopts no policy and writes no awards. S25 launch does not wait for new S24 award thresholds.
 5. After accepting the rehearsal evidence and repair counts, apply on staging:
 
-   ~~~powershell
-   rtk node scripts/seasonCutover25.js --apply
+   ~~~sh
+   node scripts/seasonCutover25.js --apply
    ~~~
 
    Require exit 0, zero failures and phase complete. Setup/archive/source/reset errors produce failure totals and nonzero exit. Do not promote a partial result.
@@ -42,8 +42,8 @@ The native-driver script uses projected raw documents, not Mongoose defaults. It
 - Snapshots retain stable ID/name/hashUid, public and raw hidden state/version, S23 snapshots, S1–S25 counters, XP/Rainbow, activity, game references, ban/staff/verification, max/history, percentiles, baselines, badges and relevant award/visibility settings. Authentication secrets, IPs and private notes are excluded. Future policies needing other facts still require the full backup.
 - All snapshots, count/digest and uninitialized source accounts must verify before the captured manifest allows the first reset. Existing archive records are compared/reused, never overwritten.
 - Each reset uses captured field values/existence in an atomic compare-and-set filter and stamps ratingVersion 25 in that same update. Drift, missing/corrupt capture, changed membership, future/unknown markers or unmarked S25 activity fails closed. A partial reset resumes only unfinished accounts.
-- Reset eloSeason to **1500**, xpSeason to **0**, isRainbowSeason to **false**, seasonal percentile to **null**, previousDayElo/XP to **1500/0**, and the four S25 counters to **0**. Unset lastRankedGameAt, without backfilling from lastCompletedGame.
-- Preserve every finite numeric eloOverall (including zero/negative), every valid lifetime mu/sigma pair (including sigma zero), historical counters, lifetime XP/Rainbow, max/history, awards/badges and other settings. Invalid/absent public overall initializes to 1500 after capture and is counted.
+- Reset eloSeason to **1600**, xpSeason to **0**, isRainbowSeason to **false**, seasonal percentile to **null**, previousDayElo/XP to **1600/0**, and the four S25 counters to **0**. Unset lastRankedGameAt, without backfilling from lastCompletedGame.
+- Preserve every finite numeric eloOverall (including zero/negative), every valid lifetime mu/sigma pair (including sigma zero), historical counters, lifetime XP/Rainbow, max/history, awards/badges and other settings. Invalid/absent public overall initializes to 1600 after capture and is counted.
 - If hidden lifetime state is unusable, R1 preserves the established inverse soft seed from positive finite overall; otherwise use fresh mu 25 / sigma 25/3. No global assumption about what S24 ran controls this choice.
 - Retired raw rating.season/display data remains in Mongo and the archive. The S25 schema no longer admits new writes to those paths; the cutover does not destructively unset them.
 - **No S24 awards are assigned.** Completed state is a verified zero-write no-op on later runs, not another seasonal reset.
@@ -58,8 +58,8 @@ After the staging evidence and code are reviewed, the operator repeats the rehea
 4. Load the reviewed S25 code and refresh process/account/user-list state while traffic remains closed. Do not run the old S24 cron again.
 5. Regenerate the leaderboard snapshot against reset S25 state:
 
-   ~~~powershell
-   rtk node scripts/retrieveLeaderboardData.js
+   ~~~sh
+   node scripts/retrieveLeaderboardData.js
    ~~~
 
    It must replace leaderboards/current, even with an empty Seasonal Elo board. Until someone has 20 S25 ranked games, that empty board is correct. Daily reset movement should be zero. Existing lifetime recent-Rainbow rows may remain; seasonal XP starts empty.

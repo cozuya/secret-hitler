@@ -1,5 +1,7 @@
 # Season 25 ranked system — design, acceptance and deployment
 
+> **Owner decision (2026-11-05):** the S25 starting public rating is **1600**, not 1500, matching S24's start and the existing name-color scale. Only `STARTING_PUBLIC_RATING` changed; movement (20 ± 4, bounded 16–24) is unchanged. Backtest result docs predate this and still show a 1500 base.
+
 This is the consolidated design **as implemented**, relative to base commit e7d4e0fcb824cc8e220d95f864342414f9df30cd. It describes a reviewable working tree, not a deployment or declaration of target completion. All changes remain unstaged; humans decide what to record and deploy.
 
 **Production-state determination (§2.1) remains unresolved. MONGO_URL was absent in every Worker pass. No production query, migration, dry-run or write occurred.** All backtest results are synthetic. Passing tests do not establish what S24 ran or prove native Mongo/socket behavior.
@@ -36,7 +38,7 @@ The lifetime hidden estimator and public ladder have separate responsibilities:
 The policy lives only in routes/socket/rating/public-ladder.js:
 
 ~~~text
-STARTING_PUBLIC_RATING = 1500
+STARTING_PUBLIC_RATING = 1600
 PUBLIC_DELTA_CENTER = 20
 MAX_MATCHUP_ADJUSTMENT = 4
 MATCHUP_MODIFIER_SCALE = 16
@@ -47,9 +49,9 @@ delta = won ? 20 + modifier : -(20 - modifier)
 
 JavaScript Math.round supplies the tie behavior. Nonfinite/non-number expectation falls back to 0.5; finite out-of-range input remains clamped. Wins are +16…+24 and losses −24…−16, including Rainbow. The two public tracks receive the same signed amount per game; only their prior totals differ.
 
-Every faction member receives that faction's same award. No guns, investigations, policies, role card within a faction, chat or other individual contribution affects public points. The engine uses the full seated roster and **pre-game** hidden state; post-game mu cannot feed that game's modifier. Missing/nonfinite public totals start at 1500; finite zero/negative totals are valid. Public scores have no floor or decay.
+Every faction member receives that faction's same award. No guns, investigations, policies, role card within a faction, chat or other individual contribution affects public points. The engine uses the full seated roster and **pre-game** hidden state; post-game mu cannot feed that game's modifier. Missing/nonfinite public totals start at 1600; finite zero/negative totals are valid. Public scores have no floor or decay.
 
-New accounts may have absent public schema fields until first rating; their public presentation and first-game baseline are 1500. maxElo's absent schema default is 1500; existing finite maxima and pastElo history are retained.
+New accounts may have absent public schema fields until first rating; their public presentation and first-game baseline are 1600. maxElo's absent schema default is 1600; existing finite maxima and pastElo history are retained.
 
 ## 3. Exact hidden model, normalization and priors
 
@@ -129,7 +131,7 @@ The [operator runbook](season-25-cutover-runbook.md) is the authoritative curren
 
 Before any reset it captures **every** closing account in season24ClosingAccounts and verifies an ordered count/digest in seasonCutoverState / season24-to-25. Snapshots preserve raw public/hidden/version/history/counter/activity/award inputs and stable identity; no top-N truncation. Capture failure, source drift or missing/corrupt archive prevents resets. Atomic per-account compare-and-set and completion markers make interrupted resets resumable without erasing later S25 activity. This requires an offline fully drained database; it is not a writer lock.
 
-Apply resets seasonal public to 1500, season XP/Rainbow/percentile, daily baselines to 1500/0 and S25 counters to zero; lastRankedGameAt is initially unset. Finite public overall, valid lifetime hidden state, historical counters, lifetime progression, max/history and awards remain. Absent/nonfinite overall initializes to 1500 after capture and is reported. R1 handles only unusable hidden pairs.
+Apply resets seasonal public to 1600, season XP/Rainbow/percentile, daily baselines to 1600/0 and S25 counters to zero; lastRankedGameAt is initially unset. Finite public overall, valid lifetime hidden state, historical counters, lifetime progression, max/history and awards remain. Absent/nonfinite overall initializes to 1600 after capture and is reported. R1 handles only unusable hidden pairs.
 
 Dry-run reports S24 distribution and the existing 1737/1767/1822 award-count scenario with zero awards written. **No new threshold or award assignment exists here.** S25 initialization does not depend on resolving medals. The immutable archive and full backup preserve evidence for a separate owner-approved award procedure.
 
@@ -139,9 +141,9 @@ Dry-run reports S24 distribution and the existing 1737/1767/1822 award-count sce
 
 The first 10 current-season ranked games are provisional (0–9). A compact accessible P appears beside seasonal Elo in both player-list layouts, disappearing after game 10. Overall scores and win/loss surfaces do not receive it.
 
-Main Seasonal Elo requires at least 20 current-season wins+losses, ranked activity within an inclusive 14-day window and no truthy ban. Malformed counters/activity fail closed. The old >1620 floor and lifetime games.2 gate are removed; finite 1500, zero and negative scores can qualify. No stored rating decays. A returning ranked player reappears at the next successful cron refresh, not immediately. Casual/practice activity alone cannot restore this board.
+Main Seasonal Elo requires at least 20 current-season wins+losses, ranked activity within an inclusive 14-day window and no truthy ban. Malformed counters/activity fail closed. The old >1620 floor and lifetime games.2 gate are removed; finite 1600, zero and negative scores can qualify. No stored rating decays. A returning ranked player reappears at the next successful cron refresh, not immediately. Casual/practice activity alone cannot restore this board.
 
-Daily Elo/XP deliberately uses lastCompletedGame, retaining nonranked XP behavior. Missing/nonfinite Elo baseline uses 1500; finite zero/negative baselines survive. XP baseline is zero. The cron streams account scans, keeps each board's top 20, awaits baseline saves, then publishes leaderboards/current. Individual baseline-save failures remain logged/isolated; publication failure fails the invocation.
+Daily Elo/XP deliberately uses lastCompletedGame, retaining nonranked XP behavior. Missing/nonfinite Elo baseline uses 1600; finite zero/negative baselines survive. XP baseline is zero. The cron streams account scans, keeps each board's top 20, awaits baseline saves, then publishes leaderboards/current. Individual baseline-save failures remain logged/isolated; publication failure fails the invocation.
 
 Seasonal XP retains xpSeason > 10, recent Rainbow retains lifetime achievement/date ordering, and both exclude banned users. Removing the shared three-lifetime-game gate also removes that incidental restriction from these two progression boards. Neither is governed by ranked 20-game/14-day qualification.
 
@@ -188,18 +190,18 @@ Every remaining source 1600 category is intentional:
 
 D3 threshold consumers remain: ELO_BADGES in routes/socket/badges.js uses overall public values at 1800–2300; create-game.js rejects when either public score falls below the requested minimum, while join-game.js and Players.jsx admit when either score meets it. Creategame.jsx presets/slider/validation retain 1600–2100. Tracks.jsx displays the stored lobby minimum. Profile/player/chat badge, color and medal displays keep their existing scales and historical award meanings.
 
-After the seasonal reset, an established overall score can preserve join access while creation still fails its other-track comparison. The creator slider can have maximum below minimum when seasonal is 1500; R4 deliberately defers that repair. Badges may become easier to accumulate through volume and colors saturate at their existing upper stops; neither authorizes threshold changes.
+After the seasonal reset, an established overall score can preserve join access while creation still fails its other-track comparison. The creator slider can have maximum below minimum when seasonal is at the 1600 start; R4 deliberately defers that repair. Badges may become easier to accumulate through volume and colors saturate at their existing upper stops; neither authorizes threshold changes.
 
 ## 9. Deliberate behavior changes visible to players
 
 Relative to the base branch, not a claim about unknown production deployment:
 
 - Ranked Elo becomes bounded faction-uniform accumulated points, replacing hidden-display jumps; overall and seasonal per-game changes match. Rainbow no longer multiplies hidden/public rating evidence.
-- S25 seasonal public scores reset to 1500 with new seasonal counters/XP/Rainbow state; finite overall scores and lifetime hidden knowledge remain.
+- S25 seasonal public scores reset to 1600 with new seasonal counters/XP/Rainbow state; finite overall scores and lifetime hidden knowledge remain.
 - Public score can keep climbing through accumulated results or fall below zero; high score alone does not shrink an award. Favoritism can still mean +16/−24 and 60% break-even.
 - Seasonal board requires 20 games and ranked activity within 14 days, removes the old score/lifetime-array floors, and restores visibility on the next cron without decay.
 - Seasonal scores display P until 10 ranked games; XP/recent-Rainbow boards lose the incidental three-lifetime-game floor.
-- Absent maxElo defaults to 1500. Missing public display/summary values now use 1500 rather than 1600; finite zero/negative scores display correctly.
+- Absent maxElo defaults to 1600. Missing public display/summary values use 1600 (same as S24); finite zero/negative scores display correctly.
 - New games, current-season settings/user-list/moderation access use S25 counters while historical counters remain. Malformed completion containers release the table without fabricated account updates; unresolved accounts retain team shape.
 - S24 medals are deferred pending a separate owner decision; existing award/badge state is preserved, not re-awarded automatically.
 

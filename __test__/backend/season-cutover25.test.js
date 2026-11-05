@@ -145,7 +145,7 @@ describe("S25 offline cutover", () => {
     expect(result).toMatchObject({ failures: 0, reset: 12, phase: "complete" });
     expect(fixture.rows[STATE_COLLECTION][0]._id).toBe(STATE_ID);
     fixture.rows.accounts.forEach((account, i) => {
-      expect(account.eloSeason).toBe(1500);
+      expect(account.eloSeason).toBe(1600);
       expect(account.eloOverall).toBe(original[i].eloOverall);
       expect(account.rating).toEqual(original[i].rating);
       expect(account.ratingVersion).toBe(VERSION);
@@ -154,7 +154,7 @@ describe("S25 offline cutover", () => {
       expect(account.isRainbowSeason).toBe(false);
       expect(account.isRainbowOverall).toBe(true);
       expect(account.eloPercentile).toEqual({ seasonal: null, overall: 0.8 });
-      expect(account.previousDayElo).toBe(1500);
+      expect(account.previousDayElo).toBe(1600);
       expect(account.previousDayXP).toBe(0);
       expect(account.lastRankedGameAt).toBeUndefined();
       expect(account.lastCompletedGame).toEqual(original[i].lastCompletedGame);
@@ -213,8 +213,8 @@ describe("S25 offline cutover", () => {
     });
     fixture.rows.accounts.forEach((account, i) => {
       expect(account.rating.overall).toMatchObject(resolveHiddenRating(original[i]));
-      expect(account.eloOverall).toBe(Number.isFinite(original[i].eloOverall) ? original[i].eloOverall : 1500);
-      expect(account.eloSeason).toBe(1500);
+      expect(account.eloOverall).toBe(Number.isFinite(original[i].eloOverall) ? original[i].eloOverall : 1600);
+      expect(account.eloSeason).toBe(1600);
       expect(account.ratingVersion).toBe(VERSION);
       if (original[i].rating?.season) expect(account.rating.season).toEqual(original[i].rating.season);
     });
@@ -402,7 +402,7 @@ describe("cutover per-account evidence and reporting", () => {
     if (update.$set.rating) expect(update.$set.rating).toEqual({ overall: resolveHiddenRating(account) });
     if (hiddenWrites["rating.overall"]) expect(hiddenWrites["rating.overall"]).toEqual(resolveHiddenRating(account));
     if (Number.isFinite(account.eloOverall)) expect(update.$set.eloOverall).toBeUndefined();
-    else expect(update.$set.eloOverall).toBe(1500);
+    else expect(update.$set.eloOverall).toBe(1600);
     if (account.rating?.season) expect(after.rating.season).toEqual(account.rating.season);
     if (account.rating?.overall?.display !== undefined)
       expect(after.rating.overall.display).toBe(account.rating.overall.display);

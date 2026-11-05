@@ -544,7 +544,7 @@ module.exports.completeGame = (game, winningTeamName) => {
             player.set("rating.overall.mu", ratingUpdate.overall.mu);
             player.set("rating.overall.sigma", ratingUpdate.overall.sigma);
             // Newly registered accounts have no public schema defaults yet. Preserve every finite
-            // score (including zero/negative totals); only an absent/unusable score starts at 1500.
+            // score (including zero/negative totals); only an absent/unusable score starts at the S25 starting rating (1600).
             const overallBefore = Number.isFinite(player.eloOverall) ? player.eloOverall : STARTING_PUBLIC_RATING;
             const seasonBefore = Number.isFinite(player.eloSeason) ? player.eloSeason : STARTING_PUBLIC_RATING;
             player.eloOverall = overallBefore + ratingUpdate.change;

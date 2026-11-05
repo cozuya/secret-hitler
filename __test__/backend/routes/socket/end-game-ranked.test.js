@@ -313,7 +313,7 @@ describe("S25 completeGame integration", () => {
     expect(deltaLines(game.private.replayGameChats).some((line) => line.chat[0].text === "player4")).toBe(false);
   });
 
-  it("starts absent public scores at 1500 while preserving finite zero/negative totals", async () => {
+  it("starts absent public scores at 1600 while preserving finite zero/negative totals", async () => {
     const accounts = makeAccounts();
     accounts[0].eloOverall = undefined;
     accounts[0].eloSeason = undefined;
@@ -322,8 +322,8 @@ describe("S25 completeGame integration", () => {
     accounts[1].eloSeason = -100;
     accounts[2].maxElo = 1830;
     await finish(makeGame(), accounts);
-    expect(accounts[0].eloOverall).toBeGreaterThanOrEqual(1476);
-    expect(accounts[0].eloOverall).toBeLessThanOrEqual(1484);
+    expect(accounts[0].eloOverall).toBeGreaterThanOrEqual(1576);
+    expect(accounts[0].eloOverall).toBeLessThanOrEqual(1584);
     expect(accounts[0].eloSeason).toBe(accounts[0].eloOverall);
     expect(Number.isFinite(accounts[0].rating.overall.mu)).toBe(true);
     expect(Number.isFinite(accounts[0].rating.overall.sigma)).toBe(true);

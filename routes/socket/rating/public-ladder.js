@@ -1,6 +1,6 @@
 // Season-25 public ladder policy. Hidden skill and XP have their own scales; neither multiplies
 // these points. Deploy the S25 runtime only with the corresponding offline cutover.
-const STARTING_PUBLIC_RATING = 1500;
+const STARTING_PUBLIC_RATING = 1600;
 const PUBLIC_DELTA_CENTER = 20;
 const MAX_MATCHUP_ADJUSTMENT = 4;
 const MATCHUP_MODIFIER_SCALE = 16;

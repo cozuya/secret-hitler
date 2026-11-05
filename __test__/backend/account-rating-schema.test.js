@@ -34,10 +34,10 @@ it("admits only lifetime mu/sigma on construction, set and save", async () => {
 });
 
 it("defaults absent maxElo to the public start while retaining explicit stored values", () => {
-  expect(STARTING_PUBLIC_RATING).toBe(1500);
-  expect(new Account({ username: "fresh" }).maxElo).toBe(1500);
+  expect(STARTING_PUBLIC_RATING).toBe(1600);
+  expect(new Account({ username: "fresh" }).maxElo).toBe(1600);
   // Mongoose also applies defaults on hydration of missing paths; this is not creation-only.
-  expect(Account.hydrate({ username: "old-without-max" }).maxElo).toBe(1500);
+  expect(Account.hydrate({ username: "old-without-max" }).maxElo).toBe(1600);
   for (const maxElo of [0, 1600, 2400, null]) {
     expect(Account.hydrate({ username: "stored-max", maxElo }).maxElo).toBe(maxElo);
   }

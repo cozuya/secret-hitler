@@ -8,7 +8,7 @@ import {
 
 describe("rating/public-ladder", () => {
   it("centralizes the approved S25 starting score and movement policy", () => {
-    expect(STARTING_PUBLIC_RATING).toBe(1500);
+    expect(STARTING_PUBLIC_RATING).toBe(1600);
     expect(PUBLIC_DELTA_CENTER).toBe(20);
     expect(MAX_MATCHUP_ADJUSTMENT).toBe(4);
     expect(MATCHUP_MODIFIER_SCALE).toBe(16);
