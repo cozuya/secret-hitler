@@ -88,7 +88,7 @@ module.exports.newStaff = {
 const staffList = (module.exports.staffList = []);
 
 module.exports.getStaffList = () => {
-  Account.find({ staffRole: { $exists: true } })
+  Account.find({ staffRole: { $exists: true } }, "username staffRole", { lean: true })
     .then((accounts) => {
       // Mutate the existing array in place — user-requests.js destructures this reference at
       // require time, so reassigning module.exports.staffList here would leave consumers stale

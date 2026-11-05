@@ -233,7 +233,7 @@ const getSocketPacketContext = (socket, packet) => {
 };
 
 const gatherStaffUsernames = () => {
-  Account.find({ staffRole: { $exists: true } })
+  Account.find({ staffRole: { $exists: true } }, "username staffRole", { lean: true })
     .then((accounts) => {
       modUserNames = accounts.filter((account) => account.staffRole === "moderator").map((account) => account.username);
       editorUserNames = accounts.filter((account) => account.staffRole === "editor").map((account) => account.username);
@@ -751,7 +751,10 @@ module.exports.socketRoutes = () => {
           if (authenticated && (isAEM || (isTourneyMod && game?.general?.unlistedGame))) {
             if (game && game.private && game.private.seatedPlayers) {
               const players = game.private.seatedPlayers.map((player) => player.userName);
-              Account.find({ staffRole: { $exists: true, $ne: "veteran" } })
+              // Only username/staffRole are needed. Without the projection + lean this hydrated every
+              // past/present staff account in full (~540 docs incl. game/IP history, ~16MB) on each click,
+              // stalling the single web process for every player.
+              Account.find({ staffRole: { $exists: true, $nin: ["veteran", ""] } }, "username staffRole", { lean: true })
                 .then((accounts) => {
                   // Block the peek when a seated player is AEM staff (a non-veteran staffRole): a mod
                   // shouldn't read the mod chat of a game staff are playing in. Expression body on
