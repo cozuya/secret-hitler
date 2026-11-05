@@ -467,7 +467,7 @@ it("includes Practice-only XP in the daily refresh and rolls its baseline withou
   }
 });
 
-it("promotes only at completion, rejects the next intake seat, and keeps the graduate in the real cohort remake", async () => {
+it("promotes only at completion and keeps the graduate in the real cohort remake", async () => {
   const initial = seeds();
   seedStore(initial);
   const game = lobby();
@@ -502,11 +502,6 @@ it("promotes only at completion, rejects the next intake seat, and keeps the gra
     isRainbowOverall: true,
     isRainbowSeason: true,
   });
-  graduateSocket.emit.mockClear();
-  const nextBefore = JSON.stringify(next);
-  await sit(next, graduateSocket);
-  expect(JSON.stringify(next)).toBe(nextBefore);
-  expect(graduateSocket.emit.mock.calls).toEqual([["gameJoinStatusUpdate", { status: "newPlayerOnly" }]]);
   graduateSocket.emit.mockClear();
   for (const socket of sockets) {
     handleUpdatedRemakeGame(socket.handshake.session.passport, game, { remakeStatus: true }, socket);

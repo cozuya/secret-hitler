@@ -564,10 +564,10 @@ const DisplayLobbies = (props) => {
                   {game.systemLobby === "new-player" && game.gameStatus === "notStarted" && (
                     <span
                       className="ui mini teal label"
-                      data-tooltip="Earn XP toward Rainbow in this new-player Practice game."
+                      data-tooltip="Always-open Practice game, great for newer players. Earns XP, no Elo."
                       data-inverted=""
                     >
-                      Path to Rainbow
+                      New players welcome
                     </span>
                   )}
                   {userInfo.staffRole && userInfo.staffRole !== "altmod" && userInfo.staffRole !== "veteran" && (

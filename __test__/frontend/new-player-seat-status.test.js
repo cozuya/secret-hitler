@@ -33,7 +33,6 @@ afterEach(() => {
 });
 
 it.each([
-  ["newPlayerOnly", "This game is reserved for players who haven't reached Rainbow yet."],
   ["blacklisted", "This game's creator has you blacklisted."],
 ])("shows the corresponding rejection modal for %s", (status, message) => {
   const onStatus = socket.on.mock.calls.find(([event]) => event === "gameJoinStatusUpdate")[1];
@@ -49,6 +48,7 @@ it.each([
 it("ignores unknown statuses and removes the listener on unmount", () => {
   const onStatus = socket.on.mock.calls.find(([event]) => event === "gameJoinStatusUpdate")[1];
   onStatus({ status: "unknown" });
+  onStatus({ status: "newPlayerOnly" });
   expect($.fn.modal).not.toHaveBeenCalled();
   wrapper.unmount();
   expect(socket.off).toHaveBeenCalledWith("gameJoinStatusUpdate");

@@ -70,8 +70,6 @@ class Players extends React.Component {
     socket.on("gameJoinStatusUpdate", (data) => {
       if (data.status === "blacklisted") {
         $(this.blacklistModal).modal("show");
-      } else if (data.status === "newPlayerOnly") {
-        $(this.newPlayerOnlyModal).modal("show");
       }
     });
   }
@@ -785,15 +783,6 @@ class Players extends React.Component {
           }}
         >
           <div className="ui header">This game's creator has you blacklisted.</div>
-        </div>
-
-        <div
-          className="ui basic small modal"
-          ref={(c) => {
-            this.newPlayerOnlyModal = c;
-          }}
-        >
-          <div className="ui header">This game is reserved for players who haven't reached Rainbow yet.</div>
         </div>
 
         <div

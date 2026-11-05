@@ -92,11 +92,11 @@ describe("DisplayLobbies", () => {
     expect(row.find(".gamename-column").text()).not.toContain("Created by:");
   });
 
-  it("adds the path-to-Rainbow label alongside the existing name, Practice icon and range", () => {
+  it("adds the new-players-welcome label alongside the existing name, Practice icon and range", () => {
     const row = renderRow();
     const label = row.find(".gamename-column .ui.mini.teal.label");
-    expect(label.text()).toBe("Path to Rainbow");
-    expect(label.prop("data-tooltip")).toBe("Earn XP toward Rainbow in this new-player Practice game.");
+    expect(label.text()).toBe("New players welcome");
+    expect(label.prop("data-tooltip")).toBe("Always-open Practice game, great for newer players. Earns XP, no Elo.");
     expect(row.find(".gamename-column").text()).toContain("New Player Game");
     expect(row.find(".options-icons-container .chess.icon")).toHaveLength(1);
     expect(row.find(".allowed-players").text().trim()).toBe("5-7");

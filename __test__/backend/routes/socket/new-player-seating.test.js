@@ -124,45 +124,23 @@ it("seats a non-Rainbow account using the flag alone and runs the normal status/
   expect(game.general.status).toBe("Game starts in 20 seconds.");
 });
 
-it.each([0, 4, 5])("rejects a Rainbow account without changing a %i-seat game or its timers/lists", async (count) => {
+it.each([0, 4, 5])("seats a Rainbow account like anyone else in a %i-seat New Player Game", async (count) => {
   const game = initialLobby();
   await fill(game, count);
-  const { socket, user } = connect({ isRainbowOverall: true, xpOverall: 0, wins: 0, losses: 0 });
-  models.gameListEmitter.send = false;
-  models.userListEmitter.send = false;
-  const before = JSON.stringify(game);
-  const players = game.publicPlayersState;
-  const timerCount = jest.getTimerCount();
-  // Wire fields cannot override the account lookup, even though the schema allows unknown fields.
-  await attemptSeat(game, socket, { isRainbowOverall: false, xpOverall: 0, systemLobby: false });
-  expect(Account.findOne).toHaveBeenLastCalledWith({ username: "Applicant" });
-  expect(JSON.stringify(game)).toBe(before);
-  expect(game.publicPlayersState).toBe(players);
-  expect(jest.getTimerCount()).toBe(timerCount);
-  expect(user.status).toEqual({ type: "none" });
-  expect(models.gameListEmitter.send).toBe(false);
-  expect(models.userListEmitter.send).toBe(false);
-  expect(socket.emit.mock.calls).toEqual([["gameJoinStatusUpdate", { status: "newPlayerOnly" }]]);
+  const { socket } = connect({ isRainbowOverall: true, xpOverall: 500 });
+  await attemptSeat(game, socket);
+  expect(game.publicPlayersState.map((player) => player.userName)).toContain("Applicant");
+  expect(game.publicPlayersState).toHaveLength(count + 1);
+  expect(socket.emit).toHaveBeenCalledWith("updateSeatForUser", true);
+  expect(socket.emit).not.toHaveBeenCalledWith("gameJoinStatusUpdate", expect.anything());
 });
 
-it.each([
-  "admin",
-  "editor",
-  "moderator",
-  "trialmod",
-  "veteran",
-  "altmod",
-])("does not allow a Rainbow %s or creator to bypass the gate", async (staffRole) => {
+it.each(["admin", "moderator", "veteran"])("seats a Rainbow %s in the New Player Game", async (staffRole) => {
   const game = initialLobby();
   const { socket } = connect({ isRainbowOverall: true, staffRole });
-  // Exercise both the account role and the legacy privilege lists; creator identity is no exception either.
-  models.newStaff.editorUserNames.push("Applicant");
-  models.newStaff.modUserNames.push("Applicant");
-  game.private.gameCreatorName = "Applicant";
-  const before = JSON.stringify(game);
   await attemptSeat(game, socket);
-  expect(JSON.stringify(game)).toBe(before);
-  expect(socket.emit.mock.calls).toEqual([["gameJoinStatusUpdate", { status: "newPlayerOnly" }]]);
+  expect(game.publicPlayersState.map((player) => player.userName)).toEqual(["Applicant"]);
+  expect(socket.emit).not.toHaveBeenCalledWith("gameJoinStatusUpdate", expect.anything());
 });
 
 it.each([false, true])("still seats Rainbow accounts in human rooms (Rainbow-only %s)", async (rainbowgame) => {
@@ -206,22 +184,15 @@ it("still applies the public-room new-account lockdown below three games", async
 it.each([
   undefined,
   "admin",
-])("lets a Rainbow observer watch and stay observing after refusal (role %s)", async (staffRole) => {
+])("lets a Rainbow observer watch and then take a seat (role %s)", async (staffRole) => {
   const game = initialLobby();
   const { socket, user } = connect({ isRainbowOverall: true, staffRole });
   global.io.sockets.adapter.rooms[game.general.uid] = { sockets: { [socket.id]: true } };
-  const before = JSON.stringify(game);
   sendGameInfo(socket, game.general.uid);
   expect(socket.join).toHaveBeenCalledWith(game.general.uid);
-  expect(socket.emit).toHaveBeenCalledWith("joinGameRedirect", game.general.uid);
-  const update = socket.emit.mock.calls.find(([event]) => event === "gameUpdate")[1];
-  expect(update.general.uid).toBe(game.general.uid);
-  expect(update).not.toHaveProperty("private");
-  expect(Account.findOne).not.toHaveBeenCalled();
   expect(user.status).toEqual({ type: "observing", gameId: game.general.uid });
   socket.emit.mockClear();
   await attemptSeat(game, socket);
-  expect(JSON.stringify(game)).toBe(before);
-  expect(user.status).toEqual({ type: "observing", gameId: game.general.uid });
-  expect(socket.emit.mock.calls).toEqual([["gameJoinStatusUpdate", { status: "newPlayerOnly" }]]);
+  expect(game.publicPlayersState.map((player) => player.userName)).toEqual(["Applicant"]);
+  expect(socket.emit).not.toHaveBeenCalledWith("gameJoinStatusUpdate", expect.anything());
 });

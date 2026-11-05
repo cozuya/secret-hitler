@@ -38,9 +38,9 @@ class Changelog extends React.Component {
 
         <ul>
           <li>
-            <strong>New Player Games:</strong> There&apos;s now a dedicated public Practice lobby for players who
-            haven&apos;t reached Rainbow. Games use standard rules and start with <strong>5–7 players</strong>, using
-            the normal countdown. A fresh lobby opens when each game starts. Earn the usual XP toward Rainbow without
+            <strong>New Player Games:</strong> There&apos;s now an always-open public Practice lobby, great for
+            newer players and open to everyone. Games use standard rules and start with <strong>5–7 players</strong>, using
+            the normal countdown. A fresh lobby opens when each game starts. Earn the usual XP without
             affecting your ranked ratings.
           </li>
           <li>
