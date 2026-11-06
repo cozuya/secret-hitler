@@ -125,13 +125,21 @@ export default class Game extends React.Component {
       }
     }
 
+    const isTournyRoundZero = gameInfo.general.isTourny && gameInfo.general.tournyInfo?.round === 0;
+
     // All players have left the game, so we will return the observer to the main screen.
+    // Only on the transition from a populated game to an empty one: opening a lobby that is
+    // already empty must not bounce the viewer. System lobbies (the New Player Game) exist with
+    // zero players by design, so they never redirect.
+    const playersLeftGame =
+      !gameInfo.general.systemLobby &&
+      !gameInfo.publicPlayersState.length &&
+      prevProps.gameInfo.general.uid === gameInfo.general.uid &&
+      Boolean(prevProps.gameInfo.publicPlayersState?.length);
+
     if (
-      (!gameInfo.publicPlayersState.length &&
-        !(gameInfo.general.isTourny && gameInfo.general.tournyInfo?.round === 0)) ||
-      (gameInfo.general.isTourny &&
-        gameInfo.general.tournyInfo?.round === 0 &&
-        !gameInfo.general.tournyInfo?.queuedPlayers?.length)
+      (playersLeftGame && !isTournyRoundZero) ||
+      (isTournyRoundZero && !gameInfo.general.tournyInfo?.queuedPlayers?.length)
     ) {
       window.location.hash = "#/";
     }
