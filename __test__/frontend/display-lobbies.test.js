@@ -36,4 +36,51 @@ describe("DisplayLobbies option icons", () => {
     expect(tooltipFor(wrapper, ".exchange.icon")).toMatch(/always casual/i);
     expect(tooltipFor(wrapper, ".exchange.icon")).toMatch(/seat number \(for example \/4\)/);
   });
+
+  describe("Neighbor Chat icon placement", () => {
+    // Each direct child span of the icon group, labelled by its icon (or "timer").
+    const iconOrder = (wrapper) =>
+      wrapper
+        .find(".options-icons-container")
+        .children()
+        .map((span) => {
+          if (span.find(".hourglass.icon").exists()) return "timer";
+          const icon = span.find("i").first();
+          return icon.exists() ? icon.prop("className").replace(/ icon$/, "") : span.text().trim();
+        });
+
+    it("sits inside the option icon group, next to the other mode icons and left of the timer", () => {
+      const wrapper = render(
+        row({
+          casualGame: true,
+          blindMode: true,
+          experiencedMode: true,
+          avalonSH: { withPercival: false },
+          noTopdecking: 1,
+          neighborChat: true,
+          timedMode: 120,
+          flappyMode: true,
+        })
+      );
+      expect(wrapper.find(".options-icons-container .exchange.icon")).toHaveLength(1);
+      expect(wrapper.find(".exchange.icon").closest(".options-icons-container")).toHaveLength(1);
+      expect(iconOrder(wrapper)).toEqual([
+        "handshake",
+        "hide",
+        "fast forward",
+        "shield",
+        "gavel",
+        "exchange",
+        "timer",
+        "plane",
+      ]);
+    });
+
+    it("stays directly left of the timer in a minimal Neighbor Chat row", () => {
+      const order = iconOrder(
+        render(row({ casualGame: true, experiencedMode: true, neighborChat: true, timedMode: 90 }))
+      );
+      expect(order).toEqual(["handshake", "fast forward", "exchange", "timer"]);
+    });
+  });
 });

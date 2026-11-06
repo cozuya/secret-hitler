@@ -331,6 +331,12 @@ const DisplayLobbies = (props) => {
             {noTopdecking}
           </span>
         )}
+        {/* Neighbor Chat is a game mode: keep it with the other mode icons, left of the timer. */}
+        {neighborChat && (
+          <span data-tooltip={neighborChatTooltip} data-inverted="">
+            {neighborChat}
+          </span>
+        )}
         {rainbowgame && (
           <span data-tooltip={rainbowgameTooltip} data-inverted="">
             {rainbowgame}
@@ -364,11 +370,6 @@ const DisplayLobbies = (props) => {
         {flappyOnlyMode && (
           <span data-tooltip={flappyOnlyModeTooltip} data-inverted="">
             {flappyOnlyMode}
-          </span>
-        )}
-        {neighborChat && (
-          <span data-tooltip={neighborChatTooltip} data-inverted="">
-            {neighborChat}
           </span>
         )}
         {unlistedGame && (

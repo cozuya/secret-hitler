@@ -32,6 +32,10 @@ class Changelog extends React.Component {
             <code>{"/N <message>"}</code> with a neighbor&apos;s seat number, for example <code>{"/4 hi"}</code>, as
             well as <code>/l</code> and <code>/r</code>. It only works for your nearest living neighbor on either side.
           </li>
+          <li>
+            <strong>Tidier game list:</strong> The Neighbor Chat icon now sits with the other game mode icons, left of
+            the timer.
+          </li>
         </ul>
 
         <hr style={{ width: "100%" }} />
