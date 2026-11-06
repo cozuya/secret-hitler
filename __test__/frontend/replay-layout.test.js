@@ -66,7 +66,7 @@ describe("previous-government marker placement", () => {
   const seat = (marker) => `
     <div class="player-container">
       <div class="player-number">1. Alpha</div>
-      ${marker ? `<span class="previous-government-token ${marker}"><span class="previous-government-prefix">Prev.</span><span class="previous-government-art"></span></span>` : ""}
+      ${marker ? `<span class="previous-government-token ${marker}"><span class="previous-government-art"></span><span class="previous-government-prefix">Prev.</span></span>` : ""}
       <div class="government-token isPendingPresident"></div>
       <div class="card-container"><i class="large file icon blacklist"></i></div>
     </div>`;
@@ -113,12 +113,20 @@ describe("previous-government marker placement", () => {
     expect(window.getComputedStyle(marker).pointerEvents).not.toBe("none");
   });
 
-  it("lets the Prev. label give way before the token art on narrow seats", () => {
+  it("drops the whole Prev. label, never the token art, when a seat is too narrow for both", () => {
+    const marker = window.getComputedStyle(host.querySelector(".previous-government-token"));
     const prefix = window.getComputedStyle(host.querySelector(".previous-government-prefix"));
     const art = window.getComputedStyle(host.querySelector(".previous-government-art"));
+    // The label is the later item, so it is the one that wraps onto the hidden second line.
+    expect(marker.flexWrap).toBe("wrap");
+    expect(marker.flexDirection).toBe("row-reverse");
+    expect(marker.overflow).toBe("hidden");
+    // One 16px line: a wrapped second line (the label) is clipped away.
+    expect(marker.height).toBe("16px");
+    // jsdom keeps the gap shorthand unexpanded; its first value is the row gap.
+    expect(px(marker.getPropertyValue("gap"))).toBeGreaterThanOrEqual(px(marker.height));
+    expect(prefix.flexShrink).toBe("0");
     expect(px(art.minWidth)).toBeGreaterThanOrEqual(20);
-    expect(px(prefix.minWidth)).toBe(0);
-    expect(Number(prefix.flexShrink)).toBeGreaterThan(Number(art.flexShrink));
   });
 
   it("keeps the blacklist icon at the top of the seat while the role card is hidden", () => {

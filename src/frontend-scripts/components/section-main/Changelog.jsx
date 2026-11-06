@@ -12,7 +12,7 @@ class Changelog extends React.Component {
         </div>
 
         <div className="ui header">
-          <p>Season 25 update</p>
+          <p>Season 25.1 update</p>
         </div>
         <ul>
           <li>
@@ -33,8 +33,8 @@ class Changelog extends React.Component {
             well as <code>/l</code> and <code>/r</code>. It only works for your nearest living neighbor on either side.
           </li>
           <li>
-            <strong>Tidier game list:</strong> The Neighbor Chat icon now sits with the other game mode icons, left of
-            the timer.
+            <strong>Tidier game list:</strong> The Neighbor Chat icon now appears next to the other game mode icons,
+            left of the timer, instead of after it.
           </li>
           <li>
             <strong>Previous government markers moved:</strong> The previous president and chancellor are now shown with

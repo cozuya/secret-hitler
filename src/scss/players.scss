@@ -188,16 +188,21 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			width: 100%;
 			height: 16px;
 			display: flex;
+			// The art comes first in the markup and is shown on the right. When the seat is too narrow
+			// for both, the "Prev." label wraps onto a second line that overflow hides, so it disappears
+			// whole (never clipped to "Pr") and the art keeps the office identifiable.
+			flex-direction: row-reverse;
+			flex-wrap: wrap;
+			align-content: flex-start;
 			align-items: center;
 			justify-content: center;
-			gap: 2px;
+			// The row gap pushes a wrapped label fully below the 16px band.
+			gap: 16px 2px;
+			overflow: hidden;
 			opacity: 0.7;
 			white-space: nowrap;
-			// The label gives way before the art on narrow seats, so the office stays identifiable.
 			.previous-government-prefix {
-				flex: 0 1000 auto;
-				min-width: 0;
-				overflow: hidden;
+				flex: none;
 				color: var(--theme-text-2);
 				font: bold 9px/16px Arial, sans-serif;
 			}
