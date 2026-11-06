@@ -1,3 +1,6 @@
+// Where the hidden role card waits below the seat row; the blacklist icon offsets it back.
+$hidden-card-top: 140px;
+
 $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4) (2100 0.7 1 0.5);
 
 @function lerp($low, $high, $elo) {
@@ -129,7 +132,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		max-width: 70px;
 		min-width: 25px;
 		height: 95px;
-		margin: 40px 0.5% 0;
+		// The bottom margin is the previous-government band below the cardback; names keep their
+		// original position above the card whether or not a seat has a marker.
+		margin: 18px 0.5% 20px;
 		border-radius: 4px;
 		background-image: url('../../public/images/tweed.png');
 		background-repeat: no-repeat;
@@ -155,7 +160,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			cursor: pointer;
 			overflow: hidden;
 			white-space: nowrap;
-			margin-top: -41px;
+			margin-top: -21px;
 			font-family: $headerfont;
 			color: var(--theme-text-2);
 			text-align: center;
@@ -174,20 +179,43 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			position: absolute;
 			z-index: 1;
 		}
+		// Previous government: a smaller, dimmed copy of the token art in the band below the cardback,
+		// apart from the current/pending government token on the card (top: 72px). Both can show at once.
 		.previous-government-token {
 			position: absolute;
-			top: -22px;
+			top: 98px;
 			left: 0;
 			width: 100%;
-			height: 18px;
-			border: 1px solid #8a6914;
-			border-radius: 3px;
-			background: #f6df93;
-			color: #282016;
-			font: bold 10px/16px Arial, sans-serif;
-			text-align: center;
+			height: 16px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 2px;
+			opacity: 0.7;
 			white-space: nowrap;
-			z-index: 2;
+			// The label gives way before the art on narrow seats, so the office stays identifiable.
+			.previous-government-prefix {
+				flex: 0 1000 auto;
+				min-width: 0;
+				overflow: hidden;
+				color: var(--theme-text-2);
+				font: bold 9px/16px Arial, sans-serif;
+			}
+			.previous-government-art {
+				flex: 0 1 42px;
+				min-width: 20px;
+				height: 14px;
+				background-position: center;
+				background-repeat: no-repeat;
+				background-size: contain;
+				filter: grayscale(0.35);
+			}
+			&.wasPresident .previous-government-art {
+				background-image: url('../../public/images/president-token.png');
+			}
+			&.wasChancellor .previous-government-art {
+				background-image: url('../../public/images/chancellor-token.png');
+			}
 			@media screen and (max-width: 950px) {
 				.previous-government-prefix {
 					display: none;
@@ -228,7 +256,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.card-container {
 			width: 100%;
 			height: 95px;
-			top: 100px;
+			// Hidden below the row (overflow: hidden), clear of the previous-government band.
+			top: $hidden-card-top;
 			left: 0;
 			transition-duration: 1s;
 			transition-property: transform, top;
@@ -391,7 +420,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				-o-backface-visibility: hidden;
 			}
 			.blacklist {
-				top: -100px !important;
+				// Cancels the hidden card's offset so the icon sits at the top of the seat.
+				top: -$hidden-card-top !important;
 				position: absolute !important;
 				z-index: 99999 !important;
 				color: var(--theme-background-3);

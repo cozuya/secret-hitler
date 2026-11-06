@@ -25,15 +25,21 @@ describe("Players", () => {
 
 describe("previous government labels", () => {
   it.each([
-    ["wasPresident", "Prev. P", "Previous president"],
-    ["wasChancellor", "Prev. C", "Previous chancellor"],
-  ])("labels %s without relying on avatar graphics", (status, text, title) => {
+    ["wasPresident", "Previous president"],
+    ["wasChancellor", "Previous chancellor"],
+  ])("marks %s with a labelled copy of the token art, distinct from the current government token", (status, title) => {
     const players = new Players.WrappedComponent({
       gameInfo: { publicPlayersState: [{ previousGovernmentStatus: status }] },
     });
     const label = shallow(players.renderPreviousGovtToken(0));
-    expect(label.text()).toBe(text);
+    expect(label.hasClass("previous-government-token")).toBe(true);
+    expect(label.hasClass(status)).toBe(true);
+    expect(label.find(".previous-government-prefix").text()).toBe("Prev.");
+    expect(label.find(".previous-government-art")).toHaveLength(1);
     expect(label.prop("title")).toBe(title);
+    expect(label.prop("aria-label")).toBe(title);
+    expect(label.prop("role")).toBe("img");
+    // Never the current/pending government token class, which shares the art on the card itself.
     expect(label.hasClass("government-token")).toBe(false);
   });
 

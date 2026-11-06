@@ -208,9 +208,14 @@ class Players extends React.Component {
     // Describe the previous office, not eligibility: the previous president is eligible again in a 5p game.
     if (role) {
       return (
-        <span className={classnames("previous-government-token", status)} title={`Previous ${role}`}>
-          <span className="previous-government-prefix">Prev. </span>
-          {role === "president" ? "P" : "C"}
+        <span
+          className={classnames("previous-government-token", status)}
+          title={`Previous ${role}`}
+          role="img"
+          aria-label={`Previous ${role}`}
+        >
+          <span className="previous-government-prefix">Prev.</span>
+          <span className="previous-government-art" />
         </span>
       );
     }

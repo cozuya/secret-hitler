@@ -36,6 +36,10 @@ class Changelog extends React.Component {
             <strong>Tidier game list:</strong> The Neighbor Chat icon now sits with the other game mode icons, left of
             the timer.
           </li>
+          <li>
+            <strong>Previous government markers moved:</strong> The previous president and chancellor are now shown with
+            a small, faded token below their cards, so player names stay put.
+          </li>
         </ul>
 
         <hr style={{ width: "100%" }} />
