@@ -109,8 +109,12 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
   }
 
   const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
+  const neighborChat = Boolean(data.neighborChat && data.playerChats !== "disabled");
+  // Neighbor Chat games are always casual (moderator decision, S25): whatever the client sends,
+  // an enabled Neighbor Chat forces casual, which also rules out Practice below. Custom games keep
+  // their own type under the precedence above; they are never rated either.
   const casualGame =
-    (data.casualGame || (typeof data.timedMode === "number" && data.timedMode < 30)
+    (neighborChat || data.casualGame || (typeof data.timedMode === "number" && data.timedMode < 30)
       ? true
       : data.gameType === "casual" ||
         data.avalonSH ||
@@ -174,8 +178,8 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
       flappyOnlyMode: Boolean(
         data.flappyMode && !data.blindMode && !data.avalonSH && !data.monarchistSH && data.flappyOnlyMode
       ),
-      // Like flappyMode, Neighbor Chat deliberately stays rankable: players opt in at creation.
-      neighborChat: Boolean(data.neighborChat && data.playerChats !== "disabled"),
+      // Unlike flappyMode, Neighbor Chat is never rankable: it forces casualGame above.
+      neighborChat,
       casualGame,
       practiceGame,
       rebalance6p: data.rebalance6p,

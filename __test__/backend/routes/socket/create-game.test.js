@@ -31,12 +31,10 @@ describe("create-game Neighbor Chat", () => {
   });
 
   it.each([
-    [{ neighborChat: true }, true],
     [{ neighborChat: false }, false],
-    [{ neighborChat: true, playerChats: "enabled" }, true],
     [{ neighborChat: true, playerChats: "disabled" }, false],
     [{}, false],
-  ])("stores and delivers the opt-in flag without forcing casual (%j)", async (options, expected) => {
+  ])("leaves a game without effective Neighbor Chat ranked (%j)", async (options, expected) => {
     await handleAddNewGame(
       socket,
       { user: user.userName },
@@ -52,6 +50,63 @@ describe("create-game Neighbor Chat", () => {
       "gameUpdate",
       expect.objectContaining({ general: expect.objectContaining({ neighborChat: expected }) })
     );
+  });
+
+  it.each([
+    [{ gameType: "ranked" }],
+    [{ gameType: "ranked", casualGame: false }],
+    [{ gameType: "ranked", playerChats: "enabled", casualGame: false }],
+    [{ gameType: "casual", casualGame: true }],
+    // Practice and casual are mutually exclusive; Neighbor Chat wins, so the game is casual.
+    [{ gameType: "practice", casualGame: false }],
+    [{ gameType: "ranked", privatePassword: "pw", casualGame: false }],
+    [{ gameType: "ranked", unlistedGame: true, casualGame: false }],
+  ])("forces a Neighbor Chat game casual whatever the client sends (%j)", async (options) => {
+    await handleAddNewGame(
+      socket,
+      { user: user.userName },
+      { gameName: "Neighbor Chat", neighborChat: true, ...options }
+    );
+
+    expect(games.NeighborChatGame.general).toMatchObject({
+      neighborChat: true,
+      casualGame: true,
+      practiceGame: false,
+    });
+    expect(socket.emit).toHaveBeenCalledWith(
+      "gameUpdate",
+      expect.objectContaining({ general: expect.objectContaining({ neighborChat: true, casualGame: true }) })
+    );
+  });
+
+  it("keeps a custom Neighbor Chat game in the (unrated) Custom type", async () => {
+    await handleAddNewGame(
+      socket,
+      { user: user.userName },
+      {
+        gameName: "Neighbor Chat",
+        gameType: "custom",
+        neighborChat: true,
+        minPlayersCount: 5,
+        maxPlayersCount: 5,
+        customGameSettings: {
+          enabled: true,
+          deckState: { lib: 6, fas: 11 },
+          trackState: { lib: 0, fas: 0 },
+          fascistCount: 1,
+          hitlerZone: 1,
+          vetoZone: 5,
+          powers: [null, null, null, null, null],
+        },
+      }
+    );
+
+    expect(games.NeighborChatGame.customGameSettings.enabled).toBe(true);
+    expect(games.NeighborChatGame.general).toMatchObject({
+      neighborChat: true,
+      casualGame: false,
+      practiceGame: false,
+    });
   });
 
   it("keeps Neighbor Chat available in emote-only casual games", async () => {

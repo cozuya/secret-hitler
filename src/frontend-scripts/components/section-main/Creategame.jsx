@@ -354,6 +354,14 @@ export default class Creategame extends React.Component {
     );
   }
 
+  // Neighbor Chat games are always casual (create-game.js enforces this on the server too).
+  // While it's on, a Ranked or Practice selection reads and submits as Casual; switching Neighbor
+  // Chat off restores the earlier choice. Private and Custom keep their own unrated types.
+  neighborChatActive = () => Boolean(this.state.neighborChat && this.state.playerChats !== "disabled");
+
+  effectiveGameType = () =>
+    this.neighborChatActive() && ["ranked", "practice"].includes(this.state.gameType) ? "casual" : this.state.gameType;
+
   renderGameTypeDropdown() {
     const options = [
       {
@@ -452,7 +460,7 @@ export default class Creategame extends React.Component {
             : options
         }
         styles={style}
-        value={findValue(this.state.gameType)}
+        value={findValue(this.effectiveGameType())}
         onChange={(inputValue, action) => {
           // Emote-only chat isn't offered for ranked/practice, so switching to one resets it.
           // Silent (disabled) games may now be ranked, so that combination is intentionally not reset.
@@ -466,7 +474,11 @@ export default class Creategame extends React.Component {
           });
         }}
         menuPlacement={"auto"}
-        isDisabled={this.state.unlistedGame || this.state.customGameSettings.enabled}
+        isDisabled={
+          this.state.unlistedGame ||
+          this.state.customGameSettings.enabled ||
+          (this.neighborChatActive() && this.effectiveGameType() === "casual")
+        }
         menuShouldScrollIntoView={true}
       />
     );
@@ -492,7 +504,7 @@ export default class Creategame extends React.Component {
       },
     ];
 
-    if (!["ranked", "practice"].includes(this.state.gameType)) {
+    if (!["ranked", "practice"].includes(this.effectiveGameType())) {
       options.push({
         value: "emotes",
         label: (
@@ -1096,7 +1108,7 @@ export default class Creategame extends React.Component {
         .filter((el) => el);
       const data = {
         gameName: this.state.gameName || "New Game",
-        gameType: this.state.gameType,
+        gameType: this.effectiveGameType(),
         flag: this.state.flag || "none",
         minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.sliderValues[0],
         excludedPlayerCount,
@@ -2346,6 +2358,9 @@ export default class Creategame extends React.Component {
               <i className="big handshake icon" />
               <h4 className="ui header">Game Type</h4>
               {this.renderGameTypeDropdown()}
+              {this.neighborChatActive() && this.effectiveGameType() === "casual" && (
+                <p className="neighbor-chat-casual-note">Neighbor Chat games are always casual.</p>
+              )}
             </div>
             {this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.isPrivate && (
               <div className="four wide column privateonlygame">
@@ -2526,13 +2541,23 @@ export default class Creategame extends React.Component {
               <i className="big exchange icon" />
               <h4 className="ui header">
                 Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are
-                visible only to you, your neighbor, and authorized moderators, including after the game.
+                visible only to you, your neighbor, and authorized moderators, including after the game. Neighbor Chat
+                games are always casual.
               </h4>
               {this.state.playerChats === "disabled" && <p>Enable player chat to use Neighbor Chat.</p>}
               <Switch
                 className="create-game-switch"
                 onChange={(checked) => {
-                  this.setState({ neighborChat: checked });
+                  // Emote-only chat was offered because the game read as casual; switching back to a
+                  // Ranked/Practice selection resets it, as the Game Type dropdown does.
+                  const resetPlayerChats =
+                    !checked &&
+                    ["ranked", "practice"].includes(this.state.gameType) &&
+                    this.state.playerChats === "emotes";
+                  this.setState({
+                    neighborChat: checked,
+                    playerChats: resetPlayerChats ? "enabled" : this.state.playerChats,
+                  });
                 }}
                 checked={this.state.neighborChat && this.state.playerChats !== "disabled"}
                 disabled={this.state.playerChats === "disabled"}

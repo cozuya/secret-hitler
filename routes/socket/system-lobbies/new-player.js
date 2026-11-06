@@ -24,7 +24,7 @@ const buildNewPlayerLobby = (uid, timeCreated = new Date()) => ({
     excludedPlayerCount: [],
     maxPlayersCount: 7,
     status: "Waiting for 5 more players..",
-    experiencedMode: false,
+    experiencedMode: true, // Speed mode always on, like the create-game default (S25 moderator request).
     playerChats: "enabled",
     isVerifiedOnly: false,
     disableObserverLobby: false,

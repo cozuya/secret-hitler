@@ -95,7 +95,7 @@ describe("New Player Game construction and ensure", () => {
       disableGamechat: false,
       disableObserver: false,
       disableObserverLobby: false,
-      experiencedMode: false,
+      experiencedMode: true,
       isVerifiedOnly: false,
       avalonSH: null,
       monarchistSH: false,
@@ -380,6 +380,8 @@ describe("empty New Player Game listing", () => {
       customCardback: [],
       customCardbackUid: [],
       practiceGame: true,
+      // The lobby list renders the speed-mode icon from this flag.
+      experiencedMode: true,
       isCustomGame: false,
       enactedLiberalPolicyCount: 0,
       enactedFascistPolicyCount: 0,

@@ -1,5 +1,9 @@
 jest.mock("../../../../routes/socket/util", () => ({ sendInProgressGameUpdate: jest.fn(), LineGuess: jest.fn() }));
-jest.mock("../../../../routes/socket/user-requests", () => ({ sendUserList: jest.fn(), sendGameList: jest.fn() }));
+jest.mock("../../../../routes/socket/user-requests", () => ({
+  sendUserList: jest.fn(),
+  sendGameList: jest.fn(),
+  updateUserStatus: jest.fn(),
+}));
 jest.mock("../../../../models/profile/utils", () => ({ updateProfiles: jest.fn() }));
 jest.mock("../../../../models/game-summary/buildEnhancedGameSummary", () => jest.fn());
 jest.mock("../../../../routes/socket/report", () => ({ makeReport: jest.fn() }));
@@ -8,6 +12,7 @@ const Account = require("../../../../models/account");
 const Game = require("../../../../models/game");
 const { games, userList } = require("../../../../routes/socket/models");
 const { completeGame, saveAndDeleteGame } = require("../../../../routes/socket/game/end-game");
+const { handleAddNewGame } = require("../../../../routes/socket/user-events/create-game");
 const { computeRankedUpdates, resolveHiddenRatings } = require("../../../../routes/socket/rating/ranked");
 const { CURRENT_SEASON_FIELDS } = require("../../../../src/shared/season");
 const { sendUserList } = require("../../../../routes/socket/user-requests");
@@ -285,6 +290,36 @@ describe("S25 completeGame integration", () => {
     expect(Account.prototype.save).toHaveBeenCalledTimes(getsXp ? 5 : 0);
     expect(deltaLines(game.private.replayGameChats)).toHaveLength(0);
     expect(console.log).not.toHaveBeenCalled();
+  });
+
+  it("leaves ranked state untouched when a Neighbor Chat game requested as ranked ends", async () => {
+    // Create through the real handler: the client asks for a ranked, non-casual game.
+    const creator = { userName: "Creator", status: { type: "none" } };
+    userList.push(creator);
+    jest.spyOn(Account, "findOne").mockResolvedValue({ username: "Creator" });
+    global.io.sockets.emit = jest.fn();
+    const before = new Set(Object.keys(games));
+    await handleAddNewGame(
+      { join: jest.fn(), emit: jest.fn() },
+      { user: "Creator" },
+      { gameName: "Neighbors", gameType: "ranked", casualGame: false, neighborChat: true }
+    );
+    const created = Object.keys(games).find((uid) => !before.has(uid));
+    const { general } = games[created];
+    delete games[created];
+    userList.length = 0;
+    expect(general).toMatchObject({ neighborChat: true, casualGame: true, practiceGame: false });
+
+    const game = makeGame({ ...general, uid: "ranked-integration", playerCount: 5 });
+    const accounts = makeAccounts();
+    const beforeState = accounts.map(rankedState);
+    await finish(game, accounts);
+    accounts.forEach((account, i) => {
+      expect(rankedState(account)).toEqual(beforeState[i]);
+      expect(account.lastRankedGameAt).toEqual(oldDate);
+    });
+    expect(accountWrites).toEqual([]);
+    expect(Account.prototype.save).not.toHaveBeenCalled();
   });
 
   it("keeps an otherwise ranked silent game ranked", async () => {

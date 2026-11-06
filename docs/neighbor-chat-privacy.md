@@ -12,6 +12,8 @@ A recipient can report a received message from live chat or their replay. Report
 
 Limits: 1,000 accepted Neighbor Chat messages per game and four distinct Neighbor Chat reports per recipient per game. Excess messages are rejected with feedback; previously accepted evidence is retained. Private games keep the existing 30-message live-history cap, while the restricted archive retains all accepted messages. A server restart before normal game persistence can still lose in-memory conversation history; a successfully submitted report has its own persisted evidence.
 
+Neighbor Chat games are always casual. When Neighbor Chat is enabled, `create-game.js` forces `casualGame` whatever the client sends, so the game never changes Elo, ranked wins/losses or ranked activity, and a Practice selection becomes casual. Custom games keep their own (also unrated) Custom type. As with every casual game, gameplay auto-reports are not sent; player reports and Neighbor Chat message reports still work.
+
 ## Release playtest
 
 - In a Neighbor Chat game, send in both directions, including across a dead or departed seat. Verify that only the pair and a subscribed moderator observer receive the message, and that a seated moderator gets only their own participant view.

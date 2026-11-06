@@ -263,6 +263,8 @@ describe("New Player countdown and actual-start replacement", () => {
     let intake = await lobbies.ensureNewPlayerLobby();
     const started = [];
     for (let cohort = 0; cohort < 3; cohort++) {
+      // Speed mode is always on, for the first intake and every replacement.
+      expect(intake.general.experiencedMode).toBe(true);
       await fill(intake, 7);
       expect(waitingLobbies()).toEqual([intake]);
       expect(intake.gameState.isTracksFlipped).toBeFalsy();
@@ -275,6 +277,8 @@ describe("New Player countdown and actual-start replacement", () => {
       expect(started).not.toContain(intake);
       expect(global.io.sockets.emit.mock.calls.filter(([event]) => event === "newGameAdded")).toEqual([]);
     }
+    expect(intake.general.experiencedMode).toBe(true);
+    expect(started.every((game) => game.general.experiencedMode === true)).toBe(true);
     expect(Object.values(models.games)).toHaveLength(4);
     expect(Object.values(models.games).filter((game) => game.publicPlayersState.length === 0)).toEqual([intake]);
     await Promise.all([lobbies.ensureNewPlayerLobby(), lobbies.ensureNewPlayerLobby(), lobbies.ensureNewPlayerLobby()]);
