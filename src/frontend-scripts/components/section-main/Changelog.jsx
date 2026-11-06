@@ -37,8 +37,8 @@ class Changelog extends React.Component {
             left of the timer, instead of after it.
           </li>
           <li>
-            <strong>Previous government markers moved:</strong> The previous president and chancellor are now shown with
-            a small, faded token below their cards, so player names stay put.
+            <strong>Previous government markers moved:</strong> The yellow &quot;Prev. P&quot; / &quot;Prev. C&quot; tags now
+            sit below the previous president&apos;s and chancellor&apos;s cards, so player names stay put.
           </li>
         </ul>
 

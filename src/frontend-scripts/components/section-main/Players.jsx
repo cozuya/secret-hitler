@@ -214,9 +214,8 @@ class Players extends React.Component {
           role="img"
           aria-label={`Previous ${role}`}
         >
-          {/* Art first: the row is reversed so "Prev." shows on the left and wraps away when it can't fit. */}
-          <span className="previous-government-art" />
-          <span className="previous-government-prefix">Prev.</span>
+          <span className="previous-government-prefix">Prev. </span>
+          {role === "president" ? "P" : "C"}
         </span>
       );
     }

@@ -13,7 +13,7 @@ goes live; it describes the same changes as the in-game changelog.
 - New: whisper by **seat number**. Use `/4 hi` to message seat 4, as well as `/l` and `/r`. It only works for your nearest living neighbor on either side; anything else tells you which seats you can reach.
 - The Neighbor Chat icon in the game list now sits with the other game mode icons, left of the timer.
 
-**Previous government markers moved.** The previous president and chancellor are now shown with a small, faded token **below** their cards, so player names stay in place. The current or pending government token is unchanged.
+**Previous government markers moved.** The yellow "Prev. P" / "Prev. C" tags now sit **below** the previous president's and chancellor's cards, so player names stay in place. The current or pending government token is unchanged.
 
 As always, let the mods know if anything looks off.
 ```

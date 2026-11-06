@@ -66,7 +66,7 @@ describe("previous-government marker placement", () => {
   const seat = (marker) => `
     <div class="player-container">
       <div class="player-number">1. Alpha</div>
-      ${marker ? `<span class="previous-government-token ${marker}"><span class="previous-government-art"></span><span class="previous-government-prefix">Prev.</span></span>` : ""}
+      ${marker ? `<span class="previous-government-token ${marker}"><span class="previous-government-prefix">Prev. </span>${marker === "wasPresident" ? "P" : "C"}</span>` : ""}
       <div class="government-token isPendingPresident"></div>
       <div class="card-container"><i class="large file icon blacklist"></i></div>
     </div>`;
@@ -95,7 +95,6 @@ describe("previous-government marker placement", () => {
     expect(px(marker.top) + px(marker.height)).toBeLessThanOrEqual(cardHeight + band);
     // The current/pending token stays on the card, so both can show on one seat without overlapping.
     expect(px(current.top) + px(current.height)).toBeLessThanOrEqual(px(marker.top));
-    expect(px(marker.opacity)).toBeLessThan(1);
   });
 
   it("keeps the hidden role card clear of the marker band", () => {
@@ -113,33 +112,17 @@ describe("previous-government marker placement", () => {
     expect(window.getComputedStyle(marker).pointerEvents).not.toBe("none");
   });
 
-  it("drops the whole Prev. label, never the token art, when a seat is too narrow for both", () => {
+  it("renders the familiar yellow Prev. chip, clipped to the band", () => {
     const marker = window.getComputedStyle(host.querySelector(".previous-government-token"));
-    const prefix = window.getComputedStyle(host.querySelector(".previous-government-prefix"));
-    const art = window.getComputedStyle(host.querySelector(".previous-government-art"));
-    // The label is the later item, so it is the one that wraps onto the hidden second line.
-    expect(marker.flexWrap).toBe("wrap");
-    expect(marker.flexDirection).toBe("row-reverse");
-    expect(marker.overflow).toBe("hidden");
-    // One 16px line: a wrapped second line (the label) is clipped away.
+    expect(marker.backgroundColor).toBe("rgb(246, 223, 147)");
     expect(marker.height).toBe("16px");
-    // jsdom keeps the gap shorthand unexpanded; its first value is the row gap.
-    expect(px(marker.getPropertyValue("gap"))).toBeGreaterThanOrEqual(px(marker.height));
-    expect(prefix.flexShrink).toBe("0");
-    expect(px(art.minWidth)).toBeGreaterThanOrEqual(20);
+    expect(marker.overflow).toBe("hidden");
+    expect(host.querySelector(".previous-government-token").textContent).toBe("Prev. C");
   });
 
   it("keeps the blacklist icon at the top of the seat while the role card is hidden", () => {
     const card = host.querySelector(".card-container");
     const icon = window.getComputedStyle(card.querySelector(".blacklist"));
     expect(px(icon.top) + px(window.getComputedStyle(card).top)).toBe(0);
-  });
-
-  it.each([
-    [0, "chancellor-token.png"],
-    [1, "president-token.png"],
-  ])("uses the token art for seat %i (%s)", (index, image) => {
-    const art = host.querySelectorAll(".previous-government-art")[index];
-    expect(window.getComputedStyle(art).backgroundImage).toContain(image);
   });
 });
