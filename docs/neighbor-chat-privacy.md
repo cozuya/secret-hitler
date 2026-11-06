@@ -1,5 +1,7 @@
 # Neighbor Chat privacy and moderation
 
+Players send with `/l` and `/r`, or `/N` with a seat number (for example `/4 hi`). `/N` only reaches seat N when it is the sender's nearest living, non-left neighbor on either side (the same seats `/l` and `/r` resolve to); any other number gets a private error naming the valid seats. Every rule below applies to all three commands.
+
 Neighbor Chat stays restricted after the game. The sender and recipient can read their own conversations in the replay; other players and anonymous viewers cannot. Authorized chat reviewers (admin, editor, moderator and trialmod) can review the saved transcript. Live visibility still uses the existing hidden-info subscriptions and excludes seated staff from the moderator view.
 
 Accepted messages are retained in `game.private.neighborChats` and archived in `Game.neighborChats`, separately from public replay chat. The replay socket endpoint uses current account permissions and strips both raw private arrays and legacy Neighbor Chat rows from public responses. Both public game-export scripts apply the same filter. The existing moderator-only `/gameJSON` export remains available for review.

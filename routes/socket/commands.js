@@ -125,6 +125,23 @@ module.exports.commands = [
     gameStartedOnly: true,
   },
   {
+    // /N: seat numbers are the command names (/2 hello, /10 hi). No other command name starts with a
+    // digit. One or two digits, so /04 is seat 4; /4hello (no space) is not a seat and stays unknown.
+    name: [],
+    helpName: "N",
+    seatCommand: true,
+    matchesName: (name) => /^\d{1,2}$/.test(name),
+    neighborChatOnly: true,
+    description:
+      "Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators, including afterwards.",
+    examples: ["/2 <message>", "/4 <message>"],
+    argumentsFormat: /^(.+)$/,
+    aemOnly: false,
+    observerOnly: false,
+    seatedOnly: true,
+    gameStartedOnly: true,
+  },
+  {
     name: ["forcerigdeck"],
     description: "Changes the deck in the current game, definitely not fake",
     examples: ["/forcerigdeck B", "/forcerigdeck rrrrrrrrrrrbbbbbb"],
@@ -204,7 +221,8 @@ module.exports.commands = [
  * @return {Command|null} - the command with that name or null if it is not found.
  */
 module.exports.commands.getCommand = function (name) {
-  return this.find((c) => c.name.includes(name.toLowerCase())) || null;
+  const lowerName = name.toLowerCase();
+  return this.find((c) => c.name.includes(lowerName) || Boolean(c.matchesName && c.matchesName(lowerName))) || null;
 };
 
 /**
@@ -227,8 +245,10 @@ module.exports.parseCommand = (msg) => {
 
   msg = trimPrefix(msg, name[0]).trim();
   const parsedArgs = cmd.argumentsFormat.exec(msg);
+  // Seat commands pass the seat number (their name) ahead of the message.
+  const args = parsedArgs && (cmd.seatCommand ? [name[1], ...parsedArgs.slice(1)] : parsedArgs.slice(1));
 
-  return { name: name[1].toLowerCase(), args: parsedArgs && parsedArgs.slice(1), command: cmd };
+  return { name: name[1].toLowerCase(), args, command: cmd };
 };
 
 /**
@@ -316,7 +336,7 @@ module.exports.commands.getCommand("help").run = (socket, passport, user, game, 
         timestamp: Date.now() + i++,
         chat: [
           {
-            text: `/${command.name[0]}`,
+            text: `/${command.helpName || command.name[0]}`,
             type: "player",
           },
           {
@@ -529,7 +549,17 @@ const appendNeighborChat = (game, history, chat) => {
   }
 };
 
-const sendNeighborChat = (game, user, senderName, message, direction) => {
+// Nearest eligible seat from senderIndex in one direction (step -1 = left, 1 = right), wrapping; -1 if none.
+const nearestNeighborIndex = (players, senderIndex, step) => {
+  for (let offset = 1; offset < players.length; offset++) {
+    const index = (senderIndex + step * offset + players.length) % players.length;
+    if (isNeighborChatEligible(players[index])) return index;
+  }
+  return -1;
+};
+
+// `target` is "left", "right", or { seat } (1-based) for /N, which must be one of those two neighbors.
+const sendNeighborChat = (game, user, senderName, message, target) => {
   if (!game.general.neighborChat) {
     sendMessage(game, user, "Neighbor Chat is not enabled in this game.");
     return;
@@ -552,13 +582,30 @@ const sendNeighborChat = (game, user, senderName, message, direction) => {
     return;
   }
 
-  const step = direction === "right" ? 1 : -1;
-  let recipientIndex = -1;
-  for (let offset = 1; offset < players.length; offset++) {
-    const index = (senderIndex + step * offset + players.length) % players.length;
-    if (isNeighborChatEligible(players[index])) {
-      recipientIndex = index;
-      break;
+  let direction = target;
+  let recipientIndex;
+  if (typeof target === "string") {
+    recipientIndex = nearestNeighborIndex(players, senderIndex, target === "right" ? 1 : -1);
+  } else {
+    const leftIndex = nearestNeighborIndex(players, senderIndex, -1);
+    const rightIndex = nearestNeighborIndex(players, senderIndex, 1);
+    const seatIndex = target.seat - 1;
+    if (leftIndex === -1) {
+      recipientIndex = -1;
+    } else if (seatIndex === rightIndex || seatIndex === leftIndex) {
+      // With only one other eligible player both sides are the same seat: deliver once, as "right".
+      recipientIndex = seatIndex;
+      direction = seatIndex === rightIndex ? "right" : "left";
+    } else {
+      const seats = [...new Set([leftIndex, rightIndex])].map((index) => index + 1).sort((a, b) => a - b);
+      sendMessage(
+        game,
+        user,
+        seats.length === 1
+          ? `You can only whisper to your neighbor: seat ${seats[0]}.`
+          : `You can only whisper to your neighbors: seats ${seats[0]} and ${seats[1]}.`
+      );
+      return;
     }
   }
 
@@ -647,6 +694,10 @@ module.exports.commands.getCommand("l").run = (socket, passport, user, game, arg
 
 module.exports.commands.getCommand("r").run = (socket, passport, user, game, args) => {
   sendNeighborChat(game, user, passport.user, args[0], "right");
+};
+
+module.exports.commands.find((command) => command.seatCommand).run = (socket, passport, user, game, args) => {
+  sendNeighborChat(game, user, passport.user, args[1], { seat: parseInt(args[0], 10) });
 };
 
 module.exports.commands.getCommand("forcerigdeck").run = (socket, passport, user, game, args) => {

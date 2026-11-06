@@ -2540,9 +2540,9 @@ export default class Creategame extends React.Component {
             <div className="four wide column">
               <i className="big exchange icon" />
               <h4 className="ui header">
-                Neighbor Chat - /l and /r message your nearest living neighbor to the left or right; messages are
-                visible only to you, your neighbor, and authorized moderators, including after the game. Neighbor Chat
-                games are always casual.
+                Neighbor Chat - /l and /r message your nearest living neighbor to the left or right, or use their seat
+                number (for example /4); messages are visible only to you, your neighbor, and authorized moderators,
+                including after the game. Neighbor Chat games are always casual.
               </h4>
               {this.state.playerChats === "disabled" && <p>Enable player chat to use Neighbor Chat.</p>}
               <Switch

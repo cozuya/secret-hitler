@@ -34,5 +34,6 @@ describe("DisplayLobbies option icons", () => {
   it("says Neighbor Chat games are casual in the lobby tooltip", () => {
     const wrapper = render(row({ neighborChat: true, casualGame: true }));
     expect(tooltipFor(wrapper, ".exchange.icon")).toMatch(/always casual/i);
+    expect(tooltipFor(wrapper, ".exchange.icon")).toMatch(/seat number \(for example \/4\)/);
   });
 });

@@ -693,3 +693,192 @@ describe("public emote-chat extraction preserves the existing call site", () => 
     expect(game.chats.map((entry) => entry.chat)).toEqual(expected);
   });
 });
+
+describe("Neighbor Chat by seat number (/N)", () => {
+  const setPlayerCount = (count) => {
+    game.publicPlayersState.length = count;
+    game.private.seatedPlayers.length = count;
+  };
+
+  it.each([
+    ["/2 hello", 3, 2, "left"],
+    ["/4 hello", 3, 4, "right"],
+  ])("%s from seat %i reaches seat %i on the %s", (message, sender, recipient, direction) => {
+    run(message, `Player${sender}`);
+    expectDelivery(sender, recipient, direction);
+  });
+
+  it("skips a dead neighbor: seat 3 can use /5 but not /4 once seat 4 is shot", () => {
+    game.publicPlayersState[3].isDead = true;
+    run("/4 hello", "Player3");
+    expectRefusal("You can only whisper to your neighbors: seats 2 and 5.", "Player3");
+    jest.clearAllMocks();
+    game.private.commandChats = {};
+    run("/5 hello", "Player3");
+    expectDelivery(3, 5, "right");
+  });
+
+  it("skips a player who left", () => {
+    game.publicPlayersState[1].leftGame = true;
+    run("/1 hello", "Player3");
+    expectDelivery(3, 1, "left");
+  });
+
+  it.each([
+    ["/5 hello", 5, "left"],
+    ["/2 hello", 2, "right"],
+  ])("wraps around in a 5-player game: seat 1 %s reaches seat %i", (message, recipient, direction) => {
+    setPlayerCount(5);
+    run(message);
+    expectDelivery(1, recipient, direction);
+  });
+
+  it("wraps around from the last seat", () => {
+    run("/1 hello", "Player7");
+    expectDelivery(7, 1, "right");
+  });
+
+  it.each([
+    "/3 hello",
+    "/7 hello",
+    "/0 hello",
+    "/8 hello",
+    "/11 hello",
+    "/99 hello",
+    "/1 hello",
+  ])("refuses %s from seat 1 and names the valid seats", (message) => {
+    setPlayerCount(5);
+    run(message);
+    expectRefusal("You can only whisper to your neighbors: seats 2 and 5.");
+  });
+
+  it("names a single seat when both neighbors are the same player, and delivers to it once", () => {
+    game.publicPlayersState.forEach((player, index) => {
+      player.isDead = index !== 0 && index !== 3;
+    });
+    run("/2 hello");
+    expectRefusal("You can only whisper to your neighbor: seat 4.");
+    jest.clearAllMocks();
+    game.private.commandChats = {};
+    run("/4 hello");
+    expectDelivery(1, 4, "right");
+  });
+
+  it("refuses when every other seat is dead or left", () => {
+    game.publicPlayersState.slice(1).forEach((player) => {
+      player.isDead = true;
+    });
+    run("/2 hello");
+    expectRefusal("There is no one left to talk to.");
+  });
+
+  it.each([
+    ["/10 hi", 9, 10, "right"],
+    ["/04 hi", 3, 4, "right"],
+  ])("parses %s as a seat number", (message, sender, recipient, direction) => {
+    for (let index = 7; index < 10; index++) {
+      const userName = `Player${index + 1}`;
+      game.publicPlayersState.push({ userName, isDead: false, leftGame: false });
+      game.private.seatedPlayers.push({ userName, gameChats: [], playersState: [] });
+      sockets[userName] = { handshake: { session: { passport: { user: userName } } }, emit: jest.fn() };
+      global.io.sockets.adapter.rooms.NeighborChatTest.sockets[userName] = true;
+      models.userList.push({ userName, xpOverall: 20, status: { type: "none" } });
+    }
+    run(message, `Player${sender}`);
+    expectDelivery(sender, recipient, direction, "hi");
+  });
+
+  it("a bare /4 uses the usage response", () => {
+    run("/4", "Player3");
+    expectRefusal("You're not doing this right. Some examples: /2 <message>, /4 <message>", "Player3");
+  });
+
+  it.each(["/4hello", "/100 hello", "/4x hello"])("treats %s as an unknown command, not a seat", (message) => {
+    run(message, "Player3");
+    const name = message.slice(1).split(" ")[0];
+    // Unknown commands keep their existing (non-neighbor) feedback path; nothing is whispered.
+    expect(game.private.commandChats.Player3.map(textOf)).toEqual([
+      `Unknown command /${name}. Use /help for a list of commands.`,
+    ]);
+    expect(game.private.seatedPlayers.flatMap((player) => player.gameChats)).toEqual([]);
+    expect(game.private.neighborChats).toEqual([]);
+    expect(game.private.hiddenInfoChat).toEqual([]);
+    expect(game.chats).toEqual([]);
+  });
+
+  it.each([false, undefined])("refuses like /l when the mode flag is %s", (flag) => {
+    game.general.neighborChat = flag;
+    run("/2 hello");
+    expectRefusal("Neighbor Chat is not enabled in this game.");
+  });
+
+  it.each([false, true])("refuses an observer with staff status %s", (aem) => {
+    run("/2 hello", "Observer", aem);
+    expectRefusal("This command cannot be used by observers.", "Observer");
+  });
+
+  it("refuses a non-seated user even if a caller marks them seated", () => {
+    run("/2 hello", "Observer", false, true);
+    expectRefusal("Only living players who have not left can use Neighbor Chat.", "Observer");
+  });
+
+  it("refuses a dead sender", () => {
+    game.publicPlayersState[2].isDead = true;
+    run("/2 hello", "Player3");
+    expectRefusal("Only living players who have not left can use Neighbor Chat.", "Player3");
+  });
+
+  it("respects a muted recipient without redirecting to the other neighbor", () => {
+    game.private.seatedPlayers[3].neighborChatMuted = true;
+    run("/4 hello", "Player3");
+    expectRefusal("This neighbor is not accepting Neighbor Chat.", "Player3");
+  });
+
+  it("respects the per-game message limit", () => {
+    game.private.neighborChats.push(...Array.from({ length: 1000 }, () => ({ chat: [] })));
+    run("/2 hello", "Player3");
+    expect(game.private.commandChats.Player3.map(textOf)).toEqual([
+      "Neighbor Chat has reached this game's message limit. Please use public chat.",
+    ]);
+    expect(game.private.seatedPlayers[1].gameChats).toEqual([]);
+  });
+
+  it("masks live names in blind mode and keeps the archive out of public chats", () => {
+    game.general.blindMode = true;
+    run("/2 hello", "Player3");
+    expect(game.private.seatedPlayers[2].gameChats.map(textOf)).toEqual(["to left {2}: hello"]);
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["→ from right {3}: hello"]);
+    for (const player of game.publicPlayersState) {
+      expect(JSON.stringify(deliveredChats(player.userName))).not.toMatch(/Player[1-7]/);
+    }
+    expect(game.private.neighborChats.map(textOf)).toEqual([
+      "Neighbor Chat - (#3 Player3) to left (#2 Player2): hello",
+    ]);
+    game.gameState.isCompleted = "liberal";
+    const archive = generateGameObject(game);
+    expect(archive.chats).toEqual([]);
+    expect(archive.neighborChats).toEqual(game.private.neighborChats);
+  });
+
+  it("filters emote-only games", () => {
+    game.general.playerChats = "emotes";
+    run("/4 secret :JA: 12", "Player3");
+    expectDelivery(3, 4, "right", " :ja: 12");
+  });
+
+  it("delivers through the existing chat handler", async () => {
+    await addChat("/4 hello", "Player3");
+    expectDelivery(3, 4, "right");
+  });
+
+  it("is listed in /help only in Neighbor Chat games", () => {
+    run("/help");
+    expect(game.private.commandChats.Player1.map(textOf)).toContain(
+      "/N - Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators, including afterwards."
+    );
+    game.general.neighborChat = false;
+    game.private.commandChats = {};
+    run("/help");
+    expect(game.private.commandChats.Player1.map(textOf).some((line) => line.startsWith("/N - "))).toBe(false);
+  });
+});

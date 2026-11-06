@@ -27,6 +27,11 @@ class Changelog extends React.Component {
             <strong>Neighbor Chat games are always casual:</strong> They no longer count for Elo or ranked wins and
             losses. Turning on Neighbor Chat sets the game type to Casual.
           </li>
+          <li>
+            <strong>Whisper by seat number:</strong> In Neighbor Chat games you can now use{" "}
+            <code>{"/N <message>"}</code> with a neighbor&apos;s seat number, for example <code>{"/4 hi"}</code>, as
+            well as <code>/l</code> and <code>/r</code>. It only works for your nearest living neighbor on either side.
+          </li>
         </ul>
 
         <hr style={{ width: "100%" }} />
