@@ -4,6 +4,7 @@ import $ from "jquery";
 import PropTypes from "prop-types";
 import classnames from "classnames";
 import Checkbox from "semantic-ui-checkbox";
+import { compareModLogEntries, formatModAction } from "./mod-log-sorting";
 import { Form, Header, Button, Modal } from "semantic-ui-react";
 
 $.fn.checkbox = Checkbox;
@@ -1280,62 +1281,7 @@ export default class Moderation extends React.Component {
     };
 
     const elem = document.getElementById("playernameelem");
-    const name = elem ? elem.value : "";
-
-    const niceAction = {
-      comment: "Comment",
-      warn: "Issue Warning",
-      removeWarning: "Delete Warning",
-      getIP: "Get IP",
-      ban: "Ban",
-      setSticky: "Set Sticky",
-      ipbanlarge: "1 Week IP Ban",
-      ipban: "18 Hour IP Ban",
-      enableAccountCreation: "Enable Account Creation",
-      disableAccountCreation: "Disable Account Creation",
-      enableVPNCheck: "Enable VPN Check",
-      disableVPNCheck: "Disable VPN Check",
-      togglePrivate: "Toggle Private (Permanent)",
-      togglePrivateEighteen: "Toggle Private (Temporary)",
-      timeOut: "Timeout and IP Timeout 18 Hours",
-      timeOut2: "Timeout 18 Hours",
-      timeOut3: "Timeout and IP Timeout 1 Hour",
-      timeOut4: "Timeout 6 Hours",
-      clearTimeout: "Clear Timeout",
-      clearTimeoutIP: "Clear IP Ban",
-      clearTimeoutAndTimeoutIP: "Clear Timeout and IP Timeout",
-      modEndGame: "End Game",
-      deleteGame: "Delete Game",
-      enableIpBans: "Enable IP Bans",
-      disableIpBans: "Disable IP Bans",
-      disableGameCreation: "Disable Game Creation",
-      enableGameCreation: "Enable Game Creation",
-      disableIpbans: "Disable IP Bans",
-      enableIpbans: "Enable IP Bans",
-      broadcast: "Broadcast",
-      fragBanLarge: "1 Week Fragment Ban",
-      fragBanSmall: "18 Hour Fragment Ban",
-      clearGenchat: "Clear General Chat",
-      deleteUser: "Delete User",
-      deleteBio: "Delete Bio",
-      deleteProfile: "Delete Profile",
-      deleteCardback: "Delete Cardback",
-      setPlayerPronouns: "Set Player Pronouns",
-      resetGameName: "Reset Game Name",
-      rainbowUser: "Grant Rainbow",
-      removeStaffRole: "Remove Staff Role",
-      toggleContributor: "Add/Remove Role (Contributor)",
-      toggleTourneyMod: "Add/Remove Role (Tourney Mod)",
-      promoteToAltMod: "Promote (Staff Alt)",
-      promoteToTrialMod: "Promote (Trial Mod)",
-      promoteToVeteran: "Promote (Veteran Staff)",
-      promoteToMod: "Promote (Mod)",
-      promoteToEditor: "Promote (Editor)",
-      makeBypass: "Create Bypass Key",
-      bypassKeyUsed: "Consume Bypass Key",
-      resetServer: "Server Restart",
-      regatherAEMList: "Refresh Staff List",
-    };
+    const name = typeof elem?.value === "string" ? elem.value : "";
 
     return (
       <div>
@@ -1421,47 +1367,24 @@ export default class Moderation extends React.Component {
               .filter((entry) =>
                 this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true
               )
-              .sort((a, b) => {
-                const { logSort } = this.state;
-                const aDate = new Date(a.date);
-                const bDate = new Date(b.date);
-
-                if (logSort.type === "date") {
-                  if (logSort.direction === "descending") {
-                    return aDate > bDate ? -1 : 1;
-                  }
-                  return aDate > bDate ? 1 : -1;
-                } else {
-                  if (logSort.direction === "descending") {
-                    if (a[logSort.type] === b[logSort.type]) {
-                      return aDate > bDate ? -1 : 1;
-                    }
-                    return a[logSort.type] > b[logSort.type] ? -1 : 1;
-                  }
-
-                  if (a[logSort.type] === b[logSort.type]) {
-                    return aDate > bDate ? 1 : -1;
-                  }
-                  return a[logSort.type] > b[logSort.type] ? 1 : -1;
-                }
-              })
+              .sort((a, b) => compareModLogEntries(a, b, logSort))
               .map((report, index) => (
                 <tr key={index}>
                   <td style={{ whiteSpace: "nowrap" }}>{report.modUserName}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{moment(new Date(report.date)).format("YYYY-MM-DD HH:mm")}</td>
-                  <td style={{ width: "120px", minWidth: "120px" }}>
-                    {niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}
-                  </td>
+                  <td style={{ width: "120px", minWidth: "120px" }}>{formatModAction(report.actionTaken)}</td>
                   <td style={{ whiteSpace: "normal", wordWrap: "break-word", maxWidth: "200px", minWidth: "120px" }}>
                     {report.userActedOn}
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>{report.ip}</td>
                   <td style={{ Width: "200px", minWidth: "200px" }}>
-                    {report.modNotes.split("\n").map((v, index) => (
-                      <p key={index} style={{ margin: "0px" }}>
-                        {v}
-                      </p>
-                    ))}
+                    {String(report.modNotes ?? "")
+                      .split("\n")
+                      .map((v, index) => (
+                        <p key={index} style={{ margin: "0px" }}>
+                          {v}
+                        </p>
+                      ))}
                   </td>
                 </tr>
               ))}
