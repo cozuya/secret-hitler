@@ -449,7 +449,7 @@ export class ReplayGamechat extends React.Component {
               data-filter="Whispers"
               onClick={this.handleChatFilterClick}
               aria-pressed={whispersOnly}
-              title={whispersOnly ? "Show all chat" : "Show only the whispers available to you"}
+              title={whispersOnly ? "Show all chat" : "Show only neighbor chats"}
             >
               <i className="lock icon" aria-hidden="true" />
               Whispers only ({whisperCount})
@@ -458,9 +458,7 @@ export class ReplayGamechat extends React.Component {
         </section>
         {(gameInfo.general?.neighborChat || whisperCount > 0) && (
           <p className="replay-chat-privacy">
-            {userInfo.userName
-              ? "Whispers are private. Only your conversations or those available to your moderator role appear."
-              : "Log in to see your own whispers. Other players' conversations stay private."}
+            Neighbor chats are private during play and visible to everyone in replays.
           </p>
         )}
         <section

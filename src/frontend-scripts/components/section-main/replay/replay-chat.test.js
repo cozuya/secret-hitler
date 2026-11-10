@@ -25,8 +25,8 @@ const archive = () => ({
     whisper("three", "Carol", "Dave", "Unrelated secret", 3),
   ],
 });
-const render = (username = "Bob", canReview = false) => {
-  const data = replayForViewer(archive(), username, canReview);
+const render = (username = "Bob", canReview = false, savedGame = archive()) => {
+  const data = replayForViewer(savedGame, username, canReview, { includeAllNeighborChats: true });
   return shallow(
     <ReplayGamechat
       userInfo={{ userName: username, gameSettings: {} }}
@@ -41,18 +41,18 @@ const chatText = (wrapper) => shallow(<div>{wrapper.instance().processChats()}</
 
 describe("private conversations in replay chat", () => {
   it.each([
-    [null, false, 0],
-    ["Stranger", false, 0],
-    ["Alice", false, 2],
-    ["Bob", false, 2],
+    [null, false, 3],
+    ["Stranger", false, 3],
+    ["Alice", false, 3],
+    ["Bob", false, 3],
     ["Reviewer", true, 3],
-  ])("only displays and counts authorized whispers for %s (reviewer: %s)", (username, canReview, count) => {
+  ])("displays and counts all replay whispers for %s (reviewer: %s)", (username, canReview, count) => {
     const wrapper = render(username, canReview);
     expect(wrapper.find(".replay-whisper")).toHaveLength(count);
     expect(wrapper.find(".replay-whisper-filter").text()).toContain(`(${count})`);
-    if (!canReview) expect(chatText(wrapper)).not.toContain("Unrelated secret");
-    if (!count) expect(chatText(wrapper)).not.toContain("First private message");
-    if (!username) expect(wrapper.find(".replay-chat-privacy").text()).toContain("Log in");
+    expect(chatText(wrapper)).toContain("Unrelated secret");
+    expect(chatText(wrapper)).toContain("First private message");
+    expect(wrapper.find(".replay-chat-privacy").text()).toContain("visible to everyone in replays");
   });
 
   it("shows directions, renders emotes and keeps recipient reporting available", () => {
@@ -60,9 +60,10 @@ describe("private conversations in replay chat", () => {
     expect(wrapper.find(".replay-whisper-label").at(0).text()).toBe("Whisper · #1 Alice → #2 Bob");
     expect(wrapper.find(".chat-role--neighbor-chat").at(1).find("img").prop("src")).toBe("/emotes/ja.png");
     const reports = wrapper.find(NeighborChatReport);
-    expect(reports).toHaveLength(2);
+    expect(reports).toHaveLength(3);
     expect(reports.at(0).dive().find("button")).toHaveLength(1);
     expect(reports.at(1).dive().isEmptyRender()).toBe(true);
+    expect(reports.at(2).dive().isEmptyRender()).toBe(true);
   });
 
   it("switches between all chat and whispers without losing filters or mutating history", () => {
@@ -71,7 +72,7 @@ describe("private conversations in replay chat", () => {
     wrapper.find("[data-filter='Whispers']").simulate("click", { currentTarget: { getAttribute: () => "Whispers" } });
     expect(wrapper.find("[data-filter='Whispers']").prop("aria-pressed")).toBe(true);
     expect(chatText(wrapper)).not.toContain("Public message");
-    expect(wrapper.find(".replay-whisper")).toHaveLength(2);
+    expect(wrapper.find(".replay-whisper")).toHaveLength(3);
     wrapper.instance().handleChatFilterClick({ currentTarget: { getAttribute: () => "Whispers" } });
     expect(chatText(wrapper)).toContain("Public message");
     const history = wrapper.instance().props.gameInfo.chats;
@@ -81,8 +82,8 @@ describe("private conversations in replay chat", () => {
     expect(JSON.stringify(wrapper.instance().props.gameInfo)).toBe(original);
   });
 
-  it("provides an honest empty state for an unrelated viewer's private-only view", () => {
-    const wrapper = render("Stranger");
+  it("provides an honest empty state when the archive has no neighbor chats", () => {
+    const wrapper = render("Stranger", false, { ...archive(), neighborChats: [] });
     wrapper.instance().handleChatFilterClick({ currentTarget: { getAttribute: () => "Whispers" } });
     expect(wrapper.find(".replay-chat-empty").text()).toBe("No messages available in this view.");
     expect(chatText(wrapper)).not.toContain("Public message");
@@ -104,10 +105,10 @@ describe("replay chat switching", () => {
     expect(wrapper.find("Replay").dive().find("ReplayControls")).toHaveLength(0);
   });
 
-  it("advertises only the whispers supplied to the viewer", () => {
+  it("advertises the full archived whisper count", () => {
     const wrapper = shallow(<ReplayWrapper replay={{ status: "LOADING" }} />, { disableLifecycleMethods: true });
-    wrapper.setState({ gameData: replayForViewer(archive(), "Bob", false) });
-    expect(wrapper.find(".displaychats").text()).toBe("Show chats · 2 whispers");
+    wrapper.setState({ gameData: replayForViewer(archive(), "Bob", false, { includeAllNeighborChats: true }) });
+    expect(wrapper.find(".displaychats").text()).toBe("Show chats · 3 whispers");
   });
 
   it("rejects delayed transcript replies for a different replay and clears old chat when switching", () => {
