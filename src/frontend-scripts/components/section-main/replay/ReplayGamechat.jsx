@@ -6,18 +6,20 @@ import { loadReplay, updateUser } from "../../../actions/actions";
 import { processEmotes } from "../../../emotes";
 import { PLAYERCOLORS } from "../../../constants";
 import NeighborChatReport from "../../reusable/NeighborChatReport";
+import { isReplayWhisper } from "../../../replay/chat";
 
 const mapDispatchToProps = (dispatch) => ({
   loadReplay: (summary) => dispatch(loadReplay(summary)),
   updateUser: (userInfo) => dispatch(updateUser(userInfo)),
 });
 
-class ReplayGamechat extends React.Component {
+export class ReplayGamechat extends React.Component {
   state = {
     showFullChat: false,
     showPlayerChat: true,
     showGameChat: true,
     showObserverChat: true,
+    whispersOnly: false,
   };
 
   componentDidUpdate() {
@@ -57,6 +59,9 @@ class ReplayGamechat extends React.Component {
         break;
       case "History":
         this.setState({ showFullChat: !this.state.showFullChat });
+        break;
+      case "Whispers":
+        this.setState({ whispersOnly: !this.state.whispersOnly });
         break;
       default:
         console.log(`Unknown filter: ${filter}`);
@@ -118,12 +123,12 @@ class ReplayGamechat extends React.Component {
     const seatedUserNames = gameInfo.publicPlayersState
       ? gameInfo.publicPlayersState.map((player) => player.userName)
       : [];
-    const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
+    const { showFullChat, showPlayerChat, showGameChat, showObserverChat, whispersOnly } = this.state;
     const compareChatStrings = (a, b) => {
       const stringA = typeof a.chat === "string" ? a.chat : a.chat.map((object) => object.text).join("");
       const stringB = typeof b.chat === "string" ? b.chat : b.chat.map((object) => object.text).join("");
 
-      return stringA > stringB ? 1 : -1;
+      return stringA.localeCompare(stringB);
     };
     const time = new Date().getTime();
     /**
@@ -183,13 +188,14 @@ class ReplayGamechat extends React.Component {
     };
 
     if (gameInfo && gameInfo.chats) {
-      let list = gameInfo.chats
+      let list = [...gameInfo.chats]
         .sort((a, b) =>
           a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
         )
         .filter((chat) => {
-          // Match live chat: styling as gameChat must not bypass the Player filter.
-          if (chat.chat?.[1]?.type === "neighbor-chat") return showPlayerChat;
+          // Private conversations have their own view, independent of public chat filters.
+          if (isReplayWhisper(chat)) return true;
+          if (whispersOnly) return false;
           return (
             chat.isBroadcast ||
             (showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
@@ -218,6 +224,44 @@ class ReplayGamechat extends React.Component {
         const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
         const isSeated = seatedUserNames.includes(chat.userName);
         const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
+        if (isReplayWhisper(chat)) {
+          const { sender, recipient } = chat.neighborChat || {};
+          const seatName = (name) => {
+            const seat = seatedUserNames.indexOf(name);
+            return seat < 0 ? name : `#${seat + 1} ${name}`;
+          };
+          const label =
+            sender && recipient
+              ? `${seatName(sender)} → ${seatName(recipient)}`
+              : Array.isArray(chat.chat)
+                ? chat.chat[0]?.text
+                : "Archived Neighbor Chat";
+          const segments = Array.isArray(chat.chat)
+            ? chat.chat.filter((segment) => segment?.type === "neighbor-chat")
+            : [];
+          acc.push(
+            <div className="item neighbor-chat replay-whisper" key={chat.neighborChat?.id || i}>
+              <div className="replay-whisper-heading">
+                <i className="lock icon" aria-hidden="true" />
+                <span className="replay-whisper-label">Whisper · {label}</span>
+                {this.handleTimestamps(chat.timestamp)}
+              </div>
+              <span className="chat-role--neighbor-chat">
+                {segments.length
+                  ? segments.map((segment, index) => (
+                      <React.Fragment key={index}>
+                        {processEmotes(segment.text, isMod, this.props.allEmotes)}
+                      </React.Fragment>
+                    ))
+                  : chatContents}
+              </span>
+              {chat.neighborChat?.id && (
+                <NeighborChatReport chat={chat} username={userInfo.userName} gameUid={gameInfo.general?.uid} />
+              )}
+            </div>
+          );
+          return acc;
+        }
         acc.push(
           chat.gameChat ? (
             <div
@@ -361,10 +405,12 @@ class ReplayGamechat extends React.Component {
 
   render() {
     const { userInfo, gameInfo } = this.props;
-    const { showPlayerChat, showGameChat, showObserverChat, showFullChat } = this.state;
+    const { showPlayerChat, showGameChat, showObserverChat, showFullChat, whispersOnly } = this.state;
+    const whisperCount = (gameInfo.chats || []).filter(isReplayWhisper).length;
+    const chats = this.processChats();
 
     return (
-      <section className="gamechat">
+      <section className="gamechat replay-chat">
         <section className="ui pointing menu">
           <a className={"item"} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: "5px" }}>
             <i
@@ -396,7 +442,27 @@ class ReplayGamechat extends React.Component {
               style={{ color: showFullChat ? "#4169e1" : "indianred" }}
             />
           </a>
+          {(gameInfo.general?.neighborChat || whisperCount > 0) && (
+            <button
+              type="button"
+              className="item replay-whisper-filter"
+              data-filter="Whispers"
+              onClick={this.handleChatFilterClick}
+              aria-pressed={whispersOnly}
+              title={whispersOnly ? "Show all chat" : "Show only the whispers available to you"}
+            >
+              <i className="lock icon" aria-hidden="true" />
+              Whispers only ({whisperCount})
+            </button>
+          )}
         </section>
+        {(gameInfo.general?.neighborChat || whisperCount > 0) && (
+          <p className="replay-chat-privacy">
+            {userInfo.userName
+              ? "Whispers are private. Only your conversations or those available to your moderator role appear."
+              : "Log in to see your own whispers. Other players' conversations stay private."}
+          </p>
+        )}
         <section
           style={{
             fontSize:
@@ -410,7 +476,7 @@ class ReplayGamechat extends React.Component {
             renderThumbVertical={(props) => <div {...props} className="thumb-vertical" />}
           >
             <div className="ui list" style={{ color: "var(--theme-text-1)" }}>
-              {this.processChats()}
+              {chats?.length ? chats : <div className="replay-chat-empty">No messages available in this view.</div>}
             </div>
           </Scrollbars>
         </section>

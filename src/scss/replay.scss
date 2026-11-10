@@ -13,6 +13,54 @@
 	background-color: var(--theme-background-2);
 	padding: 0px;
 
+	.replay-chat > .ui.menu {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0;
+		border-radius: 0;
+		.replay-whisper-filter {
+			font: inherit;
+			font-size: 13px;
+			min-height: 36px;
+			border: 0;
+			cursor: pointer;
+			&[aria-pressed='true'] {
+				background: rgba($lteal, 0.2);
+				font-weight: bold;
+			}
+		}
+	}
+	.replay-chat-privacy,
+	.replay-chat-empty {
+		padding: 8px 10px;
+		margin: 0;
+		font-size: 13px;
+		line-height: 1.4;
+		color: var(--theme-text-1);
+	}
+	.replay-chat-privacy {
+		background: var(--theme-background-2);
+	}
+	.replay-whisper-heading {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px;
+		font-size: 12px;
+		font-weight: bold;
+		overflow-wrap: anywhere;
+	}
+	.chats .ui.list .item.replay-whisper {
+		padding: 7px 8px;
+		margin: 4px 0;
+		border-radius: 3px;
+		overflow-wrap: anywhere;
+		.ui.button {
+			float: right;
+			margin: 2px 0 0 6px;
+		}
+	}
+
 	.chats {
 		display: flex;
 		flex-direction: column-reverse;
