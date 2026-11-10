@@ -147,7 +147,9 @@ const DisplayLobbies = (props) => {
 
     if (game.playerChats === "disabled") {
       playerChats = <i className="mute icon" />;
-      playerChatsTooltip = "Player Chat Disabled";
+      playerChatsTooltip = game.neighborChat
+        ? "Public Player Chat Disabled - Neighbor Chat Enabled"
+        : "Player Chat Disabled";
     } else if (game.playerChats === "emotes") {
       playerChats = <i className="smile icon" />;
       playerChatsTooltip = "Emotes Only";
@@ -342,16 +344,6 @@ const DisplayLobbies = (props) => {
             {rainbowgame}
           </span>
         )}
-        {timedMode && (
-          <span data-tooltip={timedModeTooltip} data-inverted="">
-            {timedMode}
-          </span>
-        )}
-        {eloMinimum && (
-          <span data-tooltip={eloMinimumTooltip} data-inverted="">
-            {eloMinimum}
-          </span>
-        )}
         {xpMinimum && (
           <span data-tooltip={xpMinimumTooltip} data-inverted="">
             {xpMinimum}
@@ -375,6 +367,16 @@ const DisplayLobbies = (props) => {
         {unlistedGame && (
           <span data-tooltip={unlistedGameTooltip} data-inverted="">
             {unlistedGame}
+          </span>
+        )}
+        {timedMode && (
+          <span data-tooltip={timedModeTooltip} data-inverted="">
+            {timedMode}
+          </span>
+        )}
+        {eloMinimum && (
+          <span data-tooltip={eloMinimumTooltip} data-inverted="">
+            {eloMinimum}
           </span>
         )}
       </div>

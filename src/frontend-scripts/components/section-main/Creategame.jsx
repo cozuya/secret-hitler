@@ -357,7 +357,7 @@ export default class Creategame extends React.Component {
   // Neighbor Chat games are always casual (create-game.js enforces this on the server too).
   // While it's on, a Ranked or Practice selection reads and submits as Casual; switching Neighbor
   // Chat off restores the earlier choice. Private and Custom keep their own unrated types.
-  neighborChatActive = () => Boolean(this.state.neighborChat && this.state.playerChats !== "disabled");
+  neighborChatActive = () => Boolean(this.state.neighborChat);
 
   effectiveGameType = () =>
     this.neighborChatActive() && ["ranked", "practice"].includes(this.state.gameType) ? "casual" : this.state.gameType;
@@ -498,7 +498,7 @@ export default class Creategame extends React.Component {
         value: "disabled",
         label: (
           <>
-            <span title="Player chats are disabled (e.g. for voice chat games)">Disabled</span>
+            <span title="Public player chats are disabled (e.g. for voice chat games)">Disabled</span>
           </>
         ),
       },
@@ -547,7 +547,6 @@ export default class Creategame extends React.Component {
           // Silent (disabled) games may now be ranked, so selecting it no longer forces practice.
           this.setState({
             playerChats: inputValue.value,
-            neighborChat: inputValue.value === "disabled" ? false : this.state.neighborChat,
           });
         }}
         menuPlacement={"auto"}
@@ -750,7 +749,6 @@ export default class Creategame extends React.Component {
           sliderValues: [7, 7],
           experiencedmode: true,
           playerChats: "disabled",
-          neighborChat: false,
           disablegameChat: false,
           disableobserverlobby: false,
           disableobserver: true,
@@ -794,7 +792,6 @@ export default class Creategame extends React.Component {
           sliderValues: [7, 7],
           experiencedmode: true,
           playerChats: "disabled",
-          neighborChat: false,
           disablegameChat: false,
           disableobserverlobby: true,
           disableobserver: true,
@@ -1129,7 +1126,7 @@ export default class Creategame extends React.Component {
         noVoteReveal: this.state.noVoteReveal,
         flappyMode: this.state.flappyMode && !this.state.avalonSH && !this.state.monarchistSH && !this.state.blindMode,
         flappyOnlyMode: this.state.flappyOnlyMode,
-        neighborChat: this.state.neighborChat && this.state.playerChats !== "disabled",
+        neighborChat: this.state.neighborChat,
         timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
         rebalance6p: this.state.checkedRebalanceValues[0],
         rebalance7p: this.state.checkedRebalanceValues[1],
@@ -2184,7 +2181,9 @@ export default class Creategame extends React.Component {
           <div className="row sliderrow">
             <div className="four wide column playerchats">
               <i className="big unmute icon" />
-              <h4 className="ui header">Player chat - disable to only allow claiming and game messages</h4>
+              <h4 className="ui header">
+                Public player chat - disable public messages while keeping claims and chat commands available
+              </h4>
               {this.renderPlayerChatDropdown()}
             </div>
 
@@ -2544,7 +2543,12 @@ export default class Creategame extends React.Component {
                 number (for example /4); messages are visible only to you, your neighbor, and authorized moderators,
                 including after the game. Neighbor Chat games are always casual.
               </h4>
-              {this.state.playerChats === "disabled" && <p>Enable player chat to use Neighbor Chat.</p>}
+              {this.state.playerChats === "disabled" && (
+                <p>
+                  Public chat stays disabled. Use /l, /r, or a neighbor's seat number (for example /4) when Neighbor
+                  Chat is enabled.
+                </p>
+              )}
               <Switch
                 className="create-game-switch"
                 onChange={(checked) => {
@@ -2559,8 +2563,7 @@ export default class Creategame extends React.Component {
                     playerChats: resetPlayerChats ? "enabled" : this.state.playerChats,
                   });
                 }}
-                checked={this.state.neighborChat && this.state.playerChats !== "disabled"}
-                disabled={this.state.playerChats === "disabled"}
+                checked={this.state.neighborChat}
                 onColor="#627cc8"
                 offColor="#444444"
                 uncheckedIcon={false}

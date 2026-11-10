@@ -88,6 +88,43 @@ describe("Gamechat", () => {
       expect.any(Function)
     );
   });
+
+  it.each([false, true])("explains the available commands in silent games (Neighbor Chat: %s)", (neighborChat) => {
+    const component = shallowWithStore(
+      <Gamechat
+        userInfo={{ userName: "Recipient", isSeated: true, gameSettings: {} }}
+        userList={{ list: [{ userName: "Recipient" }] }}
+        allEmotes={{}}
+        socket={{ on: jest.fn(), emit: jest.fn() }}
+        gameInfo={{
+          general: { neighborChat, playerChats: "disabled" },
+          gameState: { isStarted: true, isTracksFlipped: true },
+          publicPlayersState: [{ userName: "Recipient" }],
+          chats: [],
+        }}
+      />,
+      createMockStore({ notesActive: false })
+    ).dive({ disableLifecycleMethods: true });
+    const status = component.instance().gameChatStatus();
+    expect(status.isDisabled).toBe(false);
+    expect(status.placeholder.includes("/l, /r, or /N")).toBe(neighborChat);
+    expect(status.placeholder).toContain(neighborChat ? "Public chat disabled" : "Chat commands only");
+
+    const original = component.instance().props.gameInfo;
+    component.setProps({ gameInfo: { ...original, publicPlayersState: [{ userName: "Recipient", isDead: true }] } });
+    expect(component.instance().gameChatStatus()).toEqual({ isDisabled: true, placeholder: "Dead men tell no tales" });
+    component.setProps({
+      gameInfo: {
+        ...original,
+        gameState: { ...original.gameState, phase: "presidentSelectingPolicy" },
+        publicPlayersState: [{ userName: "Recipient", governmentStatus: "isPresident" }],
+      },
+    });
+    expect(component.instance().gameChatStatus()).toEqual({
+      isDisabled: true,
+      placeholder: "Chat disabled for card selection",
+    });
+  });
 });
 
 describe.each([
@@ -124,7 +161,7 @@ describe.each([
     return view === "replay" ? component.dive({ disableLifecycleMethods: true }) : component;
   };
 
-  it.each(["enabled", "emotes"])("renders emotes inside the styled message with %s player chat", (mode) => {
+  it.each(["enabled", "emotes", "disabled"])("renders emotes inside the styled message with %s player chat", (mode) => {
     const component = renderChat(mode);
     const rows = shallow(<div>{component.instance().processChats()}</div>);
     const message = rows.find(".chat-role--neighbor-chat");

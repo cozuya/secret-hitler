@@ -50,31 +50,54 @@ describe("Creategame", () => {
     expect(socket.emit).toHaveBeenCalledWith("addNewGame", expect.objectContaining({ neighborChat: true }));
   });
 
-  it("clears and disables Neighbor Chat when player chat is disabled", () => {
+  it("keeps Neighbor Chat selected when public player chat is disabled", () => {
     const socket = { emit: jest.fn() };
     const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} socket={socket} />);
     component.setState({ neighborChat: true });
     const changeChatMode = (value) => component.instance().renderPlayerChatDropdown().props.onChange({ value });
     changeChatMode("disabled");
-    expect(component.state("neighborChat")).toBe(false);
+    expect(component.state("neighborChat")).toBe(true);
     const option = component.find(".four.wide.column").filterWhere((column) => column.find(".exchange.icon").exists());
-    expect(option.find(Switch).prop("disabled")).toBe(true);
-    expect(option.find(Switch).prop("checked")).toBe(false);
+    expect(option.find(Switch).prop("disabled")).toBeFalsy();
+    expect(option.find(Switch).prop("checked")).toBe(true);
+    expect(option.text()).toContain("Public chat stays disabled");
     component.instance().createNewGame();
     expect(socket.emit).toHaveBeenLastCalledWith(
       "addNewGame",
-      expect.objectContaining({ neighborChat: false, playerChats: "disabled" })
+      expect.objectContaining({ neighborChat: true, playerChats: "disabled" })
     );
     changeChatMode("enabled");
-    expect(component.state("neighborChat")).toBe(false);
+    expect(component.state("neighborChat")).toBe(true);
   });
 
-  it.each(["Silent Game", "2R1H"])("clears Neighbor Chat for the %s preset", (preset) => {
+  it.each([
+    ["Silent Game", false],
+    ["Silent Game", true],
+    ["2R1H", false],
+    ["2R1H", true],
+  ])("preserves the Neighbor Chat selection for the %s preset (selected: %s)", (preset, neighborChat) => {
     const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} />);
-    component.setState({ neighborChat: true });
+    component.setState({ neighborChat });
     component.instance().presetSelector(preset);
     expect(component.state("playerChats")).toBe("disabled");
+    expect(component.state("neighborChat")).toBe(neighborChat);
+  });
+
+  it.each(["ranked", "practice"])("lets a silent %s game enable Neighbor Chat afterwards", (gameType) => {
+    const socket = { emit: jest.fn() };
+    const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} socket={socket} />);
+    component.setState({ gameType });
+    component.instance().renderPlayerChatDropdown().props.onChange({ value: "disabled" });
     expect(component.state("neighborChat")).toBe(false);
+    const option = () =>
+      component.find(".four.wide.column").filterWhere((column) => column.find(".exchange.icon").exists());
+    expect(option().find(Switch).prop("disabled")).toBeFalsy();
+    option().find(Switch).prop("onChange")(true);
+    component.instance().createNewGame();
+    expect(socket.emit).toHaveBeenLastCalledWith(
+      "addNewGame",
+      expect.objectContaining({ neighborChat: true, playerChats: "disabled", gameType: "casual" })
+    );
   });
 
   it("restores the default-off Neighbor Chat selection after Reset", () => {
@@ -94,11 +117,14 @@ describe("Creategame", () => {
     expect(socket.emit).toHaveBeenLastCalledWith("addNewGame", expect.objectContaining({ neighborChat: false }));
   });
 
-  it("does not send a stale Neighbor Chat selection with disabled player chat", () => {
+  it("sends independent Neighbor Chat and disabled public chat flags", () => {
     const socket = { emit: jest.fn() };
     const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} socket={socket} />);
     component.setState({ neighborChat: true, playerChats: "disabled" });
     component.instance().createNewGame();
-    expect(socket.emit).toHaveBeenLastCalledWith("addNewGame", expect.objectContaining({ neighborChat: false }));
+    expect(socket.emit).toHaveBeenLastCalledWith(
+      "addNewGame",
+      expect.objectContaining({ neighborChat: true, playerChats: "disabled" })
+    );
   });
 });
