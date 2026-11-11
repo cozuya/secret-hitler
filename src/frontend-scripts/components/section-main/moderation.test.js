@@ -15,6 +15,12 @@ describe("Moderation", () => {
       playerInputText: "",
       resetServerCount: 0,
       logCount: 1,
+      modLogPage: 0,
+      modLogCursors: [null],
+      modLogNextCursor: null,
+      modLogHasMore: false,
+      modLogLoading: true,
+      modLogError: "",
       modLogToday: false,
       nonSeasonalSetStats: false,
       logSort: {
