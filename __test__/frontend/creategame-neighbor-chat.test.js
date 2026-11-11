@@ -65,13 +65,25 @@ describe("Creategame Neighbor Chat is always casual", () => {
     expect(wrapper.state("playerChats")).toBe("enabled");
   });
 
-  it("does not force casual when player chat is disabled (Neighbor Chat unavailable)", () => {
+  it.each([
+    "ranked",
+    "practice",
+  ])("keeps silent Neighbor Chat casual and restores the prior %s selection when disabled", (gameType) => {
     const { wrapper, socket } = mount();
-    wrapper.setState({ neighborChat: true, playerChats: "disabled" });
-    expect(gameTypeSelect(wrapper).prop("value").value).toBe("ranked");
-    expect(gameTypeSelect(wrapper).prop("isDisabled")).toBe(false);
+    wrapper.setState({ gameType, neighborChat: true, playerChats: "disabled" });
+    expect(gameTypeSelect(wrapper).prop("value").value).toBe("casual");
+    expect(gameTypeSelect(wrapper).prop("isDisabled")).toBe(true);
+    expect(wrapper.find(".neighbor-chat-casual-note").text()).toBe("Neighbor Chat games are always casual.");
     wrapper.instance().createNewGame();
-    expect(submitted(socket)).toMatchObject({ gameType: "ranked", neighborChat: false });
+    expect(submitted(socket)).toMatchObject({ gameType: "casual", neighborChat: true, playerChats: "disabled" });
+
+    neighborChatSwitch(wrapper).prop("onChange")(false);
+    expect(gameTypeSelect(wrapper).prop("value").value).toBe(gameType);
+    expect(gameTypeSelect(wrapper).prop("isDisabled")).toBe(false);
+    expect(wrapper.state("playerChats")).toBe("disabled");
+    socket.emit.mockClear();
+    wrapper.instance().createNewGame();
+    expect(submitted(socket)).toMatchObject({ gameType, neighborChat: false, playerChats: "disabled" });
   });
 
   it("keeps a Custom game Custom with Neighbor Chat on", () => {

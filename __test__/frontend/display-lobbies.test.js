@@ -71,8 +71,8 @@ describe("DisplayLobbies option icons", () => {
         "shield",
         "gavel",
         "exchange",
-        "timer",
         "plane",
+        "timer",
       ]);
     });
 
