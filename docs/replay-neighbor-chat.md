@@ -1,8 +1,11 @@
 # Neighbor chats in replays
 
 Every replay viewer, including logged-out visitors, can read the game's archived
-neighbor conversations. The chat panel labels sender and recipient, counts
-whispers, and offers a Whispers-only filter. Older neighbor rows without modern
+neighbor conversations. The chat panel starts with public chat only. Independent
+Show/Hide whispers and Show/Hide public chat buttons allow public-only, combined,
+or whispers-only views, and preserve the existing player/game/observer filters.
+The whisper button counts archived messages, and visible whispers label sender
+and recipient. Older neighbor rows without modern
 participant metadata remain visible in replays, and duplicate archive rows appear
 only once.
 
@@ -22,8 +25,9 @@ keep their existing filtering and do not acquire neighbor conversations through
 this change. Help commands, lobby and board tooltips, creation settings, replay
 labels, changelog and site rules disclose the replay visibility.
 
-Validation: 96 suites / 1,082 tests passed, plus lint and production build. Local
-Chromium checks against the server and MongoDB confirmed all archived pairs appear
-for participants, unrelated users, admins and anonymous viewers, and the
-Whispers-only filter works. The browser check used a fixture game summary; chat
-loading and authorization used the actual socket route and persisted archive.
+Validation covers public-only defaults, each combination of public/whisper
+visibility, preserved public filters, legacy messages and visibility for every
+replay viewer. Local Chromium checks against the server and MongoDB also cover
+archived conversations for participants, unrelated users, admins and anonymous
+viewers; chat loading and authorization use the actual socket route and persisted
+archive.

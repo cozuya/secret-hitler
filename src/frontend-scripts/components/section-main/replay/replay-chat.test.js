@@ -38,6 +38,8 @@ const render = (username = "Bob", canReview = false, savedGame = archive()) => {
   );
 };
 const chatText = (wrapper) => shallow(<div>{wrapper.instance().processChats()}</div>).text();
+const toggle = (wrapper, filter) =>
+  wrapper.find(`[data-filter='${filter}']`).simulate("click", { currentTarget: { getAttribute: () => filter } });
 
 describe("private conversations in replay chat", () => {
   it.each([
@@ -46,10 +48,17 @@ describe("private conversations in replay chat", () => {
     ["Alice", false, 3],
     ["Bob", false, 3],
     ["Reviewer", true, 3],
-  ])("displays and counts all replay whispers for %s (reviewer: %s)", (username, canReview, count) => {
+  ])("defaults to public chat and lets %s view all replay whispers (reviewer: %s)", (username, canReview, count) => {
     const wrapper = render(username, canReview);
+    expect(wrapper.find(".replay-whisper")).toHaveLength(0);
+    expect(wrapper.find(".replay-whisper-filter").text()).toContain(`Show whispers (${count})`);
+    expect(wrapper.find(".replay-whisper-filter").prop("aria-pressed")).toBe(false);
+    expect(wrapper.find(".replay-public-filter").text()).toContain("Hide public chat");
+    expect(wrapper.find(".replay-public-filter").prop("aria-pressed")).toBe(true);
+    expect(chatText(wrapper)).toContain("Public message");
+    expect(chatText(wrapper)).not.toContain("First private message");
+    toggle(wrapper, "Whispers");
     expect(wrapper.find(".replay-whisper")).toHaveLength(count);
-    expect(wrapper.find(".replay-whisper-filter").text()).toContain(`(${count})`);
     expect(chatText(wrapper)).toContain("Unrelated secret");
     expect(chatText(wrapper)).toContain("First private message");
     expect(wrapper.find(".replay-chat-privacy").text()).toContain("visible to everyone in replays");
@@ -57,6 +66,7 @@ describe("private conversations in replay chat", () => {
 
   it("shows directions, renders emotes and keeps recipient reporting available", () => {
     const wrapper = render();
+    toggle(wrapper, "Whispers");
     expect(wrapper.find(".replay-whisper-label").at(0).text()).toBe("Whisper · #1 Alice → #2 Bob");
     expect(wrapper.find(".chat-role--neighbor-chat").at(1).find("img").prop("src")).toBe("/emotes/ja.png");
     const reports = wrapper.find(NeighborChatReport);
@@ -66,14 +76,36 @@ describe("private conversations in replay chat", () => {
     expect(reports.at(2).dive().isEmptyRender()).toBe(true);
   });
 
-  it("switches between all chat and whispers without losing filters or mutating history", () => {
+  it.each([
+    [false, true],
+    [true, true],
+    [true, false],
+    [false, false],
+  ])("independently shows whispers %s and public chat %s", (showWhispers, showPublicChat) => {
+    const wrapper = render();
+    if (showWhispers) toggle(wrapper, "Whispers");
+    if (!showPublicChat) toggle(wrapper, "Public");
+    expect(wrapper.find(".replay-whisper")).toHaveLength(showWhispers ? 3 : 0);
+    expect(chatText(wrapper).includes("Public message")).toBe(showPublicChat);
+    expect(wrapper.find(".replay-whisper-filter").prop("aria-pressed")).toBe(showWhispers);
+    expect(wrapper.find(".replay-public-filter").prop("aria-pressed")).toBe(showPublicChat);
+    expect(wrapper.find(".replay-chat-empty")).toHaveLength(!showWhispers && !showPublicChat ? 1 : 0);
+  });
+
+  it("preserves public filters and chat history when toggling channels back and forth", () => {
     const wrapper = render();
     const original = JSON.stringify(wrapper.instance().props.gameInfo);
-    wrapper.find("[data-filter='Whispers']").simulate("click", { currentTarget: { getAttribute: () => "Whispers" } });
-    expect(wrapper.find("[data-filter='Whispers']").prop("aria-pressed")).toBe(true);
+    toggle(wrapper, "Player");
+    toggle(wrapper, "Whispers");
     expect(chatText(wrapper)).not.toContain("Public message");
     expect(wrapper.find(".replay-whisper")).toHaveLength(3);
-    wrapper.instance().handleChatFilterClick({ currentTarget: { getAttribute: () => "Whispers" } });
+    toggle(wrapper, "Public");
+    toggle(wrapper, "Public");
+    expect(wrapper.state("showPlayerChat")).toBe(false);
+    expect(chatText(wrapper)).not.toContain("Public message");
+    toggle(wrapper, "Whispers");
+    expect(wrapper.find(".replay-whisper")).toHaveLength(0);
+    toggle(wrapper, "Player");
     expect(chatText(wrapper)).toContain("Public message");
     const history = wrapper.instance().props.gameInfo.chats;
     const order = history.map((chat) => chat.timestamp);
@@ -84,9 +116,45 @@ describe("private conversations in replay chat", () => {
 
   it("provides an honest empty state when the archive has no neighbor chats", () => {
     const wrapper = render("Stranger", false, { ...archive(), neighborChats: [] });
-    wrapper.instance().handleChatFilterClick({ currentTarget: { getAttribute: () => "Whispers" } });
+    toggle(wrapper, "Whispers");
+    toggle(wrapper, "Public");
     expect(wrapper.find(".replay-chat-empty").text()).toBe("No messages available in this view.");
     expect(chatText(wrapper)).not.toContain("Public message");
+  });
+
+  it("hides broadcasts and staff messages along with all other public chat", () => {
+    const savedGame = archive();
+    savedGame.chats.push(
+      { userName: "Admin", timestamp: 4, isBroadcast: true, chat: "Public broadcast" },
+      { userName: "Moderator", timestamp: 5, staffRole: "moderator", chat: "Public staff message" }
+    );
+    const wrapper = render("Stranger", false, savedGame);
+    expect(wrapper.find(".broadcast-chat")).toHaveLength(1);
+    expect(chatText(wrapper)).toContain("Public staff message");
+    toggle(wrapper, "Whispers");
+    toggle(wrapper, "Public");
+    expect(wrapper.find(".broadcast-chat")).toHaveLength(0);
+    expect(chatText(wrapper)).not.toContain("Public staff message");
+    expect(wrapper.find(".replay-whisper")).toHaveLength(3);
+  });
+
+  it("applies the whisper toggle to older messages without participant metadata", () => {
+    const legacy = whisper("legacy", "Alice", "Bob", "Legacy private message", 1);
+    delete legacy.neighborChat;
+    const wrapper = render(null, false, { ...archive(), neighborChats: [legacy] });
+    expect(chatText(wrapper)).not.toContain("Legacy private message");
+    toggle(wrapper, "Whispers");
+    expect(wrapper.find(".replay-whisper")).toHaveLength(1);
+    expect(chatText(wrapper)).toContain("Legacy private message");
+    toggle(wrapper, "Whispers");
+    expect(chatText(wrapper)).not.toContain("Legacy private message");
+  });
+
+  it("keeps normal replays' existing public chat controls without extra channel buttons", () => {
+    const wrapper = render("Stranger", false, { ...archive(), neighborChat: false, neighborChats: [] });
+    expect(wrapper.find(".replay-whisper-filter")).toHaveLength(0);
+    expect(wrapper.find(".replay-public-filter")).toHaveLength(0);
+    expect(chatText(wrapper)).toContain("Public message");
   });
 });
 

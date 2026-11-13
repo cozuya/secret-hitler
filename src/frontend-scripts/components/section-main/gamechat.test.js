@@ -121,7 +121,10 @@ describe.each([
       />,
       createMockStore({ notesActive: false })
     ).dive({ disableLifecycleMethods: true });
-    return view === "replay" ? component.dive({ disableLifecycleMethods: true }) : component;
+    if (view !== "replay") return component;
+    const replay = component.dive({ disableLifecycleMethods: true });
+    replay.setState({ showWhispers: true });
+    return replay;
   };
 
   it.each(["enabled", "emotes"])("renders emotes inside the styled message with %s player chat", (mode) => {

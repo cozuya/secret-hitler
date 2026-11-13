@@ -19,7 +19,8 @@ export class ReplayGamechat extends React.Component {
     showPlayerChat: true,
     showGameChat: true,
     showObserverChat: true,
-    whispersOnly: false,
+    showWhispers: false,
+    showPublicChat: true,
   };
 
   componentDidUpdate() {
@@ -61,7 +62,10 @@ export class ReplayGamechat extends React.Component {
         this.setState({ showFullChat: !this.state.showFullChat });
         break;
       case "Whispers":
-        this.setState({ whispersOnly: !this.state.whispersOnly });
+        this.setState({ showWhispers: !this.state.showWhispers });
+        break;
+      case "Public":
+        this.setState({ showPublicChat: !this.state.showPublicChat });
         break;
       default:
         console.log(`Unknown filter: ${filter}`);
@@ -123,7 +127,7 @@ export class ReplayGamechat extends React.Component {
     const seatedUserNames = gameInfo.publicPlayersState
       ? gameInfo.publicPlayersState.map((player) => player.userName)
       : [];
-    const { showFullChat, showPlayerChat, showGameChat, showObserverChat, whispersOnly } = this.state;
+    const { showFullChat, showPlayerChat, showGameChat, showObserverChat, showWhispers, showPublicChat } = this.state;
     const compareChatStrings = (a, b) => {
       const stringA = typeof a.chat === "string" ? a.chat : a.chat.map((object) => object.text).join("");
       const stringB = typeof b.chat === "string" ? b.chat : b.chat.map((object) => object.text).join("");
@@ -194,8 +198,8 @@ export class ReplayGamechat extends React.Component {
         )
         .filter((chat) => {
           // Private conversations have their own view, independent of public chat filters.
-          if (isReplayWhisper(chat)) return true;
-          if (whispersOnly) return false;
+          if (isReplayWhisper(chat)) return showWhispers;
+          if (!showPublicChat) return false;
           return (
             chat.isBroadcast ||
             (showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
@@ -405,7 +409,7 @@ export class ReplayGamechat extends React.Component {
 
   render() {
     const { userInfo, gameInfo } = this.props;
-    const { showPlayerChat, showGameChat, showObserverChat, showFullChat, whispersOnly } = this.state;
+    const { showPlayerChat, showGameChat, showObserverChat, showFullChat, showWhispers, showPublicChat } = this.state;
     const whisperCount = (gameInfo.chats || []).filter(isReplayWhisper).length;
     const chats = this.processChats();
 
@@ -443,17 +447,30 @@ export class ReplayGamechat extends React.Component {
             />
           </a>
           {(gameInfo.general?.neighborChat || whisperCount > 0) && (
-            <button
-              type="button"
-              className="item replay-whisper-filter"
-              data-filter="Whispers"
-              onClick={this.handleChatFilterClick}
-              aria-pressed={whispersOnly}
-              title={whispersOnly ? "Show all chat" : "Show only neighbor chats"}
-            >
-              <i className="lock icon" aria-hidden="true" />
-              Whispers only ({whisperCount})
-            </button>
+            <React.Fragment>
+              <button
+                type="button"
+                className="item replay-whisper-filter"
+                data-filter="Whispers"
+                onClick={this.handleChatFilterClick}
+                aria-pressed={showWhispers}
+                title={showWhispers ? "Hide neighbor whispers" : "Show neighbor whispers"}
+              >
+                <i className="lock icon" aria-hidden="true" />
+                {showWhispers ? "Hide whispers" : "Show whispers"} ({whisperCount})
+              </button>
+              <button
+                type="button"
+                className="item replay-public-filter"
+                data-filter="Public"
+                onClick={this.handleChatFilterClick}
+                aria-pressed={showPublicChat}
+                title={showPublicChat ? "Hide public chat, game messages and observer chat" : "Show public chat"}
+              >
+                <i className="comments icon" aria-hidden="true" />
+                {showPublicChat ? "Hide public chat" : "Show public chat"}
+              </button>
+            </React.Fragment>
           )}
         </section>
         {(gameInfo.general?.neighborChat || whisperCount > 0) && (
