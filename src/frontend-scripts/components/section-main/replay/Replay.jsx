@@ -16,6 +16,7 @@ import TrackPieces from "./TrackPieces.jsx";
 import socket from "../../../socket";
 import PropTypes from "prop-types";
 import * as Swal from "sweetalert2";
+import { isReplayWhisper } from "../../../replay/chat";
 
 const mapStateToProps = ({ replay, userInfo }) => ({
   replay,
@@ -191,7 +192,7 @@ const Replay = ({
             <Tracks gameInfo={gameInfo} userInfo={userInfo} />
           </div>
           <div className="right-side">
-            {chatsShown && gameInfo.chats.length ? (
+            {chatsShown ? (
               <ReplayGamechat userInfo={userInfo} userList={userList} gameInfo={gameInfo} allEmotes={allEmotes} />
             ) : (
               <ReplayControls
@@ -241,6 +242,7 @@ export class ReplayWrapper extends React.Component {
 
   componentDidMount() {
     socket.on("replayGameData", (gameData) => {
+      if (gameData?.uid !== this.props.replay.game?.id) return;
       this.setState({
         gameData,
       });
@@ -255,12 +257,16 @@ export class ReplayWrapper extends React.Component {
     switch (this.props.replay.status) {
       case "INITIAL":
       case "LOADING":
-        if (this.state.requestedData) this.setState({ requestedData: false }); // ensure our data isn't stale
+        if (this.state.requestedData || Object.keys(this.state.gameData).length) {
+          this.setState({ requestedData: false, gameData: {} });
+        }
         break;
       case "READY":
-        if (!this.state.requestedData) {
+        if (!this.state.requestedData || prevProps.replay.game?.id !== this.props.replay.game.id) {
           socket.emit("getReplayGameData", this.props.replay.game.id);
           this.setState({
+            gameData: {},
+            requestedData: true,
             legacyReplay: !(
               this.props.replay.ticks &&
               this.props.replay.ticks.get(0) &&
@@ -268,7 +274,6 @@ export class ReplayWrapper extends React.Component {
               this.props.replay.ticks.get(0).deckState.size > 0
             ),
           });
-          this.setState({ requestedData: true });
         }
         break;
     }
@@ -348,6 +353,11 @@ export class ReplayWrapper extends React.Component {
           </button>
           <button className="displaychats ui inverted blue button" onClick={toggleChats}>
             {this.state.chatsShown ? "Hide chats" : "Show chats"}
+            {(this.state.gameData.chats || []).some(isReplayWhisper) && (
+              <span className="replay-whisper-count">
+                {` · ${this.state.gameData.chats.filter(isReplayWhisper).length} whispers`}
+              </span>
+            )}
           </button>
           <button className="exit ui inverted red button" onClick={toExit}>
             <i className="sign out icon" />

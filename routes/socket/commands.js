@@ -104,7 +104,7 @@ module.exports.commands = [
     name: ["l"],
     neighborChatOnly: true,
     description:
-      "Messages your nearest living left neighbor; visible only to participants and authorized moderators, including afterwards.",
+      "Messages your nearest living left neighbor; visible only to participants and authorized moderators during play, and to everyone in replays.",
     examples: ["/l <message>"],
     argumentsFormat: /^(.+)$/,
     aemOnly: false,
@@ -116,7 +116,7 @@ module.exports.commands = [
     name: ["r"],
     neighborChatOnly: true,
     description:
-      "Messages your nearest living right neighbor; visible only to participants and authorized moderators, including afterwards.",
+      "Messages your nearest living right neighbor; visible only to participants and authorized moderators during play, and to everyone in replays.",
     examples: ["/r <message>"],
     argumentsFormat: /^(.+)$/,
     aemOnly: false,
@@ -133,7 +133,7 @@ module.exports.commands = [
     matchesName: (name) => /^\d{1,2}$/.test(name),
     neighborChatOnly: true,
     description:
-      "Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators, including afterwards.",
+      "Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators during play, and to everyone in replays.",
     examples: ["/2 <message>", "/4 <message>"],
     argumentsFormat: /^(.+)$/,
     aemOnly: false,

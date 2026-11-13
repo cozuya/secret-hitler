@@ -575,8 +575,8 @@ describe("Neighbor Chat guards", () => {
     run("/help");
     expect(game.private.commandChats.Player1.map(textOf)).toEqual(
       expect.arrayContaining([
-        "/l - Messages your nearest living left neighbor; visible only to participants and authorized moderators, including afterwards.",
-        "/r - Messages your nearest living right neighbor; visible only to participants and authorized moderators, including afterwards.",
+        "/l - Messages your nearest living left neighbor; visible only to participants and authorized moderators during play, and to everyone in replays.",
+        "/r - Messages your nearest living right neighbor; visible only to participants and authorized moderators during play, and to everyone in replays.",
       ])
     );
     // Other commands retain their existing full update path.
@@ -874,7 +874,7 @@ describe("Neighbor Chat by seat number (/N)", () => {
   it("is listed in /help only in Neighbor Chat games", () => {
     run("/help");
     expect(game.private.commandChats.Player1.map(textOf)).toContain(
-      "/N - Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators, including afterwards."
+      "/N - Messages seat N if it is your nearest living left or right neighbor; visible only to participants and authorized moderators during play, and to everyone in replays."
     );
     game.general.neighborChat = false;
     game.private.commandChats = {};

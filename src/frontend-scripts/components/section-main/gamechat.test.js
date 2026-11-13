@@ -121,7 +121,10 @@ describe.each([
       />,
       createMockStore({ notesActive: false })
     ).dive({ disableLifecycleMethods: true });
-    return view === "replay" ? component.dive({ disableLifecycleMethods: true }) : component;
+    if (view !== "replay") return component;
+    const replay = component.dive({ disableLifecycleMethods: true });
+    replay.setState({ showWhispers: true });
+    return replay;
   };
 
   it.each(["enabled", "emotes"])("renders emotes inside the styled message with %s player chat", (mode) => {
@@ -154,11 +157,11 @@ describe.each([
     [false, true, false],
     [false, false, true],
     [false, false, false],
-  ])("classifies neighbor chat under Player alone (Player %s, Game %s, Observer %s)", (showPlayerChat, showGameChat, showObserverChat) => {
+  ])("filters public chats separately from replay whispers (Player %s, Game %s, Observer %s)", (showPlayerChat, showGameChat, showObserverChat) => {
     const component = renderChat();
     component.setState({ showPlayerChat, showGameChat, showObserverChat });
     const rows = shallow(<div>{component.instance().processChats()}</div>);
-    expect(rows.find(".item.neighbor-chat")).toHaveLength(showPlayerChat ? 1 : 0);
+    expect(rows.find(".item.neighbor-chat")).toHaveLength(view === "replay" || showPlayerChat ? 1 : 0);
     expect(rows.find(".item.game-chat").not(".neighbor-chat")).toHaveLength(showGameChat ? 1 : 0);
     expect(rows.text().includes("Public player message")).toBe(showPlayerChat);
     expect(rows.text().includes("Spectator message")).toBe(showObserverChat);

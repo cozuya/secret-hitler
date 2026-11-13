@@ -246,7 +246,7 @@ const DisplayLobbies = (props) => {
     if (game.neighborChat) {
       neighborChat = <i className="exchange icon" />;
       neighborChatTooltip =
-        "Neighbor Chat (always casual) - /l and /r message your nearest living neighbor to the left or right, or use their seat number (for example /4); messages are visible only to you, your neighbor, and authorized moderators, including after the game.";
+        "Neighbor Chat (always casual) - /l and /r message your nearest living neighbor to the left or right, or use their seat number (for example /4); messages are visible only to you, your neighbor, and authorized moderators during play. All neighbor chats are visible to everyone in replays.";
     }
 
     if (game.isUnlisted) {

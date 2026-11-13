@@ -57,8 +57,8 @@ beforeEach(() => {
   PlayerReport.save.mockResolvedValue({});
 });
 
-describe("restricted replay transcripts", () => {
-  it.each([undefined, "Stranger", "Carol"])("does not expose another pair's messages to %s", (username) => {
+describe("replay transcripts and export privacy", () => {
+  it.each([undefined, "Stranger", "Carol"])("keeps other pairs out of the default export for %s", (username) => {
     const result = replayForViewer(archive, username, false);
     expect(result).not.toHaveProperty("neighborChats");
     expect(result).not.toHaveProperty("hiddenInfoChat");
@@ -67,18 +67,35 @@ describe("restricted replay transcripts", () => {
     expect(result.chats).toEqual(username === "Carol" ? [archive.chats[0], unrelated] : [archive.chats[0]]);
   });
 
-  it("returns both directions to a participant exactly once, without modifying the stored record", () => {
+  it("keeps the participant export deduplicated without modifying the stored record", () => {
     archive.chats.push(incoming); // Also cover records written by the earlier public-replay implementation.
     const before = JSON.stringify(archive);
     expect(replayForViewer(archive, "Bob", false).chats).toEqual([archive.chats[0], incoming, outgoing]);
     expect(JSON.stringify(archive)).toBe(before);
   });
 
-  it("withholds legacy neighbor rows without trustworthy identities from ordinary viewers", () => {
+  it("withholds unidentified legacy rows from the default export", () => {
     const legacy = { gameChat: true, chat: [{ text: "Alice to Bob" }, { type: "neighbor-chat", text: "legacy" }] };
     archive.chats.push(legacy);
     expect(replayForViewer(archive, "Bob", false).chats).not.toContain(legacy);
     expect(replayForViewer(archive, "Reviewer", true).chats).toContain(legacy);
+  });
+
+  it.each([
+    undefined,
+    "Stranger",
+    "Bob",
+  ])("includes all archived pairs exactly once in a public replay for %s", (username) => {
+    archive.chats.push(incoming);
+    const legacy = { gameChat: true, chat: [{ type: "neighbor-chat", text: "legacy whisper" }] };
+    archive.hiddenInfoChat.push(legacy);
+    const before = JSON.stringify(archive);
+    const result = replayForViewer(archive, username, false, { includeAllNeighborChats: true });
+    expect(result.chats).toEqual([archive.chats[0], incoming, outgoing, unrelated, legacy]);
+    expect(result).not.toHaveProperty("neighborChats");
+    expect(result).not.toHaveProperty("hiddenInfoChat");
+    expect(result.chats).not.toContain(archive.hiddenInfoChat[0]);
+    expect(JSON.stringify(archive)).toBe(before);
   });
 
   it.each([
@@ -109,32 +126,61 @@ describe("restricted replay transcripts", () => {
     const socket = makeSocket("Stranger");
     socket.handshake.session.passport.staffRole = "admin";
     await sendReplayGameData(socket, "table");
-    expect(socket.emit).toHaveBeenCalledWith("replayGameData", { uid: "table", chats: [archive.chats[0]] });
+    expect(socket.emit).toHaveBeenCalledWith("replayGameData", {
+      uid: "table",
+      chats: [archive.chats[0], incoming, outgoing, unrelated],
+    });
   });
 
-  it("serves anonymous viewers only public chats and deleted accounts no participant access", async () => {
+  it("serves all archived conversations to anonymous viewers and deleted accounts", async () => {
     const anonymous = makeSocket();
     await sendReplayGameData(anonymous, "table");
     expect(Account.findOne).not.toHaveBeenCalled();
-    expect(anonymous.emit.mock.calls[0][1].chats).toEqual([archive.chats[0]]);
+    expect(anonymous.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing, unrelated]);
+    expect(anonymous.emit.mock.calls[0][1]).not.toHaveProperty("hiddenInfoChat");
     Account.findOne.mockReturnValue(query(null));
     const deleted = makeSocket("Bob");
     await sendReplayGameData(deleted, "table");
-    expect(deleted.emit.mock.calls[0][1].chats).toEqual([archive.chats[0]]);
+    expect(deleted.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing, unrelated]);
+    expect(deleted.emit.mock.calls[0][1]).not.toHaveProperty("hiddenInfoChat");
   });
 
-  it("uses authenticated account identity for participant history", async () => {
+  it("lets a participant see the other archived pairs as well", async () => {
     const socket = makeSocket("Bob");
     await sendReplayGameData(socket, "table");
-    expect(socket.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing]);
+    expect(socket.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing, unrelated]);
   });
 
-  it("does not expose a saved snapshot while the table is still running", async () => {
+  it.each([
+    [undefined, true],
+    ["Stranger", false],
+    ["Bob", undefined],
+    ["Reviewer", true],
+  ])("does not expose a saved snapshot to %s while the table is running (stored completion: %s)", async (username, completed) => {
+    archive.completed = completed;
     games.table = { gameState: { isCompleted: false } };
-    Account.findOne.mockReturnValue(query({ username: "Bob", staffRole: "admin" }));
-    const socket = makeSocket("Bob");
+    Account.findOne.mockReturnValue(query({ username, staffRole: username === "Reviewer" ? "admin" : "" }));
+    const socket = makeSocket(username);
     await sendReplayGameData(socket, "table");
     expect(socket.emit).not.toHaveBeenCalled();
+  });
+
+  it("allows replay access after a live table has finished", async () => {
+    games.table = { gameState: { isCompleted: "liberal" } };
+    const socket = makeSocket();
+    await sendReplayGameData(socket, "table");
+    expect(socket.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing, unrelated]);
+  });
+
+  it.each([
+    true,
+    false,
+    undefined,
+  ])("serves archived games after teardown, including abandoned and legacy records (%s)", async (completed) => {
+    archive.completed = completed;
+    const socket = makeSocket();
+    await sendReplayGameData(socket, "table");
+    expect(socket.emit.mock.calls[0][1].chats).toEqual([archive.chats[0], incoming, outgoing, unrelated]);
   });
 
   it.each([

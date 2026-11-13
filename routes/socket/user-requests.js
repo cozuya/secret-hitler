@@ -283,7 +283,10 @@ module.exports.sendReplayGameData = async (socket, uid) => {
     // A saved snapshot of a still-running table must not expose live identities, roles, or other conversations.
     if (live && !live.gameState?.isCompleted) return;
     // Read current DB authorization; a demoted reviewer must not retain access through a connected socket.
-    socket.emit("replayGameData", replayForViewer(game, account?.username, isChatReviewer(account)));
+    socket.emit(
+      "replayGameData",
+      replayForViewer(game, account?.username, isChatReviewer(account), { includeAllNeighborChats: true })
+    );
   } catch (err) {
     console.log(err, "err retrieving replay chat");
     socket.emit("sendAlert", "Unable to load replay chat right now.");

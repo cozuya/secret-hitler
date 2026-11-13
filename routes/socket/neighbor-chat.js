@@ -22,12 +22,17 @@ const archivedNeighborChats = (game) => {
     });
 };
 
-const replayForViewer = (game, username, canReview) => {
+const replayForViewer = (game, username, canReview, { includeAllNeighborChats = false } = {}) => {
   const result = { ...game, chats: publicChats(game.chats) };
   delete result.neighborChats;
   delete result.hiddenInfoChat;
-  // Older rows have no trustworthy participant metadata. Only reviewers may read those rows.
-  result.chats.push(...archivedNeighborChats(game).filter((chat) => canReview || isChatParticipant(chat, username)));
+  // Only the replay endpoint opts in after checking that the table is no longer running.
+  // Bulk exports keep their existing participant/reviewer filtering, including for legacy rows.
+  result.chats.push(
+    ...archivedNeighborChats(game).filter(
+      (chat) => includeAllNeighborChats || canReview || isChatParticipant(chat, username)
+    )
+  );
   if (canReview) result.hiddenInfoChat = game.hiddenInfoChat || [];
   return result;
 };
