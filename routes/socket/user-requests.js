@@ -1,5 +1,5 @@
 const Account = require("../../models/account");
-const ModAction = require("../../models/modAction");
+const { loadModActionPage } = require("./mod-action-pages");
 const PlayerReport = require("../../models/playerReport");
 const PlayerNote = require("../../models/playerNote");
 const Game = require("../../models/game");
@@ -41,78 +41,60 @@ const sendUserList = (module.exports.sendUserList = (socket, force = false) => {
   }
 });
 
-const getModInfo = (games, users, socket, queryObj, count = 1, isTrial, isAEM) => {
+const getModInfo = async (games, users, socket, _queryObj, _count, _isTrial, _isAEM, loadedPage) => {
+  const page = loadedPage || (await loadModActionPage(socket));
+  const actions = page.actions;
   const maskEmail = (email) => (email && email.split("@")[1]) || "";
-  ModAction.find(queryObj)
-    .sort({ $natural: -1 })
-    .limit(500 * count)
-    .then((actions) => {
-      const list = users.map((user) => {
-        const usr = userList.find((userListUser) => user.username === userListUser.userName);
+  const list = users.map((user) => {
+    const usr = userList.find((userListUser) => user.username === userListUser.userName);
 
-        return usr
-          ? {
-              status: usr.status,
-              isRainbow: user.isRainbowOverall,
-              userName: user.username,
-              ip: user.lastConnectedIP || user.signupIP,
-              email: `${user.verified ? "+" : "-"}${maskEmail(user.verification.email)}`,
-            }
-          : {};
-      });
-      list.forEach((user) => {
-        if (user.ip && user.ip != "") {
-          try {
-            user.ip = "-" + obfIP(user.ip);
-          } catch (e) {
-            user.ip = "ERROR";
-            console.log(e);
-          }
+    return usr
+      ? {
+          status: usr.status,
+          isRainbow: user.isRainbowOverall,
+          userName: user.username,
+          ip: user.lastConnectedIP || user.signupIP,
+          email: `${user.verified ? "+" : "-"}${maskEmail(user.verification?.email)}`,
         }
-      });
-      actions.forEach((action) => {
-        if (action.ip && action.ip != "") {
-          if (action.ip.startsWith("-")) {
-            action.ip = "ERROR"; // There are some bugged IPs in the list right now, need to suppress it.
-          } else {
-            try {
-              action.ip = "-" + obfIP(action.ip);
-            } catch (e) {
-              action.ip = "ERROR";
-              console.log(e);
-            }
-          }
-        }
-      });
-      const gList = [];
-      if (games) {
-        Object.values(games).forEach((game) => {
-          gList.push({
-            name: game.general.name,
-            uid: game.general.uid,
-            electionNum: game.general.electionCount,
-            casual: game.general.casualGame,
-            private: game.general.private,
-            custom: game.customGameSettings.enabled,
-            unlisted: game.general.unlistedGame,
-          });
-        });
+      : {};
+  });
+  list.forEach((user) => {
+    if (user.ip && user.ip != "") {
+      try {
+        user.ip = "-" + obfIP(user.ip);
+      } catch (e) {
+        user.ip = "ERROR";
+        console.log(e);
       }
-      socket.emit("modInfo", {
-        modReports: actions,
-        accountCreationDisabled,
-        ipbansNotEnforced,
-        gameCreationDisabled,
-        limitNewPlayers,
-        bypassVPNCheck,
-        userList: list,
-        gameList: gList,
-        showActions: !isTrial && isAEM,
+    }
+  });
+  const gList = [];
+  if (games) {
+    Object.values(games).forEach((game) => {
+      gList.push({
+        name: game.general.name,
+        uid: game.general.uid,
+        electionNum: game.general.electionCount,
+        casual: game.general.casualGame,
+        private: game.general.private,
+        custom: game.customGameSettings.enabled,
+        unlisted: game.general.unlistedGame,
       });
-    })
-    .catch((err) => {
-      console.log(err, "err in finding mod actions");
     });
+  }
+  socket.emit("modInfo", {
+    modReports: actions,
+    modLogHasMore: page.hasMore,
+    modLogNextCursor: page.nextCursor,
+    accountCreationDisabled,
+    ipbansNotEnforced,
+    gameCreationDisabled,
+    limitNewPlayers,
+    bypassVPNCheck,
+    userList: list,
+    gameList: gList,
+    showActions: page.showActions,
+  });
 };
 
 module.exports.getModInfo = getModInfo;
@@ -163,16 +145,19 @@ module.exports.sendPrivateSignups = (socket) => {
  * @param {boolean} isTrial - true if the user is a trial mod.
  * @param {boolean} isAEM - true if the user is a AEM member.
  */
-module.exports.sendModInfo = (games, socket, count, isTrial, isAEM) => {
-  const userNames = userList.map((user) => user.userName);
-
-  Account.find({ username: userNames, "gameSettings.isPrivate": { $ne: true } })
-    .then((users) => {
-      getModInfo(games, users, socket, {}, count, isTrial, isAEM);
-    })
-    .catch((err) => {
-      console.log(err, "err in sending mod info");
-    });
+module.exports.sendModInfo = async (games, socket, count, isTrial, isAEM) => {
+  try {
+    const page = await loadModActionPage(socket);
+    const userNames = userList.map((user) => user.userName);
+    const users = await Account.find({ username: { $in: userNames }, "gameSettings.isPrivate": { $ne: true } })
+      .select("username lastConnectedIP signupIP verified verification.email isRainbowOverall")
+      .maxTimeMS(2000)
+      .lean();
+    await getModInfo(games, users, socket, {}, count, isTrial, isAEM, page);
+  } catch (err) {
+    console.log(err, "err in sending mod info");
+    socket.emit("modInfoError", "Unable to refresh the moderation log. Please try again shortly.");
+  }
 };
 
 /**

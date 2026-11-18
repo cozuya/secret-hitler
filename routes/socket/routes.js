@@ -63,6 +63,7 @@ const {
 const { saveAndDeleteGame } = require("./game/end-game");
 const { games, emoteList, cloneSettingsFromRedis, modDMs, getStaffList } = require("./models");
 const Account = require("../../models/account");
+const { sendModActionPage } = require("./mod-action-pages");
 const { TOU_CHANGES } = require("../../src/frontend-scripts/node-constants.js");
 const version = require("../../version");
 const https = require("https");
@@ -730,6 +731,9 @@ module.exports.socketRoutes = () => {
           selectChancellorVoteOnVeto(passport, game, data);
         }
       });
+      socket.on("getModActions", (request, callback) => {
+        if (authenticated && (isAEM || isTrial)) sendModActionPage(socket, request, callback);
+      });
       socket.on("getModInfo", (count) => {
         if (authenticated && (isAEM || isTrial)) {
           sendModInfo(games, socket, count, isTrial, isAEM);
@@ -754,7 +758,9 @@ module.exports.socketRoutes = () => {
               // Only username/staffRole are needed. Without the projection + lean this hydrated every
               // past/present staff account in full (~540 docs incl. game/IP history, ~16MB) on each click,
               // stalling the single web process for every player.
-              Account.find({ staffRole: { $exists: true, $nin: ["veteran", ""] } }, "username staffRole", { lean: true })
+              Account.find({ staffRole: { $exists: true, $nin: ["veteran", ""] } }, "username staffRole", {
+                lean: true,
+              })
                 .then((accounts) => {
                   // Block the peek when a seated player is AEM staff (a non-veteran staffRole): a mod
                   // shouldn't read the mod chat of a game staff are playing in. Expression body on
