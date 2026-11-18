@@ -268,8 +268,8 @@ importers:
         specifier: ^24.1.0
         version: 24.9.0
       moment:
-        specifier: ^2.18.1
-        version: 2.30.1
+        specifier: ^2.31.0
+        version: 2.31.0
       node-notifier:
         specifier: ^5.1.2
         version: 5.4.5
@@ -4477,8 +4477,8 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
 
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+  moment@2.31.0:
+    resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
 
   mongodb@3.6.12:
     resolution: {integrity: sha512-ErHpF4P4disEIQB8Nns2twIMVXcvmlwjpKqfVnyB/hhd/L5We48LfoBYjBjuUSiSqL6ffmcygPTgjvpy2LETRQ==}
@@ -11192,7 +11192,7 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
-  moment@2.30.1: {}
+  moment@2.31.0: {}
 
   mongodb@3.6.12:
     dependencies:
