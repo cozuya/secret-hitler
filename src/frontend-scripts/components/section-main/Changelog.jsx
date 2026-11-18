@@ -20,6 +20,10 @@ class Changelog extends React.Component {
             is disabled. Use <code>/l</code>, <code>/r</code>, or a neighboring seat number such as <code>/4</code>.
             Games with Neighbor Chat are unrated.
           </li>
+          <li>
+            <strong>Replay chat controls.</strong> Toggle public chat and the neighbor whispers you can access
+            independently. Whispers show who sent and received them.
+          </li>
         </ul>
 
         <hr style={{ width: "100%" }} />
