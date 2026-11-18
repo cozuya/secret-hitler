@@ -572,11 +572,6 @@ const sendNeighborChat = (game, user, senderName, message, target) => {
     return;
   }
 
-  if (game.general.playerChats === "disabled") {
-    sendMessage(game, user, "Chat is disabled in this game.");
-    return;
-  }
-
   if (isFlappyPreLock(game)) {
     sendMessage(game, user, "Chat is disabled until a bird clears the first gate.");
     return;
@@ -657,7 +652,13 @@ const sendNeighborChat = (game, user, senderName, message, target) => {
   }
   const history = game.private.neighborChats || (game.private.neighborChats = []);
   if (history.length >= MAX_NEIGHBOR_MESSAGES) {
-    sendMessage(game, user, "Neighbor Chat has reached this game's message limit. Please use public chat.");
+    sendMessage(
+      game,
+      user,
+      game.general.playerChats === "disabled"
+        ? "Neighbor Chat has reached this game's message limit."
+        : "Neighbor Chat has reached this game's message limit. Please use public chat."
+    );
     return;
   }
   const id = randomUUID();
