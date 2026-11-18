@@ -19,7 +19,7 @@
   "packageManager": "pnpm@10.26.1",
   "dependencies": {
     "@popperjs/core": "^2.4.4",
-    "compression": "^1.6.2",
+    "compression": "^1.8.2",
     "connect-mongodb-session": "^2.0.5",
     "connect-redis": "^3.4.0",
     "cookie-parser": "^1.4.7",
