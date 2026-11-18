@@ -15,6 +15,7 @@ export default class Moderation extends React.Component {
     gameList: [],
     actionTextValue: "",
     log: [],
+    latestModActions: [],
     playerListState: 0,
     broadcastText: "",
     playerInputText: "",
@@ -57,33 +58,6 @@ export default class Moderation extends React.Component {
         lagMeterStatus: `Average lag: ${data} ms`,
       });
     });
-
-    socket.on("modInfoError", (error) => {
-      this.setState({ modLogLoading: false, modLogError: error });
-    });
-    socket.on("modInfo", (info) => {
-      this.cancelModLogRequest();
-      this.setState({
-        userList: info.userList,
-        gameList: info.gameList,
-        log: info.modReports,
-        modLogPage: 0,
-        modLogCursors: [null],
-        modLogNextCursor: info.modLogNextCursor || null,
-        modLogHasMore: Boolean(info.modLogHasMore),
-        modLogLoading: false,
-        modLogError: "",
-        showActions: info.showActions || false,
-      });
-
-      $(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? "set checked" : "set unchecked");
-      $(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? "set checked" : "set unchecked");
-      $(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? "set checked" : "set unchecked");
-      $(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? "set checked" : "set unchecked");
-      $(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? "set checked" : "set unchecked");
-    });
-
-    socket.emit("getModInfo", 1);
 
     $(this.toggleAccountCreation).checkbox({
       onChecked() {
@@ -223,14 +197,14 @@ export default class Moderation extends React.Component {
         });
       },
     });
+
+    this.refreshModInfo();
   }
 
   componentWillUnmount() {
     const { socket } = this.props;
 
     this.cancelModLogRequest();
-    socket.off("modInfo");
-    socket.off("modInfoError");
     socket.off("lagTestResults");
   }
 
@@ -279,12 +253,12 @@ export default class Moderation extends React.Component {
     const radioChange = (userName) => {
       this.setState({ selectedUser: userName });
     };
-    const { userList, userSort } = this.state;
+    const { userList, userSort, latestModActions } = this.state;
     const ips = userList.map((user) => user.ip);
-    const bannedips = this.state.log
+    const bannedips = latestModActions
       .filter((log) => log.actionTaken === "ban" || log.actionTaken === "timeOut")
       .map((log) => log.ip);
-    const timednames = this.state.log.filter((log) => log.actionTaken === "timeOut2").map((log) => log.userActedOn);
+    const timednames = latestModActions.filter((log) => log.actionTaken === "timeOut2").map((log) => log.userActedOn);
     const splitIP = (ip) => {
       if (!ip) return ["", ""];
       let idx = ip.lastIndexOf(".");
@@ -1279,7 +1253,7 @@ export default class Moderation extends React.Component {
     this.modLogPending = false;
   };
 
-  requestModLog = (before = null, page = 0) => {
+  requestModerationData = (event, payload, onSuccess) => {
     // Instance guard closes the interval before React commits the loading state.
     if (this.modLogPending) return;
     this.modLogPending = true;
@@ -1296,18 +1270,47 @@ export default class Moderation extends React.Component {
         });
         return;
       }
+      onSuccess(result);
+    };
+    this.modLogTimer = setTimeout(() => finish({ error: "The log request timed out. Please try again." }), 10000);
+    this.props.socket.emit(event, payload, finish);
+  };
+
+  refreshModInfo = () => {
+    this.requestModerationData("getModInfo", 1, ({ info }) => {
+      this.setState({
+        userList: info.userList,
+        gameList: info.gameList,
+        log: info.modReports,
+        latestModActions: info.modReports,
+        modLogPage: 0,
+        modLogCursors: [null],
+        modLogNextCursor: info.modLogNextCursor || null,
+        modLogHasMore: Boolean(info.modLogHasMore),
+        modLogLoading: false,
+        showActions: info.showActions || false,
+      });
+
+      $(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? "set checked" : "set unchecked");
+      $(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? "set checked" : "set unchecked");
+      $(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? "set checked" : "set unchecked");
+      $(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? "set checked" : "set unchecked");
+      $(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? "set checked" : "set unchecked");
+    });
+  };
+
+  requestModLog = (before = null, page = 0) => {
+    this.requestModerationData("getModActions", { before }, (result) => {
       this.setState((state) => ({
         log: result.actions,
+        latestModActions: page === 0 ? result.actions : state.latestModActions,
         modLogPage: page,
         modLogCursors: [...state.modLogCursors.slice(0, page), before],
         modLogNextCursor: result.nextCursor,
         modLogHasMore: result.hasMore,
         modLogLoading: false,
-        modLogError: "",
       }));
-    };
-    this.modLogTimer = setTimeout(() => finish({ error: "The log request timed out. Please try again." }), 10000);
-    this.props.socket.emit("getModActions", { before }, finish);
+    });
   };
 
   renderModLog() {
@@ -1620,7 +1623,7 @@ export default class Moderation extends React.Component {
         >
           Show/Hide Game Icons
         </span>
-        <span className="refreshModlog" onClick={() => this.props.socket.emit("getModInfo", 1)}>
+        <span className="refreshModlog" onClick={this.refreshModInfo}>
           Refresh
           <i className="icon repeat" id="modlogRefresh" />
         </span>
@@ -1817,7 +1820,7 @@ export default class Moderation extends React.Component {
                   });
 
                   if (!this.state.filterValue) {
-                    this.props.socket.emit("getModInfo", 1);
+                    this.refreshModInfo();
                   } else {
                     this.props.socket.emit("updateModAction", {
                       modName: this.props.userInfo.userName,
@@ -1852,7 +1855,7 @@ export default class Moderation extends React.Component {
                         filterModalVisibility: false,
                         filterValue: "",
                       });
-                      this.props.socket.emit("getModInfo", 1);
+                      this.refreshModInfo();
                     }}
                   >
                     Clear filter

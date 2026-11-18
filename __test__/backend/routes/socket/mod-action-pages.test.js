@@ -1,6 +1,7 @@
 const Account = require("../../../../models/account");
 const ModAction = require("../../../../models/modAction");
 const { loadModActionPage, sendModActionPage } = require("../../../../routes/socket/mod-action-pages");
+const { sendModInfo } = require("../../../../routes/socket/user-requests");
 
 const query = (result) => {
   const builder = {};
@@ -10,7 +11,7 @@ const query = (result) => {
 };
 let socket, accountQuery, actionsQuery;
 beforeEach(() => {
-  socket = { handshake: { session: { passport: { user: "Staff" } } } };
+  socket = { handshake: { session: { passport: { user: "Staff" } } }, emit: jest.fn() };
   accountQuery = query({ staffRole: "admin" });
   actionsQuery = query([]);
   jest.spyOn(Account, "findOne").mockReturnValue(accountQuery);
@@ -81,4 +82,31 @@ it("reports a bounded request error through the acknowledgement", async () => {
   await sendModActionPage(socket, { before: "bad" }, ack);
   expect(ack).toHaveBeenCalledWith({ success: false, error: "Invalid moderation log request." });
   log.mockRestore();
+});
+
+it.each([true, false])("returns the full refresh through the requested response channel (ack: %s)", async (useAck) => {
+  jest.spyOn(Account, "find").mockReturnValue(query([]));
+  actionsQuery.lean.mockResolvedValue([{ _id: "latest", actionTaken: "warn" }]);
+  const ack = useAck ? jest.fn() : undefined;
+  await sendModInfo({}, socket, ack);
+  const info = expect.objectContaining({
+    modReports: [expect.objectContaining({ _id: "latest" })],
+    userList: [],
+    gameList: [],
+  });
+  if (useAck) {
+    expect(ack).toHaveBeenCalledWith({ success: true, info });
+    expect(socket.emit).not.toHaveBeenCalled();
+  } else {
+    expect(socket.emit).toHaveBeenCalledWith("modInfo", info);
+  }
+});
+
+it("acknowledges a failed refresh without sending a separate event", async () => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  accountQuery.lean.mockRejectedValue(new Error("database unavailable"));
+  const ack = jest.fn();
+  await sendModInfo({}, socket, ack);
+  expect(ack).toHaveBeenCalledWith({ success: false, error: expect.stringMatching(/Unable to refresh/) });
+  expect(socket.emit).not.toHaveBeenCalled();
 });

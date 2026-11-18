@@ -15,7 +15,7 @@ const {
 } = require("../models");
 const { CURRENT_SEASON_FIELDS } = require("../../../src/shared/season");
 const PlayerReport = require("../../../models/playerReport");
-const { sendUserReports, getModInfo, sendGameList, sendUserList } = require("../user-requests");
+const { sendUserReports, sendGameList, sendUserList } = require("../user-requests");
 const ModAction = require("../../../models/modAction");
 const BannedIP = require("../../../models/bannedIP");
 const { handleDefaultIPv6Range } = require("../util.js");

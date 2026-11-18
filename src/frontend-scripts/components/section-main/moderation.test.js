@@ -10,6 +10,7 @@ describe("Moderation", () => {
       gameList: [],
       actionTextValue: "",
       log: [],
+      latestModActions: [],
       playerListState: 0,
       broadcastText: "",
       playerInputText: "",

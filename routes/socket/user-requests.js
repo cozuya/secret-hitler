@@ -41,9 +41,7 @@ const sendUserList = (module.exports.sendUserList = (socket, force = false) => {
   }
 });
 
-const getModInfo = async (games, users, socket, _queryObj, _count, _isTrial, _isAEM, loadedPage) => {
-  const page = loadedPage || (await loadModActionPage(socket));
-  const actions = page.actions;
+const buildModInfo = (games, users, page) => {
   const maskEmail = (email) => (email && email.split("@")[1]) || "";
   const list = users.map((user) => {
     const usr = userList.find((userListUser) => user.username === userListUser.userName);
@@ -82,8 +80,8 @@ const getModInfo = async (games, users, socket, _queryObj, _count, _isTrial, _is
       });
     });
   }
-  socket.emit("modInfo", {
-    modReports: actions,
+  return {
+    modReports: page.actions,
     modLogHasMore: page.hasMore,
     modLogNextCursor: page.nextCursor,
     accountCreationDisabled,
@@ -94,10 +92,8 @@ const getModInfo = async (games, users, socket, _queryObj, _count, _isTrial, _is
     userList: list,
     gameList: gList,
     showActions: page.showActions,
-  });
+  };
 };
-
-module.exports.getModInfo = getModInfo;
 
 module.exports.sendSignups = (socket) => {
   Signups.find({ type: { $in: ["local", "discord", "github"] } })
@@ -141,11 +137,17 @@ module.exports.sendPrivateSignups = (socket) => {
 /**
  * @param {array} games - list of all games
  * @param {object} socket - user socket reference.
- * @param {number} count - depth of modinfo requested.
- * @param {boolean} isTrial - true if the user is a trial mod.
- * @param {boolean} isAEM - true if the user is a AEM member.
+ * @param {function} [callback] - acknowledgement for clients that track individual requests.
  */
-module.exports.sendModInfo = async (games, socket, count, isTrial, isAEM) => {
+module.exports.sendModInfo = async (games, socket, callback) => {
+  const respond =
+    typeof callback === "function"
+      ? callback
+      : ({ success, info, error }) => {
+          if (success) socket.emit("modInfo", info);
+          else socket.emit("modInfoError", error);
+        };
+  let info;
   try {
     const page = await loadModActionPage(socket);
     const userNames = userList.map((user) => user.userName);
@@ -153,11 +155,13 @@ module.exports.sendModInfo = async (games, socket, count, isTrial, isAEM) => {
       .select("username lastConnectedIP signupIP verified verification.email isRainbowOverall")
       .maxTimeMS(2000)
       .lean();
-    await getModInfo(games, users, socket, {}, count, isTrial, isAEM, page);
+    info = buildModInfo(games, users, page);
   } catch (err) {
     console.log(err, "err in sending mod info");
-    socket.emit("modInfoError", "Unable to refresh the moderation log. Please try again shortly.");
+    respond({ success: false, error: "Unable to refresh the moderation log. Please try again shortly." });
+    return;
   }
+  respond({ success: true, info });
 };
 
 /**
