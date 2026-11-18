@@ -113,6 +113,8 @@ services:
         sync: false
       - key: GETIPINTELAPIEMAIL
         sync: false
+      - key: VPNCHECKPROVIDER
+        sync: false
 
   # Daily leaderboard generation. A SEPARATE Cron service (not the web app) for two reasons:
   # (1) a Render Persistent Disk attaches to one service, so a cron can't share the web's cardbacks

@@ -38,6 +38,8 @@ let getIPIntelCounter = {
 };
 // module.exports.vpnCounter = getIPIntelCounter;
 let torIps;
+// VPNCHECKPROVIDER picks the signup VPN check: "getipintel" (default) or "vpndetection", which needs no key and has no daily limit.
+const vpnCheckProvider = process.env.VPNCHECKPROVIDER === "vpndetection" ? "vpndetection" : "getipintel";
 const emailRegex =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
@@ -97,7 +99,12 @@ const checkIP = (config) => {
   } else if (process.env.NODE_ENV !== "production" && !process.env.IPBANSINDEV) {
     config.vpnScore = 0;
     next(config);
-  } else if (getIPIntelCounter.count >= 1995 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
+  } else if (
+    vpnCheckProvider === "getipintel" &&
+    getIPIntelCounter.count >= 1995 &&
+    new Date() < getIPIntelCounter.reset &&
+    !VPNCache[signupIP]
+  ) {
     const rateLimitSignup = new Signups({
       date: new Date(),
       userName: username,
@@ -209,25 +216,30 @@ const checkIP = (config) => {
               // we dont want to send bogus requests to gii if we are in dev
               // (this is only reachable if we are not in production or we dont have IPBANSINDEV set and if we dont have IPBANSINDEV set we are guaranteed to be in production)
               fetch(
-                `https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`
+                vpnCheckProvider === "vpndetection"
+                  ? `https://api.vpndetection.io/${signupIP}`
+                  : `https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`
               )
                 .then((res) => res.json())
-                .then((json) => {
-                  if (new Date() < getIPIntelCounter.reset) {
-                    getIPIntelCounter.count++;
-                  } else {
-                    getIPIntelCounter = {
-                      reset: new Date(
-                        new Date().getFullYear(),
-                        new Date().getMonth(),
-                        new Date().getDate(),
-                        23,
-                        59,
-                        59,
-                        999
-                      ),
-                      count: 1,
-                    };
+                .then((answer) => {
+                  const json = vpnCheckProvider === "vpndetection" ? vpnDetectionResult(answer) : answer;
+                  if (vpnCheckProvider === "getipintel") {
+                    if (new Date() < getIPIntelCounter.reset) {
+                      getIPIntelCounter.count++;
+                    } else {
+                      getIPIntelCounter = {
+                        reset: new Date(
+                          new Date().getFullYear(),
+                          new Date().getMonth(),
+                          new Date().getDate(),
+                          23,
+                          59,
+                          59,
+                          999
+                        ),
+                        count: 1,
+                      };
+                    }
                   }
                   const vpnScore = json.result;
 
@@ -236,7 +248,7 @@ const checkIP = (config) => {
                       message: "There was an error processing your request. Please contact our moderators on Discord.",
                     });
                     console.log(
-                      "Error in Get IP Intel, score given: ",
+                      `Error in ${vpnCheckProvider}, score given: `,
                       vpnScore,
                       "IP: ",
                       signupIP,
@@ -249,7 +261,7 @@ const checkIP = (config) => {
                   next(config);
                 })
                 .catch((e) => {
-                  console.log("failed getipintel", signupIP, e);
+                  console.log(`failed ${vpnCheckProvider}`, signupIP, e);
                   res.status(501).json({
                     message:
                       "There was a fatal error in processing your request. Please contact our moderators on Discord",
@@ -266,6 +278,17 @@ const checkIP = (config) => {
       }
     });
   }
+};
+
+/**
+ * @param {object} json - VPNDetection's answer for one address.
+ * @return {object} the answer in GetIPIntel's shape: result 1 for a VPN or a Tor exit, 0 otherwise, -1 on an error.
+ */
+const vpnDetectionResult = (json) => {
+  if (typeof json?.is_vpn !== "boolean") {
+    return { result: -1, message: json?.error };
+  }
+  return { result: json.is_vpn || json.is_tor ? 1 : 0 };
 };
 
 const continueSignup = (config) => {
@@ -422,6 +445,8 @@ const continueSignup = (config) => {
     }
   }
 };
+
+module.exports.vpnDetectionResult = vpnDetectionResult;
 
 module.exports.accounts = (torIpsParam) => {
   verifyRoutes();
