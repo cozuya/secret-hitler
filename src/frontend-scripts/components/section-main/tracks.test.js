@@ -36,6 +36,34 @@ describe("Tracks", () => {
     );
   });
 
+  it.each([
+    [60, 1600, ["Timed Mode: 1: 00", "Elo minimum: 1600"]],
+    [false, 1600, ["Elo minimum: 1600"]],
+    [60, null, ["Timed Mode: 1: 00"]],
+  ])("keeps timer and Elo requirements after all mode icons (timer: %s, Elo: %s)", (timedMode, eloMinimum, trailing) => {
+    const component = renderTracks({
+      neighborChat: true,
+      timedMode,
+      eloMinimum,
+      xpMinimum: 10,
+      isVerifiedOnly: true,
+      flappyMode: true,
+      unlistedGame: true,
+    });
+    const labels = component
+      .find(".option-icons")
+      .find(Popup)
+      .map((popup) => popup.prop("content"));
+    expect(labels.slice(-trailing.length)).toEqual(trailing);
+    expect(labels.slice(0, -trailing.length).some((label) => label.startsWith("Neighbor Chat"))).toBe(true);
+  });
+
+  it("labels silent Neighbor Chat games as disabling public chat only", () => {
+    const component = renderTracks({ neighborChat: true, playerChats: "disabled" });
+    const popup = component.find(Popup).filterWhere((item) => item.prop("trigger").props.className === "mute icon");
+    expect(popup.prop("content")).toBe("Public Player Chat Disabled - Neighbor Chat Enabled");
+  });
+
   it.each([false, undefined])("omits the Neighbor Chat icon and tooltip when the flag is %s", (neighborChat) => {
     const component = renderTracks({ neighborChat });
     expect(component.find(Popup).someWhere((item) => item.prop("trigger").props.className === "exchange icon")).toBe(

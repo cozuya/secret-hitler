@@ -12,6 +12,23 @@ class Changelog extends React.Component {
         </div>
 
         <div className="ui header">
+          <p>Season 25.2 update</p>
+        </div>
+        <ul>
+          <li>
+            <strong>Neighbor Chat in silent games.</strong> Hosts can enable private whispers while public player chat
+            is disabled. Use <code>/l</code>, <code>/r</code>, or a neighboring seat number such as <code>/4</code>.
+            Games with Neighbor Chat are unrated.
+          </li>
+          <li>
+            <strong>Replay chat controls.</strong> Toggle public chat and the neighbor whispers you can access
+            independently. Whispers show who sent and received them.
+          </li>
+        </ul>
+
+        <hr style={{ width: "100%" }} />
+
+        <div className="ui header">
           <p>Season 25.1 update</p>
         </div>
         <ul>

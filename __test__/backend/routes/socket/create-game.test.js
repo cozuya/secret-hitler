@@ -32,7 +32,7 @@ describe("create-game Neighbor Chat", () => {
 
   it.each([
     [{ neighborChat: false }, false],
-    [{ neighborChat: true, playerChats: "disabled" }, false],
+    [{ neighborChat: false, playerChats: "disabled" }, false],
     [{}, false],
   ])("leaves a game without effective Neighbor Chat ranked (%j)", async (options, expected) => {
     await handleAddNewGame(
@@ -79,13 +79,17 @@ describe("create-game Neighbor Chat", () => {
     );
   });
 
-  it("keeps a custom Neighbor Chat game in the (unrated) Custom type", async () => {
+  it.each([
+    "enabled",
+    "disabled",
+  ])("keeps a custom Neighbor Chat game in the (unrated) Custom type (%s chat)", async (playerChats) => {
     await handleAddNewGame(
       socket,
       { user: user.userName },
       {
         gameName: "Neighbor Chat",
         gameType: "custom",
+        playerChats,
         neighborChat: true,
         minPlayersCount: 5,
         maxPlayersCount: 5,
@@ -107,6 +111,31 @@ describe("create-game Neighbor Chat", () => {
       casualGame: false,
       practiceGame: false,
     });
+  });
+
+  it.each([
+    "ranked",
+    "casual",
+    "practice",
+  ])("preserves silent public chat and forces Neighbor Chat casual for a %s request", async (gameType) => {
+    await handleAddNewGame(
+      socket,
+      { user: user.userName },
+      { gameName: "Silent neighbors", gameType, playerChats: "disabled", neighborChat: true, casualGame: false }
+    );
+
+    expect(games.NeighborChatGame.general).toMatchObject({
+      playerChats: "disabled",
+      neighborChat: true,
+      casualGame: true,
+      practiceGame: false,
+    });
+    expect(socket.emit).toHaveBeenCalledWith(
+      "gameUpdate",
+      expect.objectContaining({
+        general: expect.objectContaining({ playerChats: "disabled", neighborChat: true, casualGame: true }),
+      })
+    );
   });
 
   it("keeps Neighbor Chat available in emote-only casual games", async () => {

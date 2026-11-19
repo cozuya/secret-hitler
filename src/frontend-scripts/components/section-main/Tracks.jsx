@@ -184,7 +184,9 @@ class Tracks extends React.Component {
 
     if (game.playerChats === "disabled") {
       playerChats = <i className="mute icon" />;
-      playerChatsTooltip = "Player Chat Disabled";
+      playerChatsTooltip = game.neighborChat
+        ? "Public Player Chat Disabled - Neighbor Chat Enabled"
+        : "Player Chat Disabled";
     } else if (game.playerChats === "emotes") {
       playerChats = <i className="smile icon" />;
       playerChatsTooltip = "Emotes Only";
@@ -379,19 +381,9 @@ class Tracks extends React.Component {
             <Popup style={{ zIndex: 999999 }} inverted trigger={practiceGame} content={practiceGameTooltip} />
           </span>
         )}
-        {timedMode && (
-          <span>
-            <Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
-          </span>
-        )}
         {isVerifiedOnly && (
           <span>
             <Popup style={{ zIndex: 999999 }} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
-          </span>
-        )}
-        {eloMinimum && (
-          <span>
-            <Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
           </span>
         )}
         {xpMinimum && (
@@ -417,6 +409,16 @@ class Tracks extends React.Component {
         {unlistedGame && (
           <span>
             <Popup style={{ zIndex: 999999 }} inverted trigger={unlistedGame} content={unlistedGameTooltip} />
+          </span>
+        )}
+        {timedMode && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
+          </span>
+        )}
+        {eloMinimum && (
+          <span>
+            <Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
           </span>
         )}
       </div>

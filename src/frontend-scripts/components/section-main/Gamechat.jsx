@@ -593,7 +593,9 @@ class Gamechat extends React.Component {
       ) {
         return {
           isDisabled: false,
-          placeholder: "Chat commands only (e.g. ping, claim, @mod)",
+          placeholder: gameInfo.general.neighborChat
+            ? "Public chat disabled - use /l, /r, or /N (seat number) for Neighbor Chat; other chat commands still work"
+            : "Chat commands only (e.g. ping, claim, @mod)",
         };
       }
     } else {

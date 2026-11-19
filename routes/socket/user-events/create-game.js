@@ -109,7 +109,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
   }
 
   const customGame = data.customGameSettings?.enabled; // ranked in order of precedent, higher up is the game mode if two are (somehow) selected
-  const neighborChat = Boolean(data.neighborChat && data.playerChats !== "disabled");
+  const neighborChat = Boolean(data.neighborChat);
   // Neighbor Chat games are always casual (moderator decision, S25): whatever the client sends,
   // an enabled Neighbor Chat forces casual, which also rules out Practice below. Custom games keep
   // their own type under the precedence above; they are never rated either.
