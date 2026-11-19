@@ -146,7 +146,7 @@ app.use((req, res, next) => {
 });
 
 const sessionSettings = {
-  secret: process.env.SECRETSESSIONKEY || "hunter2",
+  secret: process.env.SECRETSESSIONKEY || require("crypto").randomBytes(32).toString("hex"),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 28, // 4 weeks
   },
