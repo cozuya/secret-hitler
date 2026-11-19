@@ -119,6 +119,7 @@ module.exports.handleOpenChat = (socket, data, modUserNames, editorUserNames, ad
   };
   try {
     const threadReq = https.request(discordThreadNotifOptions);
+    threadReq.on("error", (err) => console.log(err, "err notifying Discord of mod DM"));
     threadReq.end(discordThreadNotifyBody);
   } catch (e) {
     console.log(e, "err in broadcast");
@@ -178,6 +179,7 @@ module.exports.handleCloseChat = (socket, data, modUserNames, editorUserNames, a
       };
       try {
         const threadReq = https.request(discordThreadNotifOptions);
+        threadReq.on("error", (err) => console.log(err, "err notifying Discord of mod DM close"));
         threadReq.end(discordThreadNotifyBody);
       } catch (e) {
         console.log(e, "err in notif");
