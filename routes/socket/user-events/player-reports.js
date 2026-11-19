@@ -117,6 +117,7 @@ module.exports.handlePlayerReport = (passport, data, callback) => {
 
   try {
     const req = https.request(options);
+    req.on("error", (err) => console.log(err, "err notifying Discord of player report"));
     req.end(body);
   } catch (error) {
     console.log(error, "Caught exception in player request https request to discord server");

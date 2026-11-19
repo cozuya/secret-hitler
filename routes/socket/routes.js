@@ -490,6 +490,7 @@ module.exports.socketRoutes = () => {
                   "Content-Length": Buffer.byteLength(feedback),
                 },
               });
+              req.on("error", (err) => console.log(err, "err sending Discord feedback"));
               req.end(feedback);
               socket.emit("feedbackResponse", { status: "success", message: "Thank you for submitting feedback!" });
             } catch (e) {

@@ -500,6 +500,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
           };
           try {
             const broadcastReq = https.request(discordBroadcastOptions);
+            broadcastReq.on("error", (err) => console.log(err, "err in broadcast"));
             broadcastReq.end(discordBroadcastBody);
           } catch (e) {
             console.log(e, "err in broadcast");
@@ -1032,6 +1033,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
             if (process.env.NODE_ENV === "production") {
               const crashReq = https.request(crashOptions);
 
+              crashReq.on("error", (err) => console.log(err, "err notifying Discord of reset"));
               crashReq.end(crashReport);
             }
             setTimeout(() => {
@@ -1185,6 +1187,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
         try {
           const modReq = https.request(modOptions);
 
+          modReq.on("error", (err) => console.log(err, "err notifying Discord mod log"));
           modReq.end(modAction);
         } catch (error) {}
       }

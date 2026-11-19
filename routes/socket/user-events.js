@@ -47,5 +47,6 @@ const crashOptions = {
 if (process.env.NODE_ENV === "production") {
   const crashReq = https.request(crashOptions);
 
+  crashReq.on("error", (err) => console.log(err, "err notifying Discord of crash"));
   crashReq.end(crashReport);
 }
