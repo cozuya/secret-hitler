@@ -77,7 +77,7 @@ services:
         sync: false
       - key: REDIS_URL # existing Render Key Value INTERNAL url (redis://red-...:6379)
         sync: false
-      - key: SECRETSESSIONKEY # strong random value; otherwise the code falls back to "hunter2"
+      - key: SECRETSESSIONKEY # use a strong random value to keep sessions valid across restarts
         sync: false
       - key: DISCORDCLIENTID
         sync: false
