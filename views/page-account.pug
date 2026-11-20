@@ -105,10 +105,15 @@ block content
 				= username
 		.ui.warning.message This cannot be undone.
 		form.ui.form
-			.field
-				.ui.left.icon.input
-					i.lock.icon
-					input#deleteaccount-password(placeholder="Your current password", type="password")
+			if requiresPassword
+				.field
+					.ui.left.icon.input
+						i.lock.icon
+						input#deleteaccount-password(placeholder="Your current password", type="password")
+			else if oauthProvider
+				p To confirm deletion, sign in again with your linked #{oauthProvider} account.
+				a.ui.primary.button.fluid.large(href='/account/confirm-delete/' + oauthProvider) Confirm with #{oauthProvider}
+			input#deleteaccount-csrf(type="hidden", value=deleteAccountCsrf)
 			button.ui.primary.button.fluid.large#deleteaccount-submit Submit
 			.ui.dimmer.inverted
 				.ui.text.loader Deleting your account..
