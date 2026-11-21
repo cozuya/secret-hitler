@@ -24,6 +24,7 @@ const {
   isStaffSocket,
 } = require("./models");
 const { sendInProgressGameUpdate } = require("./util");
+const { switchGameRoom } = require("./game-room");
 const version = require("../../version");
 const { obfIP } = require("./ip-obf");
 const { CURRENT_SEASON_FIELDS } = require("../../src/shared/season");
@@ -374,7 +375,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendGameInfo = (socket, uid) => {
+module.exports.sendGameInfo = async (socket, uid) => {
   if (typeof uid !== "string") {
     return;
   }
@@ -397,7 +398,7 @@ module.exports.sendGameInfo = (socket, uid) => {
       }
     }
 
-    socket.join(uid);
+    await switchGameRoom(socket, uid, games);
     sendInProgressGameUpdate(game);
     socket.emit("joinGameRedirect", game.general.uid);
   } else {

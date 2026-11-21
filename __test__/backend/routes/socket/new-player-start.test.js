@@ -95,9 +95,16 @@ const sit = async (game, name) => {
     socket = {
       id: name,
       handshake: { session: { passport: { user: name } } },
+      rooms: { [name]: name },
       emit: jest.fn(),
-      join: jest.fn(),
-      leave: jest.fn(),
+      join: jest.fn((room, callback) => {
+        socket.rooms[room] = room;
+        if (callback) callback(null);
+      }),
+      leave: jest.fn((room, callback) => {
+        delete socket.rooms[room];
+        if (callback) callback(null);
+      }),
     };
     global.io.sockets.sockets[name] = socket;
     models.userList.push({ userName: name, status: { type: "none" } });
@@ -133,9 +140,16 @@ const createHumanLobby = async (name, options = {}) => {
   const socket = {
     id: name,
     handshake: { session: { passport: { user: name } } },
+    rooms: { [name]: name },
     emit: jest.fn(),
-    join: jest.fn(),
-    leave: jest.fn(),
+    join: jest.fn((room, callback) => {
+      socket.rooms[room] = room;
+      if (callback) callback(null);
+    }),
+    leave: jest.fn((room, callback) => {
+      delete socket.rooms[room];
+      if (callback) callback(null);
+    }),
   };
   global.io.sockets.sockets[name] = socket;
   models.userList.push({

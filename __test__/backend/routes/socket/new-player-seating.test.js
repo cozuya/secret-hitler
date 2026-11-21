@@ -78,8 +78,16 @@ const connect = (overrides = {}) => {
   const socket = {
     id: account.username,
     handshake: { session: { passport: { user: account.username } } },
+    rooms: { [account.username]: account.username },
     emit: jest.fn(),
-    join: jest.fn(),
+    join: jest.fn((room, callback) => {
+      socket.rooms[room] = room;
+      if (callback) callback(null);
+    }),
+    leave: jest.fn((room, callback) => {
+      delete socket.rooms[room];
+      if (callback) callback(null);
+    }),
   };
   const user = { userName: account.username, staffRole: account.staffRole, status: { type: "none" } };
   models.userList.push(user);
@@ -188,8 +196,9 @@ it.each([
   const game = initialLobby();
   const { socket, user } = connect({ isRainbowOverall: true, staffRole });
   global.io.sockets.adapter.rooms[game.general.uid] = { sockets: { [socket.id]: true } };
-  sendGameInfo(socket, game.general.uid);
-  expect(socket.join).toHaveBeenCalledWith(game.general.uid);
+  await sendGameInfo(socket, game.general.uid);
+  expect(socket.join).toHaveBeenCalledWith(game.general.uid, expect.any(Function));
+  expect(socket.rooms[game.general.uid]).toBe(game.general.uid);
   expect(user.status).toEqual({ type: "observing", gameId: game.general.uid });
   socket.emit.mockClear();
   await attemptSeat(game, socket);
