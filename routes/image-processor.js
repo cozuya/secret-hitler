@@ -114,7 +114,8 @@ module.exports.ProcessImage = (username, raw, callback) => {
                   const game = games[uid];
                   const foundUser = game.publicPlayersState.find((user) => user.userName === username);
                   if (foundUser) {
-                    foundUser.customCardback = "";
+                    foundUser.customCardback = "png";
+                    foundUser.customCardbackUid = account.gameSettings.customCardbackUid;
                     sendCommandChatsUpdate(game);
                     sendGameList();
                   }
