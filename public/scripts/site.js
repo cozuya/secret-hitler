@@ -479,7 +479,11 @@ $(document).ready(function() {
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
-			data = JSON.stringify({ username: $('#delete-account-name').text(), password: password });
+			data = JSON.stringify({
+				username: $('#delete-account-name').text(),
+				password: password,
+				csrfToken: $('#deleteaccount-csrf').val()
+			});
 
 		$loader.addClass('active');
 
