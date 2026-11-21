@@ -363,9 +363,16 @@ const connect = (username) => {
   const socket = {
     id: username,
     handshake: { session: { passport: { user: username } } },
+    rooms: { [username]: username },
     emit: jest.fn(),
-    join: jest.fn(),
-    leave: jest.fn(),
+    join: jest.fn((room, callback) => {
+      socket.rooms[room] = room;
+      if (callback) callback(null);
+    }),
+    leave: jest.fn((room, callback) => {
+      delete socket.rooms[room];
+      if (callback) callback(null);
+    }),
   };
   global.io.sockets.sockets[username] = socket;
   models.userList.push({ userName: username, status: { type: "none" } });
