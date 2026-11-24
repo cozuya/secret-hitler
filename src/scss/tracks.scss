@@ -118,6 +118,8 @@
 			top: 41.36%;
 			left: 32.6%;
 			transition: all 2s;
+			z-index: 4;
+			pointer-events: none;
 		}
 		.electiontracker.fail1 {
 			left: 42.46%;
@@ -208,7 +210,7 @@
 	}
 }
 
-.tracks.blurred {
+.tracks.blurred > .track-flipper > .track {
 	filter: saturate(60%);
 	opacity: 0.3;
 }
