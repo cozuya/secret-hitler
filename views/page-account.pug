@@ -54,11 +54,15 @@ block content
 			.field
 				.ui.left.icon.input
 					i.lock.icon
-					input#passwordchange-password(placeholder="New password", type="password")
+					input#passwordchange-currentpassword(placeholder="Current password", type="password", autocomplete="current-password")
 			.field
 				.ui.left.icon.input
 					i.lock.icon
-					input#passwordchange-confirmpassword(placeholder="Confirm new password", type="password")
+					input#passwordchange-password(placeholder="New password", type="password", autocomplete="new-password")
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#passwordchange-confirmpassword(placeholder="Confirm new password", type="password", autocomplete="new-password")
 			button.ui.primary.button.fluid.large#passwordchange-submit Submit
 			.ui.dimmer.inverted
 				.ui.text.loader Changing your password..

@@ -45,6 +45,10 @@ const ensureAuthenticated = (req, res, next) => {
   }
   res.redirect("/");
 };
+const requireAccountSession = (req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  return res.status(401).json({ message: "Your session expired. Sign in again and retry." });
+};
 const VPNCache = {};
 let getIPIntelCounter = {
   reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999),
@@ -471,25 +475,37 @@ module.exports.accounts = (torIpsParam) => {
       .catch(next);
   });
 
-  app.post("/account/change-password", ensureAuthenticated, (req, res, next) => {
+  app.post("/account/change-password", requireAccountSession, (req, res, next) => {
     const parsed = changePasswordBodySchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).send();
-      return;
+      return res.status(400).json({ message: "Enter your current password and the new password twice." });
     }
-    const { newPassword, newPasswordConfirm } = parsed.data;
-    const { user } = req;
+    const { currentPassword, newPassword, newPasswordConfirm } = parsed.data;
 
     if (newPassword !== newPasswordConfirm) {
-      res.status(401).json({ message: "not equal" });
-    } else if (newPassword.length > 255 || newPassword.length < 7) {
-      res.status(400);
-    } else {
-      user.setLocalPassword(newPassword).then(() => res.send(), next);
+      return res.status(401).json({ message: "The new passwords did not match." });
     }
+    if (newPassword.length > 255 || newPassword.length < 7) {
+      return res.status(400).json({ message: "Use a new password between 7 and 255 characters." });
+    }
+
+    findAccountForDeletion(req.user)
+      .then(async (account) => {
+        if (!account) return res.status(404).json({ message: "Account not found." });
+        if (accountDeletionAuthMode(account) === AUTH_OAUTH) {
+          return res.status(403).json({ message: "Use the password reset link to set a password for this account." });
+        }
+        const { user } = await account.authenticate(currentPassword);
+        if (!user || String(user._id) !== String(account._id)) {
+          return res.status(401).json({ message: "Your current password did not match." });
+        }
+        await account.setLocalPassword(newPassword);
+        return res.send();
+      })
+      .catch(next);
   });
 
-  app.post("/account/delete-account", ensureAuthenticated, (req, res, next) => {
+  app.post("/account/delete-account", requireAccountSession, (req, res, next) => {
     const csrfToken = req.get("x-csrf-token") || (req.body && req.body.csrfToken);
     if (!validDeleteAccountCsrf(req.session, csrfToken)) {
       return res.status(403).json({ message: "Invalid request." });

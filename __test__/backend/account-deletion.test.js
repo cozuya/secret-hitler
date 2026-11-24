@@ -115,14 +115,14 @@ describe("fresh OAuth deletion confirmation", () => {
 });
 
 describe("account deletion route", () => {
-  let handleDelete;
+  const routes = new Map();
 
   beforeAll(() => {
     const originalApp = global.app;
     global.app = {
       get: jest.fn(),
       post: (path, ...handlers) => {
-        if (path === "/account/delete-account") handleDelete = handlers.pop();
+        routes.set(path, handlers);
       },
     };
     try {
@@ -134,9 +134,16 @@ describe("account deletion route", () => {
 
   afterEach(() => jest.restoreAllMocks());
 
-  const submit = (session, data) =>
+  const submit = (session, data, path = "/account/delete-account", signedIn = true) =>
     new Promise((resolve, reject) => {
-      const req = { user: { _id: discordAccount._id }, session, get: () => undefined, body: data, logOut: jest.fn() };
+      const req = {
+        user: signedIn ? { _id: discordAccount._id } : undefined,
+        isAuthenticated: () => signedIn,
+        session,
+        get: () => undefined,
+        body: data,
+        logOut: jest.fn(),
+      };
       const res = {
         statusCode: 200,
         status(code) {
@@ -150,8 +157,41 @@ describe("account deletion route", () => {
           this.json(undefined);
         },
       };
-      handleDelete(req, res, reject);
+      const [authenticate, handleRequest] = routes.get(path);
+      authenticate(req, res, () => handleRequest(req, res, reject));
     });
+
+  test("an expired session returns an error for an AJAX deletion", async () => {
+    expect(await submit({}, {}, "/account/delete-account", false)).toMatchObject({ statusCode: 401 });
+  });
+
+  test("a session alone cannot set the password for a provider-only account", async () => {
+    const account = { ...discordAccount, isLocal: false, setLocalPassword: jest.fn() };
+    jest.spyOn(Account, "findById").mockReturnValue({ select: () => Promise.resolve(account) });
+    const data = { newPassword: "new-password", newPasswordConfirm: "new-password" };
+
+    expect(await submit({}, data, "/account/change-password")).toMatchObject({ statusCode: 400 });
+    expect(await submit({}, { ...data, currentPassword: "unverified" }, "/account/change-password")).toMatchObject({
+      statusCode: 403,
+    });
+    expect(account.setLocalPassword).not.toHaveBeenCalled();
+  });
+
+  test("a password change verifies the current password before saving", async () => {
+    const account = {
+      ...discordAccount,
+      isLocal: true,
+      authenticate: jest.fn().mockResolvedValueOnce({ user: false }).mockResolvedValueOnce({ user: discordAccount }),
+      setLocalPassword: jest.fn().mockResolvedValue(undefined),
+    };
+    jest.spyOn(Account, "findById").mockReturnValue({ select: () => Promise.resolve(account) });
+    const data = { currentPassword: "current-password", newPassword: "new-password", newPasswordConfirm: "new-password" };
+
+    expect(await submit({}, data, "/account/change-password")).toMatchObject({ statusCode: 401 });
+    expect(account.setLocalPassword).not.toHaveBeenCalled();
+    expect(await submit({}, data, "/account/change-password")).toMatchObject({ statusCode: 200 });
+    expect(account.setLocalPassword).toHaveBeenCalledWith("new-password");
+  });
 
   test("a password account with a linked provider still verifies its own password", async () => {
     const account = {

@@ -387,7 +387,7 @@ module.exports.sendGameInfo = async (socket, uid) => {
       }
     }
 
-    await switchGameRoom(socket, uid, games);
+    if (!(await switchGameRoom(socket, uid, games))) return;
     sendInProgressGameUpdate(game);
     socket.emit("joinGameRedirect", game.general.uid);
   } else {

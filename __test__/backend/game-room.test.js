@@ -1,4 +1,4 @@
-const { switchGameRoom } = require("../../routes/socket/game-room");
+const { switchGameRoom, cancelGameRoomSwitch } = require("../../routes/socket/game-room");
 
 // Socket.IO 2.x filters joins against the still-current socket.rooms and updates
 // the room bookkeeping from adapter callbacks, so the mock defers them as well.
@@ -84,4 +84,20 @@ test("returning to the original table is not skipped", async () => {
   expect(socket.currentGameRoom).toBe("gameA");
   expect(socket.roomSet).toEqual(new Set(["socket-1", "gameA"]));
   expect(socket.calls.join).toEqual(["gameB", "gameA"]);
+});
+
+test("an explicit leave cancels the pending switch and allows a later rejoin", async () => {
+  const socket = makeSocket("socket-1", ["socket-1", "gameA"]);
+  socket.currentGameRoom = "gameA";
+
+  const canceledSwitch = switchGameRoom(socket, "gameB", games);
+  cancelGameRoomSwitch(socket, "gameB");
+  await socket.flush();
+  expect(await canceledSwitch).toBe(false);
+  expect(socket.roomSet.has("gameB")).toBe(false);
+
+  const laterSwitch = switchGameRoom(socket, "gameB", games);
+  await socket.flush();
+  expect(await laterSwitch).toBe(true);
+  expect(socket.roomSet).toEqual(new Set(["socket-1", "gameB"]));
 });

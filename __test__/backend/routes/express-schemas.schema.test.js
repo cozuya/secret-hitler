@@ -58,9 +58,11 @@ describe("signupBodySchema", () => {
 
 describe("changePasswordBodySchema / emailBodySchema / usernameBodySchema", () => {
   it("changePassword requires both fields as strings", () => {
-    expect(changePasswordBodySchema.safeParse({ newPassword: "x", newPasswordConfirm: "x" }).success).toBe(true);
-    expect(changePasswordBodySchema.safeParse({ newPassword: "x" }).success).toBe(false);
-    expect(changePasswordBodySchema.safeParse({ newPassword: ["x"], newPasswordConfirm: "x" }).success).toBe(false);
+    const passwords = { currentPassword: "old", newPassword: "x", newPasswordConfirm: "x" };
+    expect(changePasswordBodySchema.safeParse(passwords).success).toBe(true);
+    expect(changePasswordBodySchema.safeParse({ ...passwords, currentPassword: undefined }).success).toBe(false);
+    expect(changePasswordBodySchema.safeParse({ ...passwords, newPasswordConfirm: undefined }).success).toBe(false);
+    expect(changePasswordBodySchema.safeParse({ ...passwords, newPassword: ["x"] }).success).toBe(false);
   });
 
   it("email is optional but must be a string when present", () => {

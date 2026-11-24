@@ -19,7 +19,9 @@ const signupBodySchema = z
   })
   .passthrough();
 
-const changePasswordBodySchema = z.object({ newPassword: z.string(), newPasswordConfirm: z.string() }).passthrough();
+const changePasswordBodySchema = z
+  .object({ currentPassword: z.string().min(1), newPassword: z.string(), newPasswordConfirm: z.string() })
+  .passthrough();
 
 // add-email / change-email both allow an absent email (clearing it); reject only non-string shapes.
 const emailBodySchema = z.object({ email: z.string().nullable().optional() }).passthrough();

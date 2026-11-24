@@ -179,6 +179,7 @@ export default () => {
     const $errMessage = $loader.next();
     const $successMessage = $errMessage.next();
     const data = JSON.stringify({
+      currentPassword: $("#passwordchange-currentpassword").val(),
       newPassword,
       newPasswordConfirm,
     });
@@ -198,13 +199,11 @@ export default () => {
             $errMessage.addClass("hidden");
           }
         },
-        401() {
-          $loader.removeClass("active");
-          $errMessage.text("Your new password and your confirm password did not match.").removeClass("hidden");
-          if (!$successMessage.hasClass("hidden")) {
-            $successMessage.addClass("hidden");
-          }
-        },
+      },
+      error(xhr) {
+        $loader.removeClass("active");
+        $successMessage.addClass("hidden");
+        $errMessage.text(xhr.responseJSON?.message || "Could not change your password.").removeClass("hidden");
       },
     });
   });

@@ -405,6 +405,7 @@ $(document).ready(function() {
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
 			data = JSON.stringify({
+				currentPassword: $('#passwordchange-currentpassword').val(),
 				newPassword: newPassword,
 				newPasswordConfirm: newPasswordConfirm
 			});
@@ -423,14 +424,12 @@ $(document).ready(function() {
 					if (!$errMessage.hasClass('hidden')) {
 						$errMessage.addClass('hidden');
 					}
-				},
-				401: function() {
-					$loader.removeClass('active');
-					$errMessage.text('Your new password and your confirm password did not match.').removeClass('hidden');
-					if (!$successMessage.hasClass('hidden')) {
-						$successMessage.addClass('hidden');
-					}
 				}
+			},
+			error: function(xhr) {
+				$loader.removeClass('active');
+				$successMessage.addClass('hidden');
+				$errMessage.text(xhr.responseJSON && xhr.responseJSON.message || 'Could not change your password.').removeClass('hidden');
 			}
 		});
 	});

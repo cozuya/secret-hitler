@@ -64,6 +64,7 @@ const { saveAndDeleteGame } = require("./game/end-game");
 const { games, emoteList, cloneSettingsFromRedis, modDMs, getStaffList } = require("./models");
 const Account = require("../../models/account");
 const { sendModActionPage } = require("./mod-action-pages");
+const { cancelGameRoomSwitch } = require("./game-room");
 const { TOU_CHANGES } = require("../../src/frontend-scripts/node-constants.js");
 const version = require("../../version");
 const https = require("https");
@@ -655,8 +656,10 @@ module.exports.socketRoutes = () => {
       socket.on("leaveGame", (data) => {
         const game = findGame(data);
 
-        if (game && game.general && io.sockets.adapter.rooms[game.general.uid] && socket) {
-          socket.leave(game.general.uid);
+        if (game?.general) {
+          const { uid } = game.general;
+          cancelGameRoomSwitch(socket, uid);
+          if (io.sockets.adapter.rooms[uid]) socket.leave(uid);
         }
 
         if (authenticated && game) {
