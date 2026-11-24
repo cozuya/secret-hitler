@@ -561,21 +561,19 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/account/reset-password", (req, res, next) => {
-    if (!req.body.email || typeof req.body.email !== "string") {
+    const email = req.body?.email;
+    if (typeof email !== "string" || !email) {
       return next();
     }
 
-    Account.findOne({
-      "verification.email": req.body.email,
-    })
+    return Account.findOne({ "verification.email": email, verified: true })
       .then((account) => {
         if (!account) {
-          res.status(404).json({ message: "There is no verified account associated with that email." });
-        } else {
-          setVerify({ username: account.username, email: req.body.email, res, isResetPassword: true });
+          return res.status(404).json({ message: "There is no verified account associated with that email." });
         }
+        setVerify({ username: account.username, email, res, isResetPassword: true });
       })
-      .catch((err) => console.log(err, "account err"));
+      .catch(next);
   });
 
   app.post("/account/signup", (req, res, next) => {

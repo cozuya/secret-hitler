@@ -57,7 +57,7 @@ module.exports.verifyRoutes = () => {
   app.get("/password-reset/:username/:token", (req, res, next) => {
     const { username, token } = req.params;
 
-    ResetPassword.findOne({ username, token, expirationDate: { $gte: now } })
+    return ResetPassword.findOne({ username, token, expirationDate: { $gt: new Date() } })
       .then((reset) => {
         if (!reset) {
           return next();
@@ -71,44 +71,36 @@ module.exports.verifyRoutes = () => {
   });
 
   app.post("/password-reset", (req, res, next) => {
-    const { username, password, password2, tok } = req.body;
+    const { username, password, password2, tok } = req.body || {};
 
     if (
+      typeof username !== "string" ||
+      typeof password !== "string" ||
+      typeof tok !== "string" ||
       password !== password2 ||
       !tok ||
       password.length < 6 ||
-      password.length > 255 ||
-      typeof username !== "string" ||
-      typeof password !== "string" ||
-      typeof tok !== "string"
+      password.length > 255
     ) {
-      res.status(400).send();
-      return next();
+      return res.status(400).send();
     }
 
-    ResetPassword.findOneAndDelete({ username, token: tok, expirationDate: { $gte: now } })
-      .then((reset) => {
+    return ResetPassword.findOneAndDelete({ username, token: tok, expirationDate: { $gt: new Date() } })
+      .then(async (reset) => {
         if (!reset) {
-          res.status(400).send();
-        } else {
-          Account.findOne({ username: req.body.username })
-            .then(async (account) => {
-              if (!account || account.staffRole) {
-                res.status(404).send();
-              } else {
-                await account.setLocalPassword(password);
-                req.logIn(account, (err) => {
-                  if (err) return next(err);
-                  res.send();
-                });
-              }
-            })
-            .catch(next);
+          return res.status(400).send();
         }
+        const account = await Account.findOne({ username, verified: true });
+        if (!account || account.staffRole) {
+          return res.status(404).send();
+        }
+        await account.setLocalPassword(password);
+        req.logIn(account, (err) => {
+          if (err) return next(err);
+          res.send();
+        });
       })
-      .catch((err) => {
-        console.log(err, "err in reset password post");
-      });
+      .catch(next);
   });
 
   VerifyAccount.deleteMany({ expirationDate: { $lt: now } }, (err) => {
