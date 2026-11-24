@@ -44,6 +44,8 @@ block content
 		if !discordUsername && !githubUsername
 			button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
 
+		if oauthProvider && deleteConfirmed
+			.ui.positive.message Provider confirmed. Open Delete your account to finish.
 		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account
 
 	section.passwordchange-modal.ui.modal.small.segment.column
@@ -104,13 +106,24 @@ block content
 			span#delete-account-name
 				= username
 		.ui.warning.message This cannot be undone.
-		form.ui.form
-			.field
-				.ui.left.icon.input
-					i.lock.icon
-					input#deleteaccount-password(placeholder="Your current password", type="password")
-			button.ui.primary.button.fluid.large#deleteaccount-submit Submit
-			.ui.dimmer.inverted
-				.ui.text.loader Deleting your account..
-			.ui.negative.hidden.message
-			.ui.hidden.message Successfully deleted your account
+		if oauthProvider && !deleteConfirmed
+			- const providerName = oauthProvider === 'github' ? 'GitHub' : 'Discord';
+			p Confirm with your linked #{providerName} account first.
+			form.ui.form(method="post", action='/account/confirm-delete/' + oauthProvider)
+				input(type="hidden", name="csrfToken", value=deleteAccountCsrf)
+				button.ui.primary.button.fluid.large(type="submit") Confirm with #{providerName}
+		else
+			form.ui.form
+				if requiresPassword
+					.field
+						.ui.left.icon.input
+							i.lock.icon
+							input#deleteaccount-password(placeholder="Your current password", type="password", autocomplete="current-password")
+					if showDeleteRecovery
+						p If you never set a password, use the password reset link on the sign-in screen with your verified email, or contact the moderators for help.
+				input#deleteaccount-csrf(type="hidden", value=deleteAccountCsrf)
+				button.ui.primary.button.fluid.large#deleteaccount-submit Delete your account
+				.ui.dimmer.inverted
+					.ui.text.loader Deleting your account..
+				.ui.negative.hidden.message
+				.ui.hidden.message Successfully deleted your account

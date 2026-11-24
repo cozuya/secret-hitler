@@ -132,6 +132,7 @@ const Account = new Schema({
   discordMFA: Boolean,
   discordUID: String,
   githubUsername: String,
+  githubUID: String,
   githubMFA: Boolean,
   warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
   feedbackSubmissions: Array, // { time: Date, text: String }
@@ -156,5 +157,11 @@ const Account = new Schema({
 });
 
 Account.plugin(passportLocalMongoose);
+
+Account.methods.setLocalPassword = async function (password) {
+  await this.setPassword(password);
+  this.isLocal = true;
+  return this.save();
+};
 
 module.exports = mongoose.model("Account", Account);

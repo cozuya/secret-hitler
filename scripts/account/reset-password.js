@@ -8,20 +8,18 @@ if (process.argv.length === 3) {
   mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
   const username = process.argv[2];
   Account.findOne({ username })
-    .then((user) => {
+    .then(async (user) => {
       if (user) {
-        user.setPassword(TEMP_PASSWORD, () => {
-          user.save(() => mongoose.connection.close());
-        });
+        await user.setLocalPassword(TEMP_PASSWORD);
         console.log(`Set ${username}'s password to ${TEMP_PASSWORD}`);
       } else {
         console.log(`No user with the username ${username} found`);
-        mongoose.connection.close();
       }
     })
     .catch((err) => {
       console.error(err);
-    });
+    })
+    .finally(() => mongoose.connection.close());
 } else if (process.argv.length > 3) {
   console.error("Error: To many arguments");
 } else {

@@ -1,4 +1,5 @@
 const passport = require("passport");
+const { randomBytes } = require("crypto");
 const Account = require("../models/account");
 const Profile = require("../models/profile/index");
 const BannedIP = require("../models/bannedIP");
@@ -12,6 +13,19 @@ const bannedEmails = require("../utils/disposableEmails");
 const { expandAndSimplify, obfIP, doesIPMatchCIDR } = require("./socket/ip-obf");
 const prodCacheBustToken = require("./prodCacheBustToken");
 const { handleDefaultIPv6Range } = require("./socket/util");
+const {
+  AUTH_PASSWORD,
+  AUTH_OAUTH,
+  accountDeletionAuthMode,
+  linkedProviderId,
+  newDeleteAccountCsrfToken,
+  validDeleteAccountCsrf,
+  isDeleteAccountOAuthState,
+  newDeleteAccountOAuthRequest,
+  takeDeleteAccountOAuthRequest,
+  confirmAccountDeletion,
+  hasFreshOAuthConfirmation,
+} = require("./account-deletion");
 const {
   signupBodySchema,
   changePasswordBodySchema,
@@ -306,6 +320,7 @@ const continueSignup = (config) => {
     if (isOAuth) {
       const accountObj = {
         username: username,
+        isLocal: false,
         gameSettings: {
           soundStatus: "pack2",
           disableSeasonal: true,
@@ -329,6 +344,7 @@ const continueSignup = (config) => {
         accountObj.discordUID = profile.id;
       } else {
         accountObj.githubUsername = profile.username;
+      accountObj.githubUID = profile.id;
         accountObj.githubMFA = profile._json.two_factor_authentication;
         accountObj.bio = profile._json.bio;
       }
@@ -345,7 +361,7 @@ const continueSignup = (config) => {
         oauthID: `${config.isOAuth && config.type === "discord" ? accountObj.discordUID : ""}`,
       });
 
-      Account.register(new Account(accountObj), Math.random().toString(36).substring(2), (err, account) => {
+      Account.register(new Account(accountObj), randomBytes(32).toString("hex"), (err, account) => {
         if (err) {
           // console.log(err, 'err in creating oauth account', accountObj);
           res.status(503).json({ message: "There was an error processing your request. Please try again later." });
@@ -423,20 +439,36 @@ const continueSignup = (config) => {
   }
 };
 
+// Passport omits the hash and salt from the session user.
+const findAccountForDeletion = (user) => Account.findById(user._id).select("+hash +salt");
+
 module.exports.accounts = (torIpsParam) => {
   verifyRoutes();
   torIps = torIpsParam;
 
-  app.get("/account", ensureAuthenticated, (req, res) => {
-    res.render("page-account", {
-      isLocal: req.user.isLocal,
-      username: req.user.username,
-      verified: req.user.verified,
-      email: req.user.verification ? req.user.verification.email : "",
-      discordUsername: req.user.discordUsername,
-      discordDiscriminator: req.user.discordDiscriminator,
-      githubUsername: req.user.githubUsername,
-    });
+  app.get("/account", ensureAuthenticated, (req, res, next) => {
+    findAccountForDeletion(req.user)
+      .then((account) => {
+        if (!account) return res.redirect("/");
+        const deleteAuthMode = accountDeletionAuthMode(account);
+        req.session.deleteAccountCsrf ||= newDeleteAccountCsrfToken();
+        res.render("page-account", {
+          isLocal: account.isLocal,
+          requiresPassword: deleteAuthMode === AUTH_PASSWORD,
+          oauthProvider: deleteAuthMode === AUTH_OAUTH ? (account.discordUID ? "discord" : "github") : null,
+          deleteConfirmed: hasFreshOAuthConfirmation(req.session, account),
+          showDeleteRecovery: !account.isLocal && Boolean(account.discordUID || account.githubUsername),
+          deleteAccountCsrf: req.session.deleteAccountCsrf,
+          prodCacheBustToken: process.env.NODE_ENV === "production" ? prodCacheBustToken.prodCacheBustToken : null,
+          username: account.username,
+          verified: account.verified,
+          email: account.verification ? account.verification.email : "",
+          discordUsername: account.discordUsername,
+          discordDiscriminator: account.discordDiscriminator,
+          githubUsername: account.githubUsername,
+        });
+      })
+      .catch(next);
   });
 
   app.post("/account/change-password", ensureAuthenticated, (req, res, next) => {
@@ -453,25 +485,61 @@ module.exports.accounts = (torIpsParam) => {
     } else if (newPassword.length > 255 || newPassword.length < 7) {
       res.status(400);
     } else {
-      user.setPassword(newPassword, () => {
-        user.save();
-        res.send();
-      });
+      user.setLocalPassword(newPassword).then(() => res.send(), next);
     }
   });
 
-  app.post("/account/delete-account", passport.authenticate("local"), (req, res) => {
-    Account.findOne({ username: req.user.username }).then((acc) => {
-      if (acc.isBanned || (acc.isTimeout && Date.now() < new Date(acc.isTimeout))) {
-        res.status(403).json({ message: "You cannot delete a banned account. " });
-      } else {
-        Account.deleteOne({ username: req.user.username }).then(() => {
-          Profile.deleteOne({ _id: req.user.username }).then(() => {
-            res.send();
-          });
+  app.post("/account/delete-account", ensureAuthenticated, (req, res, next) => {
+    const csrfToken = req.get("x-csrf-token") || (req.body && req.body.csrfToken);
+    if (!validDeleteAccountCsrf(req.session, csrfToken)) {
+      return res.status(403).json({ message: "Invalid request." });
+    }
+
+    findAccountForDeletion(req.user)
+      .then(async (account) => {
+        if (!account) {
+          return res.status(404).json({ message: "Account not found." });
+        }
+        if (account.isBanned || (account.isTimeout && Date.now() < new Date(account.isTimeout))) {
+          return res.status(403).json({ message: "You cannot delete a banned account. " });
+        }
+
+        if (accountDeletionAuthMode(account) === AUTH_OAUTH) {
+          if (!hasFreshOAuthConfirmation(req.session, account)) {
+            return res.status(403).json({ message: "Please confirm with your linked provider first." });
+          }
+          delete req.session.deleteAccountConfirmation;
+        } else {
+          const password = req.body && req.body.password;
+          if (typeof password !== "string" || !password) {
+            return res.status(401).json({ message: "Your password is required." });
+          }
+          const { user } = await account.authenticate(password);
+          if (!user || String(user._id) !== String(account._id)) {
+            return res.status(401).json({ message: "Your password did not match." });
+          }
+        }
+
+        // Stop if a password, provider link or restriction changed during verification.
+        const result = await Account.deleteOne({
+          _id: account._id,
+          isLocal: account.isLocal ?? null,
+          hash: account.hash ?? null,
+          salt: account.salt ?? null,
+          password: account.password ?? null,
+          discordUID: account.discordUID ?? null,
+          githubUID: account.githubUID ?? null,
+          isBanned: { $ne: true },
+          $or: [{ isTimeout: null }, { isTimeout: { $lte: new Date() } }],
         });
-      }
-    });
+        if (result.deletedCount !== 1) {
+          return res.status(409).json({ message: "Your account changed. Refresh the page and try again." });
+        }
+        req.logOut();
+        await Profile.deleteOne({ _id: account.username });
+        return res.send();
+      })
+      .catch(next);
   });
 
   app.post("/account/reset-password", (req, res, next) => {
@@ -877,11 +945,38 @@ module.exports.accounts = (torIpsParam) => {
     );
   });
 
+  app.post("/account/confirm-delete/:type", ensureAuthenticated, (req, res, next) => {
+    const type = req.params.type;
+    if (type !== "discord" && type !== "github") {
+      return res.status(400).send();
+    }
+    if (!validDeleteAccountCsrf(req.session, req.body?.csrfToken)) {
+      return res.status(403).send("Invalid request.");
+    }
+    findAccountForDeletion(req.user)
+      .then((account) => {
+        if (accountDeletionAuthMode(account) !== AUTH_OAUTH || !linkedProviderId(account, type)) {
+          return res.status(403).send("Provider confirmation is not available for this account.");
+        }
+        const state = newDeleteAccountOAuthRequest(req.session, account, type);
+        if (type === "github") {
+          return passport.authenticate("github", { scope: ["read:user", "user:email"], state })(req, res, next);
+        }
+        return passport.authenticate("discord", { state })(req, res, next);
+      })
+      .catch(next);
+  });
+
   app.get("/discord-login", passport.authenticate("discord"));
 
   app.get("/github-login", passport.authenticate("github", { scope: ["read:user", "user:email"] }));
 
   const oAuthAuthentication = (req, res, next, type) => {
+    let deleteRequest;
+    if (isDeleteAccountOAuthState(req.query?.state)) {
+      deleteRequest = takeDeleteAccountOAuthRequest(req.session, req.user, type, req.query.state);
+      if (!deleteRequest) return res.status(403).send("Deletion confirmation expired. Start again on your account page.");
+    }
     const ip = req.expandedIP;
     testIP(ip, (banType, unbanTime) => {
       if (banType && banType !== "new" && banType !== "fragbanSmall" && banType !== "fragbanLarge") {
@@ -907,6 +1002,14 @@ module.exports.accounts = (torIpsParam) => {
         }
       } else {
         passport.authenticate(type, (profile) => {
+          if (deleteRequest) {
+            if (profile?.id !== deleteRequest.providerId) {
+              return res.status(403).send("Provider does not match the linked account.");
+            }
+            confirmAccountDeletion(req.session, deleteRequest);
+            return res.redirect("/account");
+          }
+
           if (!profile || !profile.id) {
             return next();
           }
@@ -919,6 +1022,7 @@ module.exports.accounts = (torIpsParam) => {
               req.user.discordUID = profile.id;
             } else {
               req.user.githubUsername = profile.username;
+              req.user.githubUID = profile.id;
               req.user.githubMFA = profile.two_factor_authentication;
             }
             req.user.verified = true;
@@ -1091,6 +1195,7 @@ module.exports.accounts = (torIpsParam) => {
 
   app.get("/revoke-github", ensureAuthenticated, (req, res) => {
     req.user.githubUsername = null;
+    req.user.githubUID = null;
     req.user.githubMFA = null;
     req.user.save(() => {
       res.redirect("/account");

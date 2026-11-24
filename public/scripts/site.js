@@ -479,7 +479,10 @@ $(document).ready(function() {
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
-			data = JSON.stringify({ username: $('#delete-account-name').text(), password: password });
+			data = JSON.stringify({
+				password: password,
+				csrfToken: $('#deleteaccount-csrf').val()
+			});
 
 		$loader.addClass('active');
 
@@ -498,21 +501,12 @@ $(document).ready(function() {
 					if (!$errMessage.hasClass('hidden')) {
 						$errMessage.addClass('hidden');
 					}
-				},
-				401: function() {
-					$loader.removeClass('active');
-					$errMessage.text('Your password did not match.').removeClass('hidden');
-					if (!$successMessage.hasClass('hidden')) {
-						$successMessage.addClass('hidden');
-					}
-				},
-				403(xhr) {
-					$loader.removeClass('active');
-					$errMessage.text(xhr.responseJSON.message).removeClass('hidden');
-					if (!$successMessage.hasClass('hidden')) {
-						$successMessage.addClass('hidden');
-					}
 				}
+			},
+			error: function(xhr) {
+				$loader.removeClass('active');
+				$successMessage.addClass('hidden');
+				$errMessage.text(xhr.responseJSON && xhr.responseJSON.message || 'Could not delete your account.').removeClass('hidden');
 			}
 		});
 	});

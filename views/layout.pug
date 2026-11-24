@@ -310,5 +310,5 @@ html(lang="en")
     script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-    script(src="/scripts/site.js")
+    script(src=prodCacheBustToken ? `/scripts/site.js?${prodCacheBustToken}` : "/scripts/site.js")
   block footer

@@ -92,22 +92,18 @@ module.exports.verifyRoutes = () => {
           res.status(400).send();
         } else {
           Account.findOne({ username: req.body.username })
-            .then((account) => {
+            .then(async (account) => {
               if (!account || account.staffRole) {
                 res.status(404).send();
               } else {
-                account.setPassword(password, () => {
-                  account.save(() => {
-                    req.logIn(account, () => {
-                      res.send();
-                    });
-                  });
+                await account.setLocalPassword(password);
+                req.logIn(account, (err) => {
+                  if (err) return next(err);
+                  res.send();
                 });
               }
             })
-            .catch((err) => {
-              console.log(err, "err in reset password find");
-            });
+            .catch(next);
         }
       })
       .catch((err) => {
