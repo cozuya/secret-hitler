@@ -17,6 +17,7 @@ const Account = new Schema({
   },
   password: String,
   isLocal: Boolean,
+  oauthSignupProvider: { type: String, enum: ["discord", "github"] },
   staffRole: String,
   isContributor: Boolean,
   hasNotDismissedSignupModal: Boolean,

@@ -325,6 +325,7 @@ const continueSignup = (config) => {
       const accountObj = {
         username: username,
         isLocal: false,
+        oauthSignupProvider: type,
         gameSettings: {
           soundStatus: "pack2",
           disableSeasonal: true,
@@ -459,7 +460,7 @@ module.exports.accounts = (torIpsParam) => {
         res.render("page-account", {
           isLocal: account.isLocal,
           requiresPassword: deleteAuthMode === AUTH_PASSWORD,
-          oauthProvider: deleteAuthMode === AUTH_OAUTH ? (account.discordUID ? "discord" : "github") : null,
+          oauthProvider: deleteAuthMode === AUTH_OAUTH ? account.oauthSignupProvider : null,
           deleteConfirmed: hasFreshOAuthConfirmation(req.session, account),
           showDeleteRecovery: !account.isLocal && Boolean(account.discordUID || account.githubUsername),
           deleteAccountCsrf: req.session.deleteAccountCsrf,
@@ -540,6 +541,7 @@ module.exports.accounts = (torIpsParam) => {
         const result = await Account.deleteOne({
           _id: account._id,
           isLocal: account.isLocal ?? null,
+          oauthSignupProvider: account.oauthSignupProvider ?? null,
           hash: account.hash ?? null,
           salt: account.salt ?? null,
           password: account.password ?? null,
@@ -833,6 +835,9 @@ module.exports.accounts = (torIpsParam) => {
   );
 
   app.post("/account/add-email", ensureAuthenticated, (req, res, next) => {
+    if (req.user.isLocal === false) {
+      return res.status(403).json({ message: "Passwordless accounts use the email from their original sign-in provider." });
+    }
     const parsed = emailBodySchema.safeParse(req.body);
     if (!parsed.success) {
       return next(); // intentional: mirrors this route's existing absent-email fall-through (not an explicit status)
@@ -880,6 +885,9 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.post("/account/change-email", ensureAuthenticated, (req, res, next) => {
+    if (req.user.isLocal === false) {
+      return res.status(403).json({ message: "Passwordless accounts use the email from their original sign-in provider." });
+    }
     const parsed = emailBodySchema.safeParse(req.body);
     if (!parsed.success) {
       return next(); // intentional: mirrors this route's existing absent-email fall-through (not an explicit status)
@@ -1031,6 +1039,13 @@ module.exports.accounts = (torIpsParam) => {
           }
 
           if (req.user) {
+            if (
+              req.user.isLocal === false &&
+              req.user.oauthSignupProvider === type &&
+              linkedProviderId(req.user, type) !== profile.id
+            ) {
+              return res.status(403).send("You can only sign in with the original linked provider for this account.");
+            }
             if (type === "discord") {
               req.user.discordUsername = profile.username;
               req.user.discordDiscriminator = profile.discriminator;
@@ -1200,6 +1215,9 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.get("/revoke-discord", ensureAuthenticated, (req, res) => {
+    if (req.user.isLocal === false && req.user.oauthSignupProvider === "discord") {
+      return res.status(403).send("Set a password before unlinking your original sign-in provider.");
+    }
     req.user.discordUsername = null;
     req.user.discordDiscriminator = null;
     req.user.discordUID = null;
@@ -1210,6 +1228,9 @@ module.exports.accounts = (torIpsParam) => {
   });
 
   app.get("/revoke-github", ensureAuthenticated, (req, res) => {
+    if (req.user.isLocal === false && req.user.oauthSignupProvider === "github") {
+      return res.status(403).send("Set a password before unlinking your original sign-in provider.");
+    }
     req.user.githubUsername = null;
     req.user.githubUID = null;
     req.user.githubMFA = null;

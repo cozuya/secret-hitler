@@ -5,6 +5,7 @@ const {
   AUTH_PASSWORD,
   AUTH_OAUTH,
   accountDeletionAuthMode,
+  linkedProviderId,
   newDeleteAccountCsrfToken,
   validDeleteAccountCsrf,
   isDeleteAccountOAuthState,
@@ -14,7 +15,7 @@ const {
   hasFreshOAuthConfirmation,
 } = require("../../routes/account-deletion");
 
-const discordAccount = { _id: "account-id", username: "alice", discordUID: "discord-id" };
+const discordAccount = { _id: "account-id", username: "alice", discordUID: "discord-id", oauthSignupProvider: "discord" };
 
 describe("account deletion authorization", () => {
   test("keeps password verification for older accounts with unknown password history", () => {
@@ -34,11 +35,18 @@ describe("account deletion authorization", () => {
   });
 
   test("uses the provider for a linked account known to have no user-set password", () => {
-    expect(accountDeletionAuthMode(discordAccount)).toBe(AUTH_OAUTH);
+    expect(accountDeletionAuthMode(discordAccount)).toBe(AUTH_PASSWORD);
     expect(accountDeletionAuthMode({ ...discordAccount, isLocal: false, hash: "generated" })).toBe(AUTH_OAUTH);
-    expect(accountDeletionAuthMode({ isLocal: false, githubUID: "42" })).toBe(AUTH_OAUTH);
+    expect(accountDeletionAuthMode({ isLocal: false, oauthSignupProvider: "github", githubUID: "42" })).toBe(AUTH_OAUTH);
+    expect(accountDeletionAuthMode({ isLocal: false, githubUID: "42" })).toBe(AUTH_PASSWORD);
     expect(accountDeletionAuthMode({ isLocal: false, githubUsername: "octocat" })).toBe(AUTH_PASSWORD);
     expect(accountDeletionAuthMode({})).toBe(AUTH_PASSWORD);
+  });
+
+  test("ignores a secondary provider when verifying account deletion", () => {
+    const account = { ...discordAccount, isLocal: false, githubUID: "later-link" };
+    expect(linkedProviderId(account, "discord")).toBe(discordAccount.discordUID);
+    expect(linkedProviderId(account, "github")).toBeUndefined();
   });
 
   test("records a chosen password and then requires it for deletion", async () => {
@@ -134,11 +142,11 @@ describe("account deletion route", () => {
 
   afterEach(() => jest.restoreAllMocks());
 
-  const submit = (session, data, path = "/account/delete-account", signedIn = true) =>
+  const submit = (session, data, path = "/account/delete-account", user = { _id: discordAccount._id }) =>
     new Promise((resolve, reject) => {
       const req = {
-        user: signedIn ? { _id: discordAccount._id } : undefined,
-        isAuthenticated: () => signedIn,
+        user,
+        isAuthenticated: () => Boolean(user),
         session,
         get: () => undefined,
         body: data,
@@ -162,8 +170,20 @@ describe("account deletion route", () => {
     });
 
   test("an expired session returns an error for an AJAX deletion", async () => {
-    expect(await submit({}, {}, "/account/delete-account", false)).toMatchObject({ statusCode: 401 });
+    expect(await submit({}, {}, "/account/delete-account", null)).toMatchObject({ statusCode: 401 });
   });
+
+  test.each(["/account/add-email", "/account/change-email"])(
+    "%s preserves the recovery email on a provider-only account",
+    async (path) => {
+      const account = { ...discordAccount, isLocal: false };
+      const findAccount = jest.spyOn(Account, "findOne").mockImplementation(() => {
+        throw new Error("The request reached an account lookup");
+      });
+      expect(await submit({}, { email: "new@example.test" }, path, account)).toMatchObject({ statusCode: 403 });
+      expect(findAccount).not.toHaveBeenCalled();
+    }
+  );
 
   test("a session alone cannot set the password for a provider-only account", async () => {
     const account = { ...discordAccount, isLocal: false, setLocalPassword: jest.fn() };

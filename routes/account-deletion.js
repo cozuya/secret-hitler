@@ -7,17 +7,15 @@ const OAUTH_STATE_TTL_MS = 10 * 60 * 1000;
 const OAUTH_STATE_PREFIX = "delete-account-";
 
 const linkedProviderId = (account, provider) => {
-  if (!account) return undefined;
+  if (!account || account.oauthSignupProvider !== provider) return undefined;
   if (provider === "discord") return account.discordUID;
   if (provider === "github") return account.githubUID;
 };
 
-// Older signups used a random password indistinguishable from a password the
-// player later chose. A signup log only establishes how the account originated.
+// Legacy signup history cannot establish whether the player later set a password.
+// Use the recorded signup provider for accounts explicitly marked passwordless.
 const accountDeletionAuthMode = (account) => {
-  if (!account || account.isLocal === true) return AUTH_PASSWORD;
-  if (!linkedProviderId(account, "discord") && !linkedProviderId(account, "github")) return AUTH_PASSWORD;
-  return account.isLocal === false || (!account.hash && !account.salt && !account.password) ? AUTH_OAUTH : AUTH_PASSWORD;
+  return account?.isLocal === false && linkedProviderId(account, account.oauthSignupProvider) ? AUTH_OAUTH : AUTH_PASSWORD;
 };
 
 const safeEqual = (actual, expected) => {
