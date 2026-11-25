@@ -212,6 +212,19 @@ const expectDelivery = (senderSeat, recipientSeat, direction, message = "hello")
   }
 };
 
+const setPlayerCount = (count) => {
+  for (let index = game.publicPlayersState.length; index < count; index++) {
+    const userName = `Player${index + 1}`;
+    game.publicPlayersState.push({ userName, isDead: false, leftGame: false });
+    game.private.seatedPlayers.push({ userName, gameChats: [], playersState: [] });
+    sockets[userName] = { handshake: { session: { passport: { user: userName } } }, emit: jest.fn() };
+    models.userList.push({ userName, xpOverall: 20, status: { type: "none" } });
+    global.io.sockets.adapter.rooms.NeighborChatTest.sockets[userName] = true;
+  }
+  game.publicPlayersState.length = count;
+  game.private.seatedPlayers.length = count;
+};
+
 describe("Neighbor Chat routing and delivery", () => {
   it("keeps edits to moderation history separate from replay history", () => {
     run("/r hello");
@@ -236,19 +249,19 @@ describe("Neighbor Chat routing and delivery", () => {
 
   it.each([
     ["r", "right", "isDead", 2, 3],
-    ["r", "right", "leftGame", 2, 3],
+    ["r", "right", "leftGame", 2, 2],
     ["l", "left", "isDead", 7, 6],
-    ["l", "left", "leftGame", 7, 6],
-  ])("/%s skips a seat marked %s/%s", (command, direction, flag, skipped, recipient) => {
+    ["l", "left", "leftGame", 7, 7],
+  ])("/%s (%s) handles %s at seat %i and reaches seat %i", (command, direction, flag, skipped, recipient) => {
     game.publicPlayersState[skipped - 1][flag] = true;
     run(`/${command} hello`);
     expectDelivery(1, recipient, direction);
   });
 
   it.each([
-    ["r", "right", 1, [2, 3, 4], 5],
-    ["l", "left", 7, [6, 5, 4], 3],
-  ])("/%s skips consecutive dead and left seats", (command, direction, sender, skipped, recipient) => {
+    ["r", "right", 1, [2, 3, 4], 3],
+    ["l", "left", 7, [6, 5, 4], 5],
+  ])("/%s (%s) skips dead seats but stops at a living departed seat", (command, direction, sender, skipped, recipient) => {
     skipped.forEach((seat, index) => {
       game.publicPlayersState[seat - 1][index === 1 ? "leftGame" : "isDead"] = true;
     });
@@ -256,16 +269,60 @@ describe("Neighbor Chat routing and delivery", () => {
     expectDelivery(sender, recipient, direction);
   });
 
-  it("resolves again after a neighbor reconnects", () => {
+  it("keeps the same living neighbor before and after they return", () => {
     game.publicPlayersState[1].leftGame = true;
     run("/r first");
-    expect(game.private.seatedPlayers[1].gameChats).toEqual([]);
-    expect(game.private.seatedPlayers[2].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): first"]);
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): first"]);
+    expect(game.private.seatedPlayers[2].gameChats).toEqual([]);
     game.publicPlayersState[1].leftGame = false;
     run("/r second");
-    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): second"]);
-    expect(game.private.seatedPlayers[2].gameChats).toHaveLength(1);
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual([
+      "← from left (#1 Player1): first",
+      "← from left (#1 Player1): second",
+    ]);
+    expect(game.private.seatedPlayers[2].gameChats).toEqual([]);
     expect(game.private.neighborChats).toHaveLength(2);
+  });
+
+  it.each(
+    [5, 6, 7, 8, 9, 10].flatMap((count) => [
+      [count, "r", 2, "right"],
+      [count, "2", 2, "right"],
+      [count, "l", count, "left"],
+      [count, String(count), count, "left"],
+    ])
+  )("keeps living departed neighbors in a %i-player game with /%s", (count, command, recipient, direction) => {
+    setPlayerCount(count);
+    const neighbor = game.publicPlayersState[recipient - 1];
+    neighbor.connected = false;
+    neighbor.leftGame = true;
+    run(`/${command} hello`);
+    expectDelivery(1, recipient, direction);
+  });
+
+  it("changes the neighbor only when the departed living seat subsequently dies", () => {
+    game.publicPlayersState[1].leftGame = true;
+    run("/r before death");
+    game.publicPlayersState[1].isDead = true;
+    run("/r after death");
+    expect(game.private.neighborChats.map((chat) => chat.neighborChat.recipient)).toEqual(["Player2", "Player3"]);
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): before death"]);
+    expect(game.private.seatedPlayers[2].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): after death"]);
+    for (const name of ["Observer", "Anonymous", "UnsubscribedMod"]) expect(deliveredChats(name)).toEqual([]);
+  });
+
+  it.each(["/l hello", "/r hello", "/2 hello", "/7 hello"])("a departed sender still cannot send %s", (command) => {
+    game.publicPlayersState[0].leftGame = true;
+    run(command);
+    expectRefusal("Only living players who have not left can use Neighbor Chat.");
+  });
+
+  it("does not redirect around a departed living neighbor who has muted chat", () => {
+    game.publicPlayersState[1].leftGame = true;
+    game.private.seatedPlayers[1].neighborChatMuted = true;
+    run("/r hello");
+    expectRefusal("This neighbor is not accepting Neighbor Chat.");
+    expect(game.private.seatedPlayers[2].gameChats).toEqual([]);
   });
 
   it.each([
@@ -279,16 +336,17 @@ describe("Neighbor Chat routing and delivery", () => {
     expectDelivery(1, 4, direction);
   });
 
-  it("uses only isDead and leftGame to determine eligibility", () => {
+  it("keeps a living recipient despite connected, away, or left flags", () => {
     game.publicPlayersState[1].connected = false;
     game.publicPlayersState[1].isAway = true;
+    game.publicPlayersState[1].leftGame = true;
     run("/r hello");
     expectDelivery(1, 2, "right");
   });
 
-  it.each(["l", "r"])("/%s refuses when all other seats are dead or left", (direction) => {
-    game.publicPlayersState.slice(1).forEach((player, index) => {
-      player[index % 2 ? "isDead" : "leftGame"] = true;
+  it.each(["l", "r"])("/%s refuses when every other seat is dead", (direction) => {
+    game.publicPlayersState.slice(1).forEach((player) => {
+      player.isDead = true;
     });
     run(`/${direction} hello`);
     expectRefusal("There is no one left to talk to.");
@@ -790,11 +848,6 @@ describe("public emote-chat extraction preserves the existing call site", () => 
 });
 
 describe("Neighbor Chat by seat number (/N)", () => {
-  const setPlayerCount = (count) => {
-    game.publicPlayersState.length = count;
-    game.private.seatedPlayers.length = count;
-  };
-
   it.each([
     ["/2 hello", 3, 2, "left"],
     ["/4 hello", 3, 4, "right"],
@@ -813,10 +866,14 @@ describe("Neighbor Chat by seat number (/N)", () => {
     expectDelivery(3, 5, "right");
   });
 
-  it("skips a player who left", () => {
+  it("keeps a departed living neighbor for direct seat messages and rejects skipping them", () => {
     game.publicPlayersState[1].leftGame = true;
     run("/1 hello", "Player3");
-    expectDelivery(3, 1, "left");
+    expectRefusal("You can only whisper to your neighbors: seats 2 and 4.", "Player3");
+    jest.clearAllMocks();
+    game.private.commandChats = {};
+    run("/2 hello", "Player3");
+    expectDelivery(3, 2, "left");
   });
 
   it.each([
@@ -859,7 +916,7 @@ describe("Neighbor Chat by seat number (/N)", () => {
     expectDelivery(1, 4, "right");
   });
 
-  it("refuses when every other seat is dead or left", () => {
+  it("refuses when every other seat is dead", () => {
     game.publicPlayersState.slice(1).forEach((player) => {
       player.isDead = true;
     });
@@ -975,5 +1032,84 @@ describe("Neighbor Chat by seat number (/N)", () => {
     game.private.commandChats = {};
     run("/help");
     expect(game.private.commandChats.Player1.map(textOf).some((line) => line.startsWith("/N - "))).toBe(false);
+  });
+});
+
+// Use real departure/return handlers so the routing rules cover actual lifecycle flags.
+describe("departures preserve living neighbor relationships", () => {
+  const disconnectSeat2 = () => {
+    game.general.playerCount = 7;
+    game.publicPlayersState.forEach((player) => {
+      player.connected = true;
+    });
+    models.games[game.general.uid] = game;
+    require("../../../../routes/socket/user-events/leave-game").handleSocketDisconnect(sockets.Player2);
+    // Socket.IO removes the closed transport and its room membership after dispatching disconnect.
+    const socket = sockets.Player2;
+    delete sockets.Player2;
+    delete global.io.sockets.adapter.rooms.NeighborChatTest.sockets.Player2;
+    return socket;
+  };
+  afterEach(() => {
+    delete models.games[game.general.uid];
+  });
+
+  it("a real socket disconnect keeps seat 2 as seat 1's neighbor", () => {
+    disconnectSeat2();
+    expect(game.publicPlayersState[1]).toMatchObject({ isDead: false, connected: false, leftGame: true });
+    jest.clearAllMocks();
+    run("/r hello");
+    expect(game.private.neighborChats[0].neighborChat.recipient).toBe("Player2");
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual(["← from left (#1 Player1): hello"]);
+    expect(game.private.seatedPlayers[2].gameChats).toEqual([]);
+    expect(deliveredChats("Player1")).toHaveLength(1);
+    expect(deliveredChats("Player3")).toEqual([]);
+    expect(game.chats).toEqual([]);
+  });
+
+  it("the Leave action does not let seat 1 address seat 3", () => {
+    game.general.playerCount = 7;
+    models.games[game.general.uid] = game;
+    require("../../../../routes/socket/user-events/leave-game").handleUserLeaveGame(
+      sockets.Player2,
+      game,
+      { uid: game.general.uid },
+      { user: "Player2" }
+    );
+    expect(game.publicPlayersState[1].leftGame).toBe(true);
+    jest.clearAllMocks();
+    run("/3 hello");
+    expectRefusal("You can only whisper to your neighbors: seats 2 and 7.");
+  });
+
+  it("returning to the table restores missed messages without ever changing the neighbor", async () => {
+    const socket = disconnectSeat2();
+    run("/r first");
+    socket.id = "Player2";
+    socket.rooms = { Player2: true };
+    socket.join = jest.fn((uid, done) => {
+      socket.rooms[uid] = true;
+      done();
+    });
+    socket.leave = jest.fn((uid, done) => {
+      delete socket.rooms[uid];
+      done();
+    });
+    sockets.Player2 = socket;
+    global.io.sockets.adapter.rooms.NeighborChatTest.sockets.Player2 = true;
+    await require("../../../../routes/socket/user-requests").sendGameInfo(socket, game.general.uid);
+    expect(game.publicPlayersState[1]).toMatchObject({ connected: true, leftGame: false });
+    expect(
+      socket.emit.mock.calls.some(
+        ([event, data]) => event === "gameUpdate" && data.chats.some((chat) => textOf(chat).includes("first"))
+      )
+    ).toBe(true);
+    run("/r second");
+    expect(game.private.neighborChats.map((chat) => chat.neighborChat.recipient)).toEqual(["Player2", "Player2"]);
+    expect(game.private.seatedPlayers[2].gameChats).toEqual([]);
+    expect(game.private.seatedPlayers[1].gameChats.map(textOf)).toEqual([
+      "← from left (#1 Player1): first",
+      "← from left (#1 Player1): second",
+    ]);
   });
 });
