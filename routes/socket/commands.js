@@ -531,8 +531,8 @@ module.exports.commands.getCommand("ping").run = (socket, passport, user, game, 
   }
 };
 
-// Left players are deliberately excluded so messages route to someone present; reconnect restores eligibility.
-const isNeighborChatEligible = (player) => Boolean(player) && !player.isDead && !player.leftGame;
+// Only deaths change the neighbor ring. Living seats remain neighbors while their players are away.
+const isLivingSeat = (player) => Boolean(player) && !player.isDead;
 
 const appendNeighborChat = (game, history, chat) => {
   history.push(chat);
@@ -549,11 +549,11 @@ const appendNeighborChat = (game, history, chat) => {
   }
 };
 
-// Nearest eligible seat from senderIndex in one direction (step -1 = left, 1 = right), wrapping; -1 if none.
+// Nearest living seat from senderIndex in one direction (step -1 = left, 1 = right), wrapping; -1 if none.
 const nearestNeighborIndex = (players, senderIndex, step) => {
   for (let offset = 1; offset < players.length; offset++) {
     const index = (senderIndex + step * offset + players.length) % players.length;
-    if (isNeighborChatEligible(players[index])) return index;
+    if (isLivingSeat(players[index])) return index;
   }
   return -1;
 };
@@ -567,7 +567,7 @@ const sendNeighborChat = (game, user, senderName, message, target) => {
 
   const players = game.publicPlayersState;
   const senderIndex = players.findIndex((player) => player?.userName === senderName);
-  if (!isNeighborChatEligible(players[senderIndex])) {
+  if (!isLivingSeat(players[senderIndex]) || players[senderIndex].leftGame) {
     sendMessage(game, user, "Only living players who have not left can use Neighbor Chat.");
     return;
   }

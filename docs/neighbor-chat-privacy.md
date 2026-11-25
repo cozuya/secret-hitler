@@ -1,12 +1,14 @@
 # Neighbor Chat privacy and moderation
 
-Players send with `/l` and `/r`, or `/N` with a seat number (for example `/4 hi`). `/N` only reaches seat N when it is the sender's nearest living, non-left neighbor on either side (the same seats `/l` and `/r` resolve to); any other number gets a private error naming the valid seats. Every rule below applies to all three commands.
+Players send with `/l` and `/r`, or `/N` with a seat number (for example `/4 hi`). `/N` only reaches seat N when it is the sender's nearest living neighbor on either side (the same seats `/l` and `/r` resolve to); any other number gets a private error naming the valid seats. Every rule below applies to all three commands.
 
 Neighbor Chat stays restricted after the game. The sender and recipient can read their own conversations in the replay; other players and anonymous viewers cannot. Authorized chat reviewers (admin, editor, moderator and trialmod) can review the saved transcript. Live visibility still uses the existing hidden-info subscriptions and excludes seated staff from the moderator view.
 
 Accepted messages are retained in `game.private.neighborChats` and archived in `Game.neighborChats`, separately from public replay chat. The replay socket endpoint uses current account permissions and strips both raw private arrays and legacy Neighbor Chat rows from public responses. Both public game-export scripts apply the same filter. The existing moderator-only `/gameJSON` export remains available for review.
 
 Older Neighbor Chat records have no reliable participant identifiers. Those rows remain available to authorized reviewers, but cannot safely be assigned to a participant's replay. No database migration is required for new messages. Existing replay availability is unchanged: private games do not publish the game summary required by the replay UI, although their retained chat remains available to moderators and to the recipient's authenticated report request.
+
+Only deaths change which seats are neighbors. A living player keeps their place in the Neighbor Chat ring when they leave the table or disconnect. Accepted messages to that neighbor remain in their private game history, subject to the existing history limits, and are available when they return; they are not redirected to another living seat. A player who has left still cannot send Neighbor Chat until they return to the table.
 
 The in-game mute button stops sending and receiving Neighbor Chat for that game, without changing public chat. Messages are not redirected around a muted neighbor. The preference survives a reconnect to that table and resets in a new game.
 
@@ -20,7 +22,7 @@ Neighbor Chat games are always casual. When Neighbor Chat is enabled, `create-ga
 
 ## Release playtest
 
-- In a Neighbor Chat game, send in both directions, including across a dead or departed seat. Verify that only the pair and a subscribed moderator observer receive the message, and that a seated moderator gets only their own participant view.
+- In a Neighbor Chat game, send in both directions across a dead seat. Verify that only the pair and a subscribed moderator observer receive the message, and that a seated moderator gets only their own participant view. Disconnect a living neighbor and repeat after clicking Leave: that seat must remain the recipient, `/N` must refuse a non-neighbor beyond it, and returning to the table must restore access to the saved private conversation.
 - Repeat in blind and emote-only games: live names remain masked and emotes render. In a silent Neighbor Chat game, verify ordinary public player messages are rejected (including from seated staff), `/l`, `/r` and a valid `/N` reach only the pair and authorized moderator observers, a non-neighbor `/N` is rejected privately, and the private transcript remains restricted in replays.
 - Mute, attempt delivery, unmute, and reconnect. Public chat keeps its configured enabled/silent behavior; mute status is restored and rejected messages do not reach a different neighbor.
 - Submit a report and open Player Reports. Before completion, the transcript is withheld. After completion, reload reports and verify the saved message, surrounding conversation and reported sender.
